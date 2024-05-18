@@ -18,14 +18,6 @@
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <ReportAnalyzer>true</ReportAnalyzer>
-  </PropertyGroup>
-
-  <!-- run analyzers only for release builds, since they are too expensive to run every build when iterating (1-2 mins) -->
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <AnalysisMode>All</AnalysisMode>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
