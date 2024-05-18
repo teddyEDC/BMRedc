@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BossMod", "BossMod\BossMod.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UIDev", "UIDev\UIDev.csproj", "{9FFC3FB6-C9B3-4FA9-8378-F56B5916C8EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeAnalysis", "CodeAnalysis\CodeAnalysis.csproj", "{F5F7E565-DCF2-494A-A18F-F7FA503428F5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,10 +21,6 @@ Global
 		{9FFC3FB6-C9B3-4FA9-8378-F56B5916C8EC}.Debug|x64.Build.0 = Debug|x64
 		{9FFC3FB6-C9B3-4FA9-8378-F56B5916C8EC}.Release|x64.ActiveCfg = Release|x64
 		{9FFC3FB6-C9B3-4FA9-8378-F56B5916C8EC}.Release|x64.Build.0 = Release|x64
-		{F5F7E565-DCF2-494A-A18F-F7FA503428F5}.Debug|x64.ActiveCfg = Release|x64
-		{F5F7E565-DCF2-494A-A18F-F7FA503428F5}.Debug|x64.Build.0 = Release|x64
-		{F5F7E565-DCF2-494A-A18F-F7FA503428F5}.Release|x64.ActiveCfg = Release|x64
-		{F5F7E565-DCF2-494A-A18F-F7FA503428F5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
