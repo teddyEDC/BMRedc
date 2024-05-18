@@ -12,6 +12,7 @@ public record struct WDir(float X, float Z)
     public static WDir operator +(WDir a, WDir b) => new(a.X + b.X, a.Z + b.Z);
     public static WDir operator -(WDir a, WDir b) => new(a.X - b.X, a.Z - b.Z);
     public static WDir operator -(WDir a) => new(-a.X, -a.Z);
+    public static WDir operator -(WDir a, WPos b) => new(a.X - b.X, a.Z - b.Z);
     public static WDir operator *(WDir a, float b) => new(a.X * b, a.Z * b);
     public static WDir operator *(float a, WDir b) => new(a * b.X, a * b.Z);
     public static WDir operator /(WDir a, float b) => new(a.X / b, a.Z / b);
@@ -53,6 +54,10 @@ public record struct WPos(float X, float Z)
     public readonly Vector2 ToVec2() => new(X, Z);
     public readonly WDir ToWDir() => new(X, Z);
 
+    public static WPos operator *(WPos a, float b) => new(a.X * b, a.Z * b);
+    public static WPos operator +(WPos a, float b) => new(a.X + b, a.Z + b);
+    public static WPos operator /(WPos a, int b) => new(a.X / b, a.Z / b);
+    public static WPos operator /(WPos a, float b) => new(a.X / b, a.Z / b);
     public static WPos operator +(WPos a, WDir b) => new(a.X + b.X, a.Z + b.Z);
     public static WPos operator +(WDir a, WPos b) => new(a.X + b.X, a.Z + b.Z);
     public static WPos operator -(WPos a, WDir b) => new(a.X - b.X, a.Z - b.Z);
@@ -97,4 +102,42 @@ public record struct WPos(float X, float Z)
 
     public readonly bool InDonutCone(WPos origin, float innerRadius, float outerRadius, WDir direction, Angle halfAngle) => InDonut(origin, innerRadius, outerRadius) && InCone(origin, direction, halfAngle);
     public readonly bool InDonutCone(WPos origin, float innerRadius, float outerRadius, Angle direction, Angle halfAngle) => InDonut(origin, innerRadius, outerRadius) && InCone(origin, direction, halfAngle);
+
+    public readonly bool InConvexPolygon(IEnumerable<WPos> vertices)
+    {
+        var verts = vertices.ToList();
+        var count = verts.Count;
+        var inside = false;
+        for (int i = 0, j = count - 1; i < count; j = i++)
+        {
+            if ((verts[i].Z > Z) != (verts[j].Z > Z) && X < (verts[j].X - verts[i].X) * (Z - verts[i].Z) / (verts[j].Z - verts[i].Z) + verts[i].X)
+            {
+                inside = !inside;
+            }
+        }
+        return inside;
+    }
+
+    public readonly bool InConcavePolygon(IEnumerable<WPos> vertices)
+    {
+        float windingNumber = 0;
+        var verticesList = vertices.ToList();
+        for (var i = 0; i < verticesList.Count; i++)
+        {
+            var j = (i + 1) % verticesList.Count;
+            var vi = verticesList[i];
+            var vj = verticesList[j];
+            var di = this - vi;
+            var dj = this - vj;
+            var cross = di.Cross(dj);
+            if (vi.Z <= Z)
+            {
+                if (vj.Z > Z && cross > 0)
+                    ++windingNumber;
+            }
+            else if (vj.Z <= Z && cross < 0)
+                --windingNumber;
+        }
+        return windingNumber != 0;
+    }
 }

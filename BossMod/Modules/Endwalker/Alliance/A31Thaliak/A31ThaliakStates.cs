@@ -99,7 +99,8 @@ class A31ThaliakStates : StateMachineBuilder
             .ActivateOnEnter<TetraktysBorder>(); // telegraph appears ~0.1s before cast start
         CastEnd(id + 1, 6);
         ComponentCondition<TetraktysBorder>(id + 2, 0.4f, comp => comp.Active, "Triangles start")
-            .OnExit(() => Module.Arena.Bounds = A31Thaliak.TriBounds);
+            .OnExit(() => Module.Arena.Bounds = A31Thaliak.TriangleBounds)
+            .OnExit(() => Module.Arena.Center = A31Thaliak.TriangleCenter);
         ComponentCondition<Tetraktys>(id + 0x10, 3.6f, comp => comp.AOEs.Count > 0)
             .ActivateOnEnter<Tetraktys>();
         ComponentCondition<Tetraktys>(id + 0x11, 3.9f, comp => comp.NumCasts >= 3, "Small tri 1");
@@ -112,17 +113,19 @@ class A31ThaliakStates : StateMachineBuilder
 
         Cast(id + 0x100, AID.TetraktuosKosmos, 1.7f, 4);
         ComponentCondition<TetraktuosKosmos>(id + 0x110, 0.8f, comp => comp.AOEs.Count > 0)
+            .ActivateOnEnter<TetraktuosKosmosCounter>()
             .ActivateOnEnter<TetraktuosKosmos>();
         CastStart(id + 0x120, AID.TetraktuosKosmos, 6.3f);
         ComponentCondition<TetraktuosKosmos>(id + 0x121, 1.7f, comp => comp.NumCasts >= 1, "Splitting tri 1");
         CastEnd(id + 0x122, 2.3f);
         ComponentCondition<TetraktuosKosmos>(id + 0x130, 0.8f, comp => comp.AOEs.Count > 0);
         ComponentCondition<TetraktuosKosmos>(id + 0x140, 8, comp => comp.NumCasts >= 3, "Splitting tri 2+3")
+            .DeactivateOnExit<TetraktuosKosmosCounter>()
             .DeactivateOnExit<TetraktuosKosmos>();
-
         ComponentCondition<TetraktysBorder>(id + 0x200, 4.2f, comp => !comp.Active, "Triangles resolve")
             .DeactivateOnExit<TetraktysBorder>()
-            .OnExit(() => Module.Arena.Bounds = A31Thaliak.NormalBounds);
+            .OnExit(() => Module.Arena.Bounds = A31Thaliak.NormalBounds)
+            .OnExit(() => Module.Arena.Center = A31Thaliak.NormalCenter);
     }
 
     private void Tetraktys2(uint id, float delay)
@@ -131,7 +134,8 @@ class A31ThaliakStates : StateMachineBuilder
             .ActivateOnEnter<TetraktysBorder>(); // telegraph appears ~0.1s before cast start
         CastEnd(id + 1, 6);
         ComponentCondition<TetraktysBorder>(id + 2, 0.4f, comp => comp.Active, "Triangles start")
-            .OnExit(() => Module.Arena.Bounds = A31Thaliak.TriBounds);
+            .OnExit(() => Module.Arena.Bounds = A31Thaliak.TriangleBounds)
+            .OnExit(() => Module.Arena.Center = A31Thaliak.TriangleCenter);
         ComponentCondition<Tetraktys>(id + 0x10, 3.6f, comp => comp.AOEs.Count > 0)
             .ActivateOnEnter<Tetraktys>();
         ComponentCondition<Tetraktys>(id + 0x11, 3.9f, comp => comp.NumCasts >= 3, "Small tri 1");
@@ -155,7 +159,8 @@ class A31ThaliakStates : StateMachineBuilder
 
         ComponentCondition<TetraktysBorder>(id + 0x200, 3.2f, comp => !comp.Active, "Triangles resolve")
             .DeactivateOnExit<TetraktysBorder>()
-            .OnExit(() => Module.Arena.Bounds = A31Thaliak.NormalBounds);
+            .OnExit(() => Module.Arena.Bounds = A31Thaliak.NormalBounds)
+            .OnExit(() => Module.Arena.Center = A31Thaliak.NormalCenter);
     }
 
     private void Hieroglyphica(uint id, float delay)
@@ -171,7 +176,9 @@ class A31ThaliakStates : StateMachineBuilder
 
     private void HieroglyphicaLeftRightBank(uint id, float delay)
     {
-        Cast(id, AID.Hieroglyphika, delay, 5);
+        Cast(id, AID.Hieroglyphika, delay, 5)
+            .ActivateOnEnter<HieroglyphikaLeftBank>()
+            .ActivateOnEnter<HieroglyphikaRightBank>();
         ComponentCondition<Hieroglyphika>(id + 0x10, 0.9f, comp => comp.SafeSideDir != default)
             .ActivateOnEnter<Hieroglyphika>();
         CastStartMulti(id + 0x11, [AID.HieroglyphikaLeftBank, AID.HieroglyphikaRightBank], 1.2f);
@@ -180,8 +187,6 @@ class A31ThaliakStates : StateMachineBuilder
         ComponentCondition<Hieroglyphika>(id + 0x30, 4.1f, comp => comp.NumCasts > 0, "Squares")
             .DeactivateOnExit<Hieroglyphika>();
         CastEnd(id + 0x40, 4.1f, "Half-arena cleave")
-            .ActivateOnEnter<HieroglyphikaLeftBank>() // note: we activate this only now - there's enough time to dodge from any safespot, and this simplifies staying on maxmelee
-            .ActivateOnEnter<HieroglyphikaRightBank>()
             .DeactivateOnExit<HieroglyphikaLeftBank>()
             .DeactivateOnExit<HieroglyphikaRightBank>();
     }
