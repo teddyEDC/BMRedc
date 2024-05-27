@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 using System.Text;
 
 namespace BossMod;
