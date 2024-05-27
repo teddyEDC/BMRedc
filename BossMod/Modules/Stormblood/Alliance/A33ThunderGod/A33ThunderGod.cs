@@ -10,10 +10,9 @@ class HallowedBolt(BossModule module) : Components.GenericAOEs(module, ActionID.
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (_castersHallowedBoltAOE.Count > 3)
-            return _castersHallowedBoltAOE.Select(c => new AOEInstance(_shapeHallowedBoltAOE, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
-        else
-            return _castersHallowedBoltDonut.Select(c => new AOEInstance(_shapeHallowedBoltDonut, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+        return _castersHallowedBoltAOE.Count > 3
+            ? _castersHallowedBoltAOE.Select(c => new AOEInstance(_shapeHallowedBoltAOE, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
+            : _castersHallowedBoltDonut.Select(c => new AOEInstance(_shapeHallowedBoltDonut, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -37,10 +36,8 @@ class HallowedBolt(BossModule module) : Components.GenericAOEs(module, ActionID.
 [ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 636, NameID = 7899)] //7917
 public class A33ThunderGod(WorldState ws, Actor primary) : BossModule(ws, primary, new(-600, -600), arena)
 {
-    //public static readonly WPos NormalCenter = new(-600, 600);
-    //public static readonly ArenaBoundsCircle NormalBounds = new(30);
-    //public static readonly WPos ArenaBoundsComplex = new(-600, 600);
     private static readonly ArenaBoundsComplex arena = new([new Circle(new(-612.5f, -578.4f), 10), new Circle(new(-587.5f, -578.4f), 10), new Circle(new(-575, -600), 10), new Circle(new(-587.5f, -621.5f), 10), new Circle(new(-612.5f, -621.5f), 10), new Circle(new(-625, -600), 10), new Donut(new(-600, -600), 20, 27)]);
+
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);

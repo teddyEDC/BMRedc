@@ -28,8 +28,5 @@ public class T08Suzaku(WorldState ws, Actor primary) : BossModule(ws, primary, a
 {
     private static readonly List<Shape> union = [new Circle(new(100, 100), 20)];
     public static readonly ArenaBounds arena = new ArenaBoundsComplex(union);
-
-    private static readonly List<Shape> union2 = [new Circle(new(100, 100), 20)];
-    private static readonly List<Shape> difference2 = [new Circle(new(100, 100), 4)];
-    public static readonly ArenaBounds phase2Arena = new ArenaBoundsComplex(union2, difference2);
+    public static readonly ArenaBounds phase2Arena = new ArenaBoundsComplex([new Donut(new(100, 100), 4, 20)]);
 }
