@@ -44,8 +44,8 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
     private static readonly Angle Rot90 = 90.Degrees();
     private static readonly Angle RotM90 = -90.Degrees();
 
-    private Stampede stampede1 = Stampede.Default;
-    private Stampede stampede2 = Stampede.Default;
+    private Stampede stampede1;
+    private Stampede stampede2;
 
     private static readonly (WPos, Angle)[] stampedePositions = [(new(4, -759), Rot90),
         (new(44, -759), RotM90), (new(4, -749), Rot90), (new(44, -749), RotM90),
@@ -151,15 +151,12 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-struct Stampede(bool active, WPos position, Angle rotation)
+record struct Stampede(bool Active, WPos Position, Angle Rotation)
 {
-    public bool Active = active;
-    public WPos Position = position;
-    public Angle Rotation = rotation;
     public int Count = 0;
     public DateTime Reset = default;
     public List<Actor> Beasts = [];
-    public static readonly Stampede Default = new(false, new WPos(), new Angle());
+    public static readonly Stampede Default = new(false, default, default);
 }
 
 class IcyThroes(BossModule module) : Components.GenericBaitAway(module)
