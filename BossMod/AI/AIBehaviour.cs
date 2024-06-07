@@ -7,6 +7,7 @@ namespace BossMod.AI;
 sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
 {
     private readonly AIConfig _config = Service.Config.Get<AIConfig>();
+    private readonly NavigationDecision.Context _naviCtx = new();
     private NavigationDecision _naviDecision;
     private bool _afkMode;
     private bool _followMaster; // if true, our navigation target is master rather than primary target - this happens e.g. in outdoor or in dungeons during gathering trash
@@ -102,11 +103,11 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
         if (_config.ForbidMovement)
             return new() { LeewaySeconds = float.MaxValue };
         if (_followMaster && !_config.FollowTarget || _followMaster && _config.FollowTarget && target == null)
-            return NavigationDecision.Build(autorot.WorldState, autorot.Hints, player, master.Position, 1, new(), Positional.Any);
+            return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, master.Position, 1, new(), Positional.Any);
         if (_followMaster && _config.FollowTarget && target != null)
-            return NavigationDecision.Build(autorot.WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + 2.6f, target.Rotation, _config.DesiredPositional);
+            return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + 2.6f, target.Rotation, _config.DesiredPositional);
         if (targeting.Target == null)
-            return NavigationDecision.Build(autorot.WorldState, autorot.Hints, player, null, 0, new(), Positional.Any);
+            return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, null, 0, new(), Positional.Any);
         var adjRange = targeting.PreferredRange + player.HitboxRadius + targeting.Target.Actor.HitboxRadius;
         if (targeting.PreferTanking)
         {
@@ -116,12 +117,12 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
             if (desiredToTarget.LengthSq() > 4 /*&& (_autorot.ClassActions?.GetState().GCD ?? 0) > 0.5f*/)
             {
                 var dest = autorot.Hints.ClampToBounds(targeting.Target.DesiredPosition - adjRange * desiredToTarget.Normalized());
-                return NavigationDecision.Build(autorot.WorldState, autorot.Hints, player, dest, 0.5f, new(), Positional.Any);
+                return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, dest, 0.5f, new(), Positional.Any);
             }
         }
         var adjRotation = targeting.PreferTanking ? targeting.Target.DesiredRotation : targeting.Target.Actor.Rotation;
 
-        return NavigationDecision.Build(autorot.WorldState, autorot.Hints, player, targeting.Target.Actor.Position, adjRange, adjRotation, targeting.PreferredPosition);
+        return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, targeting.Target.Actor.Position, adjRange, adjRotation, targeting.PreferredPosition);
     }
 
     private void FocusMaster(Actor master)
