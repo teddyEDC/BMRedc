@@ -8,6 +8,7 @@ public sealed class Replay
 
         public override readonly string ToString() => $"{Duration:f2}";
         public readonly bool Contains(DateTime t) => t >= Start && t <= End;
+        public readonly TimeSpan Distance(DateTime t) => t < Start ? Start - t : t > End ? t - End : default;
     }
 
     // note: if target is non-null, Location corresponds to target's position at cast start
@@ -24,7 +25,7 @@ public sealed class Replay
     }
 
     // note: if main target is non-null, TargetPos corresponds to main target's position at cast event
-    public sealed record class Action(ActionID ID, DateTime Timestamp, Participant Source, Participant? MainTarget, Vector3 TargetPos, float AnimationLock, uint GlobalSequence)
+    public sealed record class Action(ActionID ID, DateTime Timestamp, Participant Source, Participant? MainTarget, Vector3 TargetPos, float AnimationLock, uint SourceSequence, uint GlobalSequence)
     {
         public readonly List<ActionTarget> Targets = [];
         public ClientAction? ClientAction;

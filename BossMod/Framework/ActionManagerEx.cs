@@ -1,9 +1,11 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using CSActionType = FFXIVClientStructs.FFXIV.Client.Game.ActionType;
 
 namespace BossMod;
@@ -22,10 +24,9 @@ namespace BossMod;
 // 6. ground-targeted action queueing
 //    ground-targeted actions can't be queued, making using them efficiently tricky
 //    this feature allows queueing them, plus provides options to execute them automatically either at target's position or at cursor's position
-unsafe sealed class ActionManagerEx : IDisposable
+// TODO: should not be public!
+public unsafe sealed class ActionManagerEx : IDisposable
 {
-    public static ActionManagerEx? Instance;
-
     public ActionID CastSpell => new(ActionType.Spell, _inst->CastSpellId);
     public ActionID CastAction => new((ActionType)_inst->CastActionType, _inst->CastActionId);
     public float CastTimeRemaining => _inst->CastSpellId != 0 ? _inst->CastTimeTotal - _inst->CastTimeElapsed : 0;
@@ -36,27 +37,36 @@ unsafe sealed class ActionManagerEx : IDisposable
     public float EffectiveAnimationLock => _inst->AnimationLock + CastTimeRemaining; // animation lock starts ticking down only when cast ends, so this is the minimal time until next action can be requested
     public float AnimationLockDelayEstimate => _animLockTweak.DelayEstimate;
 
-    public Event<ClientActionRequest> ActionRequested = new();
+    public Event<ClientActionRequest> ActionRequestExecuted = new();
     public Event<ulong, ActorCastEvent> ActionEffectReceived = new();
 
     public InputOverride InputOverride = new();
-    public ActionManagerConfig Config = Service.Config.Get<ActionManagerConfig>();
-    public CommonActions.NextAction AutoQueue;
+    public ActionTweaksConfig Config = Service.Config.Get<ActionTweaksConfig>();
+    public ActionQueue.Entry AutoQueue { get; private set; }
     public bool MoveMightInterruptCast { get; private set; } // if true, moving now might cause cast interruption (for current or queued cast)
     private readonly ActionManager* _inst = ActionManager.Instance();
+    private readonly WorldState _ws;
+    private readonly AIHints _hints;
+    private readonly ManualActionQueueTweak _manualQueue;
     private readonly AnimationLockTweak _animLockTweak = new();
     private readonly CooldownDelayTweak _cooldownTweak = new();
     private readonly RestoreRotationTweak _restoreRotTweak = new();
 
     private readonly HookAddress<ActionManager.Delegates.Update> _updateHook;
+    private readonly HookAddress<ActionManager.Delegates.UseAction> _useActionHook;
     private readonly HookAddress<ActionManager.Delegates.UseActionLocation> _useActionLocationHook;
     private readonly HookAddress<PublicContentBozja.Delegates.UseFromHolster> _useBozjaFromHolsterDirectorHook;
     private readonly HookAddress<ActionEffectHandler.Delegates.Receive> _processPacketActionEffectHook;
 
-    public ActionManagerEx()
+    public ActionManagerEx(WorldState ws, AIHints hints)
     {
+        _ws = ws;
+        _hints = hints;
+        _manualQueue = new(ws, hints);
+
         Service.Log($"[AMEx] ActionManager singleton address = 0x{(ulong)_inst:X}");
         _updateHook = new(ActionManager.Addresses.Update, UpdateDetour);
+        _useActionHook = new(ActionManager.Addresses.UseAction, UseActionDetour);
         _useActionLocationHook = new(ActionManager.Addresses.UseActionLocation, UseActionLocationDetour);
         _useBozjaFromHolsterDirectorHook = new(PublicContentBozja.Addresses.UseFromHolster, UseBozjaFromHolsterDirectorDetour);
         _processPacketActionEffectHook = new(ActionEffectHandler.Addresses.Receive, ProcessPacketActionEffectDetour);
@@ -67,8 +77,22 @@ unsafe sealed class ActionManagerEx : IDisposable
         _processPacketActionEffectHook.Dispose();
         _useBozjaFromHolsterDirectorHook.Dispose();
         _useActionLocationHook.Dispose();
+        _useActionHook.Dispose();
         _updateHook.Dispose();
         InputOverride.Dispose();
+    }
+
+    public void QueueManualActions()
+    {
+        _manualQueue.RemoveExpired();
+        _manualQueue.FillQueue(_hints.ActionsToExecute);
+    }
+
+    // finish gathering candidate actions for this frame: sort by priority and select best action to execute
+    public void FinishActionGather()
+    {
+        var player = _ws.Party.Player();
+        AutoQueue = player != null ? _hints.ActionsToExecute.FindBest(_ws, player, _ws.Client.Cooldowns, EffectiveAnimationLock, _hints, _animLockTweak.DelayEstimate) : default;
     }
 
     public Vector3? GetWorldPosUnderCursor()
@@ -119,7 +143,7 @@ unsafe sealed class ActionManagerEx : IDisposable
 
     public float GCD()
     {
-        var gcd = _inst->GetRecastGroupDetail(CommonDefinitions.GCDGroup);
+        var gcd = _inst->GetRecastGroupDetail(ActionDefinitions.GCDGroup);
         return gcd->Total - gcd->Elapsed;
     }
 
@@ -143,11 +167,35 @@ unsafe sealed class ActionManagerEx : IDisposable
     public int GetAdjustedCastTime(ActionID action, bool applyProcs = true, ActionManager.CastTimeProc* outOptProc = null)
         => ActionManager.GetAdjustedCastTime((CSActionType)action.Type, action.ID, applyProcs, outOptProc);
 
+    public int GetAdjustedRecastTime(ActionID action, bool applyClassMechanics = true) => ActionManager.GetAdjustedRecastTime((CSActionType)action.Type, action.ID, applyClassMechanics);
+
     public bool IsRecastTimerActive(ActionID action)
         => _inst->IsRecastTimerActive((CSActionType)action.Type, action.ID);
 
     public int GetRecastGroup(ActionID action)
         => _inst->GetRecastGroup((int)action.Type, action.ID);
+
+    // perform some action transformations to simplify implementation of queueing; UseActionLocation expects some normalization to be already done
+    private ActionID NormalizeGeneralAction(ActionID action)
+    {
+        // do some general action adjustments; note that if we queue action up, it will go through UseActionLocation, so anything non-spell/item needs special handling
+        if (action.Type == ActionType.General)
+        {
+            if (action == ActionDefinitions.IDGeneralLimitBreak)
+            {
+                var lb = LimitBreakController.Instance();
+                var level = lb->BarUnits != 0 ? lb->CurrentUnits / lb->BarUnits : 0;
+                var id = level > 0 ? lb->GetActionId((Character*)GameObjectManager.Instance()->Objects.IndexSorted[0].Value, (byte)(level - 1)) : 0;
+                if (id != 0)
+                    action = new(ActionType.Spell, id);
+            }
+            else if (action == ActionDefinitions.IDGeneralSprint || action == ActionDefinitions.IDGeneralDuty1 || action == ActionDefinitions.IDGeneralDuty2)
+            {
+                action = new(ActionType.Spell, ActionManager.GetSpellIdForAction(CSActionType.GeneralAction, action.ID));
+            }
+        }
+        return action;
+    }
 
     // skips queueing etc
     private bool ExecuteAction(ActionID action, ulong targetId, Vector3 targetPos)
@@ -194,16 +242,12 @@ unsafe sealed class ActionManagerEx : IDisposable
         // note: if we cancel movement and start casting immediately, it will be canceled some time later - instead prefer to delay for one frame
         if (EffectiveAnimationLock <= 0 && AutoQueue.Action && !IsRecastTimerActive(AutoQueue.Action) && !(blockMovement && InputOverride.IsMoving()))
         {
-            // extra safety checks (should no longer be needed, but leaving them for now)
-            // hack for sprint support
+            // extra safety checks (should no longer be needed)
             // normally general action -> spell conversion is done by UseAction before calling UseActionRaw
             // calling UseActionRaw directly is not good: it would call StartCooldown, which would in turn call GetRecastTime, which always returns 5s for general actions
             // this leads to incorrect sprint cooldown (5s instead of 60s), which is just bad
             // for spells, call GetAdjustedActionId - even though it is typically done correctly by autorotation modules
             var actionAdj = AutoQueue.Action.Type == ActionType.Spell ? new(ActionType.Spell, GetAdjustedActionID(AutoQueue.Action.ID)) : AutoQueue.Action;
-            if (actionAdj != AutoQueue.Action)
-                Service.Log($"[AMEx] Something didn't perform action adjustment correctly: replacing {AutoQueue.Action} with {actionAdj}");
-
             var targetID = AutoQueue.Target?.InstanceID ?? 0xE0000000;
             var status = GetActionStatus(actionAdj, targetID);
             if (status == 0)
@@ -216,7 +260,7 @@ unsafe sealed class ActionManagerEx : IDisposable
             }
             else
             {
-                Service.Log($"[AMEx] Can't execute {AutoQueue.Source} action {AutoQueue.Action} (=> {actionAdj}) @ {targetID:X}: status {status} '{Service.LuminaRow<Lumina.Excel.GeneratedSheets.LogMessage>(status)?.Text}'");
+                Service.Log($"[AMEx] Can't execute prio {AutoQueue.Priority} action {AutoQueue.Action} (=> {actionAdj}) @ {targetID:X}: status {status} '{Service.LuminaRow<Lumina.Excel.GeneratedSheets.LogMessage>(status)?.Text}'");
                 blockMovement = false;
             }
         }
@@ -227,6 +271,46 @@ unsafe sealed class ActionManagerEx : IDisposable
             InputOverride.BlockMovement();
         else
             InputOverride.UnblockMovement();
+    }
+
+    // note: targetId is usually your current primary target (or 0xE0000000 if you don't target anyone), unless you do something like /ac XXX <f> etc
+    private bool UseActionDetour(ActionManager* self, CSActionType actionType, uint actionId, ulong targetId, uint extraParam, ActionManager.UseActionMode mode, uint comboRouteId, bool* outOptAreaTargeted)
+    {
+        var action = new ActionID((ActionType)actionType, actionId);
+        //Service.Log($"[AMEx] UA: {action} @ {targetId:X}: {extraParam} {mode} {comboRouteId}");
+
+        // if mouseover mode is enabled AND target is a usual primary target AND current mouseover is valid target for action, then we override target to mouseover
+        var primaryTarget = TargetSystem.Instance()->Target;
+        var primaryTargetId = primaryTarget != null ? primaryTarget->GetGameObjectId() : 0xE0000000;
+        bool targetOverridden = targetId != primaryTargetId;
+        if (Config.PreferMouseover && !targetOverridden)
+        {
+            var mouseoverTarget = PronounModule.Instance()->UiMouseOverTarget;
+            if (mouseoverTarget != null && ActionManager.CanUseActionOnTarget(ActionManager.GetSpellIdForAction(actionType, actionId), mouseoverTarget))
+            {
+                targetId = mouseoverTarget->GetGameObjectId();
+                targetOverridden = true;
+            }
+        }
+
+        action = NormalizeGeneralAction(action);
+        (ulong, Vector3?) getAreaTarget() => targetOverridden ? (targetId, null) :
+            (Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtTarget ? targetId : 0xE0000000, Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtCursor ? GetWorldPosUnderCursor() : null);
+
+        // note: only standard mode can be filtered
+        // note: current implementation introduces slight input lag (on button press, next autorotation update will pick state updates, which will be executed on next action manager update)
+        if (mode == ActionManager.UseActionMode.None && action.Type is ActionType.Spell or ActionType.Item && _manualQueue.Push(action, targetId, !targetOverridden, getAreaTarget))
+            return false;
+
+        bool areaTargeted = false;
+        var res = _useActionHook.Original(self, actionType, actionId, targetId, extraParam, mode, comboRouteId, &areaTargeted);
+        if (outOptAreaTargeted != null)
+            *outOptAreaTargeted = areaTargeted;
+        if (areaTargeted && Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtCursor)
+            self->AreaTargetingExecuteAtCursor = true;
+        if (areaTargeted && Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtTarget)
+            self->AreaTargetingExecuteAtObject = targetId;
+        return res;
     }
 
     private bool UseActionLocationDetour(ActionManager* self, CSActionType actionType, uint actionId, ulong targetId, Vector3* location, uint extraParam)
@@ -313,6 +397,7 @@ unsafe sealed class ActionManagerEx : IDisposable
 
     private void HandleActionRequest(ActionID action, uint seq, ulong targetID, Vector3 targetPos, Angle prevRot, Angle currRot)
     {
+        _manualQueue.Pop(action);
         _animLockTweak.RecordRequest(seq, _inst->AnimationLock);
         _restoreRotTweak.Preserve(prevRot, currRot);
         MoveMightInterruptCast = CastTimeRemaining > 0;
@@ -330,6 +415,6 @@ unsafe sealed class ActionManagerEx : IDisposable
         var (castElapsed, castTotal) = _inst->CastSpellId != 0 ? (_inst->CastTimeElapsed, _inst->CastTimeTotal) : (0, 0);
         var (recastElapsed, recastTotal) = recast != null ? (recast->Elapsed, recast->Total) : (0, 0);
         Service.Log($"[AMEx] UAL #{seq} {action} @ {targetID:X} / {Utils.Vec3String(targetPos)}, ALock={_inst->AnimationLock:f3}, CTR={CastTimeRemaining:f3}, CD={recastElapsed:f3}/{recastTotal:f3}, GCD={GCD():f3}");
-        ActionRequested.Fire(new(action, targetID, targetPos, seq, _inst->AnimationLock, castElapsed, castTotal, recastElapsed, recastTotal));
+        ActionRequestExecuted.Fire(new(action, targetID, targetPos, seq, _inst->AnimationLock, castElapsed, castTotal, recastElapsed, recastTotal));
     }
 }

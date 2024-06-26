@@ -208,7 +208,7 @@ class PenancePianissimo(BossModule module) : Components.GenericAOEs(module)
     {
         base.AddAIHints(slot, actor, assignment, hints);
         if (Module.Arena.Bounds == D055ForgivenObscenity.arenaCircle)
-            hints.PlannedActions.Add((ActionID.MakeSpell(WAR.AID.Sprint), actor, 1, false));
+            hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
     }
 }
 

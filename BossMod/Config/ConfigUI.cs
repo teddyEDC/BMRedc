@@ -1,7 +1,8 @@
-﻿using Dalamud.Interface.Utility.Raii;
+using BossMod.Autorotation;
 using System.Diagnostics;
 using ImGuiNET;
 using System.Reflection;
+using Dalamud.Interface.Utility.Raii;
 
 namespace BossMod;
 
@@ -18,14 +19,21 @@ public sealed class ConfigUI : IDisposable
 
     private readonly List<UINode> _roots = [];
     private readonly UITree _tree = new();
-    private readonly ModuleViewer _mv = new();
+    private readonly UITabs _tabs = new();
+    private readonly ModuleViewer _mv;
     private readonly ConfigRoot _root;
     private readonly WorldState _ws;
+    private readonly UIPresetDatabaseEditor? _presets;
 
-    public ConfigUI(ConfigRoot config, WorldState ws)
+    public ConfigUI(ConfigRoot config, WorldState ws, RotationDatabase? rotationDB)
     {
         _root = config;
         _ws = ws;
+        _mv = new(rotationDB?.Plans);
+        _presets = rotationDB != null ? new(rotationDB.Presets) : null;
+        _tabs.Add("Configs", () => DrawNodes(_roots));
+        _tabs.Add("Modules", () => _mv.Draw(_tree, _ws));
+        _tabs.Add("Presets", () => _presets?.Draw());
 
         Dictionary<Type, UINode> nodes = [];
         foreach (var n in config.Nodes)
@@ -55,17 +63,14 @@ public sealed class ConfigUI : IDisposable
         _mv.Dispose();
     }
 
+    public void ShowTab(string name) => _tabs.Select(name);
+
     public void Draw()
     {
+        _tabs.Draw();
         using var tabs = ImRaii.TabBar("Tabs");
         if (tabs)
         {
-            using (var tab = ImRaii.TabItem("Configs"))
-                if (tab)
-                    DrawNodes(_roots);
-            using (var tab = ImRaii.TabItem("Modules"))
-                if (tab)
-                    _mv.Draw(_tree);
             using (var tab = ImRaii.TabItem("Slash commands"))
                 if (tab)
                     DrawAvailableCommands();
@@ -75,7 +80,7 @@ public sealed class ConfigUI : IDisposable
         }
     }
 
-    private readonly Dictionary<string, string> _availableAICommands = new()
+    private static readonly Dictionary<string, string> _availableAICommands = new()
     {
         { "on", "Enables the AI." },
         { "off", "Disables the AI." },
@@ -94,9 +99,17 @@ public sealed class ConfigUI : IDisposable
         { "positional X", "Switch to positional when following targets. (any, rear, flank, front)" }
     };
 
-    private readonly Dictionary<string, string> _availableOtherCommands = new()
+    private static readonly Dictionary<string, string> _autorotationCommands = new()
     {
-        { "a", "Toggles autorotation." },
+        { "ar", "Lists all autorotation commands." },
+        { "ar clear", "Clear current preset; autorotation will do nothing unless plan is active" },
+        { "ar set Preset", "Force disable autorotation; no actions will be executed automatically even if plan is active." },
+        { "ar toggle", "Force disable autorotation if not already; otherwise clear overrides." },
+        { "ar toggle Preset", "Start executing specified preset unless it's already active; clear otherwise" },
+    };
+
+    private static readonly Dictionary<string, string> _availableOtherCommands = new()
+    {
         { "d", "Opens the debug menu." },
         { "r", "Opens the replay menu." },
         { "gc", "Triggers the garbage collection." },
@@ -114,12 +127,20 @@ public sealed class ConfigUI : IDisposable
             ImGui.Text($"/bmrai {command.Key}: {command.Value}");
         }
         ImGui.Separator();
+        ImGui.Text("Autorotation commands:");
+        ImGui.Separator();
+        foreach (var command in _autorotationCommands)
+        {
+            ImGui.Text($"/bmr {command.Key}: {command.Value}");
+        }
+        ImGui.Separator();
         ImGui.Text("Other commands:");
         ImGui.Separator();
         foreach (var command in _availableOtherCommands)
         {
             ImGui.Text($"/bmr {command.Key}: {command.Value}");
         }
+        ImGui.Separator();
         ImGui.Text("/vbm can be used instead of /bmr and /vbmai can be used instead of /bmrai");
     }
 
@@ -169,15 +190,11 @@ public sealed class ConfigUI : IDisposable
             if (props == null)
                 continue;
 
-            _ = field.GetValue(node) switch
+            var value = field.GetValue(node);
+            if (DrawProperty(props.Label, node, field, value, root, tree, ws))
             {
-                bool v => DrawProperty(props, node, field, v),
-                Enum v => DrawProperty(props, node, field, v),
-                float v => DrawProperty(props, node, field, v),
-                int v => DrawProperty(props, node, field, v),
-                GroupAssignment v => DrawProperty(props, node, field, v, root, tree, ws),
-                _ => false
-            };
+                node.Modified.Fire();
+            }
         }
 
         // draw custom stuff
@@ -202,39 +219,51 @@ public sealed class ConfigUI : IDisposable
         }
     }
 
-    private static bool DrawProperty(PropertyDisplayAttribute props, ConfigNode node, FieldInfo member, bool v)
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, object? value, ConfigRoot root, UITree tree, WorldState ws) => value switch
+    {
+        bool v => DrawProperty(label, node, member, v),
+        Enum v => DrawProperty(label, node, member, v),
+        float v => DrawProperty(label, node, member, v),
+        int v => DrawProperty(label, node, member, v),
+        Color v => DrawProperty(label, node, member, v),
+        Color[] v => DrawProperty(label, node, member, v),
+        GroupAssignment v => DrawProperty(label, node, member, v, root, tree, ws),
+        _ => false
+    };
+
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, bool v)
     {
         var combo = member.GetCustomAttribute<PropertyComboAttribute>();
         if (combo != null)
         {
-            if (UICombo.Bool(props.Label, combo.Values, ref v))
+            if (UICombo.Bool(label, combo.Values, ref v))
             {
                 member.SetValue(node, v);
-                node.Modified.Fire();
+                return true;
             }
         }
         else
         {
-            if (ImGui.Checkbox(props.Label, ref v))
+            if (ImGui.Checkbox(label, ref v))
             {
                 member.SetValue(node, v);
-                node.Modified.Fire();
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
-    private static bool DrawProperty(PropertyDisplayAttribute props, ConfigNode node, FieldInfo member, Enum v)
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, Enum v)
     {
-        if (UICombo.Enum(props.Label, ref v))
+        if (UICombo.Enum(label, ref v))
         {
             member.SetValue(node, v);
-            node.Modified.Fire();
+            return true;
         }
-        return true;
+        return false;
     }
 
-    private static bool DrawProperty(PropertyDisplayAttribute props, ConfigNode node, FieldInfo member, float v)
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, float v)
     {
         var slider = member.GetCustomAttribute<PropertySliderAttribute>();
         if (slider != null)
@@ -242,24 +271,24 @@ public sealed class ConfigUI : IDisposable
             var flags = ImGuiSliderFlags.None;
             if (slider.Logarithmic)
                 flags |= ImGuiSliderFlags.Logarithmic;
-            if (ImGui.DragFloat(props.Label, ref v, slider.Speed, slider.Min, slider.Max, "%.3f", flags))
+            if (ImGui.DragFloat(label, ref v, slider.Speed, slider.Min, slider.Max, "%.3f", flags))
             {
                 member.SetValue(node, v);
-                node.Modified.Fire();
+                return true;
             }
         }
         else
         {
-            if (ImGui.InputFloat(props.Label, ref v))
+            if (ImGui.InputFloat(label, ref v))
             {
                 member.SetValue(node, v);
-                node.Modified.Fire();
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
-    private static bool DrawProperty(PropertyDisplayAttribute props, ConfigNode node, FieldInfo member, int v)
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, int v)
     {
         var slider = member.GetCustomAttribute<PropertySliderAttribute>();
         if (slider != null)
@@ -267,30 +296,58 @@ public sealed class ConfigUI : IDisposable
             var flags = ImGuiSliderFlags.None;
             if (slider.Logarithmic)
                 flags |= ImGuiSliderFlags.Logarithmic;
-            if (ImGui.DragInt(props.Label, ref v, slider.Speed, (int)slider.Min, (int)slider.Max, "%d", flags))
+            if (ImGui.DragInt(label, ref v, slider.Speed, (int)slider.Min, (int)slider.Max, "%d", flags))
             {
                 member.SetValue(node, v);
-                node.Modified.Fire();
+                return true;
             }
         }
         else
         {
-            if (ImGui.InputInt(props.Label, ref v))
+            if (ImGui.InputInt(label, ref v))
             {
                 member.SetValue(node, v);
-                node.Modified.Fire();
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
-    private static bool DrawProperty(PropertyDisplayAttribute props, ConfigNode node, FieldInfo member, GroupAssignment v, ConfigRoot root, UITree tree, WorldState ws)
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, Color v)
+    {
+        var col = v.ToFloat4();
+        if (ImGui.ColorEdit4(label, ref col, ImGuiColorEditFlags.PickerHueWheel))
+        {
+            member.SetValue(node, Color.FromFloat4(col));
+            return true;
+        }
+        return false;
+    }
+
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, Color[] v)
+    {
+        var modified = false;
+        for (int i = 0; i < v.Length; ++i)
+        {
+            var col = v[i].ToFloat4();
+            if (ImGui.ColorEdit4($"{label} {i}", ref col, ImGuiColorEditFlags.PickerHueWheel))
+            {
+                v[i] = Color.FromFloat4(col);
+                member.SetValue(node, v);
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    private static bool DrawProperty(string label, ConfigNode node, FieldInfo member, GroupAssignment v, ConfigRoot root, UITree tree, WorldState ws)
     {
         var group = member.GetCustomAttribute<GroupDetailsAttribute>();
         if (group == null)
             return false;
 
-        foreach (var tn in tree.Node(props.Label, false, v.Validate() ? 0xffffffff : 0xff00ffff, () => DrawPropertyContextMenu(node, member, v)))
+        var modified = false;
+        foreach (var tn in tree.Node(label, false, v.Validate() ? 0xffffffff : 0xff00ffff, () => DrawPropertyContextMenu(node, member, v)))
         {
             var assignments = root.Get<PartyRolesConfig>().SlotsPerAssignment(ws.Party);
             if (ImGui.BeginTable("table", group.Names.Length + 2, ImGuiTableFlags.SizingFixedFit))
@@ -310,14 +367,14 @@ public sealed class ConfigUI : IDisposable
                         if (ImGui.RadioButton($"###{r}:{c}", v[r] == c))
                         {
                             v[r] = c;
-                            node.Modified.Fire();
+                            modified = true;
                         }
                     }
                     ImGui.TableNextColumn();
                     if (ImGui.RadioButton($"###{r}:---", v[r] < 0 || v[r] >= group.Names.Length))
                     {
                         v[r] = -1;
-                        node.Modified.Fire();
+                        modified = true;
                     }
 
                     string name = r.ToString();
@@ -329,7 +386,7 @@ public sealed class ConfigUI : IDisposable
                 ImGui.EndTable();
             }
         }
-        return true;
+        return modified;
     }
 
     private static void DrawPropertyContextMenu(ConfigNode node, FieldInfo member, GroupAssignment v)

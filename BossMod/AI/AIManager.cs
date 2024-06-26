@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.Gui.Dtr;
+using Dalamud.Game.Gui.Dtr;
+using BossMod.Autorotation;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -7,21 +8,24 @@ namespace BossMod.AI;
 
 sealed class AIManager : IDisposable
 {
-    public static AIManager? Instance { get; private set; }
-    public readonly Autorotation Autorot;
+    public static AIManager? Instance;
+    public readonly RotationModuleManager Autorot;
     public readonly AIController Controller;
     private readonly AIConfig _config;
     private readonly DtrBarEntry _dtrBarEntry;
     private readonly AIManagementWindow _wndAI;
     public int MasterSlot = PartyState.PlayerSlot; // non-zero means corresponding player is master
     public AIBehaviour? Beh;
+    public Preset? AiPreset;
 
-    public AIManager(Autorotation autorot)
+    public WorldState WorldState => Autorot.Bossmods.WorldState;
+
+    public AIManager(RotationModuleManager autorot)
     {
         Instance = this;
         _wndAI = new AIManagementWindow(this);
         Autorot = autorot;
-        Controller = new();
+        Controller = new(autorot.ActionManager);
         _config = Service.Config.Get<AIConfig>();
         _dtrBarEntry = Service.DtrBar.Get("Bossmod");
         Service.ChatGui.ChatMessage += OnChatMessage;
@@ -41,14 +45,14 @@ sealed class AIManager : IDisposable
 
     public void Update()
     {
-        if (Autorot.WorldState.Party.ContentIDs[MasterSlot] == 0 && Autorot.WorldState.Party.ActorIDs[MasterSlot] == 0)
+        if (WorldState.Party.ActorIDs[MasterSlot] == 0)
             SwitchToIdle();
 
         if (!_config.Enabled && Beh != null)
             SwitchToIdle();
 
-        var player = Autorot.WorldState.Party.Player();
-        var master = Autorot.WorldState.Party[MasterSlot];
+        var player = WorldState.Party.Player();
+        var master = WorldState.Party[MasterSlot];
         if (Beh != null && player != null && master != null)
             Beh.Execute(player, master);
         else
@@ -79,7 +83,6 @@ sealed class AIManager : IDisposable
     {
         Beh?.Dispose();
         Beh = null;
-
         MasterSlot = PartyState.PlayerSlot;
         Controller.Clear();
         _wndAI.UpdateTitle();
@@ -87,14 +90,10 @@ sealed class AIManager : IDisposable
 
     public void SwitchToFollow(int masterSlot)
     {
-        var master = Autorot.WorldState.Party[masterSlot];
-        if (master != null)
-        {
-            SwitchToIdle();
-            MasterSlot = masterSlot;
-            Beh = new AIBehaviour(Controller, Autorot);
-            _wndAI.UpdateTitle();
-        }
+        SwitchToIdle();
+        MasterSlot = WorldState.Party[masterSlot]?.Name == null ? 0 : masterSlot;
+        Beh = new AIBehaviour(Controller, Autorot, AiPreset);
+        _wndAI.UpdateTitle();
     }
 
     private int FindPartyMemberSlotFromSender(SeString sender)
@@ -102,12 +101,7 @@ sealed class AIManager : IDisposable
         if (sender.Payloads.FirstOrDefault() is not PlayerPayload source)
             return -1;
         var pm = Service.PartyList.FirstOrDefault(pm => pm.Name.TextValue == source.PlayerName && pm.World.Id == source.World.RowId);
-        if (pm != null)
-            return Autorot.WorldState.Party.ContentIDs.IndexOf((ulong)pm.ContentId);
-
-        // Check for NPCs (Buddies)
-        var buddy = Autorot.WorldState.Party.WithSlot().FirstOrDefault(p => p.Item2.Name.Equals(source.PlayerName, StringComparison.OrdinalIgnoreCase));
-        return buddy != default ? buddy.Item1 : -1;
+        return pm != null ? WorldState.Party.ContentIDs.IndexOf((ulong)pm.ContentId) : -1;
     }
 
     private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)

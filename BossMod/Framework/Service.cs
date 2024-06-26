@@ -36,7 +36,8 @@ public sealed class Service
     public static void Log(string msg) => LogHandler?.Invoke(msg);
 
     public static Lumina.GameData? LuminaGameData;
-    public static T? LuminaRow<T>(uint row) where T : Lumina.Excel.ExcelRow => LuminaGameData?.GetExcelSheet<T>(Lumina.Data.Language.English)?.GetRow(row);
+    public static Lumina.Excel.ExcelSheet<T>? LuminaSheet<T>() where T : Lumina.Excel.ExcelRow => LuminaGameData?.GetExcelSheet<T>(Lumina.Data.Language.English);
+    public static T? LuminaRow<T>(uint row) where T : Lumina.Excel.ExcelRow => LuminaSheet<T>()?.GetRow(row);
 
     public static WindowSystem? WindowSystem;
 #pragma warning restore CA2211

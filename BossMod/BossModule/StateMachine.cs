@@ -56,7 +56,6 @@ public class StateMachine(List<StateMachine.Phase> phases)
     private DateTime _activation;
     private DateTime _phaseEnter;
     private DateTime _lastTransition;
-    public float PrepullTimer; // TODO: reconsider...
     public float TimeSinceActivation => (float)(_curTime - _activation).TotalSeconds;
     public float TimeSincePhaseEnter => (float)(_curTime - _phaseEnter).TotalSeconds;
     public float TimeSinceTransition => (float)(_curTime - _lastTransition).TotalSeconds;

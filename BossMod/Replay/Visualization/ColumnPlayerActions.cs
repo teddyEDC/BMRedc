@@ -27,17 +27,16 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
         _autoAttacks = Add<ColumnGenericHistory>(new(timeline, tree, phaseBranches, "Auto attacks"));
         _animLocks = Add<ColumnGenericHistory>(new(timeline, tree, phaseBranches, "Abilities with animation locks"));
         _sep = Add(new ColumnSeparator(timeline));
-        GetCooldownColumn(CommonDefinitions.GCDGroup, new()).Name = "GCD"; // make sure GCD column always exists and is before any others
+        GetCooldownColumn(ActionDefinitions.GCDGroup, new()).Name = "GCD"; // make sure GCD column always exists and is before any others
         SetupClass(playerClass);
 
-        var classDef = PlanDefinitions.Classes.GetValueOrDefault(playerClass);
         int iCast = 0;
         var minTime = enc.Time.Start.AddSeconds(timeline.MinTime);
         foreach (var a in replay.Actions.SkipWhile(a => a.Timestamp < minTime).TakeWhile(a => a.Timestamp <= enc.Time.End).Where(a => a.Source == player))
         {
             // note: we assume autoattacks are never casted... in fact, I think only GCDs can be casted
             var actionName = $"{a.ID} -> {ReplayUtils.ParticipantString(a.MainTarget, a.Timestamp)} #{a.GlobalSequence}";
-            if (a.ID == CommonDefinitions.IDAutoAttack || a.ID == CommonDefinitions.IDAutoShot)
+            if (a.ID == ActionDefinitions.IDAutoAttack || a.ID == ActionDefinitions.IDAutoShot)
             {
                 AddAnimationLock(_autoAttacks, a, enc.Time.Start, a.Timestamp, actionName);
                 _autoAttacks.AddHistoryEntryDot(enc.Time.Start, a.Timestamp, actionName, 0xffc0c0c0).AddActionTooltip(a);
@@ -47,10 +46,10 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
             while (iCast < player.Casts.Count && player.Casts[iCast].Time.End < a.Timestamp)
             {
                 // add cast without event (interrupted, cancelled, whatever)
-                AddUnfinishedCast(player.Casts[iCast++], enc.Time.Start, classDef);
+                AddUnfinishedCast(player.Casts[iCast++], enc.Time.Start);
             }
 
-            var actionDef = classDef?.Abilities.GetValueOrDefault(a.ID);
+            var actionDef = ActionDefinitions.Instance[a.ID];
             DateTime effectStart;
             if (iCast < player.Casts.Count && player.Casts[iCast].Time.Start < a.Timestamp && player.Casts[iCast].ID == a.ID)
             {
@@ -61,8 +60,8 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
                 if (actionDef != null)
                 {
                     StartCooldown(a.ID, actionDef, enc.Time.Start, cast.Time.Start);
-                    GetCooldownColumn(actionDef.CooldownGroup, a.ID).AddHistoryEntryRange(enc.Time.Start, cast.Time, castName, 0x80ffffff).AddCastTooltip(cast);
-                    AdvanceCooldown(actionDef.CooldownGroup, enc.Time.Start, cast.Time.End, false);
+                    GetCooldownColumn(actionDef.MainCooldownGroup, a.ID).AddHistoryEntryRange(enc.Time.Start, cast.Time, castName, 0x80ffffff).AddCastTooltip(cast);
+                    AdvanceCooldown(actionDef.MainCooldownGroup, enc.Time.Start, cast.Time.End, false);
                 }
                 effectStart = cast.Time.End;
             }
@@ -80,12 +79,28 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
 
             if (actionDef != null)
             {
-                var col = GetCooldownColumn(actionDef.CooldownGroup, a.ID);
-                // TODO: effect should be extended by action-to-effectresult delay?..
-                if (actionDef.EffectDuration > 0)
+                var col = GetCooldownColumn(actionDef.MainCooldownGroup, a.ID);
+                float effectDuration = 0;
+                List<string> effectTooltip = [];
+                foreach (var t in a.Targets)
                 {
-                    col.AddHistoryEntryRange(enc.Time.Start, effectStart, actionDef.EffectDuration, actionName, 0x8000ff00).TooltipExtra.Add($"- effect: {actionDef.EffectDuration:f1}s");
-                    AdvanceCooldown(actionDef.CooldownGroup, enc.Time.Start, effectStart.AddSeconds(actionDef.EffectDuration), false);
+                    foreach (var eff in t.Effects.Where(eff => eff.Type is ActionEffectType.ApplyStatusEffectTarget or ActionEffectType.ApplyStatusEffectSource))
+                    {
+                        var source = eff.FromTarget ? t.Target : a.Source;
+                        var target = eff.Type == ActionEffectType.ApplyStatusEffectTarget && !eff.AtSource ? t.Target : a.Source;
+                        var status = replay.Statuses.FirstOrDefault(s => s.ID == eff.Value && s.Target == target && s.Source == source);
+                        var duration = (float)((status?.Time.End ?? a.Timestamp) - a.Timestamp).TotalSeconds;
+                        var delay = ((status?.Time.Start ?? a.Timestamp) - a.Timestamp).TotalSeconds;
+                        effectDuration = Math.Max(effectDuration, duration);
+                        effectTooltip.Add($"- effect: {Utils.StatusString(eff.Value)}, duration={(status != null ? status.Time : "???")}s, start-delay={delay:f3}s");
+                    }
+                }
+                if (actionDef.MainCooldownGroup == ActionDefinitions.GCDGroup)
+                    effectDuration = Math.Min(effectDuration, 0.6f); // TODO: this is a hack, reconsider... the problem is that sometimes actions apply statuses that are then refreshed, that usually happens for gcds...
+                if (effectDuration > 0)
+                {
+                    col.AddHistoryEntryRange(enc.Time.Start, effectStart, effectDuration, actionName, 0x8000ff00).TooltipExtra = effectTooltip;
+                    AdvanceCooldown(actionDef.MainCooldownGroup, enc.Time.Start, effectStart.AddSeconds(effectDuration), false);
                 }
                 col.AddHistoryEntryDot(enc.Time.Start, a.Timestamp, actionName, 0xffffffff).AddActionTooltip(a);
             }
@@ -120,7 +135,7 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
         // add remaining unfinished casts
         while (iCast < player.Casts.Count)
         {
-            AddUnfinishedCast(player.Casts[iCast++], enc.Time.Start, classDef);
+            AddUnfinishedCast(player.Casts[iCast++], enc.Time.Start);
         }
 
         // add unfinished cooldowns
@@ -157,32 +172,33 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
         {
             case Class.WAR:
                 // make sure important damage cooldowns are in consistent order
-                GetCooldownColumn((int)WAR.CDGroup.Infuriate, ActionID.MakeSpell(WAR.AID.Infuriate));
-                GetCooldownColumn((int)WAR.CDGroup.InnerRelease, ActionID.MakeSpell(WAR.AID.InnerRelease));
-                GetCooldownColumn((int)WAR.CDGroup.Upheaval, ActionID.MakeSpell(WAR.AID.Upheaval));
-                GetCooldownColumn((int)WAR.CDGroup.Onslaught, ActionID.MakeSpell(WAR.AID.Onslaught));
+                GetCooldownColumn(ActionID.MakeSpell(WAR.AID.Infuriate));
+                GetCooldownColumn(ActionID.MakeSpell(WAR.AID.InnerRelease));
+                GetCooldownColumn(ActionID.MakeSpell(WAR.AID.Upheaval));
+                GetCooldownColumn(ActionID.MakeSpell(WAR.AID.Onslaught));
                 // infuriate cooldown reductions
-                _cooldownReductions[ActionID.MakeSpell(WAR.AID.InnerBeast)] = ((int)WAR.CDGroup.Infuriate, 5);
-                _cooldownReductions[ActionID.MakeSpell(WAR.AID.FellCleave)] = ((int)WAR.CDGroup.Infuriate, 5);
-                _cooldownReductions[ActionID.MakeSpell(WAR.AID.InnerChaos)] = ((int)WAR.CDGroup.Infuriate, 5);
-                _cooldownReductions[ActionID.MakeSpell(WAR.AID.SteelCyclone)] = ((int)WAR.CDGroup.Infuriate, 5);
-                _cooldownReductions[ActionID.MakeSpell(WAR.AID.Decimate)] = ((int)WAR.CDGroup.Infuriate, 5);
-                _cooldownReductions[ActionID.MakeSpell(WAR.AID.ChaoticCyclone)] = ((int)WAR.CDGroup.Infuriate, 5);
+                var infCDG = ActionDefinitions.Instance.Spell(WAR.AID.Infuriate)!.MainCooldownGroup;
+                _cooldownReductions[ActionID.MakeSpell(WAR.AID.InnerBeast)] = (infCDG, 5);
+                _cooldownReductions[ActionID.MakeSpell(WAR.AID.FellCleave)] = (infCDG, 5);
+                _cooldownReductions[ActionID.MakeSpell(WAR.AID.InnerChaos)] = (infCDG, 5);
+                _cooldownReductions[ActionID.MakeSpell(WAR.AID.SteelCyclone)] = (infCDG, 5);
+                _cooldownReductions[ActionID.MakeSpell(WAR.AID.Decimate)] = (infCDG, 5);
+                _cooldownReductions[ActionID.MakeSpell(WAR.AID.ChaoticCyclone)] = (infCDG, 5);
                 break;
         }
     }
 
-    private void AddUnfinishedCast(Replay.Cast cast, DateTime encStart, PlanDefinitions.ClassData? classDef)
+    private void AddUnfinishedCast(Replay.Cast cast, DateTime encStart)
     {
         var name = $"[unfinished] {cast.ID} -> {ReplayUtils.ParticipantString(cast.Target, cast.Time.Start)}";
         _animLocks.AddHistoryEntryRange(encStart, cast.Time, name, 0x800000ff).AddCastTooltip(cast);
 
-        var castActionDef = classDef?.Abilities.GetValueOrDefault(cast.ID);
+        var castActionDef = ActionDefinitions.Instance[cast.ID];
         if (castActionDef != null)
         {
-            AdvanceCooldown(castActionDef.CooldownGroup, encStart, cast.Time.Start, true);
-            GetCooldownColumn(castActionDef.CooldownGroup, cast.ID).AddHistoryEntryRange(encStart, cast.Time, name, 0x800000ff).AddCastTooltip(cast);
-            AdvanceCooldown(castActionDef.CooldownGroup, encStart, cast.Time.End, false); // consider cooldown reset instead?..
+            AdvanceCooldown(castActionDef.MainCooldownGroup, encStart, cast.Time.Start, true);
+            GetCooldownColumn(castActionDef.MainCooldownGroup, cast.ID).AddHistoryEntryRange(encStart, cast.Time, name, 0x800000ff).AddCastTooltip(cast);
+            AdvanceCooldown(castActionDef.MainCooldownGroup, encStart, cast.Time.End, false); // consider cooldown reset instead?..
         }
     }
 
@@ -194,6 +210,7 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
 
     private ColumnGenericHistory GetCooldownColumn(int cooldownGroup, ActionID defaultAction)
         => _cdGroups[cooldownGroup].Column ??= AddBefore<ColumnGenericHistory>(new(Timeline, _autoAttacks.Tree, _autoAttacks.PhaseBranches, defaultAction.ToString()), _sep);
+    private ColumnGenericHistory GetCooldownColumn(ActionID action) => GetCooldownColumn(ActionDefinitions.Instance[action]!.MainCooldownGroup, action);
 
     private void AddCooldownRange(ref CooldownGroup data, DateTime encStart, DateTime rangeEnd)
     {
@@ -236,8 +253,8 @@ public class ColumnPlayerActions : Timeline.ColumnGroup
 
     private void StartCooldown(ActionID aid, ActionDefinition actionDef, DateTime encStart, DateTime timestamp)
     {
-        AdvanceCooldown(actionDef.CooldownGroup, encStart, timestamp, true);
-        ref var data = ref _cdGroups[actionDef.CooldownGroup];
+        AdvanceCooldown(actionDef.MainCooldownGroup, encStart, timestamp, true);
+        ref var data = ref _cdGroups[actionDef.MainCooldownGroup];
         if (data.ChargesOnCooldown == 0)
         {
             // off cd -> cd

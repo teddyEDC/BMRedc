@@ -50,12 +50,6 @@ public static partial class Utils
     public static unsafe FFXIVClientStructs.FFXIV.Client.Game.Character.Character* CharacterInternal(Character? chr) => chr != null ? (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*)chr.Address : null;
     public static unsafe FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara* BattleCharaInternal(BattleChara? chara) => chara != null ? (FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara*)chara.Address : null;
 
-    public static unsafe ulong MouseoverID()
-    {
-        var pronoun = FFXIVClientStructs.FFXIV.Client.UI.Misc.PronounModule.Instance();
-        return pronoun != null && pronoun->UiMouseOverTarget != null ? pronoun->UiMouseOverTarget->EntityId : 0;
-    }
-
     public static unsafe ulong SceneObjectFlags(FFXIVClientStructs.FFXIV.Client.Graphics.Scene.Object* o) => ReadField<ulong>(o, 0x38);
 
     // backport from .net 6, except that it doesn't throw on empty enumerable...
@@ -217,6 +211,37 @@ public static partial class Utils
         ++last;
         if (last < list.Count)
             list.RemoveRange(last, list.Count - last);
+    }
+
+    // rotate span elements left (so first element becomes last, second becomes first, etc)
+    public static void RotateLeft<T>(this Span<T> span)
+    {
+        if (span.Length == 0)
+            return;
+        var first = span[0];
+        for (int i = 1; i < span.Length; ++i)
+            span[i - 1] = span[i];
+        span[^1] = first;
+    }
+
+    // rotate span elements right (so last element becomes first, first becomes second, etc)
+    public static void RotateRight<T>(this Span<T> span)
+    {
+        if (span.Length == 0)
+            return;
+        var last = span[^1];
+        for (int i = span.Length - 1; i > 0; --i)
+            span[i] = span[i - 1];
+        span[0] = last;
+    }
+
+    // reorder element of the span to be at specified position, preserving the order of other elements
+    public static void Reorder<T>(this Span<T> span, int originalPos, int finalPos)
+    {
+        if (originalPos < finalPos)
+            RotateLeft(span[originalPos..finalPos]);
+        else
+            RotateRight(span[originalPos..finalPos]);
     }
 
     // linear interpolation

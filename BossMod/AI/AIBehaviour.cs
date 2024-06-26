@@ -1,11 +1,16 @@
-﻿using BossMod.Pathfinding;
+﻿using BossMod.Autorotation;
+using BossMod.Pathfinding;
 using ImGuiNET;
 
 namespace BossMod.AI;
 
 // constantly follow master
-sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
+sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Preset? aiPreset) : IDisposable
 {
+    public record struct Targeting(AIHints.Enemy Target, float PreferredRange = 3, Positional PreferredPosition = Positional.Any, bool PreferTanking = false);
+
+    public WorldState WorldState => autorot.Bossmods.WorldState;
+    public Preset? AIPreset = aiPreset;
     private readonly AIConfig _config = Service.Config.Get<AIConfig>();
     private readonly NavigationDecision.Context _naviCtx = new();
     private NavigationDecision _naviDecision;
@@ -29,16 +34,15 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
         if (_config.FocusTargetLeader)
             FocusMaster(master);
 
-        _afkMode = !master.InCombat && (autorot.WorldState.CurrentTime - _masterLastMoved).TotalSeconds > 10;
-        var forbidActions = _config.ForbidActions || ctrl.IsMounted || _afkMode || autorot.ClassActions == null || autorot.ClassActions.AutoAction >= CommonActions.AutoActionFirstCustom;
+        _afkMode = !master.InCombat && (WorldState.CurrentTime - _masterLastMoved).TotalSeconds > 10;
+        var forbidActions = _config.ForbidActions || ctrl.IsMounted || _afkMode || autorot.Preset != null && autorot.Preset != AIPreset;
 
-        CommonActions.Targeting target = new();
+        Targeting target = new();
         if (!forbidActions)
         {
             target = SelectPrimaryTarget(player, master);
-            if (target.Target != null || TargetIsForbidden(autorot.PrimaryTarget))
-                ctrl.SetPrimaryTarget(target.Target?.Actor);
-            autorot.PrimaryTarget = target.Target?.Actor;
+            if (target.Target != null || TargetIsForbidden(player.TargetID))
+                autorot.Hints.ForcedTarget ??= target.Target?.Actor;
             AdjustTargetPositional(player, ref target);
         }
 
@@ -52,35 +56,36 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
 
         if (!forbidActions)
         {
-            var actionStrategy = target.Target != null ? CommonActions.AutoActionAIFight : CommonActions.AutoActionAIIdle;
-            autorot.ClassActions?.UpdateAutoAction(actionStrategy, _maxCastTime, false);
+            autorot.Preset = target.Target != null ? AIPreset : null;
         }
 
-        UpdateMovement(player, master, target, !forbidActions);
+        UpdateMovement(player, master, target, !forbidActions ? autorot.Hints.ActionsToExecute : null);
     }
 
     // returns null if we're to be idle, otherwise target to attack
-    private CommonActions.Targeting SelectPrimaryTarget(Actor player, Actor master)
+    private Targeting SelectPrimaryTarget(Actor player, Actor master)
     {
-        if (!autorot.Hints.PriorityTargets.Any() || !master.InCombat || autorot.ClassActions == null)
+        if (!autorot.Hints.PriorityTargets.Any() || !master.InCombat || AIPreset == null)
             return new(); // there are no valid targets to attack, or we're not fighting - remain idle
 
         // we prefer not to switch targets unnecessarily, so start with current target - it could've been selected manually or by AI on previous frames
         // if current target is not among valid targets, clear it - this opens way for future target selection heuristics
-        var target = autorot.Hints.PriorityTargets.FirstOrDefault(e => e.Actor == autorot.PrimaryTarget);
+        var targetId = autorot.Hints.ForcedTarget?.InstanceID ?? player.TargetID;
+        var target = autorot.Hints.PriorityTargets.FirstOrDefault(e => e.Actor.InstanceID == targetId);
 
         // if we don't have a valid target yet, use some heuristics to select some 'ok' target to attack
         // try assisting master, otherwise (if player is own master, or if master has no valid target) just select closest valid target
         target ??= master != player ? autorot.Hints.PriorityTargets.FirstOrDefault(t => master.TargetID == t.Actor.InstanceID) : null;
         target ??= autorot.Hints.PriorityTargets.MinBy(e => (e.Actor.Position - player.Position).LengthSq());
 
+        // TODO: rethink all this... ai module should set forced target if it wants to switch... figure out positioning and stuff
         // now give class module a chance to improve targeting
         // typically it would switch targets for multidotting, or to hit more targets with AOE
         // in case of ties, it should prefer to return original target - this would prevent useless switches
-        return autorot.ClassActions.SelectBetterTarget(target!);
+        return new(target!);
     }
 
-    private void AdjustTargetPositional(Actor player, ref CommonActions.Targeting targeting)
+    private void AdjustTargetPositional(Actor player, ref Targeting targeting)
     {
         if (targeting.Target == null || targeting.PreferredPosition == Positional.Any)
             return; // nothing to adjust
@@ -98,15 +103,15 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
             targeting.PreferredPosition = Positional.Any;
     }
 
-    private NavigationDecision BuildNavigationDecision(Actor player, Actor master, ref CommonActions.Targeting targeting)
+    private NavigationDecision BuildNavigationDecision(Actor player, Actor master, ref Targeting targeting)
     {
         var target = autorot.WorldState.Actors.Find(player.TargetID);
         if (_config.ForbidMovement)
             return new() { LeewaySeconds = float.MaxValue };
         if (_followMaster && !_config.FollowTarget || _followMaster && _config.FollowTarget && target == null)
-            return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, master.Position, 1, new(), Positional.Any);
+            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, 1, new(), Positional.Any);
         if (_followMaster && _config.FollowTarget && target != null)
-            return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + 2.6f, target.Rotation, _config.DesiredPositional);
+            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + 2.6f, target.Rotation, _config.DesiredPositional);
         if (targeting.Target == null)
             return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, null, 0, new(), Positional.Any);
         var adjRange = targeting.PreferredRange + player.HitboxRadius + targeting.Target.Actor.HitboxRadius;
@@ -118,12 +123,11 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
             if (desiredToTarget.LengthSq() > 4 /*&& (_autorot.ClassActions?.GetState().GCD ?? 0) > 0.5f*/)
             {
                 var dest = autorot.Hints.ClampToBounds(targeting.Target.DesiredPosition - adjRange * desiredToTarget.Normalized());
-                return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, dest, 0.5f, new(), Positional.Any);
+                return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, dest, 0.5f, new(), Positional.Any);
             }
         }
         var adjRotation = targeting.PreferTanking ? targeting.Target.DesiredRotation : targeting.Target.Actor.Rotation;
-
-        return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, targeting.Target.Actor.Position, adjRange, adjRotation, targeting.PreferredPosition);
+        return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, targeting.Target.Actor.Position, adjRange, adjRotation, targeting.PreferredPosition);
     }
 
     private void FocusMaster(Actor master)
@@ -133,7 +137,7 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
         {
             ctrl.SetFocusTarget(master);
             _masterPrevPos = _masterMovementStart = master.Position;
-            _masterLastMoved = autorot.WorldState.CurrentTime.AddSeconds(-1);
+            _masterLastMoved = WorldState.CurrentTime.AddSeconds(-1);
         }
     }
 
@@ -144,10 +148,10 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
         var masterIsMoving = true;
         if (master.Position != _masterPrevPos)
         {
-            _masterLastMoved = autorot.WorldState.CurrentTime;
+            _masterLastMoved = WorldState.CurrentTime;
             _masterPrevPos = master.Position;
         }
-        else if ((autorot.WorldState.CurrentTime - _masterLastMoved).TotalSeconds > 0.5f)
+        else if ((WorldState.CurrentTime - _masterLastMoved).TotalSeconds > 0.5f)
         {
             // master has stopped, consider previous movement finished
             _masterMovementStart = _masterPrevPos;
@@ -158,9 +162,9 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
         return masterIsMoving;
     }
 
-    private void UpdateMovement(Actor player, Actor master, CommonActions.Targeting target, bool allowSprint)
+    private void UpdateMovement(Actor player, Actor master, Targeting target, ActionQueue? queueForSprint)
     {
-        var destRot = AvoidGaze.Update(player, target.Target?.Actor.Position, autorot.Hints, autorot.WorldState.CurrentTime.AddSeconds(0.5));
+        var destRot = AvoidGaze.Update(player, target.Target?.Actor.Position, autorot.Hints, WorldState.CurrentTime.AddSeconds(0.5));
         if (destRot != null)
         {
             // rotation check imminent, drop any movement - we should have moved to safe zone already...
@@ -177,8 +181,8 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
             ctrl.NaviTargetPos = _naviDecision.Destination;
             //_ctrl.NaviTargetRot = distSq >= 0.01f ? toDest.Normalized() : null;
             ctrl.NaviTargetVertical = master != player ? master.PosRot.Y : null;
-            ctrl.AllowInterruptingCastByMovement = player.CastInfo != null && _naviDecision.LeewaySeconds <= (player.CastInfo.FinishAt - autorot.WorldState.CurrentTime).TotalSeconds - 0.5;
-            ctrl.ForceCancelCast = TargetIsForbidden(autorot.WorldState.Actors.Find(player.CastInfo?.TargetID ?? 0));
+            ctrl.AllowInterruptingCastByMovement = player.CastInfo != null && _naviDecision.LeewaySeconds <= (player.CastInfo.FinishAt - WorldState.CurrentTime).TotalSeconds - 0.5;
+            ctrl.ForceCancelCast = player.CastInfo != null && TargetIsForbidden(player.CastInfo.TargetID);
             ctrl.ForceFacing = false;
             ctrl.WantJump = distSq >= 0.01f && autorot.Bossmods.ActiveModule?.StateMachine.ActiveState != null && autorot.Bossmods.ActiveModule.NeedToJump(player.Position, toDest.Normalized());
 
@@ -190,9 +194,9 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
             //    _ctrl.TargetRot = cameraFacing.OrthoL().Dot(_ctrl.TargetRot.Value) > 0 ? _ctrl.TargetRot.Value.OrthoR() : _ctrl.TargetRot.Value.OrthoL();
 
             // sprint, if not in combat and far enough away from destination
-            if (allowSprint && (player.InCombat ? _naviDecision.LeewaySeconds <= 0 && distSq > 25 : player != master && distSq > 400))
+            if (player.InCombat ? _naviDecision.LeewaySeconds <= 0 && distSq > 25 : player != master && distSq > 400)
             {
-                autorot.ClassActions?.HandleUserActionRequest(CommonDefinitions.IDSprint, player);
+                queueForSprint?.Push(ActionDefinitions.IDSprint, player, ActionQueue.Priority.Minimal + 100);
             }
         }
     }
@@ -201,31 +205,25 @@ sealed class AIBehaviour(AIController ctrl, Autorotation autorot) : IDisposable
     {
         var configModified = false;
 
-        configModified |= DrawConfigCheckbox("Forbid actions", ref _config.ForbidActions);
+        configModified |= ImGui.Checkbox("Forbid actions", ref _config.ForbidActions);
         ImGui.SameLine();
-        configModified |= DrawConfigCheckbox("Forbid movement", ref _config.ForbidMovement);
+        configModified |= ImGui.Checkbox("Forbid movement", ref _config.ForbidMovement);
         ImGui.SameLine();
-        configModified |= DrawConfigCheckbox("Follow during combat", ref _config.FollowDuringCombat);
+        configModified |= ImGui.Checkbox("Follow during combat", ref _config.FollowDuringCombat);
         ImGui.Spacing();
-        configModified |= DrawConfigCheckbox("Follow during active boss module", ref _config.FollowDuringActiveBossModule);
+        configModified |= ImGui.Checkbox("Follow during active boss module", ref _config.FollowDuringActiveBossModule);
         ImGui.SameLine();
-        configModified |= DrawConfigCheckbox("Follow out of combat", ref _config.FollowOutOfCombat);
+        configModified |= ImGui.Checkbox("Follow out of combat", ref _config.FollowOutOfCombat);
         ImGui.SameLine();
-        configModified |= DrawConfigCheckbox("Follow target", ref _config.FollowTarget);
+        configModified |= ImGui.Checkbox("Follow target", ref _config.FollowTarget);
 
         if (configModified)
             _config.Modified.Fire();
 
         var player = autorot.WorldState.Party.Player();
         var dist = _naviDecision.Destination != null && player != null ? (_naviDecision.Destination.Value - player.Position).Length() : 0;
-        ImGui.TextUnformatted($"Max-cast={MathF.Min(_maxCastTime, 1000):f3}, afk={_afkMode}, follow={_followMaster}, algo={_naviDecision.DecisionType} {_naviDecision.Destination} (d={dist:f3}), master standing for {Math.Clamp((autorot.WorldState.CurrentTime - _masterLastMoved).TotalSeconds, 0, 1000):f1}");
+        ImGui.TextUnformatted($"Max-cast={MathF.Min(_maxCastTime, 1000):f3}, afk={_afkMode}, follow={_followMaster}, algo={_naviDecision.DecisionType} {_naviDecision.Destination} (d={dist:f3}), master standing for {Math.Clamp((WorldState.CurrentTime - _masterLastMoved).TotalSeconds, 0, 1000):f1}");
     }
 
-    private bool DrawConfigCheckbox(string label, ref bool configField)
-    {
-        var originalValue = configField;
-        return ImGui.Checkbox(label, ref configField) && configField != originalValue;
-    }
-
-    private bool TargetIsForbidden(Actor? actor) => actor != null && autorot.Hints.ForbiddenTargets.Any(e => e.Actor == actor);
+    private bool TargetIsForbidden(ulong actorId) => autorot.Hints.ForbiddenTargets.Any(e => e.Actor.InstanceID == actorId);
 }

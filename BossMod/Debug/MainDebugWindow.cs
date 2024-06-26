@@ -1,16 +1,17 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+﻿using BossMod.Autorotation;
+using Dalamud.Game.ClientState.Objects.Types;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using ImGuiNET;
 
 namespace BossMod;
 
-class MainDebugWindow(WorldState ws, Autorotation autorot) : UIWindow("Boss mod debug UI", false, new(300, 200))
+class MainDebugWindow(WorldState ws, RotationModuleManager autorot) : UIWindow("Boss mod debug UI", false, new(300, 200))
 {
     private readonly DebugObjects _debugObjects = new();
     private readonly DebugParty _debugParty = new();
     private readonly DebugGraphics _debugGraphics = new();
-    private readonly DebugAction _debugAction = new(ws);
+    private readonly DebugAction _debugAction = new(ws, autorot.ActionManager);
     private readonly DebugHate _debugHate = new();
     private readonly DebugInput _debugInput = new(autorot);
     private readonly DebugAutorotation _debugAutorot = new(autorot);
@@ -22,6 +23,7 @@ class MainDebugWindow(WorldState ws, Autorotation autorot) : UIWindow("Boss mod 
 
     protected override void Dispose(bool disposing)
     {
+        _debugAction.Dispose();
         _debugInput.Dispose();
         _debugClassDefinitions.Dispose();
         _debugAddon.Dispose();
@@ -212,7 +214,7 @@ class MainDebugWindow(WorldState ws, Autorotation autorot) : UIWindow("Boss mod 
 
     private unsafe void DrawTargets()
     {
-        var cursorPos = ActionManagerEx.Instance?.GetWorldPosUnderCursor();
+        var cursorPos = autorot.ActionManager.GetWorldPosUnderCursor();
         ImGui.TextUnformatted($"World pos under cursor: {(cursorPos == null ? "n/a" : Utils.Vec3String(cursorPos.Value))}");
 
         var selfPos = Service.ClientState.LocalPlayer?.Position ?? new();
@@ -224,7 +226,8 @@ class MainDebugWindow(WorldState ws, Autorotation autorot) : UIWindow("Boss mod 
         DrawTarget("GPose target", ts->GPoseTarget, selfPos, angle);
         DrawTarget("Mouseover", ts->MouseOverTarget, selfPos, angle);
         DrawTarget("Focus", ts->FocusTarget, selfPos, angle);
-        ImGui.TextUnformatted($"UI Mouseover: {Utils.ObjectString(Utils.MouseoverID())}");
+        var mouseover = FFXIVClientStructs.FFXIV.Client.UI.Misc.PronounModule.Instance()->UiMouseOverTarget;
+        ImGui.TextUnformatted($"UI Mouseover: {Utils.ObjectString(mouseover != null ? mouseover->EntityId : 0)}");
 
         if (ImGui.Button("Target closest enemy"))
         {

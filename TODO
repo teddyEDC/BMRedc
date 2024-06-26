@@ -1,31 +1,35 @@
-autorotation v2:
-- Autorotation.cs
--- not tied to game - convert to rotationmodulemanager basically
--- move useaction hook to AMEx
--- manual queue should be managed by a plugin / framework
--- move hints above? ie to be filled by framework right after WS/BMM update
--- manage ui and active modules
--- calcnextaction logic to combine manual queue, hints and rotation modules
-- CommonActions.cs
--- just a base class for rotation modules
--- move rotation expire logic to autorotation?
---- maybe need to split into manager + manual layers?
--- 
-
-
-autorotation rework:
-- priority action suggestions
-- control panel w/ presets and bindings
-- module registry supporting alternatives per job
-- unify lb planning across all classes
-- proper gcd time calculations
+autorotation v2 cleanup:
+- tank stance track
+- worldstate: animlock, combo, gauge parser, camera
+- rmm in replay analysis
+- preset/plan editors should properly react to external changes
+- ipc for autorotation
+- actiondefinitions
+-- action transforms?.. (combos, adjustment)
+-- adjusted casttime/cooldown/maxcharges/???
+- ai features
+-- legacy ai rotation modules (auto stance, interrupt, taunt, etc)
+-- target selection should be part of a module/preset
+-- ai manager should use selected preset for combat, out of combat use forcedtarget
+- action history/queue visualization
+- proper gcd time calculations?
 - simulation in replay analysis
-- cooldowns
--- get rid of cdgroup enums
--- properly support additional cdgroups
--- remove fake cdgroup 71 (lb/holster)
+- spell out shared cooldowns in actiondefinitions comments instead of group?
+- delete/rework commonstate/legacy
+- delete autorotationlegacy dir
 
 general:
+- module packs
+-- dlls, loaded as usual
+-- hotreload - just discard old version and load new one
+-- distributed as github releases, on startup query latest version and download if different
+-- rate limit gh requests to 1/hour
+-- dialog to add warns about arbitrary code execution
+-- update bm/rm registries on reload
+- add non-entities to worldstate
+- proper logging
+- consistently use Color instead of uint
+- horizontal timeline / cooldown planner
 - refactor window system to dispose stuff properly and avoid CS1806 and `_ = new...` pattern
 - diagnostic to detect readonly mutable collections
 - introduce 'Game' class that would contain dalamud services and stuff like AMEx/IDScramble, instead of statics, to avoid uncontrolled access to game state (won't help with CS tho)
@@ -35,8 +39,17 @@ general:
 - revise module categories - consider merging fates/hunts/quests/gold saucer?/pvp? into outdoor?/casual?
 - refactor pendingeffects
 - utility to inject custom ipcs to the stream for debugging?
+- better aoe targeting
+-- improve forbidden classification
+--- target absolutely forbidden to damage (eg tea doll, t01 blob, outdoor enemy that wasn't pulled yet)
+--- target is invulnerable, hitting it is a complete waste, won't advance combo/apply buffs/etc
+--- target is at 1hp, damage will be dealt but won't be logged, might be worth hitting for gauge or combo advance
+--- target can be damaged but it won't contribute to fight progress or log (various pointless adds)
+--- target is not a priority, but damaging it is a nice bonus (lower priority than max target)
+-- use that for targeting utils in aihints
 
 boss modules:
+- timers
 - wipe should not fast forward all phases
 - fail log
 - boss module config presets/profiles
@@ -57,10 +70,6 @@ autorotation:
 -- resurrect (6.1 and later changes)
 -- planner
 -- smart-targeting for ST actions
-
-cooldown planner:
-- in-combat cooldown plan ui
-- select columns to show (concrete actions, categories)
 
 ai:
 - improve healing AI: analyze incoming dps

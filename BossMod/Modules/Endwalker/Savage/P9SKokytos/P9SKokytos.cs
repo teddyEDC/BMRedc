@@ -4,10 +4,7 @@ class GluttonysAugur(BossModule module) : Components.CastCounter(module, ActionI
 class SoulSurge(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.SoulSurge));
 class BeastlyFury(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.BeastlyFuryAOE));
 
-[ConfigDisplay(Order = 0x190, Parent = typeof(EndwalkerConfig))]
-public class P9SKokytosConfig() : CooldownPlanningConfigNode(90);
-
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 937, NameID = 12369)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 937, NameID = 12369, PlanLevel = 90)]
 public class P9SKokytos(WorldState ws, Actor primary) : BossModule(ws, primary, center, arena)
 {
     public static readonly WPos center = new(100, 100);

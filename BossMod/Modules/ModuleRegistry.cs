@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace BossMod;
 
@@ -26,8 +25,7 @@ public static class ModuleRegistry
         public uint GroupID;
         public uint NameID;
         public int SortOrder;
-
-        public bool CooldownPlanningSupported => ConfigType?.IsSubclassOf(typeof(CooldownPlanningConfigNode)) ?? false;
+        public int PlanLevel;
 
         public static Info? Build(Type module)
         {
@@ -154,6 +152,7 @@ public static class ModuleRegistry
                 GroupID = groupID,
                 NameID = nameID,
                 SortOrder = sortOrder,
+                PlanLevel = infoAttr?.PlanLevel ?? 0,
             };
         }
 
@@ -165,7 +164,8 @@ public static class ModuleRegistry
         }
     }
 
-    private static readonly Dictionary<uint, Info> _modules = []; // [primary-actor-oid] = module type
+    private static readonly Dictionary<uint, Info> _modulesByOID = []; // [primary-actor-oid] = module info
+    private static readonly Dictionary<Type, Info> _modulesByType = []; // [module-type] = module info
 
     static ModuleRegistry()
     {
@@ -174,14 +174,16 @@ public static class ModuleRegistry
             var info = Info.Build(t);
             if (info == null)
                 continue;
-            if (!_modules.TryAdd(info.PrimaryActorOID, info))
-                Service.Log($"Two boss modules have same primary actor OID: {t.Name} and {_modules[info.PrimaryActorOID].ModuleType.Name}");
+            _modulesByType[t] = info;
+            if (!_modulesByOID.TryAdd(info.PrimaryActorOID, info))
+                Service.Log($"Two boss modules have same primary actor OID: {t.Name} and {_modulesByOID[info.PrimaryActorOID].ModuleType.Name}");
         }
     }
 
-    public static IReadOnlyDictionary<uint, Info> RegisteredModules => _modules;
+    public static IReadOnlyDictionary<uint, Info> RegisteredModules => _modulesByOID;
 
-    public static Info? FindByOID(uint oid) => _modules.GetValueOrDefault(oid);
+    public static Info? FindByOID(uint oid) => _modulesByOID.GetValueOrDefault(oid);
+    public static Info? FindByType(Type type) => _modulesByType.GetValueOrDefault(type);
 
     public static BossModule? CreateModule(Info? info, WorldState ws, Actor primary) => info?.ModuleFactory(ws, primary);
 
@@ -192,9 +194,9 @@ public static class ModuleRegistry
     }
 
     // TODO: this is a hack...
-    public static BossModule? CreateModuleForConfigPlanning(Type cfg)
+    public static BossModule? CreateModuleForConfigPlanning(Type module)
     {
-        var info = _modules.Values.FirstOrDefault(i => i.ConfigType == cfg);
+        var info = FindByType(module);
         return info != null ? CreateModule(info, new(TimeSpan.TicksPerSecond, "fake"), new(0, info.PrimaryActorOID, -1, "", 0, ActorType.None, Class.None, 0, new())) : null;
     }
 

@@ -1,12 +1,14 @@
-﻿using ImGuiNET;
+﻿using BossMod.Autorotation;
+using ImGuiNET;
 
 namespace BossMod.ReplayVisualization;
 
 class ReplayDetailsWindow : UIWindow
 {
     private readonly ReplayPlayer _player;
-    private BossModuleManager _mgr;
     private readonly AIHints _hints = new();
+    private BossModuleManager _mgr;
+    private AIHintsBuilder _hintsBuilder;
     private readonly DateTime _first;
     private readonly DateTime _last;
     private DateTime _curTime; // note that is could fall between frames
@@ -23,25 +25,26 @@ class ReplayDetailsWindow : UIWindow
     private AIHintsVisualizer? _pfVisu;
     private float _pfTargetRadius = 3;
     private Positional _pfPositional = Positional.Any;
-    private bool _pfTank;
 
-    public ReplayDetailsWindow(Replay data) : base($"Replay: {data.Path}", false, new(1500, 1000))
+    public ReplayDetailsWindow(Replay data, PlanDatabase planDB) : base($"Replay: {data.Path}", false, new(1500, 1000))
     {
         _player = new(data);
         _mgr = new(_player.WorldState);
+        _hintsBuilder = new(_player.WorldState, _mgr);
         _curTime = _first = data.Ops[0].Timestamp;
         _last = data.Ops[^1].Timestamp;
         _player.AdvanceTo(_first, _mgr.Update);
-        _config = new(Service.Config, _player.WorldState);
-        _events = new(data, MoveTo);
+        _config = new(Service.Config, _player.WorldState, null);
+        _events = new(data, MoveTo, planDB);
         _analysis = new([data]);
     }
 
     protected override void Dispose(bool disposing)
     {
-        _mgr.Dispose();
-        _config.Dispose();
         _analysis.Dispose();
+        _config.Dispose();
+        _hintsBuilder.Dispose();
+        _mgr.Dispose();
         base.Dispose(disposing);
     }
 
@@ -72,23 +75,24 @@ class ReplayDetailsWindow : UIWindow
             }
             ImGui.TextUnformatted($"Current state: {_mgr.ActiveModule.StateMachine.ActiveState?.ID:X}, Time since pull: {_mgr.ActiveModule.StateMachine.TimeSinceActivation:f3}, Draw time: {(drawTimerPost - drawTimerPre).TotalMilliseconds:f3}ms, Components: {compList}, Player offset: {povOffsetString}, Draw cache: {_mgr.ActiveModule.Arena.DrawCacheStats()}");
 
-            if (ImGui.CollapsingHeader("Plan execution"))
-            {
-                var sm = _mgr.ActiveModule.StateMachine;
-                if (ImGui.Button("Show timeline"))
-                {
-                    _ = new StateMachineWindow(_mgr.ActiveModule);
-                }
-                ImGui.SameLine();
-                _mgr.ActiveModule.PlanConfig?.DrawSelectionUI(_mgr.ActiveModule.Raid[_povSlot]?.Class ?? Class.None, sm, _mgr.ActiveModule.Info);
+            // TODO: restore; this requires getting rid of AMEx from rotation module manager
+            //if (ImGui.CollapsingHeader("Plan execution"))
+            //{
+            //    var sm = _mgr.ActiveModule.StateMachine;
+            //    if (ImGui.Button("Show timeline"))
+            //    {
+            //        _ = new StateMachineWindow(_mgr.ActiveModule);
+            //    }
+            //    ImGui.SameLine();
+            //    _mgr.ActiveModule.PlanConfig?.DrawSelectionUI(_mgr.ActiveModule.Raid[_povSlot]?.Class ?? Class.None, sm, _mgr.ActiveModule.Info);
 
-                var pe = _mgr.ActiveModule.PlanExecution;
-                if (pe != null)
-                {
-                    ImGui.TextUnformatted($"Downtime: {FlagTransitionString(pe.EstimateTimeToNextDowntime(sm))}; Pos-lock: {FlagTransitionString(pe.EstimateTimeToNextPositioning(sm))}; Vuln: {FlagTransitionString(pe.EstimateTimeToNextVulnerable(sm))}; Strats: [{string.Join(",", pe.ActiveStrategyOverrides(sm))}]");
-                    pe.Draw(sm);
-                }
-            }
+            //    var pe = _mgr.ActiveModule.PlanExecution;
+            //    if (pe != null)
+            //    {
+            //        ImGui.TextUnformatted($"Downtime: {FlagTransitionString(pe.EstimateTimeToNextDowntime(sm))}; Pos-lock: {FlagTransitionString(pe.EstimateTimeToNextPositioning(sm))}; Vuln: {FlagTransitionString(pe.EstimateTimeToNextVulnerable(sm))}; Strats: [{string.Join(",", pe.ActiveStrategyOverrides(sm))}]");
+            //        pe.Draw(sm);
+            //    }
+            //}
         }
 
         DrawPartyTable();
@@ -360,13 +364,11 @@ class ReplayDetailsWindow : UIWindow
 
         if (_pfVisu == null)
         {
-            _hints.Clear();
-            _hints.FillPotentialTargets(_mgr.WorldState, _pfTank);
-            _hints.FillForcedTarget(_mgr.ActiveModule, _mgr.WorldState, player);
-            _hints.FillPlannedActions(_mgr.ActiveModule, _povSlot, player);
-            _mgr.ActiveModule.CalculateAIHints(_povSlot, player, Service.Config.Get<PartyRolesConfig>()[_mgr.WorldState.Party.ContentIDs[_povSlot]], _hints);
-            _hints.Normalize();
-            _pfVisu = new(_hints, _mgr.WorldState, player, player.TargetID, e => (e, _pfTargetRadius, _pfPositional, _pfTank));
+            _hintsBuilder.Update(_hints, _povSlot);
+
+            var playerAssignment = Service.Config.Get<PartyRolesConfig>()[_mgr.WorldState.Party.ContentIDs[_povSlot]];
+            var pfTank = playerAssignment == PartyRolesConfig.Assignment.MT || playerAssignment == PartyRolesConfig.Assignment.OT && !_mgr.WorldState.Party.WithoutSlot().Any(p => p != player && p.Role == Role.Tank);
+            _pfVisu = new(_hints, _mgr.WorldState, player, player.TargetID, e => (e, _pfTargetRadius, _pfPositional, pfTank));
         }
         _pfVisu.Draw(_pfTree);
 
@@ -374,7 +376,6 @@ class ReplayDetailsWindow : UIWindow
         //rebuild |= ImGui.SliderFloat("Zone cushion", ref _pfCushion, 0.1f, 5);
         rebuild |= ImGui.SliderFloat("Ability range", ref _pfTargetRadius, 3, 25);
         rebuild |= UICombo.Enum("Ability positional", ref _pfPositional);
-        rebuild |= ImGui.Checkbox("Prefer tanking", ref _pfTank);
         if (rebuild)
             ResetPF();
     }
@@ -385,8 +386,11 @@ class ReplayDetailsWindow : UIWindow
     {
         if (t < _player.WorldState.CurrentTime)
         {
+            _hintsBuilder.Dispose();
+            _mgr.Dispose();
             _player.Reset();
             _mgr = new(_player.WorldState);
+            _hintsBuilder = new(_player.WorldState, _mgr);
         }
         _player.AdvanceTo(t, _mgr.Update);
         _curTime = t;

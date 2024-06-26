@@ -5,7 +5,7 @@ namespace BossMod;
 // column representing single planner track (could be cooldowns or anything else)
 public abstract class ColumnPlannerTrack(Timeline timeline, StateMachineTree tree, List<int> phaseBranches, string name) : ColumnGenericHistory(timeline, tree, phaseBranches, name)
 {
-    public class Element(ColumnGenericHistory.Entry window)
+    public class Element(Entry window)
     {
         public Entry Window = window;
         public Entry? Effect; // null if window length is >= than effect length
@@ -16,7 +16,7 @@ public abstract class ColumnPlannerTrack(Timeline timeline, StateMachineTree tre
         public float TotalLength => Math.Max(EffectLength, Window.Duration + CooldownLength);
     }
 
-    private class EditState(ColumnPlannerTrack.Element element, bool editingEnd)
+    private class EditState(Element element, bool editingEnd)
     {
         public Element Element = element;
         public bool EditingEnd = editingEnd;
@@ -26,10 +26,6 @@ public abstract class ColumnPlannerTrack(Timeline timeline, StateMachineTree tre
     public List<Element> Elements = [];
     private EditState? _edit;
     private Element? _popupElement;
-
-    private readonly uint _colCooldown = 0x80808080;
-    private readonly uint _colEffect = 0x8000ff00;
-    private readonly uint _colWindow = 0x8000ffff;
 
     public override void Draw()
     {
@@ -129,7 +125,7 @@ public abstract class ColumnPlannerTrack(Timeline timeline, StateMachineTree tre
 
     public Element AddElement(StateMachineTree.Node attachNode, float delay, float windowLength)
     {
-        var w = new Entry(Entry.Type.Range, attachNode, delay, windowLength, "", _colWindow);
+        var w = new Entry(Entry.Type.Range, attachNode, delay, windowLength, "", Timeline.Colors.PlannerWindow[0]);
         Entries.Add(w);
         var e = CreateElement(w);
         Elements.Add(e);
@@ -174,7 +170,7 @@ public abstract class ColumnPlannerTrack(Timeline timeline, StateMachineTree tre
         {
             if (element.Effect == null)
             {
-                element.Effect = new Entry(Entry.Type.Range, element.Window.AttachNode, 0, 0, "", _colEffect);
+                element.Effect = new Entry(Entry.Type.Range, element.Window.AttachNode, 0, 0, "", Timeline.Colors.PlannerEffect);
                 Entries.Add(element.Effect);
             }
             element.Effect.AttachNode = element.Window.AttachNode;
@@ -192,7 +188,7 @@ public abstract class ColumnPlannerTrack(Timeline timeline, StateMachineTree tre
         {
             if (element.Cooldown == null)
             {
-                element.Cooldown = new Entry(Entry.Type.Range, element.Window.AttachNode, 0, 0, "", _colCooldown);
+                element.Cooldown = new Entry(Entry.Type.Range, element.Window.AttachNode, 0, 0, "", Timeline.Colors.PlannerCooldown);
                 Entries.Add(element.Cooldown);
             }
             element.Cooldown.AttachNode = element.Window.AttachNode;

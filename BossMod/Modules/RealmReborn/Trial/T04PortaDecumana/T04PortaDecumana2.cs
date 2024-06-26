@@ -71,8 +71,8 @@ class AethericBoom(BossModule module) : Components.KnockbackFromCastTarget(modul
     {
         if (Casters.Count > 0)
         {
-            hints.PlannedActions.Add((ActionID.MakeSpell(WAR.AID.ArmsLength), actor, 1, false));
-            hints.PlannedActions.Add((ActionID.MakeSpell(WHM.AID.Surecast), actor, 1, false));
+            hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.ArmsLength), actor, ActionQueue.Priority.High);
+            hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Surecast), actor, ActionQueue.Priority.High);
         }
     }
 }
@@ -97,7 +97,7 @@ class Aetheroplasm(BossModule module) : BossComponent(module)
         var orbs = new List<Func<WPos, float>>();
         if (orb != null)
         {
-            hints.PlannedActions.Add((ActionID.MakeSpell(WAR.AID.Sprint), actor, 1, false));
+            hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
             foreach (var o in ActiveOrbs)
                 orbs.Add(ShapeDistance.InvertedCircle(o.Position + 0.5f * o.Rotation.ToDirection(), 0.5f));
         }

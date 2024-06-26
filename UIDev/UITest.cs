@@ -65,11 +65,16 @@ class UITest
             Service.WindowSystem.Draw();
         };
 
-        var configPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XIVLauncher", "pluginConfigs", "BossModReborn.json");
-        var mainWindow = new UITestWindow(scene, configPath);
-        mainWindow.IsOpen = true;
+        var pluginConfigs = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XIVLauncher", "pluginConfigs");
+        var configPath = Path.Join(pluginConfigs, "BossModReborn.json");
+        var rotationRoot = Path.Join(pluginConfigs, "BossModReborn", "autorot");
+        var mainWindow = new UITestWindow(scene, configPath, rotationRoot)
+        {
+            IsOpen = true
+        };
         scene.Run();
         mainWindow.Dispose();
+        ActionDefinitions.Instance.Dispose();
     }
 
     private static unsafe void InitializeDalamudStyle()

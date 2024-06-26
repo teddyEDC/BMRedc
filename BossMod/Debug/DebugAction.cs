@@ -1,42 +1,49 @@
 ﻿using Dalamud.Game.Gui;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using ImGuiNET;
 
 namespace BossMod;
 
-public class DebugAction(WorldState ws)
+sealed class DebugAction(WorldState ws, ActionManagerEx amex) : IDisposable
 {
     private int _customAction;
+    private readonly UITree _tree = new();
+
+    public void Dispose()
+    {
+    }
 
     public unsafe void DrawActionManagerExtensions()
     {
-        var am = ActionManagerEx.Instance!;
         var amr = FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance();
-        var aidCastAction = am.CastAction;
-        var aidCastSpell = am.CastSpell;
+        var aidCastAction = amex.CastAction;
+        var aidCastSpell = amex.CastSpell;
         var aidCombo = new ActionID(ActionType.Spell, amr->Combo.Action);
-        var aidQueued = am.QueuedAction;
+        var aidQueued = amex.QueuedAction;
         var aidGTAction = new ActionID((ActionType)amr->AreaTargetingActionType, amr->AreaTargetingActionId);
         var aidGTSpell = new ActionID(ActionType.Spell, amr->AreaTargetingSpellId);
         ImGui.TextUnformatted($"ActionManager singleton address: 0x{(ulong)amr:X}");
         ImGui.TextUnformatted($"Anim lock: {amr->AnimationLock:f3}");
         ImGui.TextUnformatted($"Cast: {aidCastAction} / {aidCastSpell}, progress={amr->CastTimeElapsed:f3}/{amr->CastTimeTotal:f3}, target={amr->CastTargetId:X}/{Utils.Vec3String(amr->CastTargetPosition)}");
-        ImGui.TextUnformatted($"Combo: {aidCombo}, {am.ComboTimeLeft:f3}");
+        ImGui.TextUnformatted($"Combo: {aidCombo}, {amex.ComboTimeLeft:f3}");
         ImGui.TextUnformatted($"Queue: {(amr->ActionQueued ? "active" : "inactive")}, {aidQueued} @ {(ulong)amr->QueuedTargetId:X} [{amr->QueueType}], combo={amr->QueuedComboRouteId}");
-        ImGui.TextUnformatted($"GT: {aidGTAction} / {aidGTSpell}, arg={Utils.ReadField<uint>(amr, 0x94)}, obj={Utils.ReadField<ulong>(amr, 0x98):X}, a0={Utils.ReadField<byte>(amr, 0xA0):X2}, b8={Utils.ReadField<byte>(amr, 0xB8):X2}, bc={Utils.ReadField<byte>(amr, 0xBC):X}");
+        ImGui.TextUnformatted($"GT: {aidGTAction} / {aidGTSpell}, arg={Utils.ReadField<uint>(amr, 0x94)}, targ={amr->AreaTargetingExecuteAtObject:X}/{amr->AreaTargetingExecuteAtCursor}, a0={Utils.ReadField<byte>(amr, 0xA0):X2}, bc={Utils.ReadField<byte>(amr, 0xBC):X}");
         ImGui.TextUnformatted($"Last used action sequence: {amr->LastUsedActionSequence}");
+        //ImGui.TextUnformatted($"GT config: 298={Framework.Instance()->SystemConfig.GetConfigOption(298)->Value.UInt}");
         if (ImGui.Button("GT complete"))
         {
-            Utils.WriteField(amr, 0xB8, (byte)1);
+            amr->AreaTargetingExecuteAtCursor = true;
         }
         ImGui.SameLine();
         if (ImGui.Button("GT set target"))
         {
-            Utils.WriteField(amr, 0x98, (ulong)(Service.TargetManager.Target?.ObjectId ?? 0));
+            var target = TargetSystem.Instance()->Target;
+            amr->AreaTargetingExecuteAtObject = target != null ? target->GetGameObjectId() : 0xE0000000;
         }
 
         if (ImGui.Button("Rotate 30 CCW"))
         {
-            am.FaceDirection((ws.Party.Player()?.Rotation ?? 0.Degrees() + 30.Degrees()).ToDirection());
+            amex.FaceDirection((ws.Party.Player()?.Rotation ?? 0.Degrees() + 30.Degrees()).ToDirection());
         }
     }
 
@@ -45,7 +52,7 @@ public class DebugAction(WorldState ws)
         ImGui.InputInt("Action to show details for", ref _customAction);
         if (_customAction != 0)
         {
-            var data = Service.DataManager.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>()?.GetRow((uint)_customAction);
+            var data = Service.LuminaRow<Lumina.Excel.GeneratedSheets.Action>((uint)_customAction);
             if (data != null)
             {
                 ImGui.TextUnformatted($"Name: {data.Name}");
@@ -71,27 +78,27 @@ public class DebugAction(WorldState ws)
             uint unlockLink = 0;
             if ((int)hover.ActionKind == 24) // action
             {
-                var data = Service.DataManager.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>()?.GetRow(hover.ActionID);
+                var data = Service.LuminaRow<Lumina.Excel.GeneratedSheets.Action>(hover.ActionID);
                 name = data?.Name;
                 type = FFXIVClientStructs.FFXIV.Client.Game.ActionType.Action;
                 unlockLink = data?.UnlockLink ?? 0;
             }
             else if (hover.ActionKind == HoverActionKind.GeneralAction)
             {
-                var data = Service.DataManager.GetExcelSheet<Lumina.Excel.GeneratedSheets.GeneralAction>()?.GetRow(hover.ActionID);
+                var data = Service.LuminaRow<Lumina.Excel.GeneratedSheets.GeneralAction>(hover.ActionID);
                 name = data?.Name;
                 type = FFXIVClientStructs.FFXIV.Client.Game.ActionType.GeneralAction;
                 unlockLink = data?.UnlockLink ?? 0;
             }
             else if (hover.ActionKind == HoverActionKind.Trait)
             {
-                var data = Service.DataManager.GetExcelSheet<Lumina.Excel.GeneratedSheets.Trait>()?.GetRow(hover.ActionID);
+                var data = Service.LuminaRow<Lumina.Excel.GeneratedSheets.Trait>(hover.ActionID);
                 name = data?.Name;
                 unlockLink = data?.Quest.Row ?? 0;
             }
 
             ImGui.TextUnformatted($"Name: {name}");
-            ImGui.TextUnformatted($"Unlock: {unlockLink} ({Service.DataManager.GetExcelSheet<Lumina.Excel.GeneratedSheets.Quest>()?.GetRow(unlockLink)?.Name}) = {FFXIVClientStructs.FFXIV.Client.Game.QuestManager.IsQuestComplete(unlockLink)}");
+            ImGui.TextUnformatted($"Unlock: {unlockLink} ({Service.LuminaRow<Lumina.Excel.GeneratedSheets.Quest>(unlockLink)?.Name}) = {FFXIVClientStructs.FFXIV.Client.Game.QuestManager.IsQuestComplete(unlockLink)}");
             if (hover.ActionKind == HoverActionKind.Action)
             {
                 ImGui.TextUnformatted($"Range: {FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetActionRange(hover.ActionID)}");
@@ -124,7 +131,7 @@ public class DebugAction(WorldState ws)
             uint itemID = (uint)Service.GameGui.HoveredItem % 1000000;
             bool isHQ = Service.GameGui.HoveredItem / 1000000 > 0;
             ImGui.TextUnformatted($"Hover item: {Service.GameGui.HoveredItem}");
-            ImGui.TextUnformatted($"Name: {Service.DataManager.GetExcelSheet<Lumina.Excel.GeneratedSheets.Item>()?.GetRow(itemID)?.Name}{(isHQ ? " (HQ)" : "")}");
+            ImGui.TextUnformatted($"Name: {Service.LuminaRow<Lumina.Excel.GeneratedSheets.Item>(itemID)?.Name}{(isHQ ? " (HQ)" : "")}");
             ImGui.TextUnformatted($"Count: {FFXIVClientStructs.FFXIV.Client.Game.InventoryManager.Instance()->GetInventoryItemCount(itemID, isHQ, false, false)}");
             ImGui.TextUnformatted($"Status: {mgr->GetActionStatus(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Item, itemID)}");
             ImGui.TextUnformatted($"Adjusted recast: {FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetAdjustedRecastTime(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Item, itemID):f2}");
@@ -142,12 +149,28 @@ public class DebugAction(WorldState ws)
         {
             ImGui.TextUnformatted("Hover: none");
         }
+
+        foreach (var nr in _tree.Node("Player actions"))
+        {
+            DrawFilteredActions("Hostile + friendly", a => a.IsPlayerAction && a.CanTargetHostile && (a.CanTargetSelf || a.CanTargetParty || a.CanTargetFriendly || a.Unknown19 || a.Unknown22 || a.Unknown23));
+        }
     }
 
     private unsafe void DrawStatus(string prompt, ActionID action, bool checkRecast, bool checkCasting)
     {
         uint extra;
-        var status = ActionManagerEx.Instance!.GetActionStatus(action, Service.ClientState.LocalPlayer?.TargetObjectId ?? 0xE0000000, checkRecast, checkCasting, &extra);
+        var status = amex.GetActionStatus(action, Service.ClientState.LocalPlayer?.TargetObjectId ?? 0xE0000000, checkRecast, checkCasting, &extra);
         ImGui.TextUnformatted($"{prompt}: {status} [{extra}] '{Service.LuminaRow<Lumina.Excel.GeneratedSheets.LogMessage>(status)?.Text}'");
+    }
+
+    private void DrawFilteredActions(string tag, Func<Lumina.Excel.GeneratedSheets.Action, bool> filter)
+    {
+        foreach (var nr in _tree.Node(tag))
+        {
+            foreach (var a in Service.LuminaSheet<Lumina.Excel.GeneratedSheets.Action>()!.Where(filter))
+            {
+                _tree.LeafNode($"#{a.RowId} {a.Name}");
+            }
+        }
     }
 }
