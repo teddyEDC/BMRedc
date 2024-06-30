@@ -12,7 +12,7 @@ sealed class AIManager : IDisposable
     public readonly RotationModuleManager Autorot;
     public readonly AIController Controller;
     private readonly AIConfig _config;
-    private readonly DtrBarEntry _dtrBarEntry;
+    private readonly IDtrBarEntry _dtrBarEntry;
     private readonly AIManagementWindow _wndAI;
     public int MasterSlot = PartyState.PlayerSlot; // non-zero means corresponding player is master
     public AIBehaviour? Beh;
@@ -36,7 +36,6 @@ sealed class AIManager : IDisposable
     public void Dispose()
     {
         SwitchToIdle();
-        _dtrBarEntry.Dispose();
         _wndAI.Dispose();
         Service.ChatGui.ChatMessage -= OnChatMessage;
         Service.CommandManager.RemoveHandler("/bmrai");
@@ -104,7 +103,7 @@ sealed class AIManager : IDisposable
         return pm != null ? WorldState.Party.ContentIDs.IndexOf((ulong)pm.ContentId) : -1;
     }
 
-    private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
+    private void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
     {
         if (!_config.Enabled || type != XivChatType.Party)
             return;

@@ -15,7 +15,7 @@ sealed class IPCProvider : IDisposable
         Register("ActiveModuleComponentList", () => autorotation.Bossmods.ActiveModule?.Components.Select(c => c.GetType().Name).ToList() ?? default);
         Register("ActiveModuleHasComponent", (string name) => autorotation.Bossmods.ActiveModule?.Components.Any(c => c.GetType().Name == name || c.GetType().BaseType?.Name == name) ?? false);
 
-        Register("HasModule", (GameObject obj) => ModuleRegistry.FindByOID(obj.DataId) != null);
+        Register("HasModule", (IGameObject obj) => ModuleRegistry.FindByOID(obj.DataId) != null);
         Register("IsMoving", autorotation.ActionManager.InputOverride.IsMoving);
         Register("ForbiddenZonesCount", () => autorotation.Hints.ForbiddenZones.Count);
         //Register("InitiateCombat", () => autorotation.ClassActions?.UpdateAutoAction(CommonActions.AutoActionAIFight, float.MaxValue, true));
@@ -38,12 +38,12 @@ sealed class IPCProvider : IDisposable
         _disposeActions += p.UnregisterFunc;
     }
 
-    // private void Register(string name, Action func)
-    // {
-    //     var p = Service.PluginInterface.GetIpcProvider<object>("BossMod." + name);
-    //     p.RegisterAction(func);
-    //     _disposeActions += p.UnregisterAction;
-    // }
+    private void Register(string name, Action func)
+    {
+        var p = Service.PluginInterface.GetIpcProvider<object>("BossMod." + name);
+        p.RegisterAction(func);
+        _disposeActions += p.UnregisterAction;
+    }
 
     //private void Register<T1>(string name, Action<T1> func)
     //{
