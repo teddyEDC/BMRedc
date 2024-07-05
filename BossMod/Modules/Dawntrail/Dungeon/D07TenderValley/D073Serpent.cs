@@ -57,12 +57,12 @@ public enum SID : uint
 
 public enum IconID : uint
 {
-    Icon_341 = 341, // player
-    Icon_504 = 504, // player
-    Icon_503 = 503, // player
+    Icon341 = 341, // player
+    Icon504 = 504, // player
+    Icon503 = 503, // player
     Stackmarker = 62, // player
-    Icon_542 = 542, // player
-    Icon_543 = 543, // player
+    Icon542 = 542, // player
+    Icon543 = 543, // player
     Spreadmarker = 139, // player
 }
 

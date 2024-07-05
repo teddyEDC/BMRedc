@@ -59,9 +59,9 @@ public enum IconID : uint
 }
 public enum TetherID : uint
 {
-    Tether_57 = 57, // StrayGeist->player
-    Tether_1 = 1, // StrayGeist->player
-    Tether_277 = 277, // StrayPhantagenitrix->Boss
+    Tether57 = 57, // StrayGeist->player
+    Tether1 = 1, // StrayGeist->player
+    Tether277 = 277, // StrayPhantagenitrix->Boss
 }
 
 class BitterRegret1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BitterRegret1), new AOEShapeRect(40, 8));

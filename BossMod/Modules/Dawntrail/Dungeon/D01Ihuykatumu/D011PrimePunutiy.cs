@@ -64,12 +64,12 @@ public enum SID : uint
 public enum IconID : uint
 {
     Stackmarker = 196, // player
-    Icon_505 = 505, // player
+    Icon505 = 505, // player
 }
 
 public enum TetherID : uint
 {
-    Tether_17 = 17, // ProdigiousPunutiy/Punutiy/PetitPunutiy->player
+    Tether17 = 17, // ProdigiousPunutiy/Punutiy/PetitPunutiy->player
 }
 
 class PunutiyPress(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.PunutiyPress));

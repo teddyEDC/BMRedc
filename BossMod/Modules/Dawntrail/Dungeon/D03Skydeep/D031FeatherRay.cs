@@ -45,7 +45,7 @@ public enum SID : uint
 
 public enum IconID : uint
 {
-    Icon_514 = 514, // player
+    Icon514 = 514, // player
 }
 
 class Immersion(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Immersion));

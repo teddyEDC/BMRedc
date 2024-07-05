@@ -57,8 +57,8 @@ public enum SID : uint
 
 public enum IconID : uint
 {
-    Icon_218 = 218, // player
-    Icon_376 = 376, // player
+    Icon218 = 218, // player
+    Icon376 = 376, // player
 }
 
 class Electrothermia(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Electrothermia));
