@@ -54,9 +54,9 @@ public enum SID : uint
 public enum IconID : uint
 {
     Stackmarker = 62, // Helper
-    Icon_511 = 511, // player
-    Icon_169 = 169, // player
-    Icon_311 = 311, // player
+    Icon511 = 511, // player
+    Icon169 = 169, // player
+    Icon311 = 311, // player
 }
 
 class WindUnbound(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.WindUnbound));

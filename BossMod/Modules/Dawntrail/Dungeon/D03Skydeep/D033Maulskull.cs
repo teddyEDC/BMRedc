@@ -78,9 +78,9 @@ public enum AID : uint
 
 public enum IconID : uint
 {
-    Icon_375 = 375, // player
-    Icon_344 = 344, // player
-    Icon_317 = 317, // player
+    Icon375 = 375, // player
+    Icon344 = 344, // player
+    Icon317 = 317, // player
 }
 
 class Stonecarver3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Stonecarver3), new AOEShapeRect(40, 10));

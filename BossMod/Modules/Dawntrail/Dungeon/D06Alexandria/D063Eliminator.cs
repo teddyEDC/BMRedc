@@ -85,7 +85,7 @@ public enum SID : uint
 public enum IconID : uint
 {
     Spreadmarker = 139, // player
-    Icon_534 = 534, // Helper
+    Icon534 = 534, // Helper
 }
 
 class Disruption(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Disruption));

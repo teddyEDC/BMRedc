@@ -56,7 +56,7 @@ public enum SID : uint
 
 public enum IconID : uint
 {
-    Icon_345 = 345, // player
+    Icon345 = 345, // player
 }
 
 class Electrowave(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Electrowave));

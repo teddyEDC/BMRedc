@@ -68,9 +68,9 @@ public enum SID : uint
 public enum IconID : uint
 {
     Tankbuster = 218, // player
-    Icon_108 = 108, // player
-    Icon_344 = 344, // player
-    Icon_506 = 506, // Whirlwind
+    Icon108 = 108, // player
+    Icon344 = 344, // player
+    Icon506 = 506, // Whirlwind
 }
 
 class RazorZephyr(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RazorZephyr), new AOEShapeRect(50, 6));

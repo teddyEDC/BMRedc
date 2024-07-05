@@ -48,7 +48,7 @@ public enum IconID : uint
 
 public enum TetherID : uint
 {
-    Tether_272 = 272, // RorrlohTeh/QorrlohTeh1->Boss
+    Tether272 = 272, // RorrlohTeh/QorrlohTeh1->Boss
 }
 
 class FrostingFracas1(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.FrostingFracas1));
