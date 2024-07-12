@@ -1,5 +1,3 @@
-﻿using BossMod.Endwalker.Dungeon.D12Aetherfont.D121Lyngbakr;
-
 namespace BossMod.Dawntrail.Dungeon.D08Deadwalk.D081Leonogg;
 
 public enum OID : uint
