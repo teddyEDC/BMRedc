@@ -169,7 +169,7 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
         if (aoes.Count > 0 && actionId is AID.PathocircuitPurge or AID.PathocrossPurge)
         {
             var cross = actionId == AID.PathocrossPurge;
-            aoes.Remove(aoes.FirstOrDefault(aoe => cross  && aoe.Shape is AOEShapeCross || !cross && aoe.Shape is AOEShapeDonut));
+            aoes.Remove(aoes.FirstOrDefault(aoe => cross && aoe.Shape is AOEShapeCross || !cross && aoe.Shape is AOEShapeDonut));
             //Service.Log($"removed {(cross ? "cross" : "donut")} AoE");
 
             bool reactivate = false;
