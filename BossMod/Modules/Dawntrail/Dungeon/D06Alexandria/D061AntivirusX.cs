@@ -50,7 +50,7 @@ class PathocircuitPurge(BossModule module) : Components.SelfTargetedAOEs(module,
 
 class PathoPurge(BossModule module) : Components.GenericAOEs(module)
 {
-    private List<AOEInstance> aoes = [];
+    private readonly List<AOEInstance> aoes = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => aoes;
 
@@ -100,7 +100,7 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                 }
 
                 //Service.Log($"Added first {(cross ? "cross" : "donut")} AoE");
-            } else if (!donutActive && actorOid == OID.InterferonR)
+            }else if (!donutActive && actorOid == OID.InterferonR)
             {
                 donutActive = true;
                 AddAoE(false, actor.Position, 12f + (actors.Count - 1) * 4);
@@ -112,7 +112,6 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
     {
         base.OnCastStarted(caster, spell);
         var actionId = (AID)spell.Action.ID;
-        
         if (actors.Contains(caster) && (actionId is AID.PathocircuitPurge or AID.PathocrossPurge))
         {
             actors.Remove(caster);
@@ -187,7 +186,7 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                     reactivate = true;
             }
 
-            if(actorCount == 1 && donutActive && donutActorIndex == 2)
+            if (actorCount == 1 && donutActive && donutActorIndex == 2)
             {
                 donutActiveInstance.Risky = true;
             }
@@ -210,7 +209,7 @@ class QuarantineTest(BossModule module) : Components.StackWithIcon(module, (uint
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         //Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
-        if(actor.OID != 0)
+        if (actor.OID != 0)
             base.OnEventIcon(actor, iconID);
     }
 }
