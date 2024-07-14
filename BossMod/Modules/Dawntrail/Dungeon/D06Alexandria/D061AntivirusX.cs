@@ -100,7 +100,8 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                 }
 
                 //Service.Log($"Added first {(cross ? "cross" : "donut")} AoE");
-            }else if (!donutActive && actorOid == OID.InterferonR)
+            }
+            else if (!donutActive && actorOid == OID.InterferonR)
             {
                 donutActive = true;
                 AddAoE(false, actor.Position, 12f + (actors.Count - 1) * 4);
@@ -164,7 +165,7 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
     }
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        var actionId = (AID) spell.Action.ID;
+        var actionId = (AID)spell.Action.ID;
         if (aoes.Count > 0 && actionId is AID.PathocircuitPurge or AID.PathocrossPurge)
         {
             var cross = actionId == AID.PathocrossPurge;
