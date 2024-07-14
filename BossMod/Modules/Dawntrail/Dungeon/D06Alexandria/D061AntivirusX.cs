@@ -83,7 +83,7 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
         if (actorOid is OID.InterferonC or OID.InterferonR)
         {
             actors.Add(actor);
-            Service.Log("added actor");
+            //Service.Log("added actor");
 
             if(actors.Count == 1)
             {
@@ -101,12 +101,11 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                     donutActorIndex = 0;
                 }
 
-                Service.Log($"Added first {(cross ? "cross" : "donut")} AoE");
+                //Service.Log($"Added first {(cross ? "cross" : "donut")} AoE");
             } else if (!donutActive && actorOid == OID.InterferonR)
             {
                 donutActive = true;
                 AddAoE(false, actor.Position, 12f + (actors.Count - 1) * 4);
-                Service.Log("Added first donut");
             }
         }
     }
@@ -129,7 +128,6 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                 if (nextCross)
                 {
                     AddAoE(true, next.Position, 3);
-                    Service.Log("added cross AoE at: " + next.Position);
 
 
                     module.FindComponent<ImmuneResponse2>()!.Risky = true;
@@ -173,9 +171,9 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
         if (aoes.Count > 0 && actionId is AID.PathocircuitPurge or AID.PathocrossPurge)
         {
             var cross = actionId == AID.PathocrossPurge;
-            if(aoes.Remove(aoes.FirstOrDefault(aoe => cross   && aoe.Shape is AOEShapeCross ||
-                                                        !cross && aoe.Shape is AOEShapeDonut)))
-                Service.Log($"removed {(cross ? "cross" : "donut")} AoE");
+            if (aoes.Remove(aoes.FirstOrDefault(aoe => cross  && aoe.Shape is AOEShapeCross ||
+                                                       !cross && aoe.Shape is AOEShapeDonut)))
+                ;//Service.Log($"removed {(cross ? "cross" : "donut")} AoE");
 
             bool reactivate = false;
 
@@ -186,7 +184,7 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                 {
                     Actor next = actors[nextDonut];
                     AddAoE(false, next.Position, 1 + nextDonut * 5);
-                    Service.Log("added Donut AoE");
+                    //Service.Log("added Donut AoE");
                 }
                 else
                     reactivate = true;
@@ -199,7 +197,7 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
 
             if (reactivate)
             {
-                Service.Log("reactivate modules");
+                //Service.Log("reactivate modules");
                 actorCount                                     = 0;
                 module.FindComponent<ImmuneResponse2>()!.Risky = true;
                 module.FindComponent<ImmuneResponse4>()!.Risky = true;
@@ -214,7 +212,7 @@ class QuarantineTest(BossModule module) : Components.StackWithIcon(module, (uint
 {
     public override void OnEventIcon(Actor actor, uint iconID)
     {
-        Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
+        //Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
         if(actor.OID != 0)
             base.OnEventIcon(actor, iconID);
     }
