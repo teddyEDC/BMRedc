@@ -64,17 +64,17 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
 
         if (!cross)
         {
-            donutActive         = true;
+            donutActive = true;
             donutActiveInstance = instance;
         }
     }
 
-    public List<Actor> actors     = [];
-    public int         actorCount = 0;
+    public List<Actor> actors = [];
+    public int actorCount;
 
-    private bool        donutActive = false;
+    private bool donutActive;
     private AOEInstance donutActiveInstance;
-    private int         donutActorIndex = 0;
+    private int donutActorIndex;
 
     public override void OnActorCreated(Actor actor)
     {
@@ -87,10 +87,8 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
 
             if(actors.Count == 1)
             {
-                module.FindComponent<ImmuneResponse2>()!.Risky = false;
-                module.FindComponent<ImmuneResponse4>()!.Risky = false;
-                //module.DeactivateComponent<ImmuneResponse2>();
-                //module.DeactivateComponent<ImmuneResponse4>();
+                Module.FindComponent<ImmuneResponse2>()!.Risky = false;
+                Module.FindComponent<ImmuneResponse4>()!.Risky = false;
 
                 bool cross = actorOid == OID.InterferonC;
 
@@ -130,8 +128,8 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                     AddAoE(true, next.Position, 3);
 
 
-                    module.FindComponent<ImmuneResponse2>()!.Risky = true;
-                    module.FindComponent<ImmuneResponse4>()!.Risky = true;
+                    Module.FindComponent<ImmuneResponse2>()!.Risky = true;
+                    Module.FindComponent<ImmuneResponse4>()!.Risky = true;
                 }
 
                 switch (actorCount)
@@ -145,22 +143,22 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
                     case 3:
                         if (!nextCross)
                         {
-                            module.FindComponent<ImmuneResponse2>()!.Risky = true;
-                            module.FindComponent<ImmuneResponse4>()!.Risky = true;
+                            Module.FindComponent<ImmuneResponse2>()!.Risky = true;
+                            Module.FindComponent<ImmuneResponse4>()!.Risky = true;
                         }
                         break;
                     default:
                         if (!nextCross)
                         {
-                            module.FindComponent<ImmuneResponse2>()!.Risky = false;
-                            module.FindComponent<ImmuneResponse4>()!.Risky = false;
+                            Module.FindComponent<ImmuneResponse2>()!.Risky = false;
+                            Module.FindComponent<ImmuneResponse4>()!.Risky = false;
                         }
                         break;
                 }
             }
             else
             {
-                donutActive     = false;
+                donutActive = false;
                 donutActorIndex = 0;
             }
         }
@@ -171,9 +169,9 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
         if (aoes.Count > 0 && actionId is AID.PathocircuitPurge or AID.PathocrossPurge)
         {
             var cross = actionId == AID.PathocrossPurge;
-            if (aoes.Remove(aoes.FirstOrDefault(aoe => cross  && aoe.Shape is AOEShapeCross ||
-                                                       !cross && aoe.Shape is AOEShapeDonut)))
-                ;//Service.Log($"removed {(cross ? "cross" : "donut")} AoE");
+            aoes.Remove(aoes.FirstOrDefault(aoe => cross  && aoe.Shape is AOEShapeCross ||
+                                                   !cross && aoe.Shape is AOEShapeDonut));
+            //Service.Log($"removed {(cross ? "cross" : "donut")} AoE");
 
             bool reactivate = false;
 
@@ -198,9 +196,9 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
             if (reactivate)
             {
                 //Service.Log("reactivate modules");
-                actorCount                                     = 0;
-                module.FindComponent<ImmuneResponse2>()!.Risky = true;
-                module.FindComponent<ImmuneResponse4>()!.Risky = true;
+                actorCount = 0;
+                Module.FindComponent<ImmuneResponse2>()!.Risky = true;
+                Module.FindComponent<ImmuneResponse4>()!.Risky = true;
             }
         }
     }
