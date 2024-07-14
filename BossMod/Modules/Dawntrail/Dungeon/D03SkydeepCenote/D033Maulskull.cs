@@ -85,9 +85,9 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            yield return new(_aoes[0].Shape, _aoes[0].Origin, _aoes[0].Rotation, _aoes[0].Activation, ArenaColor.Danger);
+            yield return _aoes[0] with { Color = ArenaColor.Danger };
         if (_aoes.Count > 1)
-            yield return new(_aoes[1].Shape, _aoes[1].Origin, _aoes[1].Rotation, _aoes[1].Activation, Risky: false);
+            yield return _aoes[1] with { Risky = false };
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -142,7 +142,7 @@ class Shatter(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact1), 18)
+class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact1), 18, stopAfterWall: true)
 {
     private (WPos, DateTime) data;
 
@@ -156,11 +156,11 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()));
     }
 }
 
-class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact2), 18)
+class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact2), 18, stopAfterWall: true)
 {
     private (WPos, DateTime) data;
 
@@ -176,11 +176,11 @@ class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()));
     }
 }
 
-class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact3), 20)
+class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact3), 20, stopAfterWall: true)
 {
     private (WPos, DateTime) data;
     private static readonly Angle halfAngle = 10.Degrees();
