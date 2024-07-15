@@ -210,8 +210,11 @@ class QuarantineTest(BossModule module) : Components.StackWithIcon(module, (uint
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         //Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
-        if (actor.OID != 0)
+        Actor player = Module.WorldState.Party.Player()!;
+        if (actor.OID != player.OID && player.Role != Role.Tank)
+        {
             base.OnEventIcon(actor, iconID);
+        }
     }
 }
 
