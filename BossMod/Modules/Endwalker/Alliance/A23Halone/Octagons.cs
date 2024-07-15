@@ -19,7 +19,7 @@ class Octagons(BossModule module) : Components.GenericAOEs(module)
     private static readonly List<Shape> baseArena = [new Circle(new WPos(-700, 600), 29.5f)];
     private readonly List<Shape> octagonsInner = [];
     private readonly List<Shape> octagonsOuter = [];
-    public static readonly ArenaBounds arenaDefault = new ArenaBoundsCircle(29.5f);
+    public static readonly ArenaBoundsCircle arenaDefault = new(29.5f);
     private AOEInstance? _aoe;
     private static readonly AOEShapeCustom customShape = new(baseArena, [shapes[0], shapes[2], shapes[4]]);
 

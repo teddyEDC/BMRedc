@@ -58,8 +58,15 @@ public enum NPCYell : uint
     LimitBreakStart = 15175,
 }
 
-class VoidTorrent(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.VoidTorrent), new AOEShapeRect(60, 4));
-class VoidTorrentHint(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.VoidTorrent), "Tankbuster cleave");
+class VoidTorrent(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.VoidTorrent), new AOEShapeRect(60, 4))
+{
+    public override void AddGlobalHints(GlobalHints hints)
+    {
+        if (CurrentBaits.Count > 0)
+            hints.Add("Tankbuster cleave");
+    }
+}
+
 class Voidcleaver(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Voidcleaver));
 class VoidMiasmaBait(BossModule module) : Components.BaitAwayTethers(module, new AOEShapeCone(50, 15.Degrees()), (uint)TetherID.BaitAway);
 class VoidMiasma(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.VoidMiasma), new AOEShapeCone(50, 15.Degrees()));
@@ -88,15 +95,14 @@ class BodySlamKB(BossModule module) : Components.KnockbackFromCastTarget(module,
 
 class HydraulicRam(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<(WPos source, AOEShape shape, Angle direction)> _casters = [];
-    private DateTime _activation;
+    private readonly List<AOEInstance> _aoes = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (_casters.Count > 0)
-            yield return new(_casters[0].shape, _casters[0].source, _casters[0].direction, _activation, ArenaColor.Danger);
-        for (var i = 1; i < _casters.Count; ++i)
-            yield return new(_casters[i].shape, _casters[i].source, _casters[i].direction, _activation);
+        if (_aoes.Count > 0)
+            yield return _aoes[0] with { Color = ArenaColor.Danger };
+        for (var i = 1; i < _aoes.Count; ++i)
+            yield return _aoes[i];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -104,72 +110,53 @@ class HydraulicRam(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID == AID.HydraulicRamTelegraph)
         {
             var dir = spell.LocXZ - caster.Position;
-            _casters.Add((caster.Position, new AOEShapeRect(dir.Length(), 4), Angle.FromDirection(dir)));
+            _aoes.Add(new(new AOEShapeRect(dir.Length(), 4), caster.Position, Angle.FromDirection(dir), spell.NPCFinishAt.AddSeconds(7.8f)));
         }
-        else if ((AID)spell.Action.ID == AID.HydraulicRam)
-            _activation = spell.NPCFinishAt.AddSeconds(1.5f); //since these are charges of different length with 0s cast time, the activation times are different for each and there are different patterns, so we just pretend that they all start after the telegraphs end
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_casters.Count > 0 && (AID)spell.Action.ID == AID.HydraulicRam2)
-            _casters.RemoveAt(0);
+        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.HydraulicRam2)
+            _aoes.RemoveAt(0);
     }
 }
 
 class Hydrobomb(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<WPos> _casters = [];
+    private readonly List<AOEInstance> _aoes = [];
     private static readonly AOEShapeCircle circle = new(4);
-    private DateTime _activation;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (_casters.Count > 1)
+        if (_aoes.Count > 1)
             for (var i = 0; i < 2; ++i)
-                yield return new(circle, _casters[i], default, _activation.AddSeconds(6 - _casters.Count / 2), ArenaColor.Danger);
-        for (var i = 2; i < _casters.Count; ++i)
-            yield return new(circle, _casters[i], default, _activation.AddSeconds(MathF.Ceiling(i / 2) + 6 - _casters.Count / 2));
+                yield return _aoes[i] with { Color = ArenaColor.Danger };
+        for (var i = 1; i < _aoes.Count; ++i)
+            yield return _aoes[i];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.HydrobombTelegraph)
-            _casters.Add(spell.LocXZ);
-        else if ((AID)spell.Action.ID == AID.HydraulicRam)
-            _activation = spell.NPCFinishAt.AddSeconds(2.2f);
+            _aoes.Add(new(circle, spell.LocXZ, default, spell.NPCFinishAt.AddSeconds(8.1f)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_casters.Count > 0 && (AID)spell.Action.ID == AID.Hydrobomb)
-            _casters.RemoveAt(0);
+        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.Hydrobomb)
+            _aoes.RemoveAt(0);
     }
 }
 
 class Hydrovent(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Hydrovent), 6);
+class NeapTide(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Spreadmarker, ActionID.MakeSpell(AID.NeapTide), 6, 5);
 
-class NeapTide(BossModule module) : Components.UniformStackSpread(module, 0, 6, alwaysShowSpreads: true)
-{
-    public override void OnEventIcon(Actor actor, uint iconID)
-    {
-        if (iconID == (uint)IconID.Spreadmarker)
-            AddSpread(actor);
-    }
-
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
-    {
-        if ((AID)spell.Action.ID == AID.NeapTide)
-            Spreads.Clear();
-    }
-}
-
-class Stackmarkers(BossModule module) : Components.UniformStackSpread(module, 6, 0) // Hydrofall and Springtide, both use the same icon
+class SpringTideHydroFall(BossModule module) : Components.UniformStackSpread(module, 6, 0, 4) // both use the same icon
 {
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         if (iconID == (uint)IconID.Stackmarker)
-            AddStack(actor);
+            AddStack(actor, Module.WorldState.FutureTime(5));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -203,12 +190,11 @@ class D113CagnazzoStates : StateMachineBuilder
             .ActivateOnEnter<BodySlamKB>()
             .ActivateOnEnter<HydraulicRam>()
             .ActivateOnEnter<Hydrobomb>()
-            .ActivateOnEnter<Stackmarkers>()
+            .ActivateOnEnter<SpringTideHydroFall>()
             .ActivateOnEnter<NeapTide>()
             .ActivateOnEnter<StygianDeluge>()
             .ActivateOnEnter<Hydrovent>()
             .ActivateOnEnter<VoidTorrent>()
-            .ActivateOnEnter<VoidTorrentHint>()
             .ActivateOnEnter<Tsunami>();
     }
 }

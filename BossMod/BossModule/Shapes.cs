@@ -231,6 +231,7 @@ public record class Polygon(WPos Center, float Radius, int Vertices, Angle Rotat
                 var z = Center.Z + Radius * MathF.Sin(angle);
                 vertices.Add(new WDir(x - center.X, z - center.Z));
             }
+            vertices.Reverse();
             return vertices;
         });
 

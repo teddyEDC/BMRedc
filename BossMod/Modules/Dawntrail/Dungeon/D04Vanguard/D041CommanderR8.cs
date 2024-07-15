@@ -187,6 +187,6 @@ class D041CommanderR8States : StateMachineBuilder
 public class D041CommanderR8(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
 {
     public static readonly WPos ArenaCenter = new(-100, 207);
-    public static readonly ArenaBounds StartingBounds = new ArenaBoundsSquare(19.5f);
-    public static readonly ArenaBounds DefaultBounds = new ArenaBoundsSquare(17);
+    public static readonly ArenaBoundsSquare StartingBounds = new(19.5f);
+    public static readonly ArenaBoundsSquare DefaultBounds = new(17);
 }

@@ -106,14 +106,15 @@ class SlitherbaneBurstCombo(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        switch ((AID)spell.Action.ID)
-        {
-            case AID.SlitherbaneRearguardCone:
-            case AID.SlitherbaneForeguardCone:
-            case AID.Burst2:
-                _aoes.RemoveAt(0);
-                break;
-        }
+        if (_aoes.Count > 0)
+            switch ((AID)spell.Action.ID)
+            {
+                case AID.SlitherbaneRearguardCone:
+                case AID.SlitherbaneForeguardCone:
+                case AID.Burst2:
+                    _aoes.RemoveAt(0);
+                    break;
+            }
     }
 }
 
@@ -167,8 +168,8 @@ class D043ZanderStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 831, NameID = 12752, SortOrder = 6)]
 public class D043Zander(WorldState ws, Actor primary) : BossModule(ws, primary, new(90, -430), StartingBounds)
 {
-    public static readonly ArenaBounds StartingBounds = new ArenaBoundsCircle(19.5f);
-    public static readonly ArenaBounds DefaultBounds = new ArenaBoundsCircle(17);
+    public static readonly ArenaBoundsCircle StartingBounds = new(19.5f);
+    public static readonly ArenaBoundsCircle DefaultBounds = new(17);
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

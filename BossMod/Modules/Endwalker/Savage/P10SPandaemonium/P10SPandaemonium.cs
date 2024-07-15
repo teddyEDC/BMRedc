@@ -15,7 +15,7 @@ class PealOfDamnation(BossModule module) : Components.SelfTargetedAOEs(module, A
 class PandaemoniacPillars(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.Bury), 2);
 class Touchdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TouchdownAOE), new AOEShapeCircle(20));
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "veyn, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 939, NameID = 12354, PlanLevel = 90)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "veyn, The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 939, NameID = 12354, PlanLevel = 90)]
 public class P10SPandaemonium(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly List<Shape> union = [new Rectangle(new(100, 100), 13, 15), new Rectangle(new(125, 85), 4, 15), new Rectangle(new(75, 85), 4, 15)];
