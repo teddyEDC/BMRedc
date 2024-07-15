@@ -31,7 +31,7 @@ class D040VanguardAerostat2States : StateMachineBuilder
             .ActivateOnEnter<IncendiaryRing>()
             .ActivateOnEnter<Electrobeam>()
             .ActivateOnEnter<SpreadShot>()
-            .Raw.Update = () => module.Turret.All(e => e.IsDeadOrDestroyed) && module.PrimaryActor.IsDeadOrDestroyed && module.SentryS7.All(e => e.IsDeadOrDestroyed) && module.SentryG7.All(e => e.IsDeadOrDestroyed);
+            .Raw.Update = () => module.Turret.All(e => e.IsDeadOrDestroyed) && module.PrimaryActor.IsDeadOrDestroyed;
     }
 }
 
@@ -43,7 +43,7 @@ public class D040VanguardAerostat2 : BossModule
     new(41.242f, -318.724f), new(21.684f, -318.724f), new(12.648f, -312.733f),
     new(12.5f, -311.5f), new(4.283f, -311.468f), new(3.086f, -310.288f),
     new(3, -302.5f), new(-3, -302.5f), new(-3.086f, -310.288f), new(-4.283f, -311.468f), new(-12.5f, -311.5f)];
-    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new PolygonCustom(arenacoords)]);
+    private static readonly ArenaBoundsComplex arena = new([new PolygonCustom(arenacoords)]);
     public readonly IReadOnlyList<Actor> Turret;
     public readonly IReadOnlyList<Actor> SentryG7;
     public readonly IReadOnlyList<Actor> SentryS7;

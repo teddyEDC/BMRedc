@@ -156,7 +156,7 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()));
     }
 }
 

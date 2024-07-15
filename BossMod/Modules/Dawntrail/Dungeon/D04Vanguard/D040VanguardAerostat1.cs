@@ -2,14 +2,14 @@ namespace BossMod.Dawntrail.Dungeon.D04Vanguard.D040VanguardAerostat1;
 
 public enum OID : uint
 {
-    Boss = 0x41DA, //R=2.34
-    Aerostat2 = 0x447B, //R=2.34
+    Boss = 0x41DA, //R=2.3
+    Aerostat2 = 0x447B //R=2.3
 }
 
 public enum AID : uint
 {
     AutoAttack = 871, // Boss/Aerostat2->player, no cast, single-target
-    IncendiaryRing = 38452, // Aerostat2->self, 4.8s cast, range 3-12 donut
+    IncendiaryRing = 38452 // Aerostat2->self, 4.8s cast, range 3-12 donut
 }
 
 class IncendiaryRing(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.IncendiaryRing), new AOEShapeDonut(3, 10));

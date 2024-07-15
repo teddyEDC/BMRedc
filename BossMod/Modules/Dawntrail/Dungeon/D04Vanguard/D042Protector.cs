@@ -55,8 +55,8 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 {
     private const float Radius = 0.5f;
     public static readonly WPos ArenaCenter = new(0, -100);
-    public static readonly ArenaBounds StartingBounds = new ArenaBoundsRect(14.5f, 22.5f);
-    private static readonly ArenaBounds defaultBounds = new ArenaBoundsRect(12, 20);
+    public static readonly ArenaBoundsRect StartingBounds = new(14.5f, 22.5f);
+    private static readonly ArenaBoundsRect defaultBounds = new(12, 20);
     private static readonly Rectangle startingRect = new(ArenaCenter, 15, 23);
     private static readonly Rectangle defaultRect = new(ArenaCenter, 12, 20);
     private static readonly WPos[] CirclePositions =

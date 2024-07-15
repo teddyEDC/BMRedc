@@ -74,7 +74,14 @@ sealed class AIManager : IDisposable
                 if (behaviour != null)
                     SwitchToIdle();
                 else
+                {
+                    if (!_config.Enabled)
+                    {
+                        _config.Enabled = true;
+                        _config.Modified.Fire();
+                    }
                     SwitchToFollow(_config.FollowSlot);
+                }
             };
         }
     }
