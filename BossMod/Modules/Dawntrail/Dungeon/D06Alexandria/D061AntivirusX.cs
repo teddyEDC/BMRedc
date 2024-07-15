@@ -205,13 +205,29 @@ class PathoPurge(BossModule module) : Components.GenericAOEs(module)
 
 class Quarantine2(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine2), 6, 5, 4);
 
-class QuarantineTest(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine2), 6, 5, 4)
+class QuarantineNonTank(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine2), 6, 5, 4)
 {
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         //Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
-        if (actor.OID != 0)
+        Actor player = Module.WorldState.Party.Player()!;
+        if (actor.OID != player.OID && player.Role != Role.Tank)
+        {
             base.OnEventIcon(actor, iconID);
+        }
+    }
+}
+
+class QuarantineTank(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine2), 8, 5)
+{
+    public override void OnEventIcon(Actor actor, uint iconID)
+    {
+        //Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
+        Actor player = Module.WorldState.Party.Player()!;
+        if (player.Role == Role.Tank)
+        {
+            base.OnEventIcon(actor, iconID);
+        }
     }
 }
 
@@ -229,7 +245,8 @@ class D061AntivirusXStates : StateMachineBuilder
             .ActivateOnEnter<PathoPurge>()
             //.ActivateOnEnter<PathocrossPurge>()
             //.ActivateOnEnter<PathocircuitPurge>()
-            .ActivateOnEnter<QuarantineTest>()
+            .ActivateOnEnter<QuarantineNonTank>()
+            .ActivateOnEnter<QuarantineTank>()
             .ActivateOnEnter<Disinfection>()
             .ActivateOnEnter<Cytolysis>();
     }
