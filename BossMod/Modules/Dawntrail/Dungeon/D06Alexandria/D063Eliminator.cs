@@ -99,6 +99,8 @@ class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 class Impact(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact), 15, stopAtWall: true, kind: Kind.AwayFromOrigin);
 class Compression2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Compression2), new AOEShapeCircle(6));
 
+class Overexpusure2(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.Overexposure2), ActionID.MakeSpell(AID.Overexposure1), 5);
+
 class D063EliminatorStates : StateMachineBuilder
 {
     public D063EliminatorStates(BossModule module) : base(module)
@@ -113,7 +115,8 @@ class D063EliminatorStates : StateMachineBuilder
             .ActivateOnEnter<Electray>()
             .ActivateOnEnter<Explosion>()
             .ActivateOnEnter<Impact>()
-            .ActivateOnEnter<Compression2>();
+            .ActivateOnEnter<Compression2>()
+            .ActivateOnEnter<Overexpusure2>();
     }
 }
 
