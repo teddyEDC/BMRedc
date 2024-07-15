@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using Dalamud.Plugin.Services;
+using ImGuiNET;
 using System.IO;
 
 namespace BossMod.ReplayVisualization;
@@ -119,6 +120,8 @@ class OpList(Replay replay, ModuleRegistry.Info? moduleInfo, IEnumerable<WorldSt
             ActorState.OpTether op => FilterInterestingActor(op.InstanceID, op.Timestamp, true),
             ClientState.OpActionRequest => false,
             //ClientState.OpActionReject => false,
+            ClientState.OpAnimationLockChange => false,
+            ClientState.OpComboChange => false,
             ClientState.OpCooldown => false,
             NetworkState.OpServerIPC => false,
             _ => true
