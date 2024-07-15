@@ -130,30 +130,32 @@ class Surge(BossModule module) : Components.Knockback(module)
     {
         if ((AID)spell.Action.ID == AID.Surge)
         {
-            var safewalls = GetActiveSafeWalls();
             activation = spell.NPCFinishAt.AddSeconds(0.8f);
-            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + 90.Degrees(), Kind.DirForward, default, safewalls));
-            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation - 90.Degrees(), Kind.DirForward, default, safewalls));
+            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + 90.Degrees(), Kind.DirForward, default, ActiveSafeWalls));
+            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation - 90.Degrees(), Kind.DirForward, default, ActiveSafeWalls));
         }
     }
 
-    private List<SafeWall> GetActiveSafeWalls()
+    public List<SafeWall> ActiveSafeWalls
     {
-        foreach (var kvp in ArenaChanges.ArenaBoundsMap)
+        get
         {
-            if (Module.Arena.Bounds == kvp.Value)
+            foreach (var kvp in ArenaChanges.ArenaBoundsMap)
             {
-                return kvp.Key switch
+                if (Module.Arena.Bounds == kvp.Value)
                 {
-                    0x1B => walls2A1B,
-                    0x1E => walls2C1E,
-                    0x1D => walls2D1D,
-                    0x1C => walls2B1C,
-                    _ => []
-                };
+                    return kvp.Key switch
+                    {
+                        0x1B => walls2A1B,
+                        0x1E => walls2C1E,
+                        0x1D => walls2D1D,
+                        0x1C => walls2B1C,
+                        _ => []
+                    };
+                }
             }
+            return [];
         }
-        return [];
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -170,8 +172,7 @@ class Surge(BossModule module) : Components.Knockback(module)
         if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
             var forbidden = new List<Func<WPos, float>>();
-            var safewalls = GetActiveSafeWalls();
-            foreach (var w in safewalls)
+            foreach (var w in ActiveSafeWalls)
                 forbidden.Add(ShapeDistance.InvertedRect(new(Module.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? new WDir(-4, 0) : new(4, 0), 8, 0, 20));
             hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation);
         }
