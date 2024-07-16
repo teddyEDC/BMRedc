@@ -112,5 +112,5 @@ class D051HerpekarisStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 825, NameID = 12741)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 825, NameID = 12741, SortOrder = 1)]
 public class D051Herpekaris(WorldState ws, Actor primary) : BossModule(ws, primary, new(-88, -180), new ArenaBoundsSquare(17.5f));
