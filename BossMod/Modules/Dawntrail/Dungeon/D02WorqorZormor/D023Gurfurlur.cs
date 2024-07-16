@@ -135,8 +135,8 @@ class GreatFlood(BossModule module) : Components.KnockbackFromCastTarget(module,
 
 class Allfire(BossModule module) : Components.GenericAOEs(module)
 {
-    private const string risk2Hint = "Walk into safespot for knockback!";
-    private const string stayHint = "Wait inside safespot for knockback!";
+    private const string Risk2Hint = "Walk into safespot for knockback!";
+    private const string StayHint = "Wait inside safespot for knockback!";
     private bool tutorial;
     private static readonly AOEShapeRect rect = new(5, 5, 5);
     private readonly List<AOEInstance> _aoesWave1 = [];
@@ -166,36 +166,52 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
     }
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Allfire1)
-            _aoesWave1.Add(new(rect, caster.Position, spell.Rotation, spell.NPCFinishAt));
-        else if ((AID)spell.Action.ID == AID.Allfire2)
-            _aoesWave2.Add(new(rect, caster.Position, spell.Rotation, spell.NPCFinishAt));
-        else if ((AID)spell.Action.ID == AID.Allfire3)
-            _aoesWave3.Add(new(rect, caster.Position, spell.Rotation, spell.NPCFinishAt));
+        var newAOE = new AOEInstance(rect, caster.Position, spell.Rotation, spell.NPCFinishAt);
+        switch ((AID)spell.Action.ID)
+        {
+            case AID.Allfire1:
+                _aoesWave1.Add(newAOE);
+                break;
+            case AID.Allfire2:
+                _aoesWave2.Add(newAOE);
+                break;
+            case AID.Allfire3:
+                _aoesWave3.Add(newAOE);
+                break;
+        }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Allfire1)
+        switch ((AID)spell.Action.ID)
         {
-            _aoesWave1.Clear();
-            if (!tutorial)
-                tutorial = true;
+            case AID.Allfire1:
+                _aoesWave1.Clear();
+                if (!tutorial)
+                    tutorial = true;
+                break;
+            case AID.Allfire2:
+                _aoesWave2.Clear();
+                break;
+            case AID.Allfire3:
+                _aoesWave3.Clear();
+                break;
         }
-        else if ((AID)spell.Action.ID == AID.Allfire2)
-            _aoesWave2.Clear();
-        else if ((AID)spell.Action.ID == AID.Allfire3)
-            _aoesWave3.Clear();
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (ActiveAOEs(slot, actor).Any(c => !(c.Shape == safespot)))
+        var activeAOEs = ActiveAOEs(slot, actor).ToList();
+        if (activeAOEs.Any(c => c.Shape != safespot))
             base.AddHints(slot, actor, hints);
-        else if (ActiveAOEs(slot, actor).Any(c => c.Shape == safespot && !c.Check(actor.Position)))
-            hints.Add(risk2Hint);
-        else if (ActiveAOEs(slot, actor).Any(c => c.Shape == safespot && c.Check(actor.Position)))
-            hints.Add(stayHint, false);
+        else
+        {
+            var safeSpots = activeAOEs.Where(c => c.Shape == safespot);
+            if (safeSpots.Any(c => !c.Check(actor.Position)))
+                hints.Add(Risk2Hint);
+            else if (safeSpots.Any(c => c.Check(actor.Position)))
+                hints.Add(StayHint, false);
+        }
     }
 }
 
