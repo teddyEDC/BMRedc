@@ -40,8 +40,8 @@ public class D050OrigenicsAerostat : BossModule
     public readonly IReadOnlyList<Actor> OrigenicsSentryS9;
     public readonly IReadOnlyList<Actor> OrigenicsSentryS92;
     public readonly IReadOnlyList<Actor> OrigenicsSentryG10;
-    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-116, -80), 13.5f, 6, 30.Degrees()), new Rectangle(new(-144, -80), 20, 5.5f),
-    new Polygon(new(-172, -80), 13.5f, 6, 30.Degrees())]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-116, -80), 14.5f, 6, 30.Degrees()), new Rectangle(new(-88, -80), 20, 5.5f),
+    new Polygon(new(-60, -80), 14.5f, 6, 30.Degrees()), new Rectangle(new(-144, -80), 20, 5.5f)]);
     public D050OrigenicsAerostat(WorldState ws, Actor primary) : base(ws, primary, arena.Center, arena)
     {
         Aerostat2 = Enemies(OID.Aerostat2);

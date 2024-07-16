@@ -72,14 +72,16 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     private const float QuarterWidth = 7.5f;
     private const float QuarterHeight = 9.75f;
     private const float HalfHeight = 19.5f;
-    private readonly List<(WPos, Angle)> data = [];
+    public readonly List<(WPos, Angle)> Data = [];
     public DateTime Activation;
     private readonly List<Source> _sources = [];
-    private static readonly AOEShapeRect rectNS = new(HalfHeight, QuarterWidth);
+    public static readonly AOEShapeRect RectNS = new(HalfHeight, QuarterWidth);
     private static readonly AOEShapeRect rectEW = new(15, QuarterHeight);
-    private static readonly Angle[] angles = [-0.003f.Degrees(), 180.Degrees(), -89.982f.Degrees(), 89.977f.Degrees()];
+    private static readonly Angle[] angles = [-0.003f.Degrees(), -180.Degrees(), -89.982f.Degrees(), 89.977f.Degrees()];
 
     public override IEnumerable<Source> Sources(int slot, Actor actor) => _sources;
+
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<OverwhelmingCharge>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -94,15 +96,15 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     {
         if (position.AlmostEqual(new(182.7f, 8.75f), 0.1f))
         {
-            AddSourceAndData(new WDir(QuarterWidth, -HalfHeight), rectNS, angles[0]);
-            AddSourceAndData(new WDir(-QuarterWidth, HalfHeight), rectNS, angles[1]);
+            AddSourceAndData(new WDir(QuarterWidth, -HalfHeight), RectNS, angles[0]);
+            AddSourceAndData(new WDir(-QuarterWidth, HalfHeight), RectNS, angles[1]);
             AddSource(new WDir(0, -QuarterHeight), rectEW, angles[2]);
             AddSource(new WDir(0, QuarterHeight), rectEW, angles[3]);
         }
         else if (position.AlmostEqual(new(182.5f, -8.75f), 0.1f))
         {
-            AddSourceAndData(new WDir(-QuarterWidth, -HalfHeight), rectNS, angles[0]);
-            AddSourceAndData(new WDir(QuarterWidth, HalfHeight), rectNS, angles[1]);
+            AddSourceAndData(new WDir(-QuarterWidth, -HalfHeight), RectNS, angles[0]);
+            AddSourceAndData(new WDir(QuarterWidth, HalfHeight), RectNS, angles[1]);
             AddSource(new WDir(0, -QuarterHeight), rectEW, angles[3]);
             AddSource(new WDir(0, QuarterHeight), rectEW, angles[2]);
         }
@@ -116,7 +118,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     private void AddSourceAndData(WDir direction, AOEShapeRect shape, Angle angle)
     {
         AddSource(direction, shape, angle);
-        data.Add((_sources.Last().Origin, angle));
+        Data.Add((_sources.Last().Origin, angle));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -124,6 +126,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
         if ((AID)spell.Action.ID is AID.ExtrasensoryExpulsionNorthSouth or AID.ExtrasensoryExpulsionWestEast)
         {
             _sources.Clear();
+            Data.Clear();
             ++NumCasts;
         }
     }
@@ -132,36 +135,48 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     {
         if (Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
-            var forbiddenZones = data.Select(w => ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight, 0, QuarterWidth)).ToList();
+            var forbiddenZones = Data.Select(w => ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight, 0, QuarterWidth)).ToList();
             hints.AddForbiddenZone(p => forbiddenZones.Max(f => f(p)), Activation);
         }
     }
 }
 
 class VoltaicSlash(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.VoltaicSlash));
-class OverwhelmingCharge1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.OverwhelmingCharge1), new AOEShapeCone(26, 90.Degrees()));
 
-class OverwhelmingCharge2(BossModule module) : Components.GenericAOEs(module)
+class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
 {
+    private const string Risk2Hint = "Walk into safespot for knockback!";
+    private const string StayHint = "Wait inside safespot for knockback!";
     private static readonly AOEShapeCone cone = new(26, 90.Degrees());
     private AOEInstance _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        var component = Module.FindComponent<ExtrasensoryExpulsion>()!.Sources(slot, actor).Any() || Module.FindComponent<ExtrasensoryExpulsion>()!.Activation > Module.WorldState.CurrentTime;
+        var component = Module.FindComponent<ExtrasensoryExpulsion>()!;
+        var componentActive = component.Sources(slot, actor).Any() || component.Activation > Module.WorldState.CurrentTime;
         if (_aoe != default)
-            yield return _aoe with { Risky = !component };
+        {
+            yield return _aoe with { Risky = !componentActive };
+            if (componentActive)
+            {
+                var safezone = component.Data.FirstOrDefault(x => _aoe.Rotation.AlmostEqual(x.Item2 + 180.Degrees(), Helpers.RadianConversion));
+                yield return new(ExtrasensoryExpulsion.RectNS, safezone.Item1, safezone.Item2, component.Activation, ArenaColor.SafeFromAOE, false);
+            }
+        }
+        else if (componentActive)
+            foreach (var c in component.Data)
+                yield return new(ExtrasensoryExpulsion.RectNS, c.Item1, c.Item2, component.Activation, ArenaColor.SafeFromAOE, false);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.OverwhelmingCharge2)
+        if ((AID)spell.Action.ID is AID.OverwhelmingCharge1 or AID.OverwhelmingCharge2)
             _aoe = new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.OverwhelmingCharge2)
+        if ((AID)spell.Action.ID is AID.OverwhelmingCharge1 or AID.OverwhelmingCharge2)
             _aoe = default;
     }
 
@@ -173,6 +188,19 @@ class OverwhelmingCharge2(BossModule module) : Components.GenericAOEs(module)
             hints.AddForbiddenZone(aoe.Shape, aoe.Origin, aoe.Rotation + 180.Degrees(), aoe.Activation);
         else
             base.AddAIHints(slot, actor, assignment, hints);
+    }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        base.AddHints(slot, actor, hints);
+        var activeAOEs = ActiveAOEs(slot, actor).Where(c => c.Shape == ExtrasensoryExpulsion.RectNS);
+        if (activeAOEs.Any())
+        {
+            if (!activeAOEs.Any(c => c.Check(actor.Position)))
+                hints.Add(Risk2Hint);
+            else if (activeAOEs.Any(c => c.Check(actor.Position)))
+                hints.Add(StayHint, false);
+        }
     }
 }
 
@@ -219,8 +247,7 @@ class D053AmbroseStates : StateMachineBuilder
         TrivialPhase()
             .ActivateOnEnter<PsychicWaveArenaChange>()
             .ActivateOnEnter<PsychicWave>()
-            .ActivateOnEnter<OverwhelmingCharge1>()
-            .ActivateOnEnter<OverwhelmingCharge2>()
+            .ActivateOnEnter<OverwhelmingCharge>()
             .ActivateOnEnter<Psychokinesis>()
             .ActivateOnEnter<ExtrasensoryExpulsion>()
             .ActivateOnEnter<VoltaicSlash>()
