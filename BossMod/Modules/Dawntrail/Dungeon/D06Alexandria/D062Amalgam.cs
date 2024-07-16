@@ -55,6 +55,7 @@ class Electrowave2(BossModule module) : Components.RaidwideCast(module, ActionID
 class CentralizedCurrent(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.CentralizedCurrent), new AOEShapeRect(90, 7.5f, 90));
 class SplitCurrent2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SplitCurrent2), new AOEShapeRect(90, 30, -5, DirectionOffset: -90.Degrees()));
 class SplitCurrent3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SplitCurrent3), new AOEShapeRect(90, 30, -5, DirectionOffset: 90.Degrees()));
+class SupercellMatrix1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SupercellMatrix1), new AOEShapeRect(30, 50, 40, new Angle(0 * Angle.DegToRad)));
 class SupercellMatrix2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SupercellMatrix2), new AOEShapeRect(55, 4));
 class StaticSpark(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.StaticSpark), 6);
 class Amalgamight(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Amalgamight));
@@ -105,6 +106,7 @@ class D062AmalgamStates : StateMachineBuilder
             .ActivateOnEnter<CentralizedCurrent>()
             .ActivateOnEnter<SplitCurrent2>()
             .ActivateOnEnter<SplitCurrent3>()
+            .ActivateOnEnter<SupercellMatrix1>()
             .ActivateOnEnter<SupercellMatrix2>()
             .ActivateOnEnter<StaticSpark>()
             .ActivateOnEnter<Amalgamight>()
