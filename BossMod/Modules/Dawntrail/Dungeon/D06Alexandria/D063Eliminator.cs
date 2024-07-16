@@ -120,9 +120,19 @@ class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 class Impact(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact), 15, stopAtWall: false, kind: Kind.AwayFromOrigin);
 class Compression2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Compression2), new AOEShapeCircle(6));
 
-class Overexpusure2(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.UnknownAbility3), ActionID.MakeSpell(AID.Overexposure2), 4, halfWidth: 3);
+class Overexposure2(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.UnknownAbility3), ActionID.MakeSpell(AID.Overexposure1), 4, halfWidth: 3)
+{
+    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
+    {
+        base.OnCastFinished(caster, spell);
 
-class PartyLineAoEs(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.UnknownAbility3), ActionID.MakeSpell((AID)0), 5.6f, halfWidth: 3, minStackSize: 1, maxStackSize: 1)
+        if(spell.Action == AidResolve && CurrentBaits.Count > 0)
+            CurrentBaits.RemoveAt(0);
+    }
+}
+
+
+class PartyLineAoEs(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.LightOfSalvation2), ActionID.MakeSpell((AID)0), 5.6f, halfWidth: 3, minStackSize: 1, maxStackSize: 1)
 {
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
@@ -140,18 +150,18 @@ class D063EliminatorStates : StateMachineBuilder
     public D063EliminatorStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<Disruption>()
-            .ActivateOnEnter<Partition4>()
-            .ActivateOnEnter<Partition5>()
-            .ActivateOnEnter<Partition6>()
-            .ActivateOnEnter<Terminate1>()
-            .ActivateOnEnter<HaloOfDestruction1>()
-            .ActivateOnEnter<Electray>()
-            .ActivateOnEnter<Explosion>()
-            .ActivateOnEnter<Impact>()
-            .ActivateOnEnter<Compression2>()
-            .ActivateOnEnter<Overexpusure2>()
-            .ActivateOnEnter<PartyLineAoEs>();
+           .ActivateOnEnter<Disruption>()
+           .ActivateOnEnter<Partition4>()
+           .ActivateOnEnter<Partition5>()
+           .ActivateOnEnter<Partition6>()
+           .ActivateOnEnter<Terminate1>()
+           .ActivateOnEnter<HaloOfDestruction1>()
+           .ActivateOnEnter<Electray>()
+           .ActivateOnEnter<Explosion>()
+           .ActivateOnEnter<Impact>()
+           .ActivateOnEnter<Compression2>()
+           .ActivateOnEnter<Overexposure2>();
+        //.ActivateOnEnter<PartyLineAoEs>();
     }
 }
 
