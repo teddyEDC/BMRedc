@@ -126,11 +126,10 @@ class Overexposure2(BossModule module) : Components.LineStack(module, ActionID.M
     {
         base.OnCastFinished(caster, spell);
 
-        if(spell.Action == AidResolve && CurrentBaits.Count > 0)
+        if (spell.Action == AidResolve && CurrentBaits.Count > 0)
             CurrentBaits.RemoveAt(0);
     }
 }
-
 
 class PartyLineAoEs(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.LightOfSalvation2), ActionID.MakeSpell((AID)0), 5.6f, halfWidth: 3, minStackSize: 1, maxStackSize: 1)
 {
