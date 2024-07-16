@@ -206,7 +206,7 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
             base.AddHints(slot, actor, hints);
         else
         {
-            var safeSpots = activeAOEs.Where(c => c.Shape == safespot);
+            var safeSpots = activeAOEs.Where(c => c.Shape == safespot).ToList();
             if (safeSpots.Any(c => !c.Check(actor.Position)))
                 hints.Add(Risk2Hint);
             else if (safeSpots.Any(c => c.Check(actor.Position)))

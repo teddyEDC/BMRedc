@@ -193,12 +193,12 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         base.AddHints(slot, actor, hints);
-        var activeAOEs = ActiveAOEs(slot, actor).Where(c => c.Shape == ExtrasensoryExpulsion.RectNS);
-        if (activeAOEs.Any())
+        var activeSafespot = ActiveAOEs(slot, actor).Where(c => c.Shape == ExtrasensoryExpulsion.RectNS).ToList();
+        if (activeSafespot.Count != 0)
         {
-            if (!activeAOEs.Any(c => c.Check(actor.Position)))
+            if (!activeSafespot.Any(c => c.Check(actor.Position)))
                 hints.Add(Risk2Hint);
-            else if (activeAOEs.Any(c => c.Check(actor.Position)))
+            else if (activeSafespot.Any(c => c.Check(actor.Position)))
                 hints.Add(StayHint, false);
         }
     }
