@@ -76,4 +76,4 @@ class LariatCombo12(BossModule module) : Components.SelfTargetedAOEs(module, Act
 class BrutalBurn2(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BrutalBurn2), 6, 8);
 
 [ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 989, NameID = 13356)]
-public class M3NBruteBomber(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20));
+public class M3NBruteBomber(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(15));

@@ -5,21 +5,16 @@ class M1NBlackCatStates : StateMachineBuilder
     public M1NBlackCatStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<BlackCatCrossing3>()
-            .ActivateOnEnter<BlackCatCrossing4>()
+            .ActivateOnEnter<ElevateAndEvisverate>()
             .ActivateOnEnter<BloodyScratch>()
+            .ActivateOnEnter<Mouser>()
             .ActivateOnEnter<OneTwoPaw>()
             .ActivateOnEnter<BlackCatCrossing>()
             .ActivateOnEnter<BiscuitMaker>()
-            .ActivateOnEnter<Clawful2>()
-            .ActivateOnEnter<Shockwave2>()
-            .ActivateOnEnter<PredaceousPounce2>()
-            .ActivateOnEnter<PredaceousPounce3>()
-            .ActivateOnEnter<PredaceousPounce5>()
-            .ActivateOnEnter<PredaceousPounce6>()
+            .ActivateOnEnter<Clawful>()
+            .ActivateOnEnter<Shockwave>()
+            .ActivateOnEnter<PredaceousPounce>()
             .ActivateOnEnter<GrimalkinGale2>()
-            .ActivateOnEnter<LeapingOneTwoPaw>()
-            .ActivateOnEnter<LeapingBlackCatCrossing>()
             .ActivateOnEnter<Overshadow>();
     }
 }

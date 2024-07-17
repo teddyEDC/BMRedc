@@ -15,7 +15,7 @@ class ReplayDetailsWindow : UIWindow
     private DateTime _prevFrame;
     private float _playSpeed;
     private float _azimuth;
-    private bool _azimuthOverride;
+    private bool _azimuthOverride = true;
     private int _povSlot = PartyState.PlayerSlot;
     private readonly ConfigUI _config;
     private bool _showConfig;

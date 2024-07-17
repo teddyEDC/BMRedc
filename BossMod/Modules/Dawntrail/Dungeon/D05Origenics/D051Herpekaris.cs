@@ -79,7 +79,7 @@ class WrithingRiot(BossModule module) : Components.GenericAOEs(module)
 
     private void AddAOE(AOEShape shape, WPos position, Angle rotation, DateTime activation)
     {
-        _aoes.Add(new AOEInstance(shape, position, rotation, activation));
+        _aoes.Add(new(shape, position, rotation, activation));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
