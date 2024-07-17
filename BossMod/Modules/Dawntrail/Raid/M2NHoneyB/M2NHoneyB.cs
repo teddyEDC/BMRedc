@@ -32,4 +32,4 @@ class HeartStruck2(BossModule module) : Components.LocationTargetedAOEs(module, 
 class HeartStruck3(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HeartStruck3), 10);
 
 [ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 987, NameID = 12685)]
-public class M2NHoneyB(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20));
+public class M2NHoneyB(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(20));
