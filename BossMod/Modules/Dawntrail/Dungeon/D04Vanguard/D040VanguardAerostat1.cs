@@ -12,7 +12,7 @@ public enum AID : uint
     IncendiaryRing = 38452 // Aerostat2->self, 4.8s cast, range 3-12 donut
 }
 
-class IncendiaryRing(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.IncendiaryRing), new AOEShapeDonut(3, 10));
+class IncendiaryRing(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.IncendiaryRing), new AOEShapeDonut(3, 12));
 
 class D040VanguardAerostat1States : StateMachineBuilder
 {
