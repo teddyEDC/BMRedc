@@ -120,8 +120,8 @@ class Surge(BossModule module) : Components.Knockback(module)
     new(new(-156.5f, -152), new(-156.5f, -162)), new(new(-156.5f, -122), new(-156.5f, -132))];
     private static readonly List<SafeWall> walls2D1D = [new(new(-187.5f, -152), new(-187.5f, -162)), new(new(-187.5f, -122), new(-187.5f, -132)),
     new(new(-156.5f, -142), new(-156.5f, -152)), new(new(-156.5f, -132), new(-156.5f, -142))];
-    private static readonly List<SafeWall> walls2B1C = [new(new(-187.5f, -152), new(-187.5f, -162)), new(new(-187.5f, -122), new(-187.5f, -132)),
-    new(new(-156.5f, -142), new(-156.5f, -152)), new(new(-156.5f, -132), new(-156.5f, -142))];
+    private static readonly List<SafeWall> walls2B1C = [new(new(-187.5f, -152), new(-187.5f, -162)), new(new(-187.5f, -132), new(-187.5f, -142)),
+    new(new(-156.5f, -142), new(-156.5f, -152)), new(new(-156.5f, -122), new(-156.5f, -132))];
     private static readonly AOEShapeCone _shape = new(60, 90.Degrees());
 
     public override IEnumerable<Source> Sources(int slot, Actor actor) => _sources;
@@ -173,7 +173,7 @@ class Surge(BossModule module) : Components.Knockback(module)
         {
             var forbidden = new List<Func<WPos, float>>();
             foreach (var w in ActiveSafeWalls)
-                forbidden.Add(ShapeDistance.InvertedRect(new(Module.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? new WDir(-4, 0) : new(4, 0), 8, 0, 20));
+                forbidden.Add(ShapeDistance.InvertedRect(new(Module.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? new WDir(-4, 0) : new(4, 0), 10, 0, 20));
             hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation);
         }
     }

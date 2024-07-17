@@ -75,7 +75,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     public readonly List<(WPos, Angle)> Data = [];
     public DateTime Activation;
     private readonly List<Source> _sources = [];
-    public static readonly AOEShapeRect RectNS = new(HalfHeight, QuarterWidth);
+    private static readonly AOEShapeRect rectNS = new(HalfHeight, QuarterWidth);
     private static readonly AOEShapeRect rectEW = new(15, QuarterHeight);
     private static readonly Angle[] angles = [-0.003f.Degrees(), -180.Degrees(), -89.982f.Degrees(), 89.977f.Degrees()];
 
@@ -96,15 +96,15 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     {
         if (position.AlmostEqual(new(182.7f, 8.75f), 0.1f))
         {
-            AddSourceAndData(new WDir(QuarterWidth, -HalfHeight), RectNS, angles[0]);
-            AddSourceAndData(new WDir(-QuarterWidth, HalfHeight), RectNS, angles[1]);
+            AddSourceAndData(new WDir(QuarterWidth, -HalfHeight), rectNS, angles[0]);
+            AddSourceAndData(new WDir(-QuarterWidth, HalfHeight), rectNS, angles[1]);
             AddSource(new WDir(0, -QuarterHeight), rectEW, angles[2]);
             AddSource(new WDir(0, QuarterHeight), rectEW, angles[3]);
         }
         else if (position.AlmostEqual(new(182.5f, -8.75f), 0.1f))
         {
-            AddSourceAndData(new WDir(-QuarterWidth, -HalfHeight), RectNS, angles[0]);
-            AddSourceAndData(new WDir(QuarterWidth, HalfHeight), RectNS, angles[1]);
+            AddSourceAndData(new WDir(-QuarterWidth, -HalfHeight), rectNS, angles[0]);
+            AddSourceAndData(new WDir(QuarterWidth, HalfHeight), rectNS, angles[1]);
             AddSource(new WDir(0, -QuarterHeight), rectEW, angles[3]);
             AddSource(new WDir(0, QuarterHeight), rectEW, angles[2]);
         }
@@ -135,7 +135,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     {
         if (Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
-            var forbiddenZones = Data.Select(w => ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight, 0, QuarterWidth)).ToList();
+            var forbiddenZones = Data.Select(w => ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight - 0.5f, 0, QuarterWidth)).ToList();
             hints.AddForbiddenZone(p => forbiddenZones.Max(f => f(p)), Activation);
         }
     }
@@ -148,6 +148,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
     private const string Risk2Hint = "Walk into safespot for knockback!";
     private const string StayHint = "Wait inside safespot for knockback!";
     private static readonly AOEShapeCone cone = new(26, 90.Degrees());
+    private static readonly AOEShapeRect rect = new(19, 7.5f);
     private AOEInstance _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
@@ -160,12 +161,12 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
             if (componentActive)
             {
                 var safezone = component.Data.FirstOrDefault(x => _aoe.Rotation.AlmostEqual(x.Item2 + 180.Degrees(), Helpers.RadianConversion));
-                yield return new(ExtrasensoryExpulsion.RectNS, safezone.Item1, safezone.Item2, component.Activation, ArenaColor.SafeFromAOE, false);
+                yield return new(rect, safezone.Item1, safezone.Item2, component.Activation, ArenaColor.SafeFromAOE, false);
             }
         }
         else if (componentActive)
             foreach (var c in component.Data)
-                yield return new(ExtrasensoryExpulsion.RectNS, c.Item1, c.Item2, component.Activation, ArenaColor.SafeFromAOE, false);
+                yield return new(rect, c.Item1, c.Item2, component.Activation, ArenaColor.SafeFromAOE, false);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -193,7 +194,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         base.AddHints(slot, actor, hints);
-        var activeSafespot = ActiveAOEs(slot, actor).Where(c => c.Shape == ExtrasensoryExpulsion.RectNS).ToList();
+        var activeSafespot = ActiveAOEs(slot, actor).Where(c => c.Shape == rect).ToList();
         if (activeSafespot.Count != 0)
         {
             if (!activeSafespot.Any(c => c.Check(actor.Position)))
