@@ -33,8 +33,8 @@ public enum AID : uint
 
     Impact = 39250, // Helper->self, no cast, range 10 width 10 rect
 
-    LeapingBlackCatCrossingVisual1 = 37673, // Boss->self, 7.0s cast, single-target, cardinals first
-    LeapingBlackCatCrossingVisual2 = 38928, // Boss->self, 7.0s cast, single-target, intercardinals first
+    LeapingBlackCatCrossingVisual1 = 37673, // Boss->self, 7.0s cast, single-target
+    LeapingBlackCatCrossingVisual2 = 38928, // Boss->self, 7.0s cast, single-target
     LeapingBlackCatCrossingVisual3 = 37674, // Boss->self, no cast, single-target
     LeapingBlackCatCrossingVisual4 = 37675, // Boss->self, no cast, single-target
     LeapingBlackCatCrossingFirst = 37676, // Helper->self, 1.0s cast, range 60 45-degree cone
@@ -94,11 +94,8 @@ public enum AID : uint
 
 public enum SID : uint
 {
-    SustainedDamage = 2935, // Helper->player, extra=0x0
-    UnknownStatus1 = 2056, // none->Boss, extra=0x2CB/0x307
-    UnknownStatus2 = 2193, // none->Boss, extra=0x2CC
-    VulnerabilityUp = 1789, // Helper->player, extra=0x1
-    Stun = 2656, // Boss/CopyCat->player, extra=0x0
+    BlackCatCrossing1 = 2056, // none->Boss, extra=0x2CB/0x307 -> 0x2CB attack does intercardinals first, 0x307 used in Mouser mechanic
+    BlackCatCrossing2 = 2193, // none->Boss, extra=0x2CC -> attack does cardinals first
 }
 
 public enum IconID : uint

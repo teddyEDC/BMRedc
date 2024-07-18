@@ -8,4 +8,4 @@ class GrimalkinGale2(BossModule module) : Components.SpreadFromCastTargets(modul
 class Overshadow(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.OverShadowMarker), ActionID.MakeSpell(AID.Overshadow), 5.3f, 60, 2.5f);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 985, NameID = 12686)]
-public class M1NBlackCat(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20));
+public class M1NBlackCat(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaChanges.ArenaCenter, ArenaChanges.DefaultBounds);
