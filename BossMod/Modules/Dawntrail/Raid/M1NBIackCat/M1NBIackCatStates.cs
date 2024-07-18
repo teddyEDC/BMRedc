@@ -5,7 +5,9 @@ class M1NBlackCatStates : StateMachineBuilder
     public M1NBlackCatStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<ArenaChanges>()
             .ActivateOnEnter<ElevateAndEvisverate>()
+            .ActivateOnEnter<ElevateAndEvisverateHint>()
             .ActivateOnEnter<BloodyScratch>()
             .ActivateOnEnter<Mouser>()
             .ActivateOnEnter<OneTwoPaw>()

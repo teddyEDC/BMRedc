@@ -28,13 +28,21 @@ public class BlackCatCrossing(BossModule module) : Components.GenericAOEs(module
                 _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
                 _aoes.SortBy(x => x.Activation);
                 break;
-            case AID.LeapingBlackCatCrossingVisual1:
-                _currentPattern = Pattern.Cardinals;
-                break;
-            case AID.LeapingBlackCatCrossingVisual2:
-                _currentPattern = Pattern.Intercardinals;
-                break;
         }
+    }
+
+    public override void OnStatusGain(Actor actor, ActorStatus status)
+    {
+        if (status.Extra != 0x307 && _currentPattern == Pattern.None)
+            switch ((SID)status.ID)
+            {
+                case SID.BlackCatCrossing1:
+                    _currentPattern = Pattern.Cardinals;
+                    break;
+                case SID.BlackCatCrossing2:
+                    _currentPattern = Pattern.Intercardinals;
+                    break;
+            }
     }
 
     public override void OnActorCreated(Actor actor)
@@ -43,7 +51,6 @@ public class BlackCatCrossing(BossModule module) : Components.GenericAOEs(module
         {
             AddLeapingAOEs(actor, _currentPattern == Pattern.Cardinals ? anglesCardinals : anglesIntercardinals, 9);
             AddLeapingAOEs(actor, _currentPattern == Pattern.Cardinals ? anglesIntercardinals : anglesCardinals, 11);
-            _currentPattern = Pattern.None;
         }
     }
 
@@ -57,6 +64,7 @@ public class BlackCatCrossing(BossModule module) : Components.GenericAOEs(module
                 case AID.LeapingBlackCatCrossingFirst:
                 case AID.LeapingBlackCatCrossingRest:
                     _aoes.RemoveAt(0);
+                    _currentPattern = Pattern.None;
                     break;
             }
     }

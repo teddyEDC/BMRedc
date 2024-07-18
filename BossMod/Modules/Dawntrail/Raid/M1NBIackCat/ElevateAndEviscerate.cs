@@ -1,14 +1,14 @@
 namespace BossMod.Dawntrail.Raid.M1NBlackCat;
 
-class ElevateAndEvisverate(BossModule module) : Components.Knockback(module)
+class ElevateAndEvisverate(BossModule module) : Components.Knockback(module, stopAfterWall: true)
 {
     private DateTime activation;
-    private (Actor source, Actor target) _tether;
+    public (Actor source, Actor target) Tether;
 
     public override IEnumerable<Source> Sources(int slot, Actor actor)
     {
-        if (_tether != default && actor == _tether.target)
-            yield return new(_tether.source.Position, 10, activation);
+        if (Tether != default && actor == Tether.target)
+            yield return new(Tether.source.Position, 10, activation);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -20,15 +20,33 @@ class ElevateAndEvisverate(BossModule module) : Components.Knockback(module)
     public override void OnTethered(Actor source, ActorTetherInfo tether)
     {
         if (tether.ID is (uint)TetherID.ElevateAndEviscerateGood or (uint)TetherID.ElevateAndEviscerateBad)
-            _tether = (source, WorldState.Actors.Find(tether.Target)!);
+            Tether = (source, WorldState.Actors.Find(tether.Target)!);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ElevateAndEviscerate)
         {
-            _tether = default;
+            Tether = default;
             ++NumCasts;
+        }
+    }
+
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<ElevateAndEvisverateHint>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
+}
+
+class ElevateAndEvisverateHint(BossModule module) : Components.GenericAOEs(module)
+{
+    private static readonly AOEShapeRect rect = new(5, 5, 5);
+
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        var tether = Module.FindComponent<ElevateAndEvisverate>()!.Tether;
+        if (tether != default && actor == tether.target)
+        {
+            var tiles = Module.FindComponent<ArenaChanges>()!.DamagedTiles;
+            foreach (var t in tiles.OfType<Square>())
+                yield return new(rect, t.Center);
         }
     }
 }
