@@ -6,8 +6,8 @@ class M1NBlackCatStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<ArenaChanges>()
-            .ActivateOnEnter<ElevateAndEvisverate>()
-            .ActivateOnEnter<ElevateAndEvisverateHint>()
+            .ActivateOnEnter<ElevateAndEviscerate>()
+            .ActivateOnEnter<ElevateAndEviscerateHint>()
             .ActivateOnEnter<BloodyScratch>()
             .ActivateOnEnter<Mouser>()
             .ActivateOnEnter<OneTwoPaw>()
