@@ -110,7 +110,7 @@ class Apokalypsis(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ApokalypsisFirst)
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -139,7 +139,7 @@ class ThereionCharge(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.TherionCharge)
-            _aoe = new(_rect, NumCasts == 0 ? Border.positions[8] : Border.positions[9], default, spell.NPCFinishAt);
+            _aoe = new(_rect, NumCasts == 0 ? Border.positions[8] : Border.positions[9], default, Module.CastFinishAt(spell));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -161,7 +161,7 @@ class DeathlyRayThereion(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.DeathlyRayVisualThereion1)
-            _aoe = new(new AOEShapeRect(60, 3), caster.Position, spell.Rotation, spell.NPCFinishAt);
+            _aoe = new(new AOEShapeRect(60, 3), caster.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

@@ -11,8 +11,8 @@ class HallowedBolt(BossModule module) : Components.GenericAOEs(module, ActionID.
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersHallowedBoltAOE.Count > 3
-            ? _castersHallowedBoltAOE.Select(c => new AOEInstance(_shapeHallowedBoltAOE, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersHallowedBoltDonut.Select(c => new AOEInstance(_shapeHallowedBoltDonut, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersHallowedBoltAOE.Select(c => new AOEInstance(_shapeHallowedBoltAOE, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersHallowedBoltDonut.Select(c => new AOEInstance(_shapeHallowedBoltDonut, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

@@ -54,7 +54,7 @@ class HeavingHaymakerArenaChange(BossModule module) : Components.GenericAOEs(mod
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.HeavingHaymaker && Module.Arena.Bounds == D023Gurfurlur.StartingBounds)
-            _aoe = new(square, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.6f));
+            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.6f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -121,7 +121,7 @@ class GreatFlood(BossModule module) : Components.KnockbackFromCastTarget(module,
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            Data = (caster.Position, caster.Rotation, spell.NPCFinishAt.AddSeconds(1));
+            Data = (caster.Position, caster.Rotation, Module.CastFinishAt(spell, 1));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -166,7 +166,7 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
     }
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var newAOE = new AOEInstance(rect, caster.Position, spell.Rotation, spell.NPCFinishAt);
+        var newAOE = new AOEInstance(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
         switch ((AID)spell.Action.ID)
         {
             case AID.Allfire1:
@@ -229,7 +229,7 @@ class Windswrath1(BossModule module) : Components.KnockbackFromCastTarget(module
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            activation = spell.NPCFinishAt.AddSeconds(1);
+            activation = Module.CastFinishAt(spell, 1);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -249,7 +249,7 @@ class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            activation = spell.NPCFinishAt.AddSeconds(1);
+            activation = Module.CastFinishAt(spell, 1);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

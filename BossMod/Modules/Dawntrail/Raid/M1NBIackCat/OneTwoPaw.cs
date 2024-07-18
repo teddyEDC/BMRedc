@@ -35,7 +35,7 @@ class OneTwoPaw(BossModule module) : Components.GenericAOEs(module)
             case AID.OneTwoPaw2:
             case AID.OneTwoPaw3:
             case AID.OneTwoPaw4:
-                _aoes.Add(new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt));
+                _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
                 _aoes.SortBy(x => x.Activation);
                 break;
             case AID.LeapingOneTwoPawVisual1:

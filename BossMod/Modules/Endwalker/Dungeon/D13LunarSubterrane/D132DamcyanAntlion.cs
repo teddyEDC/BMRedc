@@ -37,8 +37,8 @@ class SandblastVoidzone(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.Sandblast && Module.Arena.Bounds == D132DamcyanAntlion.StartingBounds)
         {
-            _aoes.Add(new(rect, Module.Center + new WDir(0, -22.5f), 90.Degrees(), spell.NPCFinishAt));
-            _aoes.Add(new(rect, Module.Center + new WDir(0, 22.5f), 90.Degrees(), spell.NPCFinishAt));
+            _aoes.Add(new(rect, Module.Center + new WDir(0, -22.5f), 90.Degrees(), Module.CastFinishAt(spell)));
+            _aoes.Add(new(rect, Module.Center + new WDir(0, 22.5f), 90.Degrees(), Module.CastFinishAt(spell)));
         }
     }
     public override void OnEventEnvControl(byte index, uint state)

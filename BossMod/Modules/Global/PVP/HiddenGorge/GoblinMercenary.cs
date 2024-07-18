@@ -35,7 +35,7 @@ class GobspinSwipe(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var activation = spell.NPCFinishAt.AddSeconds(4);
+        var activation = Module.CastFinishAt(spell, 4);
         if ((AID)spell.Action.ID == AID.GobspinWhooshdropsTelegraph)
             _aoe = new(circle, Module.PrimaryActor.Position, default, activation);
         if ((AID)spell.Action.ID == AID.GobswipeConklopsTelegraph)
@@ -59,7 +59,7 @@ class Knockbacks(BossModule module) : Components.Knockback(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var activation = spell.NPCFinishAt.AddSeconds(4);
+        var activation = Module.CastFinishAt(spell, 4);
         if ((AID)spell.Action.ID == AID.GobspinWhooshdropsTelegraph)
             _knockback = new(Module.PrimaryActor.Position, 15, activation, circle);
         if ((AID)spell.Action.ID == AID.GobswipeConklopsTelegraph)

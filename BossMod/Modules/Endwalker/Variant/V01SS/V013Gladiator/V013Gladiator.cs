@@ -25,9 +25,9 @@ class RingOfMight1(BossModule module) : Components.GenericAOEs(module, ActionID.
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_castersRingOfMightOut.Count > 0)
-            return _castersRingOfMightOut.Select(c => new AOEInstance(_shapeRingOfMightOut, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersRingOfMightOut.Select(c => new AOEInstance(_shapeRingOfMightOut, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
         else
-            return _castersRingOfMightIn.Select(c => new AOEInstance(_shapeRingOfMightIn, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersRingOfMightIn.Select(c => new AOEInstance(_shapeRingOfMightIn, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -59,9 +59,9 @@ class RingOfMight2(BossModule module) : Components.GenericAOEs(module, ActionID.
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_castersRingOfMightOut.Count > 0)
-            return _castersRingOfMightOut.Select(c => new AOEInstance(_shapeRingOfMightOut, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersRingOfMightOut.Select(c => new AOEInstance(_shapeRingOfMightOut, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
         else
-            return _castersRingOfMightIn.Select(c => new AOEInstance(_shapeRingOfMightIn, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersRingOfMightIn.Select(c => new AOEInstance(_shapeRingOfMightIn, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -93,8 +93,8 @@ class RingOfMight3(BossModule module) : Components.GenericAOEs(module, ActionID.
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersRingOfMightOut.Count > 0
-            ? _castersRingOfMightOut.Select(c => new AOEInstance(_shapeRingOfMightOut, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersRingOfMightIn.Select(c => new AOEInstance(_shapeRingOfMightIn, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersRingOfMightOut.Select(c => new AOEInstance(_shapeRingOfMightOut, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersRingOfMightIn.Select(c => new AOEInstance(_shapeRingOfMightIn, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -126,8 +126,8 @@ class RushOfMight(BossModule module) : Components.GenericAOEs(module, ActionID.M
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersRushOfMightFront.Count > 0
-            ? _castersRushOfMightFront.Select(c => new AOEInstance(_shapeRushOfMightFront, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersRushOfMightBack.Select(c => new AOEInstance(_shapeRushOfMightBack, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersRushOfMightFront.Select(c => new AOEInstance(_shapeRushOfMightFront, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersRushOfMightBack.Select(c => new AOEInstance(_shapeRushOfMightBack, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -183,7 +183,7 @@ class SilverFlame1(BossModule module) : Components.GenericAOEs(module)
             _source = caster;
             _startingRotation = spell.Rotation;
             _increment = _startingRotation.Rad > 0 ? 7.Degrees() : -7.Degrees();
-            _startingActivation = spell.NPCFinishAt;
+            _startingActivation = Module.CastFinishAt(spell);
         }
     }
 
@@ -222,7 +222,7 @@ class SilverFlame2(BossModule module) : Components.GenericAOEs(module)
             _source = caster;
             _startingRotation = spell.Rotation;
             _increment = _startingRotation.Rad > 0 ? 7.Degrees() : -7.Degrees();
-            _startingActivation = spell.NPCFinishAt;
+            _startingActivation = Module.CastFinishAt(spell);
         }
     }
 

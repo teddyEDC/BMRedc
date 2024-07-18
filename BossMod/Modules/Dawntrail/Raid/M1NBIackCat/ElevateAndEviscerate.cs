@@ -14,7 +14,7 @@ class ElevateAndEvisverate(BossModule module) : Components.Knockback(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ElevateAndEviscerate)
-            activation = spell.NPCFinishAt;
+            activation = Module.CastFinishAt(spell);
     }
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)

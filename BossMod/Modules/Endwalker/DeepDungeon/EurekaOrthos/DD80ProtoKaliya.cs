@@ -127,7 +127,7 @@ class Barofield(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (activation == default && (AID)spell.Action.ID is AID.Barofield or AID.NanosporeJet)
-            activation = spell.NPCFinishAt.AddSeconds(0.7f);
+            activation = Module.CastFinishAt(spell, 0.7f);
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
@@ -149,15 +149,15 @@ class NerveGasRingAndAutoCannons(BossModule module) : Components.GenericAOEs(mod
     {
         if ((AID)spell.Action.ID == AID.NerveGasRing)
         {
-            _aoes.Add(new(donut, Module.Center, default, spell.NPCFinishAt, Risky: false));
-            _aoes.Add(new(cross, Module.Center, default, spell.NPCFinishAt));
+            _aoes.Add(new(donut, Module.Center, default, Module.CastFinishAt(spell), Risky: false));
+            _aoes.Add(new(cross, Module.Center, default, Module.CastFinishAt(spell)));
         }
         if (_aoes.Count == 0 && (AID)spell.Action.ID == AID.AutoCannons)
-            _aoes.Add(new(cross, Module.Center, default, spell.NPCFinishAt));
+            _aoes.Add(new(cross, Module.Center, default, Module.CastFinishAt(spell)));
         else if (_aoes.Count == 2 && (AID)spell.Action.ID == AID.AutoCannons)
         {
             _aoes.RemoveAt(1);
-            _aoes.Add(new(cross, Module.Center, default, spell.NPCFinishAt));
+            _aoes.Add(new(cross, Module.Center, default, Module.CastFinishAt(spell)));
         }
     }
 

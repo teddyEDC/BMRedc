@@ -102,11 +102,11 @@ class DualPyresSteelfoldStrike(BossModule module) : Components.GenericAOEs(modul
     {
         if ((AID)spell.Action.ID is AID.DualPyres1 or AID.DualPyres2 or AID.DualPyres3 or AID.DualPyres4)
         {
-            _aoes.Add(new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
             _aoes.SortBy(x => x.Activation);
         }
         else if ((AID)spell.Action.ID == AID.SteelfoldStrike)
-            _aoes.Add(new(cross, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -171,7 +171,7 @@ class NobleTrail(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID == AID.NobleTrail)
         {
             var dir = spell.LocXZ - caster.Position;
-            _aoe = new(new AOEShapeRect(dir.Length(), 10), caster.Position, Angle.FromDirection(dir), spell.NPCFinishAt);
+            _aoe = new(new AOEShapeRect(dir.Length(), 10), caster.Position, Angle.FromDirection(dir), Module.CastFinishAt(spell));
         }
     }
 

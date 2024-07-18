@@ -61,7 +61,7 @@ class BattleCryArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.BattleCry2)
-            _aoe = new(donut, new(425, -440), default, spell.NPCFinishAt.AddSeconds(0.8f));
+            _aoe = new(donut, new(425, -440), default, Module.CastFinishAt(spell, 0.8f));
     }
 }
 

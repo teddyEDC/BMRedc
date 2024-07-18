@@ -66,7 +66,7 @@ class GogoBlizzardIII(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.GogoFireIII)
-            _activation = spell.NPCFinishAt.AddSeconds(5.1f);
+            _activation = Module.CastFinishAt(spell, 5.1f);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

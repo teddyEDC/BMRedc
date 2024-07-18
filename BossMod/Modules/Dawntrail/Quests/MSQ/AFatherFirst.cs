@@ -80,11 +80,11 @@ class DualBlowsSteeledStrike(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID is AID.DualBlows1 or AID.DualBlows2 or AID.DualBlows3 or AID.DualBlows4)
         {
-            _aoes.Add(new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
             _aoes.SortBy(x => x.Activation);
         }
         else if ((AID)spell.Action.ID is AID.SteeledStrike1 or AID.SteeledStrike2)
-            _aoes.Add(new(cross, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -113,9 +113,9 @@ class BurningSun(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.BurningSunTelegraph1)
-            _aoes.Add(new(circleSmall, spell.LocXZ, default, spell.NPCFinishAt.AddSeconds(4)));
+            _aoes.Add(new(circleSmall, spell.LocXZ, default, Module.CastFinishAt(spell, 4)));
         else if ((AID)spell.Action.ID == AID.BurningSunTelegraph2)
-            _aoes.Add(new(circleBig, spell.LocXZ, default, spell.NPCFinishAt.AddSeconds(4)));
+            _aoes.Add(new(circleBig, spell.LocXZ, default, Module.CastFinishAt(spell, 4)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -140,7 +140,7 @@ class BrawlEnder(BossModule module) : Components.Knockback(module, stopAtWall: t
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.BrawlEnder)
-            activation = spell.NPCFinishAt.AddSeconds(0.9f);
+            activation = Module.CastFinishAt(spell, 0.9f);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -155,7 +155,7 @@ class TheThrill(BossModule module) : Components.GenericTowers(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.TheThrill1 or AID.TheThrill2)
-            Towers.Add(new(caster.Position, 3, activation: spell.NPCFinishAt));
+            Towers.Add(new(caster.Position, 3, activation: Module.CastFinishAt(spell)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

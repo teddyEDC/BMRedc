@@ -29,8 +29,8 @@ class ReverseTimeEruption(BossModule module) : Components.GenericAOEs(module, Ac
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersEruptionAOEFirst.Count > 0
-            ? _castersEruptionAOEFirst.Select(c => new AOEInstance(_shapeEruptionAOEFirst, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersEruptionAOESecond.Select(c => new AOEInstance(_shapeEruptionAOESecond, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersEruptionAOEFirst.Select(c => new AOEInstance(_shapeEruptionAOEFirst, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersEruptionAOESecond.Select(c => new AOEInstance(_shapeEruptionAOESecond, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -62,9 +62,9 @@ class TimeEruption(BossModule module) : Components.GenericAOEs(module, ActionID.
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_castersEruptionAOEFirst.Count > 0)
-            return _castersEruptionAOEFirst.Select(c => new AOEInstance(_shapeEruptionAOEFirst, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersEruptionAOEFirst.Select(c => new AOEInstance(_shapeEruptionAOEFirst, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
         else
-            return _castersEruptionAOESecond.Select(c => new AOEInstance(_shapeEruptionAOESecond, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersEruptionAOESecond.Select(c => new AOEInstance(_shapeEruptionAOESecond, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

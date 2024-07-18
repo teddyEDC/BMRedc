@@ -42,8 +42,8 @@ class RokujoRevel(BossModule module) : Components.GenericAOEs(module)
         switch ((AID)spell.Action.ID)
         {
             case AID.OnceOnRokujoAOE:
-                _pendingLines.Add((spell.Rotation, spell.NPCFinishAt));
-                AddHitClouds(_clouds.InShape(_shapeLine, caster.Position, spell.Rotation), spell.NPCFinishAt, ShapeCircle?.Radius ?? 0);
+                _pendingLines.Add((spell.Rotation, Module.CastFinishAt(spell)));
+                AddHitClouds(_clouds.InShape(_shapeLine, caster.Position, spell.Rotation), Module.CastFinishAt(spell), ShapeCircle?.Radius ?? 0);
                 _pendingCircles.SortBy(p => p.activation);
                 break;
             case AID.LeapingLevin1:
@@ -53,10 +53,10 @@ class RokujoRevel(BossModule module) : Components.GenericAOEs(module)
                 if (index < 0)
                 {
                     ReportError($"Failed to predict levin from {caster.InstanceID:X}");
-                    _pendingCircles.Add((caster.Position, spell.NPCFinishAt));
+                    _pendingCircles.Add((caster.Position, Module.CastFinishAt(spell)));
                 }
-                else if (Math.Abs((_pendingCircles[index].activation - spell.NPCFinishAt).TotalSeconds) > 1)
-                    ReportError($"Mispredicted levin from {caster.InstanceID:X} by {(_pendingCircles[index].activation - spell.NPCFinishAt).TotalSeconds}");
+                else if (Math.Abs((_pendingCircles[index].activation - Module.CastFinishAt(spell)).TotalSeconds) > 1)
+                    ReportError($"Mispredicted levin from {caster.InstanceID:X} by {(_pendingCircles[index].activation - Module.CastFinishAt(spell)).TotalSeconds}");
                 break;
         }
     }

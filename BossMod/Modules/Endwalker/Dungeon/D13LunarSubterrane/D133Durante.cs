@@ -47,7 +47,7 @@ class OldMagicVoidzone(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.OldMagic && Module.Arena.Bounds == D133Durante.StartingBounds)
-            _aoe = new(donut, Module.Center, default, spell.NPCFinishAt);
+            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell));
     }
 
     public override void OnEventEnvControl(byte index, uint state)

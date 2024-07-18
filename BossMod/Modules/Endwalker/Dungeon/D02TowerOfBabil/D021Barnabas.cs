@@ -58,7 +58,7 @@ class ArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.GroundAndPound1 or AID.GroundAndPound2 && Module.Arena.Bounds == D021Barnabas.StartingBounds)
-            _aoe = new(donut, Module.Center, default, spell.NPCFinishAt.AddSeconds(6.1f));
+            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 6.1f));
     }
 }
 

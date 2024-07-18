@@ -23,11 +23,11 @@ class StringRock(BossModule module) : Components.GenericAOEs(module, ActionID.Ma
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_castersRockFirst.Count > 0)
-            return _castersRockFirst.Select(c => new AOEInstance(_shapeRockFirst, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersRockFirst.Select(c => new AOEInstance(_shapeRockFirst, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
         else if (_castersRockSecond.Count > 0)
-            return _castersRockSecond.Select(c => new AOEInstance(_shapeRockSecond, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersRockSecond.Select(c => new AOEInstance(_shapeRockSecond, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
         else
-            return _castersRockThird.Select(c => new AOEInstance(_shapeRockThird, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersRockThird.Select(c => new AOEInstance(_shapeRockThird, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

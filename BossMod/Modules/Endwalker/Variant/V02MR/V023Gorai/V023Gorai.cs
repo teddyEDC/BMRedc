@@ -16,8 +16,8 @@ class ImpurePurgation(BossModule module) : Components.GenericAOEs(module, Action
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersPurgationFirst.Count > 0
-            ? _castersPurgationFirst.Select(c => new AOEInstance(_shapePurgationFirst, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersPurgationNext.Select(c => new AOEInstance(_shapePurgationNext, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersPurgationFirst.Select(c => new AOEInstance(_shapePurgationFirst, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersPurgationNext.Select(c => new AOEInstance(_shapePurgationNext, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -51,10 +51,10 @@ class StringSnap(BossModule module) : Components.GenericAOEs(module, ActionID.Ma
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersSnapFirst.Count > 0
-            ? _castersSnapFirst.Select(c => new AOEInstance(_shapeSnapFirst, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
+            ? _castersSnapFirst.Select(c => new AOEInstance(_shapeSnapFirst, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
             : _castersSnapSecond.Count > 0
-            ? _castersSnapSecond.Select(c => new AOEInstance(_shapeSnapSecond, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersSnapThird.Select(c => new AOEInstance(_shapeSnapThird, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersSnapSecond.Select(c => new AOEInstance(_shapeSnapSecond, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersSnapThird.Select(c => new AOEInstance(_shapeSnapThird, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -89,23 +89,24 @@ class FlameAndSulphur(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
+        var activation = Module.CastFinishAt(spell, 3.1f);
         switch ((AID)spell.Action.ID)
         {
             case AID.BrazenBalladSplitting:
                 foreach (var a in Module.Enemies(OID.FlameAndSulphurFlame))
-                    _aoes.Add(new(_shapeFlameExpand, a.Position, a.Rotation, spell.NPCFinishAt.AddSeconds(3.1f)));
+                    _aoes.Add(new(_shapeFlameExpand, a.Position, a.Rotation, activation));
                 foreach (var a in Module.Enemies(OID.FlameAndSulphurRock))
-                    _aoes.Add(new(_shapeRockExpand, a.Position, a.Rotation, spell.NPCFinishAt.AddSeconds(3.1f)));
+                    _aoes.Add(new(_shapeRockExpand, a.Position, a.Rotation, activation));
                 break;
             case AID.BrazenBalladExpanding:
                 foreach (var a in Module.Enemies(OID.FlameAndSulphurFlame))
                 {
                     var offset = a.Rotation.ToDirection().OrthoL() * 7.5f;
-                    _aoes.Add(new(_shapeFlameSplit, a.Position + offset, a.Rotation, spell.NPCFinishAt.AddSeconds(3.1f)));
-                    _aoes.Add(new(_shapeFlameSplit, a.Position - offset, a.Rotation, spell.NPCFinishAt.AddSeconds(3.1f)));
+                    _aoes.Add(new(_shapeFlameSplit, a.Position + offset, a.Rotation, activation));
+                    _aoes.Add(new(_shapeFlameSplit, a.Position - offset, a.Rotation, activation));
                 }
                 foreach (var a in Module.Enemies(OID.FlameAndSulphurRock))
-                    _aoes.Add(new(_shapeRockSplit, a.Position, a.Rotation, spell.NPCFinishAt.AddSeconds(3.1f)));
+                    _aoes.Add(new(_shapeRockSplit, a.Position, a.Rotation, activation));
                 break;
         }
     }
@@ -211,9 +212,9 @@ class WorldlyPursuit(BossModule module) : Components.GenericAOEs(module, ActionI
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_castersPursuitFirst.Count > 0)
-            return _castersPursuitFirst.Select(c => new AOEInstance(_shapePursuitFirst, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersPursuitFirst.Select(c => new AOEInstance(_shapePursuitFirst, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
         else
-            return _castersPursuitRest.Select(c => new AOEInstance(_shapePursuitRest, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersPursuitRest.Select(c => new AOEInstance(_shapePursuitRest, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

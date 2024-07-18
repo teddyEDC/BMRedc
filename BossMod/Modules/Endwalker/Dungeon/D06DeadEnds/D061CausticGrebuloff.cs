@@ -113,7 +113,7 @@ class NecroticFluidMist(BossModule module) : Components.Exaflare(module, 6)
         {
             var numExplosions = GetNumExplosions(caster);
             var advance = 6 * (CurrentWind == Pattern.Southward ? 0.Degrees().ToDirection() : 180.Degrees().ToDirection());
-            Lines.Add(new() { Next = caster.Position, Advance = advance, NextExplosion = spell.NPCFinishAt, TimeToMove = 2, ExplosionsLeft = numExplosions, MaxShownExplosions = 5 });
+            Lines.Add(new() { Next = caster.Position, Advance = advance, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = numExplosions, MaxShownExplosions = 5 });
         }
     }
 
@@ -200,11 +200,11 @@ class WaveOfNausea(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.WaveOfNausea)
         {
-            _aoes.Add(new(donut, caster.Position, default, spell.NPCFinishAt));
+            _aoes.Add(new(donut, caster.Position, default, Module.CastFinishAt(spell)));
             if (Module.FindComponent<NecroticFluidMist>()!.CurrentWind == NecroticFluidMist.Pattern.Southward)
-                _aoes.Add(new(new AOEShapeCustom([new ConeHA(caster.Position, 6, 180.Degrees(), 90.Degrees())], differenceShapes, true), caster.Position, default, spell.NPCFinishAt, ArenaColor.SafeFromAOE));
+                _aoes.Add(new(new AOEShapeCustom([new ConeHA(caster.Position, 6, 180.Degrees(), 90.Degrees())], differenceShapes, true), caster.Position, default, Module.CastFinishAt(spell), ArenaColor.SafeFromAOE));
             else if (Module.FindComponent<NecroticFluidMist>()!.CurrentWind == NecroticFluidMist.Pattern.Northward)
-                _aoes.Add(new(new AOEShapeCustom([new ConeHA(caster.Position, 6, 0.Degrees(), 90.Degrees())], differenceShapes, true), caster.Position, default, spell.NPCFinishAt, ArenaColor.SafeFromAOE));
+                _aoes.Add(new(new AOEShapeCustom([new ConeHA(caster.Position, 6, 0.Degrees(), 90.Degrees())], differenceShapes, true), caster.Position, default, Module.CastFinishAt(spell), ArenaColor.SafeFromAOE));
         }
     }
 

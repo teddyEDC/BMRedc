@@ -28,9 +28,9 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Hieroglyphika)
-            _aoe = new(transitionSquare, Center, default, spell.NPCFinishAt);
+            _aoe = new(transitionSquare, Center, default, Module.CastFinishAt(spell));
         if ((AID)spell.Action.ID == AID.Whorl)
-            _aoe = new(transitionSmallerBounds, Center, default, spell.NPCFinishAt);
+            _aoe = new(transitionSmallerBounds, Center, default, Module.CastFinishAt(spell));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

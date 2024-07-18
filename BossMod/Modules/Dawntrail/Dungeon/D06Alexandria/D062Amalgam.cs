@@ -73,9 +73,9 @@ class TernaryCharge(BossModule module) : Components.GenericAOEs(module, ActionID
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_castersTernaryChargeCenter.Count > 0)
-            return _castersTernaryChargeCenter.Select(c => new AOEInstance(_shapeTernaryChargeCenter, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersTernaryChargeCenter.Select(c => new AOEInstance(_shapeTernaryChargeCenter, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
         else
-            return _castersTernaryChargeMid.Select(c => new AOEInstance(_shapeTernaryChargeMid, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            return _castersTernaryChargeMid.Select(c => new AOEInstance(_shapeTernaryChargeMid, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

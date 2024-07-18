@@ -83,7 +83,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Electrowave && Module.Arena.Bounds == StartingBounds)
-            _aoe = new AOEInstance(square, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.7f));
+            _aoe = new AOEInstance(square, Module.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -130,7 +130,7 @@ class Surge(BossModule module) : Components.Knockback(module)
     {
         if ((AID)spell.Action.ID == AID.Surge)
         {
-            activation = spell.NPCFinishAt.AddSeconds(0.8f);
+            activation = Module.CastFinishAt(spell, 0.8f);
             _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + 90.Degrees(), Kind.DirForward, default, ActiveSafeWalls));
             _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation - 90.Degrees(), Kind.DirForward, default, ActiveSafeWalls));
         }

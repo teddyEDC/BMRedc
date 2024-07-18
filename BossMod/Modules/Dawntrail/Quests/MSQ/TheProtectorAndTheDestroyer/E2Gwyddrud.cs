@@ -71,7 +71,7 @@ class VioletVoltage(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.VioletVoltageTelegraph)
-            _aoes.Add(new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt.AddSeconds(6)));
+            _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell, 6)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -91,7 +91,7 @@ class RoaringBoltKB(BossModule module) : Components.KnockbackFromCastTarget(modu
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            Activation = spell.NPCFinishAt.AddSeconds(1.2f);
+            Activation = Module.CastFinishAt(spell, 1.2f);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -110,7 +110,7 @@ class RoaringBoltKB(BossModule module) : Components.KnockbackFromCastTarget(modu
 
 class RollingThunder(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RollingThunder2), new AOEShapeCone(20, 22.5f.Degrees()), 6)
 {
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => ActiveCasters.Select((c, i) => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, c.CastInfo.NPCFinishAt, i < 2 ? ArenaColor.Danger : ArenaColor.AOE));
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => ActiveCasters.Select((c, i) => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo), i < 2 ? ArenaColor.Danger : ArenaColor.AOE));
 }
 
 class RoaringBolt(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.RoaringBolt), 6);

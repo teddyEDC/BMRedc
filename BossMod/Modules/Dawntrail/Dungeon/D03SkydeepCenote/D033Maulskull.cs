@@ -94,7 +94,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID is AID.Stonecarver1 or AID.Stonecarver2 or AID.Stonecarver3 or AID.Stonecarver4)
         {
-            _aoes.Add(new(rect, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
             _aoes.SortBy(x => x.Activation);
         }
     }
@@ -121,7 +121,7 @@ class Shatter(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        var activation = spell.NPCFinishAt.AddSeconds(15.1f);
+        var activation = Module.CastFinishAt(spell, 15.1f);
         switch ((AID)spell.Action.ID)
         {
             case AID.MaulworkFirstCenter:
@@ -150,7 +150,7 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            data = (caster.Position, spell.NPCFinishAt.AddSeconds(0.5f));
+            data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -170,7 +170,7 @@ class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            data = (caster.Position, spell.NPCFinishAt.AddSeconds(0.5f));
+            data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -190,7 +190,7 @@ class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            data = (caster.Position, spell.NPCFinishAt.AddSeconds(0.5f));
+            data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

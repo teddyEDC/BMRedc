@@ -115,7 +115,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Electrowave && Module.Arena.Bounds == StartingBounds)
-            _aoe = new(rectArenaChange, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.4f));
+            _aoe = new(rectArenaChange, Module.Center, default, Module.CastFinishAt(spell, 0.4f));
     }
 
     public override void Update()
@@ -187,8 +187,8 @@ class BatteryCircuit(BossModule module) : Components.GenericRotatingAOE(module)
     {
         if ((AID)spell.Action.ID == AID.BatteryCircuitFirst && !started)
         {
-            Sequences.Add(new(_shape, caster.Position, spell.Rotation, _increment, spell.NPCFinishAt, 0.5f, 34, 9));
-            Sequences.Add(new(_shape, caster.Position, spell.Rotation + 180.Degrees(), _increment, spell.NPCFinishAt, 0.5f, 34, 9));
+            Sequences.Add(new(_shape, caster.Position, spell.Rotation, _increment, Module.CastFinishAt(spell), 0.5f, 34, 9));
+            Sequences.Add(new(_shape, caster.Position, spell.Rotation + 180.Degrees(), _increment, Module.CastFinishAt(spell), 0.5f, 34, 9));
             started = true;
         }
     }

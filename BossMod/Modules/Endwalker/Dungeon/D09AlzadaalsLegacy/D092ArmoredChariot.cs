@@ -61,7 +61,7 @@ class Voidzone(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ArticulatedBits)
-            _aoe = new(circle, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.8f));
+            _aoe = new(circle, Module.Center, default, Module.CastFinishAt(spell, 0.8f));
     }
 }
 

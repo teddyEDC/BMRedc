@@ -110,7 +110,7 @@ class HydraulicRam(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID == AID.HydraulicRamTelegraph)
         {
             var dir = spell.LocXZ - caster.Position;
-            _aoes.Add(new(new AOEShapeRect(dir.Length(), 4), caster.Position, Angle.FromDirection(dir), spell.NPCFinishAt.AddSeconds(7.8f)));
+            _aoes.Add(new(new AOEShapeRect(dir.Length(), 4), caster.Position, Angle.FromDirection(dir), Module.CastFinishAt(spell, 7.8f)));
         }
     }
 
@@ -138,7 +138,7 @@ class Hydrobomb(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.HydrobombTelegraph)
-            _aoes.Add(new(circle, spell.LocXZ, default, spell.NPCFinishAt.AddSeconds(8.1f)));
+            _aoes.Add(new(circle, spell.LocXZ, default, Module.CastFinishAt(spell, 8.1f)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

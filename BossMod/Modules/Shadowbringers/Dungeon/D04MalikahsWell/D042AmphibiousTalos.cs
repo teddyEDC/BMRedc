@@ -52,7 +52,7 @@ class SwiftSpillRotation(BossModule module) : Components.GenericRotatingAOE(modu
         if ((AID)spell.Action.ID == AID.SwiftSpillFirst)
         {
             _rotation = spell.Rotation;
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
         }
         if (_rotation != default)
             InitIfReady(caster);

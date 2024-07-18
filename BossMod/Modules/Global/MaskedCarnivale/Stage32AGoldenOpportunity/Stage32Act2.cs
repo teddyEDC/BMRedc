@@ -58,7 +58,7 @@ class GoldorQuake(BossModule module) : Components.ConcentricAOEs(module, _shapes
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.GoldorQuake1)
-            AddSequence(Module.PrimaryActor.Position, spell.NPCFinishAt);
+            AddSequence(Module.PrimaryActor.Position, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

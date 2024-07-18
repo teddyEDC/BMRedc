@@ -45,7 +45,7 @@ class FrostingFracasVoidzone(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.FrostingFracas && Module.Arena.Bounds == D021RyoqorTerteh.StartingBounds)
-            _aoe = new(donut, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.6f));
+            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 0.6f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)

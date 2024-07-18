@@ -190,7 +190,7 @@ class PenancePianissimo(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.PenancePianissimo)
-            _aoe = new(donut, Arena.Center, default, spell.NPCFinishAt.AddSeconds(0.7f));
+            _aoe = new(donut, Arena.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void OnActorEAnim(Actor actor, uint state)

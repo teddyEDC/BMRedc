@@ -51,7 +51,7 @@ class PsychicWaveArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.PsychicWave && Module.Arena.Bounds == D053Ambrose.StartingBounds)
-            _aoe = new(square, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.7f));
+            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -87,7 +87,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     {
         if ((AID)spell.Action.ID == AID.ExtrasensoryExpulsionNorthSouth)
         {
-            Activation = spell.NPCFinishAt.AddSeconds(0.8f);
+            Activation = Module.CastFinishAt(spell, 0.8f);
             HandleCastStarted(caster.Position);
         }
     }
@@ -172,7 +172,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.OverwhelmingCharge1 or AID.OverwhelmingCharge2)
-            _aoe = new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt);
+            _aoe = new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -225,7 +225,7 @@ class Rush(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.RushTelegraph)
         {
-            var activation = spell.NPCFinishAt.AddSeconds(6.8f);
+            var activation = Module.CastFinishAt(spell, 6.8f);
             var dir = spell.LocXZ - caster.Position;
             if (_aoes.Count < 7)
                 _aoes.Add(new(new AOEShapeRect(dir.Length(), 5), caster.Position, Angle.FromDirection(dir), activation));

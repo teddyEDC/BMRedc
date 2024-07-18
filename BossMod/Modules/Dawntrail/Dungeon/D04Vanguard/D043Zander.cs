@@ -56,7 +56,7 @@ class ElectrothermiaArenaChange(BossModule module) : Components.GenericAOEs(modu
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Electrothermia && Module.Arena.Bounds == D043Zander.StartingBounds)
-            _aoe = new(donut, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.5f));
+            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 0.5f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -90,10 +90,10 @@ class SlitherbaneBurstCombo(BossModule module) : Components.GenericAOEs(module)
         {
             case AID.SlitherbaneRearguardCone:
             case AID.SlitherbaneForeguardCone:
-                AddAOE(cone, caster.Position, spell.Rotation, spell.NPCFinishAt);
+                AddAOE(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
                 break;
             case AID.Burst2:
-                AddAOE(rect, caster.Position, spell.Rotation, spell.NPCFinishAt);
+                AddAOE(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
                 break;
         }
     }

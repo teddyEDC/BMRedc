@@ -13,7 +13,7 @@ class ExplosiveRain(BossModule module) : Components.ConcentricAOEs(module, _shap
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ExplosiveRain1)
-            AddSequence(Module.Center, spell.NPCFinishAt);
+            AddSequence(Module.Center, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -51,7 +51,7 @@ class SelfDestruct(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID is AID.SelfDestruct1 or AID.SelfDestruct2)
         {
-            _aoes.Add(new(circle, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(circle, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
             _aoes.SortBy(x => x.Activation);
         }
     }
