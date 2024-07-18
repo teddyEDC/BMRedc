@@ -1,4 +1,4 @@
-﻿namespace BossMod.Shadowbringers.Alliance.A33RedGirlP1;
+﻿namespace BossMod.Shadowbringers.Alliance.A34RedGirlP1;
 
 public enum OID : uint
 {
