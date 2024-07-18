@@ -394,7 +394,7 @@ sealed class AIManager : IDisposable
             return false;
         }
         var distanceStr = messageData[1];
-        if (distanceStr.Contains(",") && distanceStr.Contains("."))
+        if (distanceStr.Contains(',', StringComparison.Ordinal) || distanceStr.Contains('.', StringComparison.Ordinal))
         {
             Service.Log("[AI] Invalid distance format.");
             return false;
