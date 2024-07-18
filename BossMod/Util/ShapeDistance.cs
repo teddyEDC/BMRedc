@@ -239,36 +239,6 @@ public static class ShapeDistance
         return p => -concavePolygon(p);
     }
 
-    public static Func<WPos, float> PolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
-    {
-        float distanceFunc(WPos p)
-        {
-            var localPoint = new WDir(p.X - origin.X, p.Z - origin.Z);
-            var isInside = polygon.Contains(localPoint);
-            var minDistance = polygon.Parts.SelectMany(part => part.ExteriorEdges)
-                .Min(edge => PolygonUtil.DistanceToEdge(p, PolygonUtil.ConvertToWPos(origin, edge)));
-
-            Parallel.ForEach(polygon.Parts, part =>
-            {
-                Parallel.ForEach(part.Holes, holeIndex =>
-                {
-                    var holeMinDistance = part.InteriorEdges(holeIndex)
-                        .Min(edge => PolygonUtil.DistanceToEdge(p, PolygonUtil.ConvertToWPos(origin, edge)));
-                    lock (polygon)
-                        minDistance = Math.Min(minDistance, holeMinDistance);
-                });
-            });
-            return isInside ? -minDistance : minDistance;
-        }
-        return CacheFunction(distanceFunc);
-    }
-
-    public static Func<WPos, float> InvertedPolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
-    {
-        var polygonWithHoles = PolygonWithHoles(origin, polygon);
-        return p => -polygonWithHoles(p);
-    }
-
     private static Func<WPos, float> Intersection(List<Func<WPos, float>> funcs, float offset = 0) => p => funcs.Max(e => e(p)) - offset;
     private static Func<WPos, float> Union(List<Func<WPos, float>> funcs, float offset = 0) => p => funcs.Min(e => e(p)) - offset;
 

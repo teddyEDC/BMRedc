@@ -244,7 +244,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> UnionShapes, IEnume
         var cacheKey = (sha512key, origin, rotation, InvertForbiddenZone);
         if (_distanceFuncCache.TryGetValue(cacheKey, out var cachedFunc))
             return cachedFunc;
-        var result = InvertForbiddenZone ? ShapeDistance.InvertedPolygonWithHoles(origin, GetCombinedPolygon(origin)) : ShapeDistance.PolygonWithHoles(origin, GetCombinedPolygon(origin));
+        var result = InvertForbiddenZone ? RelPolygonWithHoles.InvertedPolygonWithHoles(origin, GetCombinedPolygon(origin)) : RelPolygonWithHoles.PolygonWithHoles(origin, GetCombinedPolygon(origin));
         _distanceFuncCache[cacheKey] = result;
         return result;
     }
