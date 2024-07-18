@@ -1,7 +1,7 @@
 ﻿namespace BossMod.Shadowbringers.Alliance.A32HanselGretel;
 
 [ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team", PrimaryActorOID = (uint)OID.Gretel, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 779, NameID = 9990)]
-public class A32HanselGretel(WorldState ws, Actor primary) : BossModule(ws, primary, new(-800, -950), new ArenaBoundsCircle(30))
+public class A32HanselGretel(WorldState ws, Actor primary) : BossModule(ws, primary, new(-800, -951), new ArenaBoundsCircle(25))
 {
     private Actor? _hansel;
 

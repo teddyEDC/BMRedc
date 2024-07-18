@@ -20,11 +20,10 @@ public enum AID : uint
     BalancedEdge = 23791, // Ally2B->self, 2.0s cast, range 5 circle
     WhirlingAssault = 23792, // Ally2B->self, 2.0s cast, range 40 width 4 rect
 
-    ColossalImpact1 = 24231, // Boss/CopiedKnave->self, 8.0s cast, range 61 width 20 rect
-
-    ColossalImpact2 = 24228, // Boss/CopiedKnave->self, 7.0s cast, single-target
-    ColossalImpact3 = 24229, // Helper->self, 8.0s cast, range 61 width 20 rect
-    ColossalImpact4 = 24230, // Helper->self, 8.0s cast, range 61 width 20 rect
+    ColossalImpact1 = 24228, // Boss/CopiedKnave->self, 7.0s cast, single-target
+    ColossalImpactLeft = 24229, // Helper->self, 8.0s cast, range 61 width 20 rect // left
+    ColossalImpactRight = 24230, // Helper->self, 8.0s cast, range 61 width 20 rect // right
+    ColossalImpactMiddle = 24231, // Boss/CopiedKnave->self, 8.0s cast, range 61 width 20 rect // middle
 
     ColossalImpact5 = 23805, // Boss->self, 8.5s cast, single-target
 
@@ -34,18 +33,23 @@ public enum AID : uint
 
     MagicArtilleryBeta1 = 24242, // Boss->self, 3.0s cast, single-target
     MagicArtilleryBeta2 = 24243, // Helper->player, 5.0s cast, range 3 circle
-    Replicate = 24233, // Boss->self, 3.0s cast, single-target
+
+    MagicArtilleryAlpha1 = 24234, // Boss->self, 3.0s cast, single-target
+    MagicArtilleryAlpha2 = 24235, // Helper->players, 6.0s cast, range 5 circle
+
     StackingTheDeck1 = 24816, // CopiedKnave->self, 6.0s cast, single-target
     StackingTheDeck2 = 23801, // Boss->self, 6.0s cast, single-target
-    Spheroids = 24232, // Boss->self, 4.0s cast, single-target
-    KnavishBullets = 24237, // Spheroid->self, no cast, single-target
-    MagicArtilleryAlpha1 = 24234, // Boss->self, 3.0s cast, single-target
-    Burst = 24244, // Energy->player, no cast, single-target
-    MagicArtilleryAlpha2 = 24235, // Helper->players, 6.0s cast, range 5 circle
+
     LightLeap1 = 24238, // Boss->self, 7.0s cast, single-target
     LightLeap2 = 24239, // Helper->location, 8.5s cast, range 40 circle
-    UnknownAbiltiy = 24240, // Helper->self, 4.0s cast, range 8 width 8 rect
-    Lunge = 24241, // Boss/CopiedKnave->self, 8.0s cast, range 61 width 60 rect
+
+    Replicate = 24233, // Boss->self, 3.0s cast, single-target
+    Spheroids = 24232, // Boss->self, 4.0s cast, single-target
+    KnavishBullets = 24237, // Spheroid->self, no cast, single-target
+    Burst = 24244, // Energy->player, no cast, single-target
+    BoxSpawn = 24240, // Helper->self, 4.0s cast, range 8 width 8 rect
+
+    Lunge = 24241, // Boss/CopiedKnave->self, 8.0s cast, range 61 width 60 rect // knockback 60 dirforward
     MagicBarrage = 24236, // Spheroid->self, 6.0s cast, range 61 width 5 rect
 }
 
