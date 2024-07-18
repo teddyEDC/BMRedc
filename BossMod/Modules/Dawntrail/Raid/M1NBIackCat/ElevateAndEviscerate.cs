@@ -1,6 +1,6 @@
 namespace BossMod.Dawntrail.Raid.M1NBlackCat;
 
-class ElevateAndEvisverate(BossModule module) : Components.Knockback(module, stopAfterWall: true)
+class ElevateAndEviscerate(BossModule module) : Components.Knockback(module, ignoreImmunes: true, stopAfterWall: true)
 {
     private DateTime activation;
     public (Actor source, Actor target) Tether;
@@ -32,16 +32,16 @@ class ElevateAndEvisverate(BossModule module) : Components.Knockback(module, sto
         }
     }
 
-    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<ElevateAndEvisverateHint>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<ElevateAndEviscerateHint>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
 }
 
-class ElevateAndEvisverateHint(BossModule module) : Components.GenericAOEs(module)
+class ElevateAndEviscerateHint(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeRect rect = new(5, 5, 5);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        var tether = Module.FindComponent<ElevateAndEvisverate>()!.Tether;
+        var tether = Module.FindComponent<ElevateAndEviscerate>()!.Tether;
         if (tether != default && actor == tether.target)
         {
             var tiles = Module.FindComponent<ArenaChanges>()!.DamagedTiles;
