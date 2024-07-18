@@ -49,7 +49,7 @@ class ElectrowaveArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Electrowave && Module.Arena.Bounds == D041CommanderR8.StartingBounds)
-            _aoe = new(square, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.4f));
+            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.4f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -87,7 +87,7 @@ class EnhancedMobilitySword(BossModule module) : Components.GenericAOEs(module)
 
     private void AddAOE(ActorCastInfo spell, Angle offset)
     {
-        _aoe = new AOEInstance(rect, Module.Center + 5 * spell.Rotation.ToDirection(), spell.Rotation + offset, spell.NPCFinishAt);
+        _aoe = new AOEInstance(rect, Module.Center + 5 * spell.Rotation.ToDirection(), spell.Rotation + offset, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -122,16 +122,16 @@ class RapidRotary(BossModule module) : Components.GenericAOEs(module)
         switch ((AID)spell.Action.ID)
         {
             case AID.EnhancedMobility1:
-                AddAOEs(donutSectorSmall, donutSectorBig, -a60, spell.NPCFinishAt);
+                AddAOEs(donutSectorSmall, donutSectorBig, -a60, Module.CastFinishAt(spell));
                 break;
             case AID.EnhancedMobility2:
-                AddAOEs(donutSectorSmall, cone, a60, spell.NPCFinishAt);
+                AddAOEs(donutSectorSmall, cone, a60, Module.CastFinishAt(spell));
                 break;
             case AID.EnhancedMobility3:
-                AddAOEs(donutSectorSmall, cone, -a60, spell.NPCFinishAt);
+                AddAOEs(donutSectorSmall, cone, -a60, Module.CastFinishAt(spell));
                 break;
             case AID.EnhancedMobility4:
-                AddAOEs(donutSectorSmall, donutSectorBig, a60, spell.NPCFinishAt);
+                AddAOEs(donutSectorSmall, donutSectorBig, a60, Module.CastFinishAt(spell));
                 break;
         }
     }

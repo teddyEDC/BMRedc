@@ -49,7 +49,7 @@ class DecimationArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Decimation && Module.Arena.Bounds == D062Peacekeeper.StartingBounds)
-            _aoe = new(donut, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.4f));
+            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 0.4f));
     }
 }
 
@@ -83,7 +83,7 @@ class EclipsingExhaustKnockback(BossModule module) : Components.KnockbackFromCas
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            Activation = spell.NPCFinishAt.AddSeconds(0.5f);
+            Activation = Module.CastFinishAt(spell, 0.5f);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

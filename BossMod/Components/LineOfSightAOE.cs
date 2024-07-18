@@ -84,7 +84,7 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
 public abstract class CastLineOfSightAOE : GenericLineOfSightAOE
 {
     private readonly List<Actor> _casters = [];
-    public Actor? ActiveCaster => _casters.MinBy(c => c.CastInfo!.NPCFinishAt);
+    public Actor? ActiveCaster => _casters.MinBy(c => c.CastInfo!.RemainingTime);
 
     protected CastLineOfSightAOE(BossModule module, ActionID aid, float maxRange, bool blockersImpassable) : base(module, aid, maxRange, blockersImpassable)
     {
@@ -115,7 +115,7 @@ public abstract class CastLineOfSightAOE : GenericLineOfSightAOE
     {
         var caster = ActiveCaster;
         WPos? position = caster != null ? (WorldState.Actors.Find(caster.CastInfo!.TargetID)?.Position ?? caster.CastInfo!.LocXZ) : null;
-        Modify(position, BlockerActors().Select(b => (b.Position, b.HitboxRadius)), caster?.CastInfo?.NPCFinishAt ?? default);
+        Modify(position, BlockerActors().Select(b => (b.Position, b.HitboxRadius)), Module.CastFinishAt(caster?.CastInfo));
     }
 }
 
@@ -147,7 +147,7 @@ public abstract class GenericLineOfSightRectAOE(BossModule module, ActionID aid)
                 UnionShapes.Add(new RectangleSE(b.Position, b.Position + 1000 * caster.Rotation.ToDirection(), b.HitboxRadius));
                 DifferenceShapes.Add(new Circle(b.Position, b.HitboxRadius));
             }
-            InvertedAOE.Add(new(new AOEShapeCustom(CopyShapes(UnionShapes), CopyShapes(DifferenceShapes), true), Module.Arena.Center, default, spell.NPCFinishAt, ArenaColor.SafeFromAOE));
+            InvertedAOE.Add(new(new AOEShapeCustom(CopyShapes(UnionShapes), CopyShapes(DifferenceShapes), true), Module.Arena.Center, default, Module.CastFinishAt(spell), ArenaColor.SafeFromAOE));
             UnionShapes.Clear();
             DifferenceShapes.Clear();
         }

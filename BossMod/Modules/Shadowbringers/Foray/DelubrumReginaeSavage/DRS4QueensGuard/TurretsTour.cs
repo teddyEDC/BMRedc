@@ -27,7 +27,7 @@ class TurretsTour(BossModule module) : Components.GenericAOEs(module)
         foreach (var t in _turrets)
             yield return new(t.shape, t.turret.Position, t.turret.Rotation, _activation);
         foreach (var c in _casters)
-            yield return new(c.shape, c.caster.Position, c.rotation, c.caster.CastInfo?.NPCFinishAt ?? default);
+            yield return new(c.shape, c.caster.Position, c.rotation, Module.CastFinishAt(c.caster.CastInfo));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -36,7 +36,7 @@ class TurretsTour(BossModule module) : Components.GenericAOEs(module)
         {
             var toTarget = spell.LocXZ - caster.Position;
             _casters.Add((caster, new AOEShapeRect(toTarget.Length(), _defaultShape.HalfWidth), Angle.FromDirection(toTarget)));
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
         }
     }
 

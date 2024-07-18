@@ -65,7 +65,7 @@ class Rush(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID == AID.Rush)
         {
             var dir = spell.LocXZ - caster.Position;
-            _aoes.Add(new(new AOEShapeRect(dir.Length(), 2.5f), caster.Position, Angle.FromDirection(dir), spell.NPCFinishAt));
+            _aoes.Add(new(new AOEShapeRect(dir.Length(), 2.5f), caster.Position, Angle.FromDirection(dir), Module.CastFinishAt(spell)));
         }
     }
 

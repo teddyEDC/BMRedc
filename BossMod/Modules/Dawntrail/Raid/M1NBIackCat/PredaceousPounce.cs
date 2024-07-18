@@ -29,7 +29,7 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
             case AID.PredaceousPounceTelegraphCharge5:
             case AID.PredaceousPounceTelegraphCharge6:
                 var dir = spell.LocXZ - caster.Position;
-                _aoes.Add(new(new AOEShapeRect(dir.Length(), 3), caster.Position, Angle.FromDirection(dir), spell.NPCFinishAt));
+                _aoes.Add(new(new AOEShapeRect(dir.Length(), 3), caster.Position, Angle.FromDirection(dir), Module.CastFinishAt(spell)));
                 break;
             case AID.PredaceousPounceTelegraphCircle1:
             case AID.PredaceousPounceTelegraphCircle2:
@@ -37,7 +37,7 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
             case AID.PredaceousPounceTelegraphCircle4:
             case AID.PredaceousPounceTelegraphCircle5:
             case AID.PredaceousPounceTelegraphCircle6:
-                _aoes.Add(new(circle, caster.Position, default, spell.NPCFinishAt));
+                _aoes.Add(new(circle, caster.Position, default, Module.CastFinishAt(spell)));
                 break;
         }
         if (_aoes.Count == 12 && !sorted)

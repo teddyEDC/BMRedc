@@ -27,10 +27,10 @@ class UpperLaser(BossModule module) : Components.GenericAOEs(module, ActionID.Ma
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersUpperLaser1.Count > 0
-            ? _castersUpperLaser1.Select(c => new AOEInstance(_shapeUpperLaser1, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
+            ? _castersUpperLaser1.Select(c => new AOEInstance(_shapeUpperLaser1, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
             : _castersUpperLaser2.Count > 0
-            ? _castersUpperLaser2.Select(c => new AOEInstance(_shapeUpperLaser2, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersUpperLaser3.Select(c => new AOEInstance(_shapeUpperLaser3, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersUpperLaser2.Select(c => new AOEInstance(_shapeUpperLaser2, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersUpperLaser3.Select(c => new AOEInstance(_shapeUpperLaser3, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

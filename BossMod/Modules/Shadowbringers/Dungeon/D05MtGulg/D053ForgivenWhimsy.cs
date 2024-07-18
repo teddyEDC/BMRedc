@@ -86,7 +86,7 @@ class Exegesis(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var _activation = spell.NPCFinishAt.AddSeconds(0.4f);
+        var _activation = Module.CastFinishAt(spell, 0.4f);
         switch ((AID)spell.Action.ID)
         {
             case AID.ExegesisA: //diagonal

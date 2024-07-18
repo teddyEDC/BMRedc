@@ -75,7 +75,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     [
         (0, 1), (7, 9), (5, 6), (13, 20), (17, 18), (11, 14), (21, 20), (14, 15),
         (12, 17), (1, 10), (3, 7), (6, 8), (25, 5), (25, 11), (2, 5), (4, 8),
-        (16, 21), (21, 23), (23, 10), (13, 22), (15, 24), (15, 19), (16, 11),
+        (16, 21), (21, 23), (23, 10), (13, 19), (15, 24), (15, 19), (16, 11),
         (24, 8), (0, 22), (0, 4), (2, 10), (22, 13)
     ];
 
@@ -115,7 +115,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Electrowave && Module.Arena.Bounds == StartingBounds)
-            _aoe = new(rectArenaChange, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.4f));
+            _aoe = new(rectArenaChange, Module.Center, default, Module.CastFinishAt(spell, 0.4f));
     }
 
     public override void Update()
@@ -187,8 +187,8 @@ class BatteryCircuit(BossModule module) : Components.GenericRotatingAOE(module)
     {
         if ((AID)spell.Action.ID == AID.BatteryCircuitFirst && !started)
         {
-            Sequences.Add(new(_shape, caster.Position, spell.Rotation, _increment, spell.NPCFinishAt, 0.5f, 34, 9));
-            Sequences.Add(new(_shape, caster.Position, spell.Rotation + 180.Degrees(), _increment, spell.NPCFinishAt, 0.5f, 34, 9));
+            Sequences.Add(new(_shape, caster.Position, spell.Rotation, _increment, Module.CastFinishAt(spell), 0.5f, 34, 9));
+            Sequences.Add(new(_shape, caster.Position, spell.Rotation + 180.Degrees(), _increment, Module.CastFinishAt(spell), 0.5f, 34, 9));
             started = true;
         }
     }

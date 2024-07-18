@@ -24,7 +24,7 @@ class RadiantRhythm(BossModule module) : Components.GenericAOEs(module, ActionID
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var _activation = spell.NPCFinishAt.AddSeconds(7.7f);
+        var _activation = Module.CastFinishAt(spell, 7.7f);
         if ((AID)spell.Action.ID == AID.SolarFansCharge) //since it seems impossible to determine early enough if 5 or 6 casts happen, we draw one extra one just incase
         {
             if (spell.LocXZ.AlmostEqual(new(-775, -750), 10))

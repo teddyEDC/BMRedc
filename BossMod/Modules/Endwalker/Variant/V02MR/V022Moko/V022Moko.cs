@@ -21,8 +21,8 @@ class DoubleKasumiGiri(BossModule module) : Components.GenericAOEs(module, Actio
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersShadowFirst.Count > 0
-            ? _castersShadowFirst.Select(c => new AOEInstance(_shapeShadowFirst, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersShadowNext.Select(c => new AOEInstance(_shapeShadowNext, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersShadowFirst.Select(c => new AOEInstance(_shapeShadowFirst, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersShadowNext.Select(c => new AOEInstance(_shapeShadowNext, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -79,7 +79,7 @@ class YamaKagura(BossModule module) : Components.Knockback(module)
     {
         if ((AID)spell.Action.ID == AID.YamaKagura)
         {
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
             _casters.Add(caster);
         }
     }

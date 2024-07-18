@@ -68,12 +68,12 @@ class Bunkerbuster(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID is AID.BunkerBuster2 && NumCastsStarted == 0)
         {
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
             ++NumCastsStarted;
         }
         else if ((AID)spell.Action.ID is AID.BunkerBuster3 && NumCastsStarted == 0)
         {
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
             ++NumCastsStarted;
         }
     }
@@ -167,7 +167,7 @@ class BouncingBomb(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.BouncingBomb2)
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -218,24 +218,24 @@ class Combos(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var activation = spell.NPCFinishAt.AddSeconds(3.1f);
+        var activation = Module.CastFinishAt(spell, 3.1f);
         switch ((AID)spell.Action.ID)
         {
             case AID.CarapaceForeArms2dot0A:
-                combo = (rect, cone, spell.NPCFinishAt, activation, false, spell.Rotation);
+                combo = (rect, cone, Module.CastFinishAt(spell), activation, false, spell.Rotation);
                 break;
             case AID.CarapaceForeArms2dot0B:
-                combo = (donut, cone, spell.NPCFinishAt, activation, false, spell.Rotation);
+                combo = (donut, cone, Module.CastFinishAt(spell), activation, false, spell.Rotation);
                 break;
             case AID.CarapaceRearGuns2dot0A:
-                combo = (rect, cone, spell.NPCFinishAt, activation, true, spell.Rotation);
+                combo = (rect, cone, Module.CastFinishAt(spell), activation, true, spell.Rotation);
                 break;
             case AID.CarapaceRearGuns2dot0B:
-                combo = (donut, cone, spell.NPCFinishAt, activation, true, spell.Rotation);
+                combo = (donut, cone, Module.CastFinishAt(spell), activation, true, spell.Rotation);
                 break;
             case AID.RearGunsForeArms2dot0:
             case AID.ForeArmsRearGuns2dot0:
-                combo = (cone, cone, spell.NPCFinishAt, activation, true, spell.Rotation);
+                combo = (cone, cone, Module.CastFinishAt(spell), activation, true, spell.Rotation);
                 break;
         }
     }

@@ -39,7 +39,7 @@ class HydroRing(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.HydroRing)
-            _aoe = new(donut, Module.Center, default, spell.NPCFinishAt);
+            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -98,7 +98,7 @@ class Burst(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var activation = spell.NPCFinishAt.AddSeconds(3.4f);
+        var activation = Module.CastFinishAt(spell, 3.4f);
         switch ((AID)spell.Action.ID)
         {
             case AID.RollingCurrentWest:

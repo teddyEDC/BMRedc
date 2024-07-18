@@ -56,7 +56,7 @@ class OdiousAtmosphere(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.OdiousAtmosphere0)
-            _aoe = new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt);
+            _aoe = new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

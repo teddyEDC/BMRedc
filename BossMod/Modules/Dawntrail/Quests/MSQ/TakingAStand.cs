@@ -85,7 +85,7 @@ class RoarArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Roar1)
-            _aoe = new(donut, Module.Arena.Center, default, spell.NPCFinishAt.AddSeconds(0.9f));
+            _aoe = new(donut, Module.Arena.Center, default, Module.CastFinishAt(spell, 0.9f));
     }
 }
 
@@ -126,7 +126,7 @@ class GreatLeap(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.GreatLeapVisual)
-            activation = spell.NPCFinishAt.AddSeconds(0.2f);
+            activation = Module.CastFinishAt(spell, 0.2f);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -145,7 +145,7 @@ class SelfSacrifice(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.LethalSwipeShade)
-            _aoes.Add(new(circle, caster.Position, default, spell.NPCFinishAt.AddSeconds(0.2f)));
+            _aoes.Add(new(circle, caster.Position, default, Module.CastFinishAt(spell, 0.2f)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -170,7 +170,7 @@ class Kickdown(BossModule module) : Components.Knockback(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Kickdown)
-            activation = spell.NPCFinishAt;
+            activation = Module.CastFinishAt(spell);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -185,7 +185,7 @@ class RiotousRampage(BossModule module) : Components.GenericTowers(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.RiotousRampage)
-            Towers.Add(new(caster.Position, 4, activation: spell.NPCFinishAt));
+            Towers.Add(new(caster.Position, 4, activation: Module.CastFinishAt(spell)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

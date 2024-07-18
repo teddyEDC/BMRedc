@@ -66,14 +66,13 @@ class ThundagaForte(BossModule module) : Components.GenericAOEs(module, ActionID
     private readonly List<Actor> _castersThundagaForte2 = [];
     private readonly List<Actor> _castersThundagaForte3 = [];
 
-    private static readonly AOEShape _shapeThundagaForte2 = new AOEShapeCone(20, 22.5f.Degrees());
-    private static readonly AOEShape _shapeThundagaForte3 = new AOEShapeCone(20, 22.5f.Degrees());
+    private static readonly AOEShape _cone = new AOEShapeCone(20, 22.5f.Degrees());
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return _castersThundagaForte2.Count > 0
-            ? _castersThundagaForte2.Select(c => new AOEInstance(_shapeThundagaForte2, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt))
-            : _castersThundagaForte3.Select(c => new AOEInstance(_shapeThundagaForte3, c.Position, c.CastInfo!.Rotation, c.CastInfo!.NPCFinishAt));
+            ? _castersThundagaForte2.Select(c => new AOEInstance(_cone, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)))
+            : _castersThundagaForte3.Select(c => new AOEInstance(_cone, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo)));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

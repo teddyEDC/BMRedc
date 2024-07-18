@@ -63,9 +63,9 @@ class KnockbackPull(BossModule module) : Components.Knockback(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.FerrofluidKB)
-            _knockback = new(Module.PrimaryActor.Position, 6, spell.NPCFinishAt);
-        if ((AID)spell.Action.ID == AID.FerrofluidAttract)
-            _knockback = new(Module.PrimaryActor.Position, 6, spell.NPCFinishAt, Kind: Kind.TowardsOrigin);
+            _knockback = new(Module.PrimaryActor.Position, 6, Module.CastFinishAt(spell));
+        else if ((AID)spell.Action.ID == AID.FerrofluidAttract)
+            _knockback = new(Module.PrimaryActor.Position, 6, Module.CastFinishAt(spell), Kind: Kind.TowardsOrigin);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -99,12 +99,12 @@ class FluidConvectionDynamic(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID == AID.FerrofluidKB)
         {
             shape = donut;
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
         }
-        if ((AID)spell.Action.ID == AID.FerrofluidAttract)
+        else if ((AID)spell.Action.ID == AID.FerrofluidAttract)
         {
             shape = circle;
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
         }
     }
 

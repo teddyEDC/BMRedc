@@ -59,7 +59,7 @@ class Swinge(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Swinge)
-            _aoe = new(new AOEShapeCone(50 + caster.HitboxRadius, 30.Degrees()), caster.Position, spell.Rotation, spell.NPCFinishAt);
+            _aoe = new(new AOEShapeCone(50 + caster.HitboxRadius, 30.Degrees()), caster.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

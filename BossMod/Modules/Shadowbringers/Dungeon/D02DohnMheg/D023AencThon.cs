@@ -106,7 +106,7 @@ class CorrosiveBile(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.CorrosiveBileFirst)
-            _aoe = new(new AOEShapeCone(24.875f, 45.Degrees()), caster.Position, spell.Rotation, spell.NPCFinishAt);
+            _aoe = new(new AOEShapeCone(24.875f, 45.Degrees()), caster.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -134,7 +134,7 @@ class FlailingTentacles(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.FlailingTentaclesVisual)
-            _aoe = new(new AOEShapeCross(38.875f, 3.5f), caster.Position, Module.PrimaryActor.Rotation + 45.Degrees(), spell.NPCFinishAt.AddSeconds(1));
+            _aoe = new(new AOEShapeCross(38.875f, 3.5f), caster.Position, Module.PrimaryActor.Rotation + 45.Degrees(), Module.CastFinishAt(spell, 1));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

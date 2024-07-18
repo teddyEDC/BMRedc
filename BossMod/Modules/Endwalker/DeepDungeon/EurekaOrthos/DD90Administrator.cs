@@ -104,8 +104,8 @@ class AetheroChemicalLaserCombo(BossModule module) : Components.GenericAOEs(modu
     {
         _boss = (AID)spell.Action.ID switch
         {
-            AID.PeripheralLasers => new AOEInstance(_shapes[4], caster.Position, default, spell.NPCFinishAt),
-            AID.CrossLaser => new AOEInstance(_shapes[3], caster.Position, spell.Rotation, spell.NPCFinishAt),
+            AID.PeripheralLasers => new AOEInstance(_shapes[4], caster.Position, default, Module.CastFinishAt(spell)),
+            AID.CrossLaser => new AOEInstance(_shapes[3], caster.Position, spell.Rotation, Module.CastFinishAt(spell)),
             _ => _boss
         };
     }
@@ -131,8 +131,8 @@ class AetherLaserLine(BossModule module) : Components.SelfTargetedAOEs(module, A
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return !Module.FindComponent<AetheroChemicalLaserCombo>()!.ActiveAOEs(slot, actor).Any()
-            ? ActiveCasters.Select(c => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, c.CastInfo.NPCFinishAt, ArenaColor.Danger, Risky)).Take(2)
-            .Concat(ActiveCasters.Select(c => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, c.CastInfo.NPCFinishAt, ArenaColor.AOE, Risky)).Take(4).Skip(2))
+            ? ActiveCasters.Select(c => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo), ArenaColor.Danger, Risky)).Take(2)
+            .Concat(ActiveCasters.Select(c => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo), ArenaColor.AOE, Risky)).Take(4).Skip(2))
             : ([]);
     }
 }

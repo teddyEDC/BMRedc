@@ -60,15 +60,16 @@ class PyricBreath(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID is AID.PyricBreathFront or AID.PyricBreathLeft or AID.PyricBreathRight)
         {
-            _aoes.Add(new(cone, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
             if (buffs.Count == 2)
             {
+                var activation = Module.CastFinishAt(spell, 2.1f);
                 if (buffs[1] == (uint)SID.RightHead)
-                    _aoes.Add(new(cone, caster.Position, spell.Rotation + (buffs[0] == (uint)SID.MiddleHead ? -angle : -2 * angle), spell.NPCFinishAt.AddSeconds(2.1f)));
+                    _aoes.Add(new(cone, caster.Position, spell.Rotation + (buffs[0] == (uint)SID.MiddleHead ? -angle : -2 * angle), activation));
                 if (buffs[1] == (uint)SID.LeftHead)
-                    _aoes.Add(new(cone, caster.Position, spell.Rotation + (buffs[0] == (uint)SID.MiddleHead ? angle : 2 * angle), spell.NPCFinishAt.AddSeconds(2.1f)));
+                    _aoes.Add(new(cone, caster.Position, spell.Rotation + (buffs[0] == (uint)SID.MiddleHead ? angle : 2 * angle), activation));
                 if (buffs[1] == (uint)SID.MiddleHead)
-                    _aoes.Add(new(cone, caster.Position, spell.Rotation + (buffs[0] == (uint)SID.LeftHead ? -angle : angle), spell.NPCFinishAt.AddSeconds(2.1f)));
+                    _aoes.Add(new(cone, caster.Position, spell.Rotation + (buffs[0] == (uint)SID.LeftHead ? -angle : angle), activation));
             }
         }
     }

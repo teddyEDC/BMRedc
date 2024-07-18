@@ -174,7 +174,7 @@ class CosmicKissKnockback(BossModule module) : Components.KnockbackFromCastTarge
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            Activation = spell.NPCFinishAt.AddSeconds(0.8f);
+            Activation = Module.CastFinishAt(spell, 0.8f);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

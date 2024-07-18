@@ -44,7 +44,7 @@ class DynamicDominanceArenaChange(BossModule module) : Components.GenericAOEs(mo
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.DynamicDominance && Module.Arena.Bounds == D032Firearms.StartingBounds)
-            _aoe = new(square, Module.Center, default, spell.NPCFinishAt.AddSeconds(0.6f));
+            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.6f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)

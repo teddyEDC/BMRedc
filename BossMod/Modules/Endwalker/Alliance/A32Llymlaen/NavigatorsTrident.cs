@@ -9,17 +9,17 @@ class DireStraits(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            yield return new(_aoes[0].Shape, _aoes[0].Origin, _aoes[0].Rotation, _aoes[0].Activation, ArenaColor.Danger);
+            yield return _aoes[0] with { Color = ArenaColor.Danger };
         if (_aoes.Count > 1)
-            yield return new(_aoes[1].Shape, _aoes[1].Origin, _aoes[1].Rotation, _aoes[1].Activation, Risky: false);
+            yield return _aoes[1] with { Risky = false };
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.DireStraitsVisualFirst)
         {
-            _aoes.Add(new(_shape, Module.Arena.Center, spell.Rotation, spell.NPCFinishAt.AddSeconds(5)));
-            _aoes.Add(new(_shape, Module.Arena.Center, spell.Rotation + 180.Degrees(), spell.NPCFinishAt.AddSeconds(6.7f)));
+            _aoes.Add(new(_shape, Module.Arena.Center, spell.Rotation, Module.CastFinishAt(spell, 5)));
+            _aoes.Add(new(_shape, Module.Arena.Center, spell.Rotation + 180.Degrees(), Module.CastFinishAt(spell, 6.7f)));
         }
     }
 
@@ -51,8 +51,8 @@ class NavigatorsTridentKnockback(BossModule module) : Components.Knockback(modul
         if ((AID)spell.Action.ID == AID.NavigatorsTridentAOE)
         {
             _sources.Clear();
-            _sources.Add(new(caster.Position, 20, spell.NPCFinishAt, _shape, spell.Rotation + 90.Degrees(), Kind.DirForward));
-            _sources.Add(new(caster.Position, 20, spell.NPCFinishAt, _shape, spell.Rotation - 90.Degrees(), Kind.DirForward));
+            _sources.Add(new(caster.Position, 20, Module.CastFinishAt(spell), _shape, spell.Rotation + 90.Degrees(), Kind.DirForward));
+            _sources.Add(new(caster.Position, 20, Module.CastFinishAt(spell), _shape, spell.Rotation - 90.Degrees(), Kind.DirForward));
         }
     }
 

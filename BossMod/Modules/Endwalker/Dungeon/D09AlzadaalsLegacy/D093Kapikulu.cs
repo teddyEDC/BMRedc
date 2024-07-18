@@ -115,7 +115,7 @@ class SpikeTraps(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Traps)
-            _aoes.Add(new(rect, caster.Position, spell.Rotation, spell.NPCFinishAt));
+            _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
     }
 
     public override void OnEventEnvControl(byte index, uint state)

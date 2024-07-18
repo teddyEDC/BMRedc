@@ -86,7 +86,7 @@ class Inhale(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Resurface)
-            _aoe = new(cone, new(15, -95), spell.Rotation, spell.NPCFinishAt); // Resurface and Inhale origin are not identical, but almost 0.4y off
+            _aoe = new(cone, new(15, -95), spell.Rotation, Module.CastFinishAt(spell)); // Resurface and Inhale origin are not identical, but almost 0.4y off
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -124,7 +124,7 @@ class ShoreShaker(BossModule module) : Components.ConcentricAOEs(module, _shapes
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ShoreShaker1)
-            AddSequence(Module.Center, spell.NPCFinishAt);
+            AddSequence(Module.Center, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

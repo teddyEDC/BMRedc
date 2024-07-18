@@ -146,6 +146,7 @@ public sealed class ConfigUI : IDisposable
 
     private void DrawReadMe()
     {
+        var discordLink = "https://discord.gg/p54TZMPnC9";
         ImGui.Text("Important information");
         ImGui.Separator();
         ImGui.Text("This is a FORK of veyn's BossMod (VBM).");
@@ -153,15 +154,11 @@ public sealed class ConfigUI : IDisposable
         ImGui.Text("Please do not ask him for any support for problems you encounter while using this fork.");
         ImGui.Spacing();
         ImGui.Text("Instead visit the Combat Reborn Discord and ask for support there:");
-        RenderTextWithLink("https://discord.gg/p54TZMPnC9", new Uri("https://discord.gg/p54TZMPnC9"));
+        RenderTextWithLink(discordLink, new Uri(discordLink));
         ImGui.NewLine();
         ImGui.Text("Please also make sure to not load VBM and this fork at the same time.");
         ImGui.Spacing();
         ImGui.Text("The consequences of doing that are unexplored and unsupported.");
-        ImGui.Separator();
-        ImGui.Text("The AI is designed for legacy movement, make sure to turn on legacy movement\nwhile using AI.");
-        ImGui.Spacing();
-        ImGui.Text("It is advised to pause AutoDuty during boss modules since it can conflict with BMR AI.");
     }
 
     static void RenderTextWithLink(string displayText, Uri url)

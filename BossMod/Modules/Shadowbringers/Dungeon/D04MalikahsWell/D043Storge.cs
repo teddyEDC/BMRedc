@@ -52,16 +52,16 @@ class HereticsForkBreakingWheelStreak(BossModule module) : Components.GenericAOE
         switch ((AID)spell.Action.ID)
         {
             case AID.HereticsFork2:
-                _spell1.Add(new(cross, caster.Position, spell.Rotation, spell.NPCFinishAt));
+                _spell1.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
                 break;
             case AID.BreakingWheel2:
-                _spell1.Add(new(donut, caster.Position, default, spell.NPCFinishAt));
+                _spell1.Add(new(donut, caster.Position, default, Module.CastFinishAt(spell)));
                 break;
             case AID.HereticsFork3:
-                _spell2.Add(new(cross, caster.Position, spell.Rotation, spell.NPCFinishAt));
+                _spell2.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
                 break;
             case AID.BreakingWheel3:
-                _spell2.Add(new(donut, caster.Position, default, spell.NPCFinishAt));
+                _spell2.Add(new(donut, caster.Position, default, Module.CastFinishAt(spell)));
                 break;
         }
     }

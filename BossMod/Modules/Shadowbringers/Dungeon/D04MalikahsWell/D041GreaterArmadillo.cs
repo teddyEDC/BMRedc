@@ -40,7 +40,7 @@ class RightRound(BossModule module) : Components.GenericAOEs(module)
     {
         // the origin of the rightround cast event seems to be weird, using the primaryactor position is not pixel perfect, seen variances of almost 1y, so i increased the circle radius from 9 to 10
         if ((AID)spell.Action.ID == AID.RightRoundVisual)
-            _aoe = new(circle, Module.PrimaryActor.Position, default, spell.NPCFinishAt.AddSeconds(0.9f));
+            _aoe = new(circle, Module.PrimaryActor.Position, default, Module.CastFinishAt(spell, 0.9f));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
