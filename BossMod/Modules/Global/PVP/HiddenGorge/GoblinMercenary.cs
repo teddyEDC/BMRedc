@@ -101,7 +101,7 @@ class GobfireShootypops(BossModule module) : Components.GenericRotatingAOE(modul
         if ((AID)spell.Action.ID == AID.GobfireShootypopsStart)
         {
             _rotation = spell.Rotation;
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
         }
         if (_rotation != default)
             InitIfReady(caster);

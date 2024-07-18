@@ -123,8 +123,8 @@ class ShoreShaker(BossModule module) : Components.ConcentricAOEs(module, _shapes
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.ShoreShaker1)
-            AddSequence(Module.Center, spell.NPCFinishAt);
+        if ((AID)spell.Action.ID == AID.ShoreShaker)
+            AddSequence(Module.Center, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

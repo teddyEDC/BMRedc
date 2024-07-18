@@ -59,6 +59,8 @@ class ReplayDetailsWindow : UIWindow
         DrawControlRow();
         DrawTimelineRow();
         ImGui.TextUnformatted($"Num loaded modules: {_mgr.LoadedModules.Count}, num active modules: {_mgr.LoadedModules.Count(m => m.StateMachine.ActiveState != null)}, active module: {_mgr.ActiveModule?.GetType()}");
+        if (!_azimuthOverride)
+            _azimuth = _mgr.WorldState.Client.CameraAzimuth.Deg;
         ImGui.DragFloat("Camera azimuth", ref _azimuth, 1, -180, 180);
         ImGui.SameLine();
         ImGui.Checkbox("Override", ref _azimuthOverride);

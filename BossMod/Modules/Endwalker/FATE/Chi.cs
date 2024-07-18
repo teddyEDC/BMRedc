@@ -68,12 +68,12 @@ class Bunkerbuster(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID is AID.BunkerBuster2 && NumCastsStarted == 0)
         {
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
             ++NumCastsStarted;
         }
         else if ((AID)spell.Action.ID is AID.BunkerBuster3 && NumCastsStarted == 0)
         {
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
             ++NumCastsStarted;
         }
     }
@@ -167,7 +167,7 @@ class BouncingBomb(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.BouncingBomb2)
-            _activation = spell.NPCFinishAt;
+            _activation = Module.CastFinishAt(spell);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

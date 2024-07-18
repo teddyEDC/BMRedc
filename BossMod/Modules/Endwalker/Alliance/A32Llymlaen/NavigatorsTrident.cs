@@ -51,8 +51,8 @@ class NavigatorsTridentKnockback(BossModule module) : Components.Knockback(modul
         if ((AID)spell.Action.ID == AID.NavigatorsTridentAOE)
         {
             _sources.Clear();
-            _sources.Add(new(caster.Position, 20, spell.NPCFinishAt, _shape, spell.Rotation + 90.Degrees(), Kind.DirForward));
-            _sources.Add(new(caster.Position, 20, spell.NPCFinishAt, _shape, spell.Rotation - 90.Degrees(), Kind.DirForward));
+            _sources.Add(new(caster.Position, 20, Module.CastFinishAt(spell), _shape, spell.Rotation + 90.Degrees(), Kind.DirForward));
+            _sources.Add(new(caster.Position, 20, Module.CastFinishAt(spell), _shape, spell.Rotation - 90.Degrees(), Kind.DirForward));
         }
     }
 

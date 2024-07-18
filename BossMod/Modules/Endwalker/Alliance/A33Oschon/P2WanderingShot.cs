@@ -16,6 +16,6 @@ class P2WanderingShot(BossModule module) : Components.GenericAOEs(module, Action
             _ => default
         };
         if (coords != default)
-            _aoe = new(_shape, coords, default, spell.NPCFinishAt.AddSeconds(3.6f));
+            _aoe = new(_shape, coords, default, Module.CastFinishAt(spell, 3.6f));
     }
 }
