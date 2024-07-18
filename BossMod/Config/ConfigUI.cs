@@ -96,7 +96,8 @@ public sealed class ConfigUI : IDisposable
         { "followoutofcombat", "Toggles following during out of combat." },
         { "followtarget", "Toggles following targets during combat." },
         { "followtarget on/off", "Sets following target during combat to on or off." },
-        { "positional X", "Switch to positional when following targets. (any, rear, flank, front)" }
+        { "positional X", "Switch to positional when following targets. (any, rear, flank, front)" },
+        { "maxdistance X", "Set max distance to target for positional = any." }
     };
 
     private static readonly Dictionary<string, string> _autorotationCommands = new()

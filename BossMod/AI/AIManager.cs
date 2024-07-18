@@ -3,9 +3,7 @@ using BossMod.Autorotation;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.Game.Group;
-using ImGuiNET;
 
 namespace BossMod.AI;
 
@@ -206,6 +204,9 @@ sealed class AIManager : IDisposable
             case "POSITIONAL":
                 configModified = HandlePositionalCommand(messageData);
                 break;
+            case "MAXDISTANCE":
+                configModified = HandleMaxDistanceCommand(messageData);
+                break;
             default:
                 Service.Log($"[AI] Unknown command: {messageData[0]}");
                 break;
@@ -383,6 +384,30 @@ sealed class AIManager : IDisposable
                 return;
         }
         Service.Log($"[AI] Desired positional set to {_config.DesiredPositional}");
+    }
+
+    private bool HandleMaxDistanceCommand(string[] messageData)
+    {
+        if (messageData.Length < 2)
+        {
+            Service.Log("[AI] Missing distance value.");
+            return false;
+        }
+        var distanceStr = messageData[1];
+        if (distanceStr.Contains(",") && distanceStr.Contains("."))
+        {
+            Service.Log("[AI] Invalid distance format.");
+            return false;
+        }
+        distanceStr = distanceStr.Replace(',', '.');
+        if (!float.TryParse(distanceStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var distance))
+        {
+            Service.Log("[AI] Invalid distance value.");
+            return false;
+        }
+        _config.MaxDistanceToTarget = distance;
+        Service.Log($"[AI] Max distance to target set to {distance}");
+        return true;
     }
 
     private int FindPartyMemberByName(string name)

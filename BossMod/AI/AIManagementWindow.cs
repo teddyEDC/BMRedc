@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using Dalamud.Interface.Utility.Raii;
+using System.Globalization;
 
 namespace BossMod.AI;
 
@@ -76,6 +77,22 @@ sealed class AIManagementWindow : UIWindow
             _config.DesiredPositional = (Positional)positionalIndex;
             _config.Modified.Fire();
         }
+        ImGui.SameLine();
+        ImGui.Text("Max distance to target");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(100);
+        var maxDistanceStr = _config.MaxDistanceToTarget.ToString(CultureInfo.InvariantCulture);
+        if (ImGui.InputText("##MaxDistanceToTarget", ref maxDistanceStr, 64))
+        {
+            maxDistanceStr = maxDistanceStr.Replace(',', '.');
+            if (float.TryParse(maxDistanceStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxDistance))
+            {
+                _config.MaxDistanceToTarget = maxDistance;
+                _config.Modified.Fire();
+            }
+        }
+        ImGui.SameLine();
+        ImGui.Text("for positional = any");
         ImGui.Text("Autorotation AI preset");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(250);

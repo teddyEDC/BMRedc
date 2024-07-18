@@ -119,6 +119,36 @@ public record class RelPolygonWithHoles(List<WDir> Vertices, List<int> HoleStart
         var squaredLengthBA = (b.X - a.X) * (b.X - a.X) + (b.Z - a.Z) * (b.Z - a.Z);
         return dotProduct <= squaredLengthBA;
     }
+
+    public static Func<WPos, float> PolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
+    {
+        float distanceFunc(WPos p)
+        {
+            var localPoint = new WDir(p.X - origin.X, p.Z - origin.Z);
+            var isInside = polygon.Contains(localPoint);
+            var minDistance = polygon.Parts.SelectMany(part => part.ExteriorEdges)
+                .Min(edge => PolygonUtil.DistanceToEdge(p, PolygonUtil.ConvertToWPos(origin, edge)));
+
+            Parallel.ForEach(polygon.Parts, part =>
+            {
+                Parallel.ForEach(part.Holes, holeIndex =>
+                {
+                    var holeMinDistance = part.InteriorEdges(holeIndex)
+                        .Min(edge => PolygonUtil.DistanceToEdge(p, PolygonUtil.ConvertToWPos(origin, edge)));
+                    lock (polygon)
+                        minDistance = Math.Min(minDistance, holeMinDistance);
+                });
+            });
+            return isInside ? -minDistance : minDistance;
+        }
+        return ShapeDistance.CacheFunction(distanceFunc);
+    }
+
+    public static Func<WPos, float> InvertedPolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
+    {
+        var polygonWithHoles = PolygonWithHoles(origin, polygon);
+        return p => -polygonWithHoles(p);
+    }
 }
 
 // generic 'simplified' complex polygon that consists of 0 or more non-intersecting polygons with holes (note however that some polygons could be fully inside other polygon's hole)
