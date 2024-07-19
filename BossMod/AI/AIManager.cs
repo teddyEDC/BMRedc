@@ -204,8 +204,11 @@ sealed class AIManager : IDisposable
             case "POSITIONAL":
                 configModified = HandlePositionalCommand(messageData);
                 break;
-            case "MAXDISTANCE":
-                configModified = HandleMaxDistanceCommand(messageData);
+            case "MAXDISTANCETARGET":
+                configModified = HandleMaxDistanceTargetCommand(messageData);
+                break;
+            case "MAXDISTANCESLOT":
+                configModified = HandleMaxDistanceSlotCommand(messageData);
                 break;
             default:
                 Service.Log($"[AI] Unknown command: {messageData[0]}");
@@ -386,20 +389,14 @@ sealed class AIManager : IDisposable
         Service.Log($"[AI] Desired positional set to {_config.DesiredPositional}");
     }
 
-    private bool HandleMaxDistanceCommand(string[] messageData)
+    private bool HandleMaxDistanceTargetCommand(string[] messageData)
     {
         if (messageData.Length < 2)
         {
             Service.Log("[AI] Missing distance value.");
             return false;
         }
-        var distanceStr = messageData[1];
-        if (distanceStr.Contains(',', StringComparison.Ordinal) || distanceStr.Contains('.', StringComparison.Ordinal))
-        {
-            Service.Log("[AI] Invalid distance format.");
-            return false;
-        }
-        distanceStr = distanceStr.Replace(',', '.');
+        var distanceStr = messageData[1].Replace(',', '.');
         if (!float.TryParse(distanceStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var distance))
         {
             Service.Log("[AI] Invalid distance value.");
@@ -407,6 +404,24 @@ sealed class AIManager : IDisposable
         }
         _config.MaxDistanceToTarget = distance;
         Service.Log($"[AI] Max distance to target set to {distance}");
+        return true;
+    }
+
+    private bool HandleMaxDistanceSlotCommand(string[] messageData)
+    {
+        if (messageData.Length < 2)
+        {
+            Service.Log("[AI] Missing distance value.");
+            return false;
+        }
+        var distanceStr = messageData[1].Replace(',', '.');
+        if (!float.TryParse(distanceStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var distance))
+        {
+            Service.Log("[AI] Invalid distance value.");
+            return false;
+        }
+        _config.MaxDistanceToSlot = distance;
+        Service.Log($"[AI] Max distance to slot set to {distance}");
         return true;
     }
 
