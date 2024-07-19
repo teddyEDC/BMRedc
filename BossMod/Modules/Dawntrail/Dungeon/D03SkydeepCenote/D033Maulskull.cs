@@ -95,7 +95,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.Stonecarver1 or AID.Stonecarver2 or AID.Stonecarver3 or AID.Stonecarver4)
         {
             _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.SortBy(x => x.Activation);
+            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
         }
     }
 
@@ -156,7 +156,7 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()), data.Item2);
     }
 }
 
@@ -176,7 +176,7 @@ class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()), data.Item2);
     }
 }
 
@@ -198,9 +198,9 @@ class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
         {
             if (data.Item1.X == 90)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, direction, halfAngle));
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, direction, halfAngle), data.Item2);
             else if (data.Item1.X == 110)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, -direction, halfAngle));
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, -direction, halfAngle), data.Item2);
         }
     }
 }

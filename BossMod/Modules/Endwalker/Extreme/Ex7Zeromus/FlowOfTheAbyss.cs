@@ -72,7 +72,7 @@ class ChasmicNails(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.ChasmicNailsAOE1 or AID.ChasmicNailsAOE2 or AID.ChasmicNailsAOE3 or AID.ChasmicNailsAOE4 or AID.ChasmicNailsAOE5)
         {
             _angles.Add((spell.Rotation, Module.CastFinishAt(spell)));
-            _angles.SortBy(a => a.activation);
+            _angles.Sort((x, y) => x.activation.CompareTo(y.activation));
         }
     }
 

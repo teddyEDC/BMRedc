@@ -42,6 +42,18 @@ public static class ActorEnumeration
         return range.WhereSlot(i => i != slot);
     }
 
+    public static IEnumerable<Actor> Exclude(this IEnumerable<Actor> range, IEnumerable<Actor> actors)
+    {
+        var actorSet = new HashSet<Actor>(actors);
+        return range.Where(x => !actorSet.Contains(x));
+    }
+
+    public static IEnumerable<(int, Actor)> Exclude(this IEnumerable<(int, Actor)> range, IEnumerable<Actor> actors)
+    {
+        var actorSet = new HashSet<Actor>(actors);
+        return range.WhereActor(x => !actorSet.Contains(x));
+    }
+
     // select actors that have their corresponding bit in mask set
     public static IEnumerable<(int, Actor)> IncludedInMask(this IEnumerable<(int, Actor)> range, BitMask mask)
     {

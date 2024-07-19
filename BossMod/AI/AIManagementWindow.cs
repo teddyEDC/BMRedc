@@ -78,7 +78,7 @@ sealed class AIManagementWindow : UIWindow
             _config.Modified.Fire();
         }
         ImGui.SameLine();
-        ImGui.Text("Max distance to target");
+        ImGui.Text("Max distance to target/slot");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(100);
         var maxDistanceStr = _config.MaxDistanceToTarget.ToString(CultureInfo.InvariantCulture);
@@ -91,8 +91,6 @@ sealed class AIManagementWindow : UIWindow
                 _config.Modified.Fire();
             }
         }
-        ImGui.SameLine();
-        ImGui.Text("for positional = any");
         ImGui.Text("Autorotation AI preset");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(250);

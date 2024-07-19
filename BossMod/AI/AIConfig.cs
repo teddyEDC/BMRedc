@@ -44,6 +44,6 @@ sealed class AIConfig : ConfigNode
     [PropertyCombo(["Any", "Flank", "Rear", "Front"])]
     public Positional DesiredPositional = Positional.Any;
 
-    [PropertyDisplay("Max distance to target for positional any")]
-    public float MaxDistanceToTarget = 25;
+    [PropertyDisplay("Max distance to target/slot")]
+    public float MaxDistanceToTarget = 2.6f;
 }

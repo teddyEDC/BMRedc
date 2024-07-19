@@ -1,256 +1,179 @@
-﻿using Dalamud.Logging.Internal;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace BossMod.Dawntrail.Dungeon.D06Alexandria.D061AntivirusX;
+﻿namespace BossMod.Dawntrail.Dungeon.D06Alexandria.D061AntivirusX;
 
 public enum OID : uint
 {
-    Boss = 0x4173, // R8.000, x1
-    Helper = 0x233C, // R0.500, x20, 523 type
-    ElectricCharge = 0x18D6, // R0.500, x6
-    InterferonC = 0x4175, // R1.000, x0 (spawn during fight)
-    InterferonR = 0x4174, // R1.000, x0 (spawn during fight)
+    Boss = 0x4173, // R8.0
+    ElectricCharge = 0x18D6, // R0.5
+    InterferonC = 0x4175, // R1.0
+    InterferonR = 0x4174, // R1.0
+    Helper = 0x233C
 }
 
 public enum AID : uint
 {
     AutoAttack = 36388, // Boss->player, no cast, single-target
 
-    ImmuneResponse1 = 36378, // Boss->self, 5.0s cast, single-target
-    ImmuneResponse2 = 36379, // Helper->self, 6.0s cast, range 40 ?-degree cone // Frontal AOE cone
-    ImmuneResponse3 = 36380, // Boss->self, 5.0s cast, single-target
-    ImmuneResponse4 = 36381, // Helper->self, 6.0s cast, range 40 ?-degree cone // Side and back AOE cone
+    ImmuneResponseVisualSmall = 36378, // Boss->self, 5.0s cast, single-target
+    ImmuneResponseSmall = 36379, // Helper->self, 6.0s cast, range 40 120-degree cone, frontal AOE cone
+    ImmuneResponseVisualBig = 36380, // Boss->self, 5.0s cast, single-target
+    ImmuneResponseBig = 36381, // Helper->self, 6.0s cast, range 40 240-degree cone, side and back AOE cone
 
     PathocrossPurge = 36383, // InterferonC->self, 1.0s cast, range 40 width 6 cross
-    PathocircuitPurge = 36382, // InterferonR->self, 1.0s cast, range ?-40 donut
+    PathocircuitPurge = 36382, // InterferonR->self, 1.0s cast, range 4-40 donut
 
-    Quarantine1 = 36384, // Boss->self, 3.0s cast, single-target
-    Quarantine2 = 36386, // Helper->players, no cast, range 6 circle
+    QuarantineVisual = 36384, // Boss->self, 3.0s cast, single-target
+    Quarantine = 36386, // Helper->players, no cast, range 6 circle, stack
+    Disinfection = 36385, // Helper->player, no cast, range 6 circle, tank buster cleave
 
-    Disinfection = 36385, // Helper->player, no cast, range 6 circle
     Cytolysis = 36387, // Boss->self, 5.0s cast, range 40 circle
-}
-
-public enum SID : uint
-{
-    VulnerabilityUp = 1789, // Helper/InterferonC/InterferonR->player, extra=0x1/0x2/0x3
-    Electrocution1 = 3073, // none->player, extra=0x0
-    Electrocution2 = 3074, // none->player, extra=0x0
 }
 
 public enum IconID : uint
 {
-    Spreadmarker = 344, // player
+    Tankbuster = 344, // player
     Stackmarker = 62, // player
 }
-class ImmuneResponse2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ImmuneResponse2), new AOEShapeCone(40, 60.Degrees()));
-class ImmuneResponse4(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ImmuneResponse4), new AOEShapeCone(40, 120.Degrees()));
-class PathocrossPurge(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PathocrossPurge), new AOEShapeCross(40, 3));
-class PathocircuitPurge(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PathocircuitPurge), new AOEShapeDonut(6, 40));
 
-class PathoPurge(BossModule module) : Components.GenericAOEs(module)
+class ImmuneResponseArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<AOEInstance> aoes = [];
+    private static readonly AOEShapeCustom rect = new([new Rectangle(D061AntivirusX.ArenaCenter, 23, 19)], [new Rectangle(D061AntivirusX.ArenaCenter, 20, 14)]);
+    private AOEInstance? _aoe;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => aoes;
-
-    public void AddAoE(bool cross, WPos pos, float delay)
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var instance = new AOEInstance(cross ?
-                                              new AOEShapeCross(40, 3.5f) :
-                                              new AOEShapeDonut(4, 40),
-                                          pos, Activation: Module.WorldState.FutureTime(delay));
-        aoes.Add(instance);
-
-        if (!cross)
-        {
-            donutActive = true;
-            donutActiveInstance = instance;
-        }
+        if ((AID)spell.Action.ID == AID.ImmuneResponseVisualSmall && Module.Arena.Bounds == D061AntivirusX.StartingBounds)
+            _aoe = new(rect, Module.Center, default, Module.CastFinishAt(spell, 0.8f));
     }
 
-    public List<Actor> actors = [];
-    public int actorCount;
-
-    private bool donutActive;
-    private AOEInstance donutActiveInstance;
-    private int donutActorIndex;
-
-    public override void OnActorCreated(Actor actor)
+    public override void OnEventEnvControl(byte index, uint state)
     {
-        base.OnActorCreated(actor);
-        var actorOid = (OID)actor.OID;
-        if (actorOid is OID.InterferonC or OID.InterferonR)
+        if (state == 0x00020001 && index == 0x03)
         {
-            actors.Add(actor);
-            //Service.Log("added actor");
+            Module.Arena.Bounds = D061AntivirusX.DefaultBounds;
+            _aoe = null;
+        }
+    }
+}
 
-            if (actors.Count == 1)
-            {
-                Module.FindComponent<ImmuneResponse2>()!.Risky = false;
-                Module.FindComponent<ImmuneResponse4>()!.Risky = false;
+class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
+{
+    private static readonly AOEShapeDonut donut = new(4, 40);
+    private static readonly AOEShapeCross cross = new(40, 3);
+    private static readonly AOEShapeCone coneSmall = new(40, 60.Degrees());
+    private static readonly AOEShapeCone coneBig = new(40, 120.Degrees());
+    private readonly List<AOEInstance> _aoes = [];
 
-                bool cross = actorOid == OID.InterferonC;
-
-                AddAoE(cross, actor.Position, 13f);
-
-                if (!cross)
-                {
-                    donutActorIndex = 0;
-                }
-
-                //Service.Log($"Added first {(cross ? "cross" : "donut")} AoE");
-            }
-            else if (!donutActive && actorOid == OID.InterferonR)
-            {
-                donutActive = true;
-                AddAoE(false, actor.Position, 12f + (actors.Count - 1) * 4);
-            }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        if (_aoes.Count > 0)
+            yield return _aoes[0] with { Color = _aoes.Count > 1 ? ArenaColor.Danger : ArenaColor.AOE };
+        if (_aoes.Count > 1)
+        {
+            var isDonuts = _aoes[0].Shape == donut && _aoes[1].Shape == donut;
+            var isConeWithDelay = (_aoes[1].Shape == coneBig || _aoes[1].Shape == coneSmall) && (_aoes[1].Activation - _aoes[0].Activation).TotalSeconds > 2;
+            var isCross = _aoes[0].Shape == cross;
+            var isFrontDonutAndConeSmall = _aoes[1].Origin == new WPos(852, 823) && _aoes[0].Shape == coneSmall;
+            var isRisky = !isDonuts && !isConeWithDelay && !isFrontDonutAndConeSmall || isCross;
+            yield return _aoes[1] with { Risky = isRisky };
         }
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        base.OnCastStarted(caster, spell);
-        var actionId = (AID)spell.Action.ID;
-        if (actors.Contains(caster) && (actionId is AID.PathocircuitPurge or AID.PathocrossPurge))
+        if ((AID)spell.Action.ID is AID.ImmuneResponseBig or AID.ImmuneResponseSmall)
         {
-            actors.Remove(caster);
-            actorCount += 1;
-
-            Actor? next = actors.FirstOrDefault();
-
-            if (next != null)
-            {
-                var nextCross = (OID)next.OID == OID.InterferonC;
-                if (nextCross)
-                {
-                    AddAoE(true, next.Position, 3);
-
-
-                    Module.FindComponent<ImmuneResponse2>()!.Risky = true;
-                    Module.FindComponent<ImmuneResponse4>()!.Risky = true;
-                }
-
-                switch (actorCount)
-                {
-                    case 1:
-                        if (donutActive && donutActorIndex == 2)
-                        {
-                            donutActiveInstance.Risky = false;
-                        }
-                        goto case 3;
-                    case 3:
-                        if (!nextCross)
-                        {
-                            Module.FindComponent<ImmuneResponse2>()!.Risky = true;
-                            Module.FindComponent<ImmuneResponse4>()!.Risky = true;
-                        }
-                        break;
-                    default:
-                        if (!nextCross)
-                        {
-                            Module.FindComponent<ImmuneResponse2>()!.Risky = false;
-                            Module.FindComponent<ImmuneResponse4>()!.Risky = false;
-                        }
-                        break;
-                }
-            }
-            else
-            {
-                donutActive = false;
-                donutActorIndex = 0;
-            }
+            var coneType = spell.Action.ID == (int)AID.ImmuneResponseBig ? coneBig : coneSmall;
+            AddAOE(new(coneType, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
         }
     }
+
+    public override void OnActorCreated(Actor actor)
+    {
+        if ((OID)actor.OID is OID.InterferonR or OID.InterferonC)
+        {
+            AOEShape shape = actor.OID == (int)OID.InterferonR ? donut : cross;
+            var activationTime = _aoes.Count == 0 ? Module.WorldState.FutureTime(9.9f) : _aoes[0].Activation.AddSeconds(2.5f * _aoes.Count);
+            AddAOE(new(shape, actor.Position, actor.Rotation, activationTime));
+        }
+    }
+
+    private void AddAOE(AOEInstance aoe)
+    {
+        _aoes.Add(aoe);
+        _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+    }
+
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        var actionId = (AID)spell.Action.ID;
-        if (aoes.Count > 0 && actionId is AID.PathocircuitPurge or AID.PathocrossPurge)
+        switch ((AID)spell.Action.ID)
         {
-            var cross = actionId == AID.PathocrossPurge;
-            aoes.Remove(aoes.FirstOrDefault(aoe => cross && aoe.Shape is AOEShapeCross || !cross && aoe.Shape is AOEShapeDonut));
-            //Service.Log($"removed {(cross ? "cross" : "donut")} AoE");
-
-            bool reactivate = false;
-
-            if (!cross)
-            {
-                int nextDonut = actors.FindIndex(0, a => (OID)a.OID == OID.InterferonR);
-                if (nextDonut >= 0)
-                {
-                    Actor next = actors[nextDonut];
-                    AddAoE(false, next.Position, 1 + nextDonut * 5);
-                    //Service.Log("added Donut AoE");
-                }
-                else
-                    reactivate = true;
-            }
-
-            if (actorCount == 1 && donutActive && donutActorIndex == 2)
-            {
-                donutActiveInstance.Risky = true;
-            }
-
-            if (reactivate)
-            {
-                //Service.Log("reactivate modules");
-                actorCount = 0;
-                Module.FindComponent<ImmuneResponse2>()!.Risky = true;
-                Module.FindComponent<ImmuneResponse4>()!.Risky = true;
-            }
+            case AID.PathocrossPurge:
+            case AID.PathocircuitPurge:
+            case AID.ImmuneResponseBig:
+            case AID.ImmuneResponseSmall:
+                _aoes.RemoveAt(0);
+                break;
         }
     }
 }
-
-class Quarantine2(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine2), 6, 5, 4);
-
-class QuarantineNonTank(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine2), 6, 5, 4)
-{
-    public override void OnEventIcon(Actor actor, uint iconID)
-    {
-        //Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
-        Actor player = Module.WorldState.Party.Player()!;
-        if (actor.OID != player.OID && player.Role != Role.Tank)
-        {
-            base.OnEventIcon(actor, iconID);
-        }
-    }
-}
-
-class QuarantineTank(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine2), 8, 5)
-{
-    public override void OnEventIcon(Actor actor, uint iconID)
-    {
-        //Service.Log($"OnEventIcon: {module.PrimaryActor.OID} {actor.OID} {actor.Type} | {iconID}");
-        Actor player = Module.WorldState.Party.Player()!;
-        if (player.Role == Role.Tank)
-        {
-            base.OnEventIcon(actor, iconID);
-        }
-    }
-}
-
-class Disinfection(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Spreadmarker, ActionID.MakeSpell(AID.Disinfection), 7, 6);
 
 class Cytolysis(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Cytolysis));
+
+class Quarantine(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine), 6, 5.1f, 3, 3)
+{
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (!Module.FindComponent<Disinfection>()!.CurrentBaits.Any(x => x.Target == actor))
+        {
+            if (actor == ActiveStacks.FirstOrDefault().Target && Raid.WithoutSlot().Any(x => x.Type == ActorType.Buddy))
+            {
+                var party = Raid.WithoutSlot().Where(x => !x.IsDead);
+                List<Actor> exclude = [actor, Module.FindComponent<Disinfection>()!.CurrentBaits[0].Target];
+                var closestAlly = party.Exclude(exclude).Closest(actor.Position);
+                if (closestAlly != null)
+                    hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestAlly.Position, 3), ActiveStacks.First().Activation);
+            }
+            else
+                base.AddAIHints(slot, actor, assignment, hints);
+        }
+    }
+}
+
+class Disinfection(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(6), (uint)IconID.Tankbuster, ActionID.MakeSpell(AID.Disinfection), centerAtTarget: true)
+{
+    public override void AddGlobalHints(GlobalHints hints)
+    {
+        if (CurrentBaits.Count > 0)
+            hints.Add("Tankbuster cleave");
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (!CurrentBaits.Any(x => x.Target == actor) && Module.FindComponent<Quarantine>()!.ActiveStacks.Any(x => x.Activation.AddSeconds(-2) >= Module.WorldState.CurrentTime))
+        { }
+        else
+            base.AddAIHints(slot, actor, assignment, hints);
+    }
+}
 
 class D061AntivirusXStates : StateMachineBuilder
 {
     public D061AntivirusXStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<ImmuneResponse2>()
-            .ActivateOnEnter<ImmuneResponse4>()
-            .ActivateOnEnter<PathoPurge>()
-            //.ActivateOnEnter<PathocrossPurge>()
-            //.ActivateOnEnter<PathocircuitPurge>()
-            .ActivateOnEnter<QuarantineNonTank>()
-            .ActivateOnEnter<QuarantineTank>()
+            .ActivateOnEnter<ImmuneResponseArenaChange>()
+            .ActivateOnEnter<PathoCircuitCrossPurge>()
             .ActivateOnEnter<Disinfection>()
+            .ActivateOnEnter<Quarantine>()
             .ActivateOnEnter<Cytolysis>();
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 827, NameID = 12844)]
-public class D061AntivirusX(WorldState ws, Actor primary) : BossModule(ws, primary, new WPos(852, 822f), new ArenaBoundsRect(20, 14));
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 827, NameID = 12844)]
+public class D061AntivirusX(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
+{
+    public static readonly WPos ArenaCenter = new(852, 822);
+    public static readonly ArenaBoundsRect StartingBounds = new(22.5f, 18.5f);
+    public static readonly ArenaBoundsRect DefaultBounds = new(20, 14);
+}

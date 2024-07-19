@@ -45,7 +45,7 @@ abstract class SuperchainTheory(BossModule module) : BossComponent(module)
             else if (WorldState.Actors.Find(source.Tether.Target) is var origin && origin != null)
             {
                 Chains.Add(new(origin, source, shape, WorldState.FutureTime(ActivationDelay((source.Position - origin.Position).Length()))));
-                Chains.SortBy(c => c.Activation);
+                Chains.Sort((x, y) => x.Activation.CompareTo(y.Activation));
                 _pendingTethers.RemoveAt(i--);
             }
         }

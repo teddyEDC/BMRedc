@@ -66,6 +66,6 @@ class DivisiveOverruling(BossModule module) : Components.GenericAOEs(module)
     private void AddAOE(AOEInstance aoe)
     {
         AOEs.Add(aoe);
-        AOEs.SortBy(aoe => aoe.Activation);
+        AOEs.Sort((x, y) => x.Activation.CompareTo(y.Activation));
     }
 }

@@ -44,14 +44,14 @@ public enum AID : uint
 
 class PsychicWaveArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCustom square = new([new Rectangle(D053Ambrose.ArenaCenter, 33, 24)], [new Rectangle(D053Ambrose.ArenaCenter, 15, 19.5f)]);
+    private static readonly AOEShapeCustom rect = new([new Rectangle(D053Ambrose.ArenaCenter, 33, 24)], [new Rectangle(D053Ambrose.ArenaCenter, 15, 19.5f)]);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.PsychicWave && Module.Arena.Bounds == D053Ambrose.StartingBounds)
-            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.7f));
+            _aoe = new(rect, Module.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)

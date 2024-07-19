@@ -110,7 +110,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         if (_config.ForbidMovement)
             return new() { LeewaySeconds = float.MaxValue };
         if (_followMaster && !_config.FollowTarget || _followMaster && _config.FollowTarget && target == null)
-            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, 1, new(), Positional.Any);
+            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, _config.MaxDistanceToTarget, new(), Positional.Any);
         if (_followMaster && _config.FollowTarget && target != null)
             return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, _config.DesiredPositional);
         if (targeting.Target == null)
