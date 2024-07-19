@@ -44,22 +44,10 @@ public enum AID : uint
     TrueTornadoAOE = 25906, // Helper->location, 2.5s cast, range 4 circle
 }
 
-public enum SID : uint
-{
-    Double = 661, // Boss->Boss, extra=0x0
-    VulnerabilityUp = 1789, // Helper->player, extra=0x1
-    Quadruple = 2732, // Boss->Boss, extra=0x0
-}
-
 public enum IconID : uint
 {
     Tankbuster = 218, // player
     Spreadmarker = 139, // player
-}
-
-public enum TetherID : uint
-{
-    Tether160 = 160, // Karukeion->Boss
 }
 
 class TrueBraveryInterruptHint(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.TrueBravery));
@@ -83,7 +71,7 @@ class TrueAeroFirst(BossModule module) : Components.GenericBaitAway(module)
     {
         if ((AID)spell.Action.ID == AID.TrueAeroTarget)
             CurrentBaits.Add(new(Module.PrimaryActor, WorldState.Actors.Find(spell.MainTargetID)!, rect, Module.WorldState.FutureTime(5.7f)));
-        if ((AID)spell.Action.ID == AID.TrueAeroFirst)
+        else if ((AID)spell.Action.ID == AID.TrueAeroFirst)
             CurrentBaits.Clear();
     }
 }

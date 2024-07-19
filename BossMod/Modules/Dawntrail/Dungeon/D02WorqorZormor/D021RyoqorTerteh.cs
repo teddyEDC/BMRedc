@@ -92,7 +92,7 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
                     foreach (var e in circleAOE)
                         _aoesCircle.Add(new(circle, e.Position, default, activation1));
                     circleAOE.Clear();
-                    _aoesCircle.SortBy(e => e.Activation);
+                    _aoesCircle.Sort((x, y) => x.Activation.CompareTo(y.Activation));
                 }
             }
             else if (rectAOE.Contains(source))
@@ -104,7 +104,7 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
                     foreach (var e in rectAOE)
                         _aoesRect.Add(new(rect, e.Position, e.Rotation, activation1));
                     rectAOE.Clear();
-                    _aoesRect.SortBy(e => e.Activation);
+                    _aoesRect.Sort((x, y) => x.Activation.CompareTo(y.Activation));
                 }
             }
         }

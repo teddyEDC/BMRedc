@@ -57,7 +57,7 @@ class ArcaneArray(BossModule module) : ArcaneArrayPlot(module)
             }
 
             if (AOEs.Count > 10)
-                AOEs.SortBy(aoe => aoe.Activation);
+                AOEs.Sort((x, y) => x.Activation.CompareTo(y.Activation));
         }
     }
 }
@@ -90,6 +90,6 @@ class ArcanePlot(BossModule module) : ArcaneArrayPlot(module)
         }
         while (Module.InBounds(pos));
 
-        AOEs.SortBy(aoe => aoe.Activation);
+        AOEs.Sort((x, y) => x.Activation.CompareTo(y.Activation));
     }
 }

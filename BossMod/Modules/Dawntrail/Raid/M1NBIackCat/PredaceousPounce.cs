@@ -42,7 +42,7 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
         }
         if (_aoes.Count == 12 && !sorted)
         {
-            _aoes.SortBy(x => x.Activation);
+            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
             for (var i = 0; i < _aoes.Count; i++)
             {
                 var aoe = _aoes[i];

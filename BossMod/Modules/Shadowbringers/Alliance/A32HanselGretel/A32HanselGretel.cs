@@ -6,10 +6,10 @@ class Wail2(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSp
 class CripplingBlow1(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.CripplingBlow1));
 class CripplingBlow2(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.CripplingBlow2));
 
-class BloodySweep3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep3), new AOEShapeRect(50, 50, +5, DirectionOffset: 90.Degrees()));
-class BloodySweep4(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep4), new AOEShapeRect(50, 50, +5, DirectionOffset: -90.Degrees()));
-class BloodySweep7(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep7), new AOEShapeRect(50, 50, +10, DirectionOffset: 90.Degrees()));
-class BloodySweep8(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep8), new AOEShapeRect(50, 50, +10, DirectionOffset: -90.Degrees()));
+class BloodySweep3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep3), new AOEShapeRect(50, 50, +5, 90.Degrees()));
+class BloodySweep4(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep4), new AOEShapeRect(50, 50, +5, -90.Degrees()));
+class BloodySweep7(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep7), new AOEShapeRect(50, 50, +10, 90.Degrees()));
+class BloodySweep8(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BloodySweep8), new AOEShapeRect(50, 50, +10, -90.Degrees()));
 
 class SeedOfMagicAlpha2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.SeedOfMagicAlpha2), 5);
 class RiotOfMagic2(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.RiotOfMagic2), 5, 8);
@@ -21,7 +21,7 @@ class UnevenFooting(BossModule module) : Components.SelfTargetedAOEs(module, Act
 class HungryLance1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HungryLance1), new AOEShapeCone(40, 60.Degrees()));
 class HungryLance2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HungryLance2), new AOEShapeCone(40, 60.Degrees()));
 
-class Breakthrough1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Breakthrough1), new AOEShapeRect(50, 50, +10, DirectionOffset: 90.Degrees()));
+class Breakthrough1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Breakthrough1), new AOEShapeRect(50, 50, +10, 90.Degrees()));
 class SeedOfMagicBeta3(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.SeedOfMagicBeta3), 5);
 class Lamentation(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Lamentation));
 

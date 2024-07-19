@@ -103,7 +103,7 @@ class DualPyresSteelfoldStrike(BossModule module) : Components.GenericAOEs(modul
         if ((AID)spell.Action.ID is AID.DualPyres1 or AID.DualPyres2 or AID.DualPyres3 or AID.DualPyres4)
         {
             _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.SortBy(x => x.Activation);
+            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
         }
         else if ((AID)spell.Action.ID == AID.SteelfoldStrike)
             _aoes.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));

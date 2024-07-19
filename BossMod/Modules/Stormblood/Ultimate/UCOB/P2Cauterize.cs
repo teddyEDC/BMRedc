@@ -44,7 +44,7 @@ class P2Cauterize(BossModule module) : Components.GenericAOEs(module)
             if (_dragons.Count == 5)
             {
                 // sort by direction
-                _dragons.SortBy(d => d.position);
+                _dragons.Sort((x, y) => x.position.CompareTo(y.position));
             }
         }
     }

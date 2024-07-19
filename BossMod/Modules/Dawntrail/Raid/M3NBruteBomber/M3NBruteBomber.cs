@@ -52,7 +52,7 @@ class SelfDestruct(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.SelfDestruct1 or AID.SelfDestruct2)
         {
             _aoes.Add(new(circle, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.SortBy(x => x.Activation);
+            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
         }
     }
 

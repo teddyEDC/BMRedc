@@ -48,7 +48,7 @@ abstract class CommonAssignments(BossModule module) : BossComponent(module)
         if (assignments.Count == 0)
             return; // invalid assignments
 
-        assignments.SortBy(a => a.order);
+        assignments.Sort((x, y) => x.order.CompareTo(y.order));
         for (int i = 0; i < assignments.Count; i += 2)
         {
             var a1 = assignments[i];

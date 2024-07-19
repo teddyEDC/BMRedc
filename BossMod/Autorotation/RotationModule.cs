@@ -89,7 +89,7 @@ public abstract class RotationModule(RotationModuleManager manager, Actor player
     public AIHints Hints => Manager.Hints;
 
     // the main entry point of the module - given a set of strategy values, fill the queue with a set of actions to execute
-    public abstract void Execute(StrategyValues strategy, Actor? primaryTarget);
+    public abstract void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay);
 
     public virtual string DescribeState() => "";
 
@@ -112,10 +112,13 @@ public abstract class RotationModule(RotationModuleManager manager, Actor player
     // expected usage is `ResolveTargetOverride(strategy) ?? CustomSmartTargetingLogic(...)`
     protected Actor? ResolveTargetOverride(in StrategyValue strategy) => Manager.ResolveTargetOverride(strategy);
 
+    // TODO: reconsider...
     protected unsafe T GetGauge<T>() where T : unmanaged
     {
         T res = default;
-        ((ulong*)&res)[1] = World.Client.GaugePayload;
+        ((ulong*)&res)[1] = World.Client.GaugePayload.Low;
+        if (sizeof(T) > 16)
+            ((ulong*)&res)[2] = World.Client.GaugePayload.High;
         return res;
     }
 }

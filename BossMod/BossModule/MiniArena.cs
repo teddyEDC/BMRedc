@@ -349,13 +349,13 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
             ActorOutsideBounds(ClampToBounds(position), rotation, color);
     }
 
-    public void Actor(Actor? actor, uint color, bool allowDeadAndUntargetable = false)
+    public void Actor(Actor? actor, uint color = ArenaColor.Enemy, bool allowDeadAndUntargetable = false)
     {
         if (actor != null && !actor.IsDestroyed && (allowDeadAndUntargetable || actor.IsTargetable && !actor.IsDead))
             Actor(actor.Position, actor.Rotation, color);
     }
 
-    public void Actors(IEnumerable<Actor> actors, uint color, bool allowDeadAndUntargetable = false)
+    public void Actors(IEnumerable<Actor> actors, uint color = ArenaColor.Enemy, bool allowDeadAndUntargetable = false)
     {
         foreach (var a in actors)
             Actor(a, color, allowDeadAndUntargetable);

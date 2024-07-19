@@ -81,7 +81,7 @@ class DualBlowsSteeledStrike(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.DualBlows1 or AID.DualBlows2 or AID.DualBlows3 or AID.DualBlows4)
         {
             _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.SortBy(x => x.Activation);
+            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
         }
         else if ((AID)spell.Action.ID is AID.SteeledStrike1 or AID.SteeledStrike2)
             _aoes.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
