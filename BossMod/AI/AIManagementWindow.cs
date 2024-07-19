@@ -78,16 +78,30 @@ sealed class AIManagementWindow : UIWindow
             _config.Modified.Fire();
         }
         ImGui.SameLine();
-        ImGui.Text("Max distance to target/slot");
+        ImGui.Text("Max distance - to targets");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(100);
-        var maxDistanceStr = _config.MaxDistanceToTarget.ToString(CultureInfo.InvariantCulture);
-        if (ImGui.InputText("##MaxDistanceToTarget", ref maxDistanceStr, 64))
+        var maxDistanceTargetStr = _config.MaxDistanceToTarget.ToString(CultureInfo.InvariantCulture);
+        if (ImGui.InputText("##MaxDistanceToTarget", ref maxDistanceTargetStr, 64))
         {
-            maxDistanceStr = maxDistanceStr.Replace(',', '.');
-            if (float.TryParse(maxDistanceStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxDistance))
+            maxDistanceTargetStr = maxDistanceTargetStr.Replace(',', '.');
+            if (float.TryParse(maxDistanceTargetStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxDistance))
             {
                 _config.MaxDistanceToTarget = maxDistance;
+                _config.Modified.Fire();
+            }
+        }
+        ImGui.SameLine();
+        ImGui.Text("- to slots");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(100);
+        var maxDistanceSlotStr = _config.MaxDistanceToSlot.ToString(CultureInfo.InvariantCulture);
+        if (ImGui.InputText("##MaxDistanceToTarget", ref maxDistanceSlotStr, 64))
+        {
+            maxDistanceSlotStr = maxDistanceSlotStr.Replace(',', '.');
+            if (float.TryParse(maxDistanceSlotStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxDistance))
+            {
+                _config.MaxDistanceToSlot = maxDistance;
                 _config.Modified.Fire();
             }
         }
