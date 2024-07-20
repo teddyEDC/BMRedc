@@ -156,7 +156,7 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()), data.Item2);
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()), data.Item2.AddSeconds(-0.5f));
     }
 }
 
@@ -176,7 +176,7 @@ class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()), data.Item2);
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()), data.Item2.AddSeconds(-0.5f));
     }
 }
 
@@ -197,10 +197,11 @@ class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
         {
+            var activation = data.Item2.AddSeconds(-0.5f);
             if (data.Item1.X == 90)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, direction, halfAngle), data.Item2);
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, direction, halfAngle), activation);
             else if (data.Item1.X == 110)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, -direction, halfAngle), data.Item2);
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, -direction, halfAngle), activation);
         }
     }
 }

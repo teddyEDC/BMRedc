@@ -136,7 +136,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
         if (Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
             var forbiddenZones = Data.Select(w => ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight - 0.5f, 0, QuarterWidth)).ToList();
-            hints.AddForbiddenZone(p => forbiddenZones.Max(f => f(p)), Activation);
+            hints.AddForbiddenZone(p => forbiddenZones.Max(f => f(p)), Activation.AddSeconds(-0.8f));
         }
     }
 }
