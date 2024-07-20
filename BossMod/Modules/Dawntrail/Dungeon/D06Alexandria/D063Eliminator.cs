@@ -131,10 +131,11 @@ class Impact(BossModule module) : Components.KnockbackFromCastTarget(module, Act
     {
         if (Sources(slot, actor).Any() || Data.Item2 > Module.WorldState.CurrentTime) // 0.4s delay to wait for action effect
         {
+            var activation = Data.Item2.AddSeconds(-0.4f);
             if (Data.Item1.Z == -640)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 6, 8, 180.Degrees(), halfAngle), Data.Item2);
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 6, 8, 180.Degrees(), halfAngle), activation);
             else if (Data.Item1.Z == -656)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 6, 8, default, halfAngle), Data.Item2);
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 6, 8, default, halfAngle), activation);
         }
     }
 }

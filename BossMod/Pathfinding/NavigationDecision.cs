@@ -43,6 +43,9 @@ public struct NavigationDecision
 
     public static NavigationDecision Build(Context ctx, WorldState ws, AIHints hints, Actor player, WPos? targetPos, float targetRadius, Angle targetRot, Positional positional, float playerSpeed = 6, float forbiddenZoneCushion = DefaultForbiddenZoneCushion)
     {
+        if (targetRadius < 1)
+            targetRadius = 1; // ensure targetRadius is at least 1 to prevent game from freezing
+
         hints.WaypointManager.UpdateCurrentWaypoint(player.Position);
 
         if (hints.WaypointManager.HasWaypoints)

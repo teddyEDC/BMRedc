@@ -110,9 +110,9 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         if (_config.ForbidMovement)
             return new() { LeewaySeconds = float.MaxValue };
         if (_followMaster && !_config.FollowTarget || _followMaster && _config.FollowTarget && target == null)
-            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, Math.Clamp(_config.MaxDistanceToSlot, 1, 100), new(), Positional.Any); // follow distances smaller than 1 crash the game, so it is clamped for now
+            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, _config.MaxDistanceToSlot, new(), Positional.Any);
         if (_followMaster && _config.FollowTarget && target != null)
-            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, Math.Clamp(target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), 1, 100), target.Rotation, _config.DesiredPositional);
+            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, _config.DesiredPositional);
         if (targeting.Target == null)
             return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, null, 0, new(), Positional.Any);
         var adjRange = targeting.PreferredRange + player.HitboxRadius + targeting.Target.Actor.HitboxRadius;

@@ -174,7 +174,36 @@ class Surge(BossModule module) : Components.Knockback(module)
             var forbidden = new List<Func<WPos, float>>();
             foreach (var w in ActiveSafeWalls)
                 forbidden.Add(ShapeDistance.InvertedRect(new(Module.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? new WDir(-4, 0) : new(4, 0), 10, 0, 20));
-            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation);
+            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation.AddSeconds(-0.8f));
+        }
+    }
+}
+
+class SurgeHint(BossModule module) : Components.GenericAOEs(module)
+{
+    private const string Risk2Hint = "Walk into safespot for knockback!";
+    private const string StayHint = "Wait inside safespot for knockback!";
+    private static readonly AOEShapeRect rect = new(15.5f, 5);
+
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        var component = Module.FindComponent<Surge>()!.Sources(slot, actor).Any();
+        var activeSafeWalls = Module.FindComponent<Surge>()!.ActiveSafeWalls;
+        if (component)
+            foreach (var w in activeSafeWalls)
+                yield return new(rect, new(Module.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? -90.Degrees() : 90.Degrees(), default, ArenaColor.SafeFromAOE, false);
+    }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        base.AddHints(slot, actor, hints);
+        var activeSafespot = ActiveAOEs(slot, actor).Where(c => c.Shape == rect).ToList();
+        if (activeSafespot.Count != 0)
+        {
+            if (!activeSafespot.Any(c => c.Check(actor.Position)))
+                hints.Add(Risk2Hint);
+            else if (activeSafespot.Any(c => c.Check(actor.Position)))
+                hints.Add(StayHint, false);
         }
     }
 }
@@ -191,7 +220,8 @@ class D052DeceiverStates : StateMachineBuilder
             .ActivateOnEnter<InitializeTurrets>()
             .ActivateOnEnter<LaserLash>()
             .ActivateOnEnter<Electray>()
-            .ActivateOnEnter<Surge>();
+            .ActivateOnEnter<Surge>()
+            .ActivateOnEnter<SurgeHint>();
     }
 }
 

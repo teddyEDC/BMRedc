@@ -73,7 +73,7 @@ class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 5, m 
     {
         base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(new AOEShapeCone(11, 33.Degrees()), w.Origin + 11 * w.Rotation.ToDirection(), w.Rotation + 180.Degrees());
+            hints.AddForbiddenZone(new AOEShapeCircle(5), w.Origin + 3 * w.Rotation.ToDirection());
     }
 }
 
@@ -129,7 +129,7 @@ class GreatFlood(BossModule module) : Components.KnockbackFromCastTarget(module,
         var source = Sources(slot, actor).FirstOrDefault();
         var component = Module.FindComponent<Allfire>()!.ActiveAOEs(slot, actor).Any();
         if (!component && (source != default || Data.Item3 > Module.WorldState.CurrentTime)) // 1s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedRect(Data.Item1, Data.Item2, 12, 0, 20), Data.Item3);
+            hints.AddForbiddenZone(ShapeDistance.InvertedRect(Data.Item1, Data.Item2, 12, 0, 20), Data.Item3.AddSeconds(-1));
     }
 }
 
@@ -235,7 +235,7 @@ class Windswrath1(BossModule module) : Components.KnockbackFromCastTarget(module
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center, 5));
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center, 5), activation.AddSeconds(-1));
     }
 }
 
@@ -288,7 +288,7 @@ class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module
             else
                 forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, Math.Clamp(timespan + 5, 8, timespan + 5)));
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation);
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation.AddSeconds(-1));
         }
     }
 }
