@@ -73,7 +73,7 @@ class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 5, m 
     {
         base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(new AOEShapeRect(6, 6), w.Origin, w.Rotation);
+            hints.AddForbiddenZone(new AOEShapeCone(11, 33.Degrees()), w.Origin + 11 * w.Rotation.ToDirection(), w.Rotation + 180.Degrees());
     }
 }
 
@@ -155,10 +155,10 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
                     yield return new(a.Shape, a.Origin, a.Rotation, a.Activation, ArenaColor.Danger);
             if (_aoesWave2.Count > 0)
                 foreach (var a in _aoesWave2)
-                    yield return new(a.Shape, a.Origin, a.Rotation, a.Activation, _aoesWave1.Count > 0 ? ArenaColor.AOE : ArenaColor.Danger);
+                    yield return new(a.Shape, a.Origin, a.Rotation, a.Activation, _aoesWave1.Count > 0 ? ArenaColor.AOE : ArenaColor.Danger, _aoesWave1.Count == 0);
             if (_aoesWave1.Count == 0 && _aoesWave3.Count > 0)
                 foreach (var a in _aoesWave3)
-                    yield return new(a.Shape, a.Origin, a.Rotation, a.Activation, _aoesWave2.Count > 0 ? ArenaColor.AOE : ArenaColor.Danger);
+                    yield return new(a.Shape, a.Origin, a.Rotation, a.Activation, _aoesWave2.Count > 0 ? ArenaColor.AOE : ArenaColor.Danger, _aoesWave2.Count == 0);
         }
         else if ((_aoesWave3.Count > 0 || _aoesWave1.Count > 0) && (source != default || Module.FindComponent<GreatFlood>()!.Data.Item3 > Module.WorldState.CurrentTime))
             yield return new(safespot, data.Item1, data.Item2, data.Item3, ArenaColor.SafeFromAOE);
@@ -242,6 +242,23 @@ class Windswrath1(BossModule module) : Components.KnockbackFromCastTarget(module
 class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Windswrath2), 15)
 {
     private DateTime activation;
+    private enum Pattern { None, EWEW, WEWE }
+    private Pattern CurrentPattern;
+    private static readonly Angle a15 = 15.Degrees();
+    private static readonly Angle a165 = 165.Degrees();
+    private static readonly Angle a105 = 105.Degrees();
+    private static readonly Angle a75 = 75.Degrees();
+
+    public override void OnActorCreated(Actor actor)
+    {
+        if ((OID)actor.OID == OID.BitingWind)
+        {
+            if (actor.Position == new WPos(-74, -180))
+                CurrentPattern = Pattern.EWEW;
+            else if (actor.Position == new WPos(-74, -210))
+                CurrentPattern = Pattern.WEWE;
+        }
+    }
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Whirlwind>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
 
@@ -258,11 +275,20 @@ class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module
         var component = Module.FindComponent<Whirlwind>()?.ActiveAOEs(slot, actor)?.ToList();
         if (component != null && component.Count != 0 && Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
         {
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center, 5));
-            foreach (var c in component!)
-                forbidden.Add(ShapeDistance.Cone(Module.Center, 20, Angle.FromDirection(c.Origin - Module.Center), 25.Degrees()));
+            base.AddAIHints(slot, actor, assignment, hints);
+            var timespan = (float)(activation - Module.WorldState.CurrentTime).TotalSeconds;
+            if (timespan <= 3)
+            {
+                var patternWEWE = CurrentPattern == Pattern.WEWE;
+                forbidden.Add(ShapeDistance.InvertedCone(Module.Center - (patternWEWE ? new WDir(0, 1) : new(0, 1)), 5, patternWEWE ? a15 : -a15, a15));
+                forbidden.Add(ShapeDistance.InvertedCone(Module.Center - (patternWEWE ? new WDir(0, -1) : new(0, -1)), 5, patternWEWE ? -a165 : a165, a15));
+                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 5, patternWEWE ? a105 : -a105, a15));
+                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 5, patternWEWE ? -a75 : a75, a15));
+            }
+            else
+                forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, Math.Clamp(timespan + 5, 8, timespan + 5)));
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), activation);
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation);
         }
     }
 }

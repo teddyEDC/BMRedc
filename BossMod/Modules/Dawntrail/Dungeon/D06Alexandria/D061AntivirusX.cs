@@ -73,7 +73,7 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
             var isDonuts = _aoes[0].Shape == donut && _aoes[1].Shape == donut;
             var isConeWithDelay = (_aoes[1].Shape == coneBig || _aoes[1].Shape == coneSmall) && (_aoes[1].Activation - _aoes[0].Activation).TotalSeconds > 2;
             var isCross = _aoes[0].Shape == cross;
-            var isFrontDonutAndConeSmall = _aoes[1].Origin == new WPos(852, 823) && _aoes[0].Shape == coneSmall;
+            var isFrontDonutAndConeSmall = _aoes[1].Origin == new WPos(852, 823) && _aoes[1].Shape == donut && _aoes[0].Shape == coneSmall;
             var isRisky = !isDonuts && !isConeWithDelay && !isFrontDonutAndConeSmall || isCross;
             yield return _aoes[1] with { Risky = isRisky };
         }

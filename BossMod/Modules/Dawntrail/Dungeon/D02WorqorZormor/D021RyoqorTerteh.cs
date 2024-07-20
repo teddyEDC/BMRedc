@@ -36,7 +36,7 @@ public enum TetherID : uint
     Freeze = 272, // RorrlohTeh/QorrlohTeh1->Boss
 }
 
-class FrostingFracasVoidzone(BossModule module) : Components.GenericAOEs(module)
+class FrostingFracasArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeDonut donut = new(20, 22.5f);
     private AOEInstance? _aoe;
@@ -128,7 +128,7 @@ class D021RyoqorTertehStates : StateMachineBuilder
     public D021RyoqorTertehStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<FrostingFracasVoidzone>()
+            .ActivateOnEnter<FrostingFracasArenaChange>()
             .ActivateOnEnter<FrostingFracas>()
             .ActivateOnEnter<IceScreamFrozenSwirl>()
             .ActivateOnEnter<SnowBoulder>()

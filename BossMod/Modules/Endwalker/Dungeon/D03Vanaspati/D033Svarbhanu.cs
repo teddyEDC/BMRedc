@@ -97,8 +97,8 @@ class ChaoticUndercurrent(BossModule module) : Components.GenericAOEs(module)
 
     private void AddAOEs((int, int) indices, DateTime activation)
     {
-        _aoes.Add(new AOEInstance(rect, coords[indices.Item1], rotation, activation));
-        _aoes.Add(new AOEInstance(rect, coords[indices.Item2], rotation, activation));
+        _aoes.Add(new(rect, coords[indices.Item1], rotation, activation));
+        _aoes.Add(new(rect, coords[indices.Item2], rotation, activation));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -149,7 +149,7 @@ class CosmicKissRect(BossModule module) : Components.GenericAOEs(module)
     private void AddAOEs(IEnumerable<int> indices, float delay)
     {
         foreach (var index in indices)
-            _aoes.Add(new AOEInstance(rect, coords[index], rotation, Module.WorldState.FutureTime(delay)));
+            _aoes.Add(new(rect, coords[index], rotation, Module.WorldState.FutureTime(delay)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

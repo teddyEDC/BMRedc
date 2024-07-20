@@ -161,9 +161,14 @@ class WindShotStack(BossModule module) : Components.UniformStackSpread(module, 2
     {
         if (Stacks.Count > 0)
         {
-            var closestTarget = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position);
-            if (closestTarget != null)
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestTarget.Position, 2), ActiveStacks.First().Activation);
+            var closestAlly = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position);
+            if (closestAlly != null)
+            {
+                var comp = Module.FindComponent<WindEarthShot>()!.ActiveAOEs(slot, actor).ToList();
+                var isSafe = comp.Any(c => c.Shape is AOEShapeDonut && !c.Check(closestAlly.Position) || c.Shape is AOEShapeCustom && c.Check(closestAlly.Position));
+                if (isSafe)
+                    hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestAlly.Position, 2), ActiveStacks.First().Activation);
+            }
         }
     }
 
