@@ -236,29 +236,8 @@ class DestructiveHeat(BossModule module) : Components.SpreadFromCastTargets(modu
 
 class Landing(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Landing), 8);
 
-class DeepThunder1(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.DeepThunderTower1), 6, 4, 4)
-{
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Towers.Count > 0)
-        {
-            base.AddAIHints(slot, actor, assignment, hints);
-            hints.PredictedDamage.Add((Raid.WithSlot().Mask(), default));
-        }
-    }
-}
-
-class DeepThunder2(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.DeepThunderTower2), 6, 4, 4)
-{
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Towers.Count > 0)
-        {
-            base.AddAIHints(slot, actor, assignment, hints);
-            hints.PredictedDamage.Add((Raid.WithSlot().Mask(), default));
-        }
-    }
-}
+class DeepThunder1(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.DeepThunderTower1), 6, 4, 4);
+class DeepThunder2(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.DeepThunderTower2), 6, 4, 4);
 
 class WroughtFire(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.WroughtFire), new AOEShapeCircle(6), true)
 {
