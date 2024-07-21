@@ -16,6 +16,9 @@ public class BossModuleConfig : ConfigNode
     [PropertyDisplay("Rotate map to match camera orientation")]
     public bool RotateArena = true;
 
+    [PropertyDisplay("Rotate map by 180° if rotating map is off")]
+    public bool FlipArena = false;
+
     [PropertyDisplay("Expand space reserved for map to allow arbitrary rotations")]
     public bool AddSlackForRotations = true;
 
