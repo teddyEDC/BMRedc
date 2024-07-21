@@ -55,6 +55,8 @@ public class GenericTowers(BossModule module, ActionID aid = default) : CastCoun
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
+        if (Towers.Count == 0)
+            return;
         var forbiddenInverted = new List<Func<WPos, float>>();
         var forbidden = new List<Func<WPos, float>>();
         if (!Towers.Any(x => x.ForbiddenSoakers[slot]))
@@ -75,6 +77,8 @@ public class GenericTowers(BossModule module, ActionID aid = default) : CastCoun
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Towers[0].Activation);
         }
+        foreach (var t in Towers)
+            hints.PredictedDamage.Add((Module.Raid.WithSlot().ExcludedFromMask(t.ForbiddenSoakers).InRadius(t.Position, t.Radius).Mask(), t.Activation));
     }
 }
 

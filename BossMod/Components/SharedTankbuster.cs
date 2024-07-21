@@ -39,9 +39,17 @@ public class GenericSharedTankbuster(BossModule module, ActionID aid, AOEShape s
         {
             var shape = OriginAtTarget ? Shape.Distance(Target.Position, Target.Rotation) : Shape.Distance(Source.Position, Angle.FromDirection(Target.Position - Source.Position));
             if (actor.Role == Role.Tank)
+            {
                 hints.AddForbiddenZone(p => -shape(p), Activation);
+            }
             else
                 hints.AddForbiddenZone(shape, Activation);
+        }
+        else if (Source != null && Target != null && Target == actor && Shape is AOEShapeCircle circle)
+        {
+            var shape = circle;
+            foreach (var c in Raid.WithoutSlot().Where(x => x.Role != Role.Tank))
+                hints.AddForbiddenZone(ShapeDistance.Circle(c.Position, shape.Radius), Activation);
         }
     }
 
@@ -49,12 +57,23 @@ public class GenericSharedTankbuster(BossModule module, ActionID aid, AOEShape s
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        if (Source != null && Target != null)
+        if (Source != null && Target != null && pc.Role == Role.Tank)
         {
             if (OriginAtTarget)
-                Shape.Outline(Arena, Target);
+                Shape.Outline(Arena, Target, ArenaColor.Safe);
             else
-                Shape.Outline(Arena, Source.Position, Angle.FromDirection(Target.Position - Source.Position));
+                Shape.Outline(Arena, Source.Position, Angle.FromDirection(Target.Position - Source.Position), ArenaColor.Safe);
+        }
+    }
+
+    public override void DrawArenaBackground(int pcSlot, Actor pc)
+    {
+        if (Source != null && Target != null && pc.Role != Role.Tank)
+        {
+            if (OriginAtTarget)
+                Shape.Draw(Arena, Target);
+            else
+                Shape.Draw(Arena, Source.Position, Angle.FromDirection(Target.Position - Source.Position));
         }
     }
 

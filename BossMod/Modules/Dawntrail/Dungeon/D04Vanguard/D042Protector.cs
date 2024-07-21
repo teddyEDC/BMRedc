@@ -76,7 +76,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
         (0, 1), (7, 9), (5, 6), (13, 20), (17, 18), (11, 14), (21, 20), (14, 15),
         (12, 17), (1, 10), (3, 7), (6, 8), (25, 5), (25, 11), (2, 5), (4, 8),
         (16, 21), (21, 23), (23, 10), (13, 19), (15, 24), (15, 19), (16, 11),
-        (24, 8), (0, 22), (0, 4), (2, 10), (22, 13)
+        (24, 8), (0, 22), (0, 4), (2, 10), (22, 13),
     ];
 
     private static readonly RectangleSE[] Rectangles = RectanglePairs
@@ -96,7 +96,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCustom electricFences00020001AOE = new(union00020001Shapes);
     private static readonly ArenaBoundsComplex electricFences00020001Arena = new([defaultRect], union00020001Shapes, Offset: -Radius);
 
-    private static readonly List<Shape> union00200010Shapes = GetShapesForUnion([20, 21, 22, 23, 24, 25, 19, 26], [4, 8, 11, 19, 13, 10]);
+    private static readonly List<Shape> union00200010Shapes = GetShapesForUnion([20, 21, 22, 23, 24, 25, 26, 27], [4, 8, 11, 19, 13, 10]);
     private static readonly AOEShapeCustom electricFences00200010AOE = new(union00200010Shapes);
     private static readonly ArenaBoundsComplex electricFences00200010Arena = new([defaultRect], union00200010Shapes, Offset: -Radius);
 
