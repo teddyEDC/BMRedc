@@ -145,11 +145,11 @@ class Compression(BossModule module) : Components.SelfTargetedAOEs(module, Actio
 class Overexposure(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.OverexposureMarker), ActionID.MakeSpell(AID.Overexposure), 5, 40, 3);
 class LightOfDevotion(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.LightOfDevotionMarker), ActionID.MakeSpell(AID.LightOfDevotion), 5.5f, 40, 3)
 {
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
+    public override void Update()
     {
         // as soon as limit break phase ends the line stack gets cancelled
-        if ((AID)spell.Action.ID == AID.LightOfDevotionVisual && CurrentBaits.Count > 0)
-            CurrentBaits.RemoveAt(0);
+        if (CurrentBaits.Count > 0 && Module.Enemies(OID.LightningGenerator).Count == 0)
+            CurrentBaits.Clear();
     }
 }
 
