@@ -69,7 +69,10 @@ class JudgmentDay(BossModule module) : Components.GenericTowers(module)
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Towers.Count > 0)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 5));
+        {
+            base.AddAIHints(slot, actor, assignment, hints);
+            hints.PredictedDamage.Add((Raid.WithSlot().Mask(), default));
+        }
         if (Towers.Count > 1)
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
     }

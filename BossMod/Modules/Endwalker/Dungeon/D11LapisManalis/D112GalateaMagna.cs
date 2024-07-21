@@ -199,12 +199,6 @@ public class TenebrismTowers(BossModule module) : Components.GenericTowers(modul
         if ((AID)spell.Action.ID == AID.Burst)
             Towers.RemoveAll(t => t.Position.AlmostEqual(caster.Position, 1));
     }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Towers.Count > 0)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 5));
-    }
 }
 
 class Doom(BossModule module) : BossComponent(module)

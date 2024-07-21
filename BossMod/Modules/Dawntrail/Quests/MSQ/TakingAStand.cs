@@ -193,12 +193,6 @@ class RiotousRampage(BossModule module) : Components.GenericTowers(module)
         if ((AID)spell.Action.ID == AID.RiotousRampage && Towers.Count > 0)
             Towers.RemoveAt(0);
     }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Towers.Count > 0)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 4));
-    }
 }
 
 class Roar1(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Roar1));

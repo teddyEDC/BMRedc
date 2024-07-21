@@ -52,6 +52,30 @@ public class GenericTowers(BossModule module, ActionID aid = default) : CastCoun
         foreach (var t in Towers)
             DrawTower(Arena, t.Position, t.Radius, !t.ForbiddenSoakers[pcSlot]);
     }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        var forbiddenInverted = new List<Func<WPos, float>>();
+        var forbidden = new List<Func<WPos, float>>();
+        if (!Towers.Any(x => x.ForbiddenSoakers[slot]))
+        {
+            foreach (var t in Towers.Where(x => x.NumInside(Module) < x.MinSoakers || actor.Position.InCircle(x.Position, x.Radius) && x.CorrectAmountInside(Module)))
+                forbiddenInverted.Add(ShapeDistance.InvertedCircle(t.Position, t.Radius));
+            foreach (var t in Towers.Where(x => x.NumInside(Module) > x.MaxSoakers || !actor.Position.InCircle(x.Position, x.Radius) && x.CorrectAmountInside(Module)))
+                forbidden.Add(ShapeDistance.Circle(t.Position, t.Radius));
+            if (forbidden.Count > 0)
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Towers[0].Activation);
+            if (forbidden.Count == 0 && forbiddenInverted.Count > 0)
+                hints.AddForbiddenZone(p => forbiddenInverted.Select(f => f(p)).Max(), Towers[0].Activation);
+        }
+        else if (Towers.Any(x => x.ForbiddenSoakers[slot]))
+        {
+            foreach (var t in Towers)
+                forbidden.Add(ShapeDistance.Circle(t.Position, t.Radius));
+            if (forbidden.Count > 0)
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Towers[0].Activation);
+        }
+    }
 }
 
 public class CastTowers(BossModule module, ActionID aid, float radius, int minSoakers = 1, int maxSoakers = 1) : GenericTowers(module, aid)

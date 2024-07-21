@@ -13,13 +13,4 @@ class SerpentAscending(BossModule module) : Components.GenericTowers(module)
         if ((AID)spell.Action.ID is AID.SerpentsFang or AID.SerpentsJaws)
             Towers.Clear();
     }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        var forbidden = new List<Func<WPos, float>>();
-        foreach (var t in Towers.Where(x => !Raid.WithoutSlot().InRadius(x.Position, 3).Any() || actor.Position.InCircle(x.Position, 3)))
-            forbidden.Add(ShapeDistance.InvertedCircle(t.Position, 3));
-        if (forbidden.Count > 0)
-            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), Towers[0].Activation);
-    }
 }
