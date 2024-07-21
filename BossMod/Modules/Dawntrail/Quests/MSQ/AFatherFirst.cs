@@ -163,12 +163,6 @@ class TheThrill(BossModule module) : Components.GenericTowers(module)
         if ((AID)spell.Action.ID is AID.TheThrill1 or AID.TheThrill2 && Towers.Count > 0)
             Towers.RemoveAt(0);
     }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Towers.Count > 0)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 3));
-    }
 }
 
 class FireVoidzone(BossModule module) : Components.PersistentVoidzone(module, 6, m => m.Enemies(OID.FireVoidzone).Where(z => z.EventState != 7));

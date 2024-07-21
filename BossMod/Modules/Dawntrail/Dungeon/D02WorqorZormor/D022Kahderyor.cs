@@ -182,18 +182,7 @@ class WindShotStack(BossModule module) : Components.UniformStackSpread(module, 2
 }
 
 class WindUnbound(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.WindUnbound));
-class CrystallineCrush(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.CrystallineCrush), 6, 4, 4)
-{
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Towers.Count > 0)
-        {
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 6), Towers[0].Activation);
-            hints.PredictedDamage.Add((Raid.WithSlot().Mask(), Towers[0].Activation));
-        }
-    }
-}
-
+class CrystallineCrush(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.CrystallineCrush), 6, 4, 4);
 class EarthenShot(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.EarthenShot), 6);
 class StalagmiteCircle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.StalagmiteCircle), new AOEShapeCircle(15));
 class CrystallineStorm(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.CrystallineStorm), new AOEShapeRect(25, 1, 25));

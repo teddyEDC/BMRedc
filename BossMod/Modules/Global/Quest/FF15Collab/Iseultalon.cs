@@ -72,12 +72,6 @@ class Electrocution(BossModule module) : Components.GenericTowers(module)
     }
 
     private WPos DeterminePosition(Actor caster, ActorCastInfo spell) => spell.TargetID == caster.InstanceID ? caster.Position : WorldState.Actors.Find(spell.TargetID)?.Position ?? spell.LocXZ;
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Towers.Count > 0 && NumCasts == 0) // Noctis ignores the first tower as a tutorial
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 3));
-    }
 }
 
 class Electrocution2(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.Electrocution2), 3)

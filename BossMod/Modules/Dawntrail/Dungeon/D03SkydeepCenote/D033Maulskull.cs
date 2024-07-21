@@ -242,7 +242,7 @@ class DeepThunder1(BossModule module) : Components.CastTowers(module, ActionID.M
     {
         if (Towers.Count > 0)
         {
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 6), Towers[0].Activation);
+            base.AddAIHints(slot, actor, assignment, hints);
             hints.PredictedDamage.Add((Raid.WithSlot().Mask(), default));
         }
     }
@@ -254,7 +254,7 @@ class DeepThunder2(BossModule module) : Components.CastTowers(module, ActionID.M
     {
         if (Towers.Count > 0)
         {
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Towers[0].Position, 6), Towers[0].Activation);
+            base.AddAIHints(slot, actor, assignment, hints);
             hints.PredictedDamage.Add((Raid.WithSlot().Mask(), default));
         }
     }
