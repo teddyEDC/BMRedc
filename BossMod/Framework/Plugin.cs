@@ -24,8 +24,8 @@ public sealed class Plugin : IDalamudPlugin
     private readonly ActionManagerEx _amex;
     private readonly WorldStateGameSync _wsSync;
     private readonly RotationModuleManager _rotation;
-    private readonly AI.AIManager _ai;
-    private readonly AI.Broadcast _broadcast;
+    private readonly AIManager _ai;
+    private readonly Broadcast _broadcast;
     private readonly IPCProvider _ipc;
     private TimeSpan _prevUpdateTime;
 
@@ -79,7 +79,7 @@ public sealed class Plugin : IDalamudPlugin
         _hintsBuilder = new(_ws, _bossmod);
         _amex = new(_ws, _hints);
         _wsSync = new(_ws, _amex);
-        _rotation = new(_rotationDB, _bossmod, _hints, _amex);
+        _rotation = new(_rotationDB, _bossmod, _hints);
         _ai = new(_rotation, _amex);
         _broadcast = new();
         _ipc = new(_rotation, _amex);
@@ -87,7 +87,7 @@ public sealed class Plugin : IDalamudPlugin
         _configUI = new(Service.Config, _ws, _rotationDB);
         _wndBossmod = new(_bossmod);
         _wndBossmodHints = new(_bossmod);
-        _wndReplay = new(_ws, _rotationDB.Plans, new(dalamud.ConfigDirectory.FullName + "/replays"));
+        _wndReplay = new(_ws, _rotationDB, new(dalamud.ConfigDirectory.FullName + "/replays"));
         _wndRotation = new(_rotation, _amex, () => OpenConfigUI("Presets"));
         _wndDebug = new(_ws, _rotation, _amex);
 
@@ -127,29 +127,41 @@ public sealed class Plugin : IDalamudPlugin
             return;
         }
 
-        switch (split[0])
+        switch (split[0].ToUpperInvariant())
         {
-            case "d":
+            case "D":
                 _wndDebug.IsOpen = true;
                 _wndDebug.BringToFront();
                 break;
-            case "cfg":
+            case "CFG":
                 var output = Service.Config.ConsoleCommand(new ArraySegment<string>(split, 1, split.Length - 1));
                 foreach (var msg in output)
                     Service.ChatGui.Print(msg);
                 break;
-            case "gc":
+            case "GC":
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
                 break;
-            case "r":
+            case "R":
                 _wndReplay.SetVisible(!_wndReplay.IsOpen);
                 break;
-            case "ar":
+            case "AR":
                 ParseAutorotationCommands(split);
                 break;
+            case "RESTOREROTATION":
+                ToggleRestoreRotation();
+                break;
         }
+    }
+
+    private bool ToggleRestoreRotation()
+    {
+        var config = Service.Config.Get<ActionTweaksConfig>();
+        config.RestoreRotation = !config.RestoreRotation;
+        config.Modified.Fire();
+        Service.Log($"Restore character orientation after action use is now {(config.RestoreRotation ? "enabled" : "disabled")}");
+        return true;
     }
 
     private void OpenConfigUI(string showTab = "")
@@ -167,7 +179,7 @@ public sealed class Plugin : IDalamudPlugin
         _bossmod.Update();
         _hintsBuilder.Update(_hints, PartyState.PlayerSlot);
         _amex.QueueManualActions();
-        _rotation.Update(_amex.AnimationLockDelayEstimate);
+        _rotation.Update(_amex.AnimationLockDelayEstimate, _amex.InputOverride.IsMoveRequested() ? 0 : _ai.ForceMovementIn);
         _ai.Update();
         _broadcast.Update();
         _amex.FinishActionGather();
@@ -211,23 +223,23 @@ public sealed class Plugin : IDalamudPlugin
 
     private void ParseAutorotationCommands(string[] cmd)
     {
-        switch (cmd.Length > 1 ? cmd[1] : "")
+        switch (cmd.Length > 1 ? cmd[1].ToUpperInvariant() : "")
         {
-            case "clear":
+            case "CLEAR":
                 Service.Log($"Console: clearing autorotation preset '{_rotation.Preset?.Name ?? "<n/a>"}'");
                 _rotation.Preset = null;
                 break;
-            case "disable":
+            case "DISABLE":
                 Service.Log($"Console: force-disabling from preset '{_rotation.Preset?.Name ?? "<n/a>"}'");
                 _rotation.Preset = RotationModuleManager.ForceDisable;
                 break;
-            case "set":
+            case "SET":
                 if (cmd.Length <= 2)
                     PrintAutorotationHelp();
                 else
                     ParseAutorotationSetCommand(cmd[2], false);
                 break;
-            case "toggle":
+            case "TOGGLE":
                 ParseAutorotationSetCommand(cmd.Length > 2 ? cmd[2] : "", true);
                 break;
             default:

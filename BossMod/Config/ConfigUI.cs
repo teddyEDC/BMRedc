@@ -112,6 +112,7 @@ public sealed class ConfigUI : IDisposable
 
     private static readonly Dictionary<string, string> _availableOtherCommands = new()
     {
+        { "restorerotation", "Toggle restore character orientation after action use setting." },
         { "d", "Opens the debug menu." },
         { "r", "Opens the replay menu." },
         { "gc", "Triggers the garbage collection." },
