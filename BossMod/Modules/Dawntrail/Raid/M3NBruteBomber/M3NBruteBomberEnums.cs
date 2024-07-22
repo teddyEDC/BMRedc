@@ -67,7 +67,7 @@ public enum AID : uint
     InfernalSpinFirst = 39770, // Helper->self, 5.0s cast, range 40 60-degree cone
     InfernalSpinRest = 39771, // Helper->self, 0.5s cast, range 40 60-degree cone
 
-    KnuckleSandwich = 37845, // Boss->players, 5.0s cast, range 6 circle
+    KnuckleSandwich = 37845, // Boss->players, 5.0s cast, range 6 circle, shared tankbuster
 
     MurderousMist = 37813, // Boss->self, 5.0s cast, range 40 270-degree cone
 
