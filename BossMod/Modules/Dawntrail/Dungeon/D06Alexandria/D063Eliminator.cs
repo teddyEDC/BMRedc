@@ -148,7 +148,7 @@ class LightOfDevotion(BossModule module) : Components.LineStack(module, ActionID
     public override void Update()
     {
         // as soon as limit break phase ends the line stack gets cancelled
-        if (CurrentBaits.Count > 0 && Module.Enemies(OID.LightningGenerator).Count == 0)
+        if (CurrentBaits.Count > 0 && !Module.Enemies(OID.LightningGenerator).Any(x => !x.IsDead))
             CurrentBaits.Clear();
     }
 }
