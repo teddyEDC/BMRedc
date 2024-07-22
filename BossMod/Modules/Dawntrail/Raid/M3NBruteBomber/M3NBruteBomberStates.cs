@@ -13,13 +13,10 @@ class M3NBruteBomberStates : StateMachineBuilder
             .ActivateOnEnter<BrutalLariat2>()
             .ActivateOnEnter<ExplosiveRainCircle>()
             .ActivateOnEnter<ExplosiveRainConcentric>()
-            .ActivateOnEnter<InfernalSpin4>()
-            .ActivateOnEnter<SelfDestruct>()
-            .ActivateOnEnter<FireSpin4>()
-            .ActivateOnEnter<FireSpin5>()
-            .ActivateOnEnter<InfernalSpin4>()
-            .ActivateOnEnter<InfernalSpin5>()
+            .ActivateOnEnter<FireSpin>()
+            .ActivateOnEnter<LitFuse>()
             .ActivateOnEnter<LariatCombo>()
+            .ActivateOnEnter<BrutalBurn>()
             .ActivateOnEnter<MurderousMist>();
     }
 }

@@ -40,8 +40,10 @@ public class GenericTowers(BossModule module, ActionID aid = default) : CastCoun
                 hints.Add("Too few soakers in the tower!");
             else if (count > Towers[soakedIndex].MaxSoakers)
                 hints.Add("Too many soakers in the tower!");
+            else
+                hints.Add("Soak the tower!", false);
         }
-        else if (Towers.Any(t => !t.ForbiddenSoakers[slot] && !t.CorrectAmountInside(Module)))
+        else if (Towers.Any(t => !t.ForbiddenSoakers[slot] && t.NumInside(Module) < t.MaxSoakers))
         {
             hints.Add("Soak the tower!");
         }
@@ -61,14 +63,16 @@ public class GenericTowers(BossModule module, ActionID aid = default) : CastCoun
         var forbidden = new List<Func<WPos, float>>();
         if (!Towers.Any(x => x.ForbiddenSoakers[slot]))
         {
-            foreach (var t in Towers.Where(x => x.NumInside(Module) < x.MinSoakers || actor.Position.InCircle(x.Position, x.Radius) && x.CorrectAmountInside(Module)))
+            var inTower = Towers.Any(x => x.IsInside(actor) && x.CorrectAmountInside(Module));
+            var missingSoakers = !inTower && Towers.Any(x => x.NumInside(Module) < x.MaxSoakers);
+            foreach (var t in Towers.Where(x => x.NumInside(Module) < x.MinSoakers || x.IsInside(actor) && x.CorrectAmountInside(Module)))
                 forbiddenInverted.Add(ShapeDistance.InvertedCircle(t.Position, t.Radius));
-            foreach (var t in Towers.Where(x => x.NumInside(Module) > x.MaxSoakers || !actor.Position.InCircle(x.Position, x.Radius) && x.CorrectAmountInside(Module)))
+            foreach (var t in Towers.Where(x => x.NumInside(Module) > x.MaxSoakers || !x.IsInside(actor) && x.CorrectAmountInside(Module)))
                 forbidden.Add(ShapeDistance.Circle(t.Position, t.Radius));
-            if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Towers[0].Activation);
-            if (forbidden.Count == 0 && forbiddenInverted.Count > 0)
+            if (forbidden.Count == 0 || inTower || missingSoakers && forbiddenInverted.Count > 0)
                 hints.AddForbiddenZone(p => forbiddenInverted.Select(f => f(p)).Max(), Towers[0].Activation);
+            else if (forbidden.Count > 0 && !inTower)
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Towers[0].Activation);
         }
         else if (Towers.Any(x => x.ForbiddenSoakers[slot]))
         {

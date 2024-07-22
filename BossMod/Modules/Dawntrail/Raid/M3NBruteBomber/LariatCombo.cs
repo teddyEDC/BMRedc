@@ -7,13 +7,7 @@ class LariatCombo(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeRect rect1 = new(20, 30, 5, -90.Degrees());
     private static readonly AOEShapeRect rect2 = new(20, 30, 5, 90.Degrees());
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        if (_aoes.Count > 0)
-            yield return _aoes[0] with { Color = ArenaColor.Danger };
-        if (_aoes.Count > 1)
-            yield return _aoes[1] with { Risky = false };
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes.Take(1);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
