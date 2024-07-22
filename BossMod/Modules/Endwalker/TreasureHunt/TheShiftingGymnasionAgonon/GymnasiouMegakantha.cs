@@ -4,7 +4,6 @@ public enum OID : uint
 {
     Boss = 0x3D33, //R=6
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
-    BossHelper = 0x233C,
     BossAdd1 = 0x3D35, //R=1.76 
     BossAdd2 = 0x3D36, //R=1.56
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
@@ -13,6 +12,7 @@ public enum OID : uint
     GymnasticEggplant = 0x3D50, // R0.840, icon 2, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticOnion = 0x3D4F, // R0.840, icon 1, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticTomato = 0x3D52, // R0.840, icon 4, needs to be killed in order from 1 to 5 for maximum rewards
+    BossHelper = 0x233C
 }
 
 public enum AID : uint
@@ -37,7 +37,7 @@ public enum AID : uint
     HeirloomScream = 32304, // GymnasticTomato->self, 3.5s cast, range 7 circle
     PungentPirouette = 32303, // GymnasticGarlic->self, 3.5s cast, range 7 circle
     TearyTwirl = 32301, // GymnasticOnion->self, 3.5s cast, range 7 circle
-    Telega = 9630, // bonusadds->self, no cast, single-target, bonus add disappear
+    Telega = 9630 // bonusadds->self, no cast, single-target, bonus add disappear
 }
 
 class SludgeBomb(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.SludgeBomb2), 8);
@@ -111,24 +111,15 @@ public class Megakantha(WorldState ws, Actor primary) : BossModule(ws, primary, 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BossAdd1))
-            Arena.Actor(s, ArenaColor.Object);
-        foreach (var s in Enemies(OID.BossAdd2))
-            Arena.Actor(s, ArenaColor.Object);
-        foreach (var s in Enemies(OID.BonusAddLyssa))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLampas))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticEggplant))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticTomato))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticQueen))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticGarlic))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticOnion))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BossAdd1), ArenaColor.Object);
+        Arena.Actors(Enemies(OID.BossAdd2), ArenaColor.Object);
+        Arena.Actors(Enemies(OID.GymnasticEggplant), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticTomato), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticQueen), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticGarlic), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticOnion), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLampas), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLyssa), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

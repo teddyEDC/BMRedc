@@ -76,10 +76,10 @@ public class T01Valigarmanda(WorldState ws, Actor primary) : BossModule(ws, prim
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        Arena.Actors(Enemies(OID.IceBoulder), ArenaColor.Enemy);
-        Arena.Actors(Enemies(OID.FlameKissedBeacon), ArenaColor.Enemy);
-        Arena.Actors(Enemies(OID.GlacialBeacon), ArenaColor.Enemy);
-        Arena.Actors(Enemies(OID.ThunderousBeacon), ArenaColor.Enemy);
+        Arena.Actor(PrimaryActor);
+        Arena.Actors(Enemies(OID.IceBoulder));
+        Arena.Actors(Enemies(OID.FlameKissedBeacon));
+        Arena.Actors(Enemies(OID.GlacialBeacon));
+        Arena.Actors(Enemies(OID.ThunderousBeacon));
     }
 }

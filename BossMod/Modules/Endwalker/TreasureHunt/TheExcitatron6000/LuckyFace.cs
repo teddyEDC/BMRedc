@@ -3,12 +3,12 @@ namespace BossMod.Endwalker.TreasureHunt.Excitatron6000.LuckyFace;
 public enum OID : uint
 {
     Boss = 0x377F, // R3.240
-    BossHelper = 0x233C, // R0.500
     ExcitingQueen = 0x380C, // R0.840, icon 5, needs to be killed in order from 1 to 5 for maximum rewards
     ExcitingTomato = 0x380B, // R0.840, icon 4, needs to be killed in order from 1 to 5 for maximum rewards
     ExcitingGarlic = 0x380A, // R0.840, icon 3, needs to be killed in order from 1 to 5 for maximum rewards
     ExcitingEgg = 0x3809, // R0.840, icon 2, needs to be killed in order from 1 to 5 for maximum rewards
     ExcitingOnion = 0x3808, // R0.840, icon 1, needs to be killed in order from 1 to 5 for maximum rewards
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -49,13 +49,7 @@ public enum AID : uint
     Telega = 9630, // 380C->self, no cast, single-target, bonus add disappear
     HeirloomScream = 6451, // 380B->self, 3.5s cast, range 6+R circle
     PungentPirouette = 6450, // 380A->self, 3.5s cast, range 6+R circle
-    Pollen = 6452, // 380C->self, 3.5s cast, range 6+R circle
-}
-
-public enum IconID : uint
-{
-    tankbuster = 218,
-    spreadmarker = 194,
+    Pollen = 6452 // 380C->self, 3.5s cast, range 6+R circle
 }
 
 class LeftInTheDark1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LeftInTheDark), new AOEShapeCone(20, 90.Degrees()));
@@ -68,22 +62,7 @@ class QuakeMeAway1(BossModule module) : Components.SelfTargetedAOEs(module, Acti
 class QuakeMeAway2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.QuakeMeAway2), new AOEShapeCircle(10));
 class HeartOnFireII(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HeartOnFireII), 6);
 class HeartOnFireIV(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.HeartOnFireIV));
-
-class HeartOnFireIII(BossModule module) : Components.UniformStackSpread(module, 0, 6, alwaysShowSpreads: true)
-{
-    public override void OnEventIcon(Actor actor, uint iconID)
-    {
-        if (iconID == (uint)IconID.spreadmarker)
-            AddSpread(actor);
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        if ((AID)spell.Action.ID == AID.HeartOnFireIII)
-            Spreads.Clear();
-    }
-}
-
+class HeartOnFireIII(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HeartOnFireIII), 6);
 class TempersFlare(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.TempersFlare));
 class PluckAndPrune(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PluckAndPrune), new AOEShapeCircle(6.84f));
 class TearyTwirl(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TearyTwirl), new AOEShapeCircle(6.84f));
@@ -123,16 +102,11 @@ public class LuckyFace(WorldState ws, Actor primary) : BossModule(ws, primary, n
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.ExcitingEgg))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.ExcitingTomato))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.ExcitingQueen))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.ExcitingGarlic))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.ExcitingOnion))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.ExcitingEgg), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.ExcitingTomato), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.ExcitingGarlic), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.ExcitingQueen), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.ExcitingOnion), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

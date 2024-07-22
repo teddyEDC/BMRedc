@@ -3,9 +3,9 @@ namespace BossMod.Endwalker.TreasureHunt.ShiftingGymnasionAgonon.Narkissos;
 public enum OID : uint
 {
     Boss = 0x3D48, //R=8.0
-    BossHelper = 0x233C,
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -24,7 +24,7 @@ public enum AID : uint
     HeavySmash = 32317, // 3D4E->location, 3.0s cast, range 6 circle
     BeguilingGas = 32331, // Boss->self, 5.0s cast, range 40 circle, Temporary Misdirection
     Brainstorm = 32334, // Boss->self, 5.0s cast, range 40 circle, Forced March debuffs
-    PutridBreath = 32338, // Boss->self, 4.0s cast, range 25 90-degree cone
+    PutridBreath = 32338 // Boss->self, 4.0s cast, range 25 90-degree cone
 }
 
 public enum SID : uint
@@ -35,7 +35,7 @@ public enum SID : uint
     RightFace = 1961, // Boss->player, extra=0x0
     ForwardMarch = 1958, // Boss->player, extra=0x0
     AboutFace = 1959, // Boss->player, extra=0x0
-    LeftFace = 1960, // Boss->player, extra=0x0
+    LeftFace = 1960 // Boss->player, extra=0x0
 }
 
 class Brainstorm(BossModule module) : Components.StatusDrivenForcedMarch(module, 2, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace)
@@ -119,10 +119,8 @@ public class Narkissos(WorldState ws, Actor primary) : BossModule(ws, primary, n
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BonusAddLampas))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLyssa))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLampas), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLyssa), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

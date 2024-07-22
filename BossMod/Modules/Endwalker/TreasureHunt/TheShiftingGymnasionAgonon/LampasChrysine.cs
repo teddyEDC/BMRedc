@@ -3,8 +3,8 @@ namespace BossMod.Endwalker.TreasureHunt.ShiftingGymnasionAgonon.LampasChrysine;
 public enum OID : uint
 {
     Boss = 0x3D40, //R=6
-    BossHelper = 0x233C,
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -18,7 +18,7 @@ public enum AID : uint
     Shine = 32291, // Boss->self, 1.3s cast, single-target
     Shine2 = 32292, // BossHelper->location, 3.0s cast, range 5 circle
     Summon = 32288, // Boss->self, 1.3s cast, single-target, spawns bonus loot adds
-    Telega = 9630, // BonusAddLampas->self, no cast, single-target, bonus loot add despawn
+    Telega = 9630 // BonusAddLampas->self, no cast, single-target, bonus loot add despawn
 }
 
 class Shine(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Shine2), 5);
@@ -60,8 +60,7 @@ public class Lampas(WorldState ws, Actor primary) : BossModule(ws, primary, new(
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BonusAddLampas))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLampas), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

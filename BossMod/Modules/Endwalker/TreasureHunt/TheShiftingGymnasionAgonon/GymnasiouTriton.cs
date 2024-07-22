@@ -4,8 +4,8 @@ public enum OID : uint
 {
     Boss = 0x3D30, //R=6.08
     BossAdd = 0x3D31, //R=2.2
-    BossHelper = 0x233C,
     Bubble = 0x3D32, //R=1.0
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -17,7 +17,7 @@ public enum AID : uint
     Riptide = 32233, // Bubble->self, 1.0s cast, range 5 circle, pulls into bubble, dist 30 between centers
     WateryGrave = 32234, // Bubble->self, no cast, range 2 circle, voidzone, imprisons player until status runs out
     NavalRam = 32232, // BossAdd->player, no cast, single-target
-    ProtolithicPuncture = 32228, // Boss->player, 5.0s cast, single-target
+    ProtolithicPuncture = 32228 // Boss->player, 5.0s cast, single-target
 }
 
 class PelagicCleaver(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PelagicCleaver), new AOEShapeCone(40, 30.Degrees()));
@@ -44,8 +44,7 @@ public class Triton(WorldState ws, Actor primary) : BossModule(ws, primary, new(
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BossAdd))
-            Arena.Actor(s, ArenaColor.Object);
+        Arena.Actors(Enemies(OID.BossAdd), ArenaColor.Object);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

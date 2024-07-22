@@ -4,10 +4,10 @@ public enum OID : uint
 {
     Boss = 0x3D2D, //R=7.5
     BossAdd = 0x3D2E, //R=2.08
-    BossHelper = 0x233C,
     StormsGrip = 0x3D2F, //R=1.0
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -26,7 +26,7 @@ public enum AID : uint
     Wingblow2 = 32225, // BossHelper->self, 4.0s cast, range 15 circle
 
     HeavySmash = 32317, // BossAdd->location, 3.0s cast, range 6 circle
-    Telega = 9630, // BonusAdds->self, no cast, single-target, bonus add disappear
+    Telega = 9630 // BonusAdds->self, no cast, single-target, bonus add disappear
 }
 
 class HeavySmash(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HeavySmash), 6);
@@ -57,12 +57,9 @@ public class Satyros(WorldState ws, Actor primary) : BossModule(ws, primary, new
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BossAdd))
-            Arena.Actor(s, ArenaColor.Object);
-        foreach (var s in Enemies(OID.BonusAddLyssa))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLampas))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BossAdd), ArenaColor.Object);
+        Arena.Actors(Enemies(OID.BonusAddLampas), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLyssa), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
