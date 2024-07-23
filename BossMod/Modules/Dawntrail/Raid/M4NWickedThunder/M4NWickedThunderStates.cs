@@ -6,6 +6,7 @@ class M4NWickedThunderStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<ArenaChanges>()
+            .ActivateOnEnter<WickedHypercannon>()
             .ActivateOnEnter<WickedJolt>()
             .ActivateOnEnter<WickedBolt>()
             .ActivateOnEnter<WickedCannon>()
@@ -13,11 +14,9 @@ class M4NWickedThunderStates : StateMachineBuilder
             .ActivateOnEnter<SidewiseSpark>()
             .ActivateOnEnter<SoaringSoulpress>()
             .ActivateOnEnter<StampedingThunder>()
-            .ActivateOnEnter<Burst>()
             .ActivateOnEnter<BewitchingFlight>()
             .ActivateOnEnter<Thunderslam>()
             .ActivateOnEnter<Thunderstorm>()
-            .ActivateOnEnter<WickedHypercannon>()
             .ActivateOnEnter<WitchHunt>();
     }
 }
