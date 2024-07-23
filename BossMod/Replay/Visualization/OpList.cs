@@ -11,7 +11,7 @@ class OpList(Replay replay, ModuleRegistry.Info? moduleInfo, IEnumerable<WorldSt
     private readonly HashSet<ActionID> _filteredActions = [];
     private readonly HashSet<uint> _filteredStatuses = [];
     private readonly HashSet<uint> _filteredDirectorUpdateTypes = [];
-    private bool _showActorSizeEvents = false;
+    private bool _showActorSizeEvents;
     private bool _nodesUpToDate;
 
     public bool ShowActorSizeEvents
