@@ -101,7 +101,7 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
     private void AddAOE(AOEInstance aoe)
     {
         _aoes.Add(aoe);
-        _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+        _aoes.SortBy(x => x.Activation);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

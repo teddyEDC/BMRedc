@@ -174,11 +174,8 @@ public class D011PrimePunutiy(WorldState ws, Actor primary) : BossModule(ws, pri
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Punutiy))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.PetitPunutiy))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.ProdigiousPunutiy))
-            Arena.Actor(s, ArenaColor.Enemy);
+        Arena.Actors(Enemies(OID.Punutiy));
+        Arena.Actors(Enemies(OID.PetitPunutiy));
+        Arena.Actors(Enemies(OID.ProdigiousPunutiy));
     }
 }

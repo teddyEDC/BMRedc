@@ -4,7 +4,6 @@ public enum OID : uint
 {
     Boss = 0x3D39, //R=6.0
     BossAdd = 0x3D3A, //R=2.0
-    BossHelper = 0x233C,
     GymnasticGarlic = 0x3D51, // R0.840, icon 3, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticQueen = 0x3D53, // R0.840, icon 5, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticEggplant = 0x3D50, // R0.840, icon 2, needs to be killed in order from 1 to 5 for maximum rewards
@@ -12,6 +11,7 @@ public enum OID : uint
     GymnasticTomato = 0x3D52, // R0.840, icon 4, needs to be killed in order from 1 to 5 for maximum rewards
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -38,7 +38,7 @@ public enum AID : uint
     PungentPirouette = 32303, // GymnasticGarlic->self, 3.5s cast, range 7 circle
     TearyTwirl = 32301, // GymnasticOnion->self, 3.5s cast, range 7 circle
     Telega = 9630, // bonusadds->self, no cast, single-target, bonus add disappear
-    HeavySmash = 32317, // 3D4E->location, 3.0s cast, range 6 circle
+    HeavySmash = 32317 // 3D4E->location, 3.0s cast, range 6 circle
 }
 
 class Ceras(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Ceras));

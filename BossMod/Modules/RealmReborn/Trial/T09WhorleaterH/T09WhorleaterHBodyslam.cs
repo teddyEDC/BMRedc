@@ -23,14 +23,15 @@ class BodySlamKB(BossModule module) : Components.Knockback(module, stopAtWall: t
         if ((AID)spell.Action.ID is AID.BodySlamNorth or AID.BodySlamSouth)
             _knockback = null;
     }
-    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Hydroshot>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || (Module.FindComponent<Dreadstorm>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false);
 
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Hydroshot>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || (Module.FindComponent<Dreadstorm>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false);
 }
 
 class BodySlamAOE(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
     private float LeviathanZ;
+    private static readonly AOEShapeRect rect = new(30, 5);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
@@ -41,7 +42,7 @@ class BodySlamAOE(BossModule module) : Components.GenericAOEs(module)
         if (Module.PrimaryActor.Position.Z != LeviathanZ && Module.PrimaryActor.Position.Z != 0)
         {
             LeviathanZ = Module.PrimaryActor.Position.Z;
-            _aoe = new(new AOEShapeRect(30, 5), Module.PrimaryActor.Position, Module.PrimaryActor.Rotation, WorldState.FutureTime(2.6f));
+            _aoe = new(rect, Module.PrimaryActor.Position, Module.PrimaryActor.Rotation, Module.WorldState.FutureTime(2.6f));
         }
     }
 

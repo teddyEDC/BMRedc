@@ -5,7 +5,6 @@ public enum OID : uint
     Boss = 0x3D3B, //R=4.83
     BossAdd = 0x3D3C, //R=2.3
     VerdantPlume = 0x3D3D, //R=0.65
-    BossHelper = 0x233C,
     GymnasticGarlic = 0x3D51, // R0.840, icon 3, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticQueen = 0x3D53, // R0.840, icon 5, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticEggplant = 0x3D50, // R0.840, icon 2, needs to be killed in order from 1 to 5 for maximum rewards
@@ -13,6 +12,7 @@ public enum OID : uint
     GymnasticTomato = 0x3D52, // R0.840, icon 4, needs to be killed in order from 1 to 5 for maximum rewards
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -20,7 +20,7 @@ public enum AID : uint
     AutoAttack = 870, // Boss->player, no cast, single-target
     AutoAttack2 = 872, // BossAdd->player, no cast, single-target
     FeatherWind = 32267, // Boss->self, 4.0s cast, single-target, spawns Verdant Plumes
-    Explosion = 32273, // 3D3D->self, 5.0s cast, range 3-12 donut
+    Explosion = 32273, // VerdantPlume->self, 5.0s cast, range 3-12 donut
     Scratch = 32265, // Boss->player, 5.0s cast, single-target
     AeroII = 32268, // Boss->self, 3.0s cast, single-target
     AeroII2 = 32269, // BossHelper->location, 3.0s cast, range 4 circle
@@ -30,13 +30,14 @@ public enum AID : uint
     FrigidPulse = 32270, // Boss->self, 5.0s cast, range 12-60 donut
     AlpineDraft = 32274, // BossAdd->self, 3.0s cast, range 45 width 5 rect
     MoltingPlumage = 32266, // Boss->self, 5.0s cast, range 60 circle
+
     PluckAndPrune = 32302, // GymnasticEggplant->self, 3.5s cast, range 7 circle
     Pollen = 32305, // GymnasticQueen->self, 3.5s cast, range 7 circle
     HeirloomScream = 32304, // GymnasticTomato->self, 3.5s cast, range 7 circle
     PungentPirouette = 32303, // GymnasticGarlic->self, 3.5s cast, range 7 circle
     TearyTwirl = 32301, // GymnasticOnion->self, 3.5s cast, range 7 circle
-    Telega = 9630, // bonusadds->self, no cast, single-target, bonus add disappear
-    HeavySmash = 32317, // 3D4E->location, 3.0s cast, range 6 circle
+    Telega = 9630, // BonusAdds->self, no cast, single-target, bonus add disappear
+    HeavySmash = 32317 // BonusAddLyssa->location, 3.0s cast, range 6 circle
 }
 
 class Scratch(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Scratch));
@@ -83,22 +84,14 @@ public class Sphinx(WorldState ws, Actor primary) : BossModule(ws, primary, new(
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BossAdd))
-            Arena.Actor(s, ArenaColor.Object);
-        foreach (var s in Enemies(OID.GymnasticEggplant))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticTomato))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticQueen))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticGarlic))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticOnion))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLampas))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLyssa))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BossAdd), ArenaColor.Object);
+        Arena.Actors(Enemies(OID.GymnasticEggplant), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticTomato), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticQueen), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticGarlic), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticOnion), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLampas), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLyssa), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

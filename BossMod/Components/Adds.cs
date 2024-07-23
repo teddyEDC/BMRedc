@@ -8,6 +8,6 @@ public class Adds(BossModule module, uint oid) : BossComponent(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actors(Actors, ArenaColor.Enemy);
+        Arena.Actors(Actors);
     }
 }

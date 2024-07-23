@@ -26,16 +26,11 @@ public class T09WhorleaterH(WorldState ws, Actor primary) : BossModule(ws, prima
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy, true);
-        foreach (var s in Enemies(OID.Spume))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var e in Enemies(OID.Tail))
-            Arena.Actor(e, ArenaColor.Enemy);
-        foreach (var e in Enemies(OID.Sahagin))
-            Arena.Actor(e, ArenaColor.Enemy);
-        foreach (var e in Enemies(OID.DangerousSahagins))
-            Arena.Actor(e, ArenaColor.Enemy);
-        foreach (var c in Enemies(OID.Converter))
-            Arena.Actor(c, ArenaColor.Object);
+        Arena.Actors(Enemies(OID.Spume), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.Tail));
+        Arena.Actors(Enemies(OID.Sahagin));
+        Arena.Actors(Enemies(OID.DangerousSahagins));
+        Arena.Actor(Enemies(OID.Converter).FirstOrDefault(), ArenaColor.Object);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

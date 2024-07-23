@@ -25,7 +25,7 @@ class QuintupleSneeze(BossModule module) : Components.GenericAOEs(module)
     private readonly List<Angle> _pendingOffsets = [];
     private DateTime _nextSneeze;
 
-    private static readonly AOEShapeCone _shape = new(40, 45.Degrees());
+    private static readonly AOEShapeCone _shape = new(40, 60.Degrees());
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {

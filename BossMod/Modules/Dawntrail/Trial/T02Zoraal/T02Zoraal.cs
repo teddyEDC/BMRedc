@@ -27,4 +27,4 @@ class VorpalTrail4(BossModule module) : Components.ChargeAOEs(module, ActionID.M
 class VorpalTrail5(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.VorpalTrail5), 2f);
 
 [ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 995, NameID = 12881)]
-public class T02Zoraal(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20, Rotation: 45.Degrees()));
+public class T02Zoraal(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20, 45.Degrees()));

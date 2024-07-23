@@ -82,17 +82,11 @@ public class D012Drowsie(WorldState ws, Actor primary) : BossModule(ws, primary,
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Mimiclot1))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Mimiclot2))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Mimiclot3))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Mimiclot4))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Mimiclot5))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Mimiclot6))
-            Arena.Actor(s, ArenaColor.Enemy);
+        Arena.Actors(Enemies(OID.Mimiclot1));
+        Arena.Actors(Enemies(OID.Mimiclot2));
+        Arena.Actors(Enemies(OID.Mimiclot3));
+        Arena.Actors(Enemies(OID.Mimiclot4));
+        Arena.Actors(Enemies(OID.Mimiclot5));
+        Arena.Actors(Enemies(OID.Mimiclot6));
     }
 }

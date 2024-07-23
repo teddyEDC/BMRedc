@@ -93,9 +93,9 @@ class DualPyresSteelfoldStrike(BossModule module) : Components.GenericAOEs(modul
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            yield return new(_aoes[0].Shape, _aoes[0].Origin, _aoes[0].Rotation, _aoes[0].Activation, ArenaColor.Danger);
+            yield return _aoes[0] with { Color = ArenaColor.Danger };
         if (_aoes.Count > 1)
-            yield return new(_aoes[1].Shape, _aoes[1].Origin, _aoes[1].Rotation, _aoes[1].Activation, Risky: false);
+            yield return _aoes[1] with { Risky = false };
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -103,7 +103,7 @@ class DualPyresSteelfoldStrike(BossModule module) : Components.GenericAOEs(modul
         if ((AID)spell.Action.ID is AID.DualPyres1 or AID.DualPyres2 or AID.DualPyres3 or AID.DualPyres4)
         {
             _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            _aoes.SortBy(x => x.Activation);
         }
         else if ((AID)spell.Action.ID == AID.SteelfoldStrike)
             _aoes.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
@@ -202,7 +202,7 @@ class LayOfTheSun(BossModule module) : Components.UniformStackSpread(module, 6, 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.LayOfTheSunA1 or AID.LayOfTheSunB1)
-            AddStack(WorldState.Actors.Find(spell.TargetID)!);
+            AddStack(WorldState.Actors.Find(spell.TargetID)!, Module.CastFinishAt(spell));
     }
 }
 

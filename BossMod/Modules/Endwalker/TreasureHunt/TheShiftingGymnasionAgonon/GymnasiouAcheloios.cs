@@ -4,7 +4,6 @@ public enum OID : uint
 {
     Boss = 0x3D3E, //R=4.0
     BossAdd = 0x3D3F, //R=2.7
-    BossHelper = 0x233C,
     GymnasticGarlic = 0x3D51, // R0.840, icon 3, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticQueen = 0x3D53, // R0.840, icon 5, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticEggplant = 0x3D50, // R0.840, icon 2, needs to be killed in order from 1 to 5 for maximum rewards
@@ -12,6 +11,7 @@ public enum OID : uint
     GymnasticTomato = 0x3D52, // R0.840, icon 4, needs to be killed in order from 1 to 5 for maximum rewards
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
+    BossHelper = 0x233C
 }
 
 public enum AID : uint
@@ -144,22 +144,14 @@ public class Acheloios(WorldState ws, Actor primary) : BossModule(ws, primary, n
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BossAdd))
-            Arena.Actor(s, ArenaColor.Object);
-        foreach (var s in Enemies(OID.GymnasticEggplant))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticTomato))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticQueen))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticGarlic))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticOnion))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLampas))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLyssa))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BossAdd), ArenaColor.Object);
+        Arena.Actors(Enemies(OID.GymnasticEggplant), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticTomato), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticQueen), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticGarlic), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticOnion), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLampas), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLyssa), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

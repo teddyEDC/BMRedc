@@ -218,7 +218,20 @@ public class D022Kahderyor(WorldState ws, Actor primary) : BossModule(ws, primar
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.CrystallineDebris))
-            Arena.Actor(s, ArenaColor.Enemy);
+        Arena.Actors(Enemies(OID.CrystallineDebris), ArenaColor.Enemy);
+    }
+
+    public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.CalculateAIHints(slot, actor, assignment, hints);
+        foreach (var e in hints.PotentialTargets)
+        {
+            e.Priority = (OID)e.Actor.OID switch
+            {
+                OID.CrystallineDebris => 2,
+                OID.Boss => 1,
+                _ => 0
+            };
+        }
     }
 }

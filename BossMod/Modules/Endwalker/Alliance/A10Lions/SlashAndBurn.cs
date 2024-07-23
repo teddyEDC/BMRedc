@@ -20,7 +20,7 @@ class SlashAndBurn(BossModule module) : Components.GenericAOEs(module)
         if (shape != null)
         {
             _aoes.Add(new(shape, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            _aoes.SortBy(x => x.Activation);
         }
     }
 

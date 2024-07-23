@@ -11,7 +11,7 @@ class Hydrostasis(BossModule module) : Components.Knockback(module)
         if ((AID)spell.Action.ID is AID.HydrostasisAOE1 or AID.HydrostasisAOE2 or AID.HydrostasisAOE3)
         {
             _sources.Add(new(caster.Position, 28, Module.CastFinishAt(spell)));
-            _sources.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            _sources.SortBy(x => x.Activation);
         }
     }
 

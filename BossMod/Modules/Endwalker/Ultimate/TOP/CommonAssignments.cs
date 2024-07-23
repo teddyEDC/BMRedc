@@ -48,8 +48,8 @@ abstract class CommonAssignments(BossModule module) : BossComponent(module)
         if (assignments.Count == 0)
             return; // invalid assignments
 
-        assignments.Sort((x, y) => x.order.CompareTo(y.order));
-        for (int i = 0; i < assignments.Count; i += 2)
+        assignments.SortBy(x => x.order);
+        for (var i = 0; i < assignments.Count; i += 2)
         {
             var a1 = assignments[i];
             var a2 = assignments[i + 1];
@@ -71,7 +71,7 @@ abstract class P1CommonAssignments(BossModule module) : CommonAssignments(module
 {
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        int order = (SID)status.ID switch
+        var order = (SID)status.ID switch
         {
             SID.InLine1 => 1,
             SID.InLine2 => 2,

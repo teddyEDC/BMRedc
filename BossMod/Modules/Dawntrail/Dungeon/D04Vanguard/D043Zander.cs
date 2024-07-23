@@ -101,7 +101,7 @@ class SlitherbaneBurstCombo(BossModule module) : Components.GenericAOEs(module)
     private void AddAOE(AOEShape shape, WPos position, Angle rotation, DateTime activation)
     {
         _aoes.Add(new(shape, position, rotation, activation));
-        _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+        _aoes.SortBy(x => x.Activation);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

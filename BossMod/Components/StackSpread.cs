@@ -234,7 +234,7 @@ public class SpreadFromCastTargets(BossModule module, ActionID aid, float radius
 public class StackWithCastTargets(BossModule module, ActionID aid, float radius, int minStackSize = 2, int maxStackSize = int.MaxValue) : CastStackSpread(module, aid, default, radius, 0, minStackSize, maxStackSize);
 
 // spread/stack mechanic that selects targets by icon and finishes by cast event
-public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon, ActionID stackAID, ActionID spreadAID, float stackRadius, float spreadRadius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue, bool alwaysShowSpreads = false)
+public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon, ActionID stackAID, ActionID spreadAID, float stackRadius, float spreadRadius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue, bool alwaysShowSpreads = false, int maxCasts = 1)
     : UniformStackSpread(module, stackRadius, spreadRadius, minStackSize, maxStackSize, alwaysShowSpreads)
 {
     public uint StackIcon { get; init; } = stackIcon;
@@ -244,6 +244,8 @@ public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon,
     public float ActivationDelay { get; init; } = activationDelay;
     public int NumFinishedStacks { get; protected set; }
     public int NumFinishedSpreads { get; protected set; }
+    public int MaxCasts { get; init; } = maxCasts; // for stacks where the final AID hits multiple times
+    private int castCounter;
 
     public override void OnEventIcon(Actor actor, uint iconID)
     {
@@ -261,8 +263,12 @@ public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon,
     {
         if (spell.Action == StackAction)
         {
-            Stacks.RemoveAll(s => s.Target.InstanceID == spell.MainTargetID);
-            ++NumFinishedStacks;
+            if (++castCounter == MaxCasts)
+            {
+                Stacks.RemoveAll(s => s.Target.InstanceID == spell.MainTargetID);
+                ++NumFinishedStacks;
+                castCounter = 0;
+            }
         }
         else if (spell.Action == SpreadAction)
         {
@@ -276,11 +282,11 @@ public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon,
 public class SpreadFromIcon(BossModule module, uint icon, ActionID aid, float radius, float activationDelay, bool drawAllSpreads = true) : IconStackSpread(module, 0, icon, default, aid, 0, radius, activationDelay, alwaysShowSpreads: drawAllSpreads);
 
 // generic 'stack with actors with specific icon' mechanic
-public class StackWithIcon(BossModule module, uint icon, ActionID aid, float radius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue) : IconStackSpread(module, icon, 0, aid, default, radius, 0, activationDelay, minStackSize, maxStackSize);
+public class StackWithIcon(BossModule module, uint icon, ActionID aid, float radius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue, int maxCasts = 1) : IconStackSpread(module, icon, 0, aid, default, radius, 0, activationDelay, minStackSize, maxStackSize, false, maxCasts);
 
 // generic single hit "line stack" component, usually do not have an iconID, instead players get marked by cast event
 // usually these have 50 range and 4 halfWidth, but it can be modified
-public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolve, float activationDelay, float range = 50, float halfWidth = 4, int minStackSize = 4, int maxStackSize = int.MaxValue) : GenericBaitAway(module)
+public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolve, float activationDelay, float range = 50, float halfWidth = 4, int minStackSize = 4, int maxStackSize = int.MaxValue, int maxCasts = 1) : GenericBaitAway(module)
 {
     // TODO: add forbidden slots logic?
     // TODO: add logic for min and max stack size
@@ -291,6 +297,8 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
     public readonly float HalfWidth = halfWidth;
     public readonly int MaxStackSize = maxStackSize;
     public readonly int MinStackSize = minStackSize;
+    public readonly int MaxCasts = maxCasts; // for stacks where the final AID hits multiple times
+    private int castCounter;
     public const string HintStack = "Stack!";
     public const string HintAvoidOther = "GTFO from other line stacks!";
     public const string HintAvoid = "GTFO from line stacks!";
@@ -300,8 +308,14 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
     {
         if (spell.Action == AidMarker)
             CurrentBaits.Add(new(caster, WorldState.Actors.Find(spell.MainTargetID)!, new AOEShapeRect(Range, HalfWidth), WorldState.FutureTime(ActionDelay)));
-        if (spell.Action == AidResolve && CurrentBaits.Count > 0)
-            CurrentBaits.RemoveAt(0);
+        else if (spell.Action == AidResolve && CurrentBaits.Count > 0)
+        {
+            if (++castCounter == MaxCasts)
+            {
+                CurrentBaits.RemoveAt(0);
+                castCounter = 0;
+            }
+        }
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -316,8 +330,8 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
         // if line stack target and NPCs in party, go stack with them. usually they won't come to you
         if (Raid.WithoutSlot().Any(x => x.Type == ActorType.Buddy) && ActiveBaits.Any(x => x.Target == actor))
         {
-            var closestTarget = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position)!;
-            forbiddenInverted.Add(ShapeDistance.InvertedCircle(closestTarget.Position, 2));
+            var closestAlly = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position)!;
+            forbiddenInverted.Add(ShapeDistance.InvertedCircle(closestAlly.Position, 2));
         }
         if (isBaitNotTarget && !isBaitTarget && !forbiddenActors)
             foreach (var b in ActiveBaits.Where(x => x.Target != actor))

@@ -54,10 +54,10 @@ class Rush(BossModule module) : Components.GenericAOEs(module)
     {
         if (_aoes.Count > 0)
             for (var i = 0; i < Math.Clamp(_aoes.Count, 0, 2); ++i)
-                yield return new(_aoes[i].Shape, _aoes[i].Origin, _aoes[i].Rotation, _aoes[i].Activation, ArenaColor.Danger);
+                yield return _aoes[i] with { Color = ArenaColor.Danger };
         if (_aoes.Count > 2)
             for (var i = 2; i < 4; ++i)
-                yield return new(_aoes[i].Shape, _aoes[i].Origin, _aoes[i].Rotation, _aoes[i].Activation);
+                yield return _aoes[i];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

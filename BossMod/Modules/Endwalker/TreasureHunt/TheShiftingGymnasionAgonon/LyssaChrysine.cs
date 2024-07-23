@@ -4,9 +4,9 @@ public enum OID : uint
 {
     Boss = 0x3D43, //R=5
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
-    BossHelper = 0x233C,
     IcePillars = 0x3D44,
     BonusAddLampas = 0x3D4D, //R=2.001, bonus loot adds
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -25,7 +25,7 @@ public enum AID : uint
     HeavySmash2 = 32317, // BossAdd->location, 3.0s cast, range 6 circle
     FrigidStone = 32308, // Boss->self, 2.5s cast, single-target, activates helpers
     FrigidStone2 = 32309, // BossHelper->location, 3.0s cast, range 5 circle
-    Telega = 9630, // BonusAdds->self, no cast, single-target, bonus add disappear
+    Telega = 9630 // BonusAdds->self, no cast, single-target, bonus add disappear
 }
 
 class HeavySmash2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HeavySmash2), 6);
@@ -129,10 +129,8 @@ public class Lyssa(WorldState ws, Actor primary) : BossModule(ws, primary, new(1
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BonusAddLyssa))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.BonusAddLampas))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLyssa), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLampas), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

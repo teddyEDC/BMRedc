@@ -5,13 +5,13 @@ public enum OID : uint
     Boss = 0x3D2B, //R=6
     BallOfLevin = 0x3E90,
     BossAdd = 0x3D2C, //R=4.2
-    BossHelper = 0x233C,
     BonusAddLyssa = 0x3D4E, //R=3.75, bonus loot adds
     GymnasticGarlic = 0x3D51, // R0.840, icon 3, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticQueen = 0x3D53, // R0.840, icon 5, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticEggplant = 0x3D50, // R0.840, icon 2, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticOnion = 0x3D4F, // R0.840, icon 1, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticTomato = 0x3D52, // R0.840, icon 4, needs to be killed in order from 1 to 5 for maximum rewards
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -32,12 +32,12 @@ public enum AID : uint
     HeirloomScream = 32304, // GymnasticTomato->self, 3.5s cast, range 7 circle
     PungentPirouette = 32303, // GymnasticGarlic->self, 3.5s cast, range 7 circle
     TearyTwirl = 32301, // GymnasticOnion->self, 3.5s cast, range 7 circle
-    Telega = 9630, // bonusadds->self, no cast, single-target, bonus add disappear
+    Telega = 9630 // bonusadds->self, no cast, single-target, bonus add disappear
 }
 
 public enum IconID : uint
 {
-    Thundercall = 111, // Thundercall marker
+    Thundercall = 111 // Thundercall marker
 }
 
 class Spark(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Spark), new AOEShapeDonut(14, 30));
@@ -122,20 +122,13 @@ public class Pithekos(WorldState ws, Actor primary) : BossModule(ws, primary, ne
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.BossAdd))
-            Arena.Actor(s, ArenaColor.Object);
-        foreach (var s in Enemies(OID.BonusAddLyssa))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticEggplant))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticTomato))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticQueen))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticGarlic))
-            Arena.Actor(s, ArenaColor.Vulnerable);
-        foreach (var s in Enemies(OID.GymnasticOnion))
-            Arena.Actor(s, ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BossAdd), ArenaColor.Object);
+        Arena.Actors(Enemies(OID.GymnasticEggplant), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticTomato), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticQueen), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticGarlic), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.GymnasticOnion), ArenaColor.Vulnerable);
+        Arena.Actors(Enemies(OID.BonusAddLyssa), ArenaColor.Vulnerable);
     }
 
     public override void CalculateAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

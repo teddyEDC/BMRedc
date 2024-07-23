@@ -268,9 +268,7 @@ public class D053Ambrose(WorldState ws, Actor primary) : BossModule(ws, primary,
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.Superfluity))
-            Arena.Actor(s, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.OrigenicsEyeborg))
-            Arena.Actor(s, ArenaColor.Enemy);
+        Arena.Actors(Enemies(OID.Superfluity));
+        Arena.Actors(Enemies(OID.OrigenicsEyeborg));
     }
 }
