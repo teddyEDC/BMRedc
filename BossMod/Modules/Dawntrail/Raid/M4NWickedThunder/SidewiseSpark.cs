@@ -3,6 +3,7 @@ namespace BossMod.Dawntrail.Raid.M4NWickedThunder;
 class SidewiseSpark(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCone cone = new(60, 90.Degrees());
+    private static readonly AOEShapeRect rect = new(40, 8);
     private readonly List<AOEInstance> _aoes = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
@@ -17,6 +18,8 @@ class SidewiseSpark(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID is AID.SidewiseSpark1 or AID.SidewiseSpark2 or AID.SidewiseSpark3 or AID.SidewiseSpark4)
             _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
+        else if ((AID)spell.Action.ID == AID.Burst)
+            _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
     }
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
@@ -38,7 +41,7 @@ class SidewiseSpark(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count > 0 && (AID)spell.Action.ID is AID.SidewiseSpark1 or AID.SidewiseSpark2 or AID.SidewiseSpark3 or AID.SidewiseSpark4 or AID.SidewiseSpark5 or AID.SidewiseSpark6)
+        if (_aoes.Count > 0 && (AID)spell.Action.ID is AID.SidewiseSpark1 or AID.SidewiseSpark2 or AID.SidewiseSpark3 or AID.SidewiseSpark4 or AID.SidewiseSpark5 or AID.SidewiseSpark6 or AID.Burst)
             _aoes.RemoveAt(0);
     }
 }
