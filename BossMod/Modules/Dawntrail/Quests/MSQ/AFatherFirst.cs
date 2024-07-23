@@ -71,9 +71,9 @@ class DualBlowsSteeledStrike(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            yield return new(_aoes[0].Shape, _aoes[0].Origin, _aoes[0].Rotation, _aoes[0].Activation, ArenaColor.Danger);
+            yield return _aoes[0] with { Color = ArenaColor.Danger };
         if (_aoes.Count > 1)
-            yield return new(_aoes[1].Shape, _aoes[1].Origin, _aoes[1].Rotation, _aoes[1].Activation, Risky: false);
+            yield return _aoes[1] with { Risky = false };
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -81,7 +81,7 @@ class DualBlowsSteeledStrike(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.DualBlows1 or AID.DualBlows2 or AID.DualBlows3 or AID.DualBlows4)
         {
             _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            _aoes.SortBy(x => x.Activation);
         }
         else if ((AID)spell.Action.ID is AID.SteeledStrike1 or AID.SteeledStrike2)
             _aoes.Add(new(cross, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
@@ -104,10 +104,10 @@ class BurningSun(BossModule module) : Components.GenericAOEs(module)
     {
         if (_aoes.Count > 0)
             for (var i = 0; i < Math.Clamp(_aoes.Count, 0, 9); ++i)
-                yield return new(_aoes[i].Shape, _aoes[i].Origin, default, _aoes[i].Activation, ArenaColor.Danger);
+                yield return _aoes[i] with { Color = ArenaColor.Danger };
         if (_aoes.Count > 9)
             for (var i = 9; i < _aoes.Count; ++i)
-                yield return new(_aoes[i].Shape, _aoes[i].Origin, default, _aoes[i].Activation);
+                yield return _aoes[i];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

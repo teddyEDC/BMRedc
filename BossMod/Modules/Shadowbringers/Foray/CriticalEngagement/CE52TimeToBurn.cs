@@ -125,7 +125,7 @@ class TimeEruptionBombReproduce(BossModule module) : Components.GenericAOEs(modu
         _clocks.Add((actor.Position, delay));
         if (_clocks.Count == 9)
         {
-            _clocks.Sort((x, y) => x.delay.CompareTo(y.delay));
+            _clocks.SortBy(x => x.delay);
             _eruptionSafeSpots.AddRange(_clocks.TakeLast(2).Select(e => e.pos));
         }
     }

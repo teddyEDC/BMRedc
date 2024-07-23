@@ -13,7 +13,7 @@ class HailOfFeathers(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.HailOfFeathersAOE1 or AID.HailOfFeathersAOE2 or AID.HailOfFeathersAOE3 or AID.HailOfFeathersAOE4 or AID.HailOfFeathersAOE5 or AID.HailOfFeathersAOE6)
         {
             _aoes.Add(new(_shape, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            _aoes.SortBy(x => x.Activation);
         }
     }
 

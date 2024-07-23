@@ -26,7 +26,7 @@ public class BlackCatCrossing(BossModule module) : Components.GenericAOEs(module
             case AID.BlackCatCrossingFirst:
             case AID.BlackCatCrossingRest:
                 _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-                _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+                _aoes.SortBy(x => x.Activation);
                 break;
         }
     }

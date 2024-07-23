@@ -53,7 +53,7 @@ public class LitFuse(BossModule module) : Components.GenericAOEs(module)
         }
         if (_aoes.Count == 8 && !sorted)
         {
-            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            _aoes.SortBy(x => x.Activation);
             sorted = true;
         }
     }

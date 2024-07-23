@@ -95,7 +95,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.Stonecarver1 or AID.Stonecarver2 or AID.Stonecarver3 or AID.Stonecarver4)
         {
             _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            _aoes.SortBy(x => x.Activation);
         }
     }
 

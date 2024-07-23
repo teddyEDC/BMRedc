@@ -116,7 +116,7 @@ class Stance(BossModule module) : Components.GenericAOEs(module)
                     break;
             }
         }
-        bearings.Sort((x, y) => x.priority.CompareTo(y.priority));
+        bearings.SortBy(x => x.priority);
 
         _pendingCleaves.Clear();
         foreach (var b in bearings)

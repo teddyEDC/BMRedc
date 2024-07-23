@@ -33,6 +33,6 @@ class Hydrostasis(BossModule module) : Components.Knockback(module)
     private void AddSource(WPos pos, DateTime activation)
     {
         _sources.Add(new(pos, 28, activation));
-        _sources.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+        _sources.SortBy(x => x.Activation);
     }
 }
