@@ -15,10 +15,12 @@ public enum AID : uint
     FireIV2 = 39800, // Boss->self, 1.0s cast, range 15 circle
     FireIV3 = 39513, // Boss->self, 1.0s cast, range 15 circle
     FireIV4 = 39802, // Boss->self, 1.0s cast, range 15 circle, no log for this yet
+    FireIV5 = 39837, // Boss->self, 5.0s cast, range 15 circle
     BlizzardIV1 = 39838, // Boss->self, 5.0s cast, range 6-40 donut
     BlizzardIV2 = 39514, // Boss->self, 1.0s cast, range 6-40 donut
     BlizzardIV3 = 39801, // Boss->self, 1.0s cast, range 6-40 donut
     BlizzardIV4 = 39803, // Boss->self, 1.0s cast, range 6-40 donut
+    BlizzardIV5 = 39830, // Boss->self, 5.0s cast, range 6-40 donut
     SoullessStream1 = 39509, // Boss->self, 5.0s cast, range 40 180-degree cone, FireIV2 combo or FireIV4 combo
     SoullessStream2 = 39510, // Boss->self, 5.0s cast, range 40 180-degree cone, BlizzardIV2 or BlizzardIV4 combo
     SoullessStream3 = 39507, // Boss->self, 5.0s cast, range 40 180-degree cone, BlizzardIV3 combo
@@ -165,6 +167,8 @@ class Obliterate(BossModule module) : Components.StackWithCastTargets(module, Ac
 class Meltdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Meltdown), new AOEShapeRect(40, 5));
 class BlizzardIV1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardIV1), new AOEShapeDonut(6, 40));
 class FireIV1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FireIV1), new AOEShapeCircle(15));
+class BlizzardIV5(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardIV5), new AOEShapeDonut(6, 40));
+class FireIV5(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FireIV5), new AOEShapeCircle(15));
 
 class SoullessStreamFireBlizzardCombo(BossModule module) : Components.GenericAOEs(module)
 {
@@ -199,7 +203,7 @@ class SoullessStreamFireBlizzardCombo(BossModule module) : Components.GenericAOE
     private void AddAOEs(AOEShape primaryShape, AOEShape secondaryShape, ActorCastInfo spell)
     {
         var position = Module.PrimaryActor.Position;
-        _aoes.Add(new(primaryShape, position, default, Module.CastFinishAt(spell)));
+        _aoes.Add(new(primaryShape, position, spell.Rotation, Module.CastFinishAt(spell)));
         _aoes.Add(new(secondaryShape, position, default, Module.CastFinishAt(spell, 2.5f)));
     }
 
@@ -239,6 +243,8 @@ class ArchAethereaterStates : StateMachineBuilder
             .ActivateOnEnter<Obliterate>()
             .ActivateOnEnter<BlizzardIV1>()
             .ActivateOnEnter<FireIV1>()
+            .ActivateOnEnter<BlizzardIV5>()
+            .ActivateOnEnter<FireIV5>()
             .ActivateOnEnter<SoullessStreamFireBlizzardCombo>();
     }
 }
