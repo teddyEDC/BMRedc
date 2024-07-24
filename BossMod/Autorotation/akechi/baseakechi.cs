@@ -1,27 +1,22 @@
 ﻿using BossMod.Autorotation.Legacy;
 
-namespace BossMod.Autorotation.xan;
-
-// frick you i'll name my class whatever i want
-#pragma warning disable CS8981
-#pragma warning disable IDE1006
+namespace BossMod.Autorotation.akechi;
 
 public enum Targeting { Auto, Manual, AutoPrimary }
 public enum OffensiveStrategy { Automatic, Delay, Force }
 public enum AOEStrategy { AOE, SingleTarget }
 
-public abstract class xbase<AID, TraitID> : LegacyModule where AID : Enum where TraitID : Enum
+public abstract class Baseakechi<AID, TraitID> : LegacyModule where AID : Enum where TraitID : Enum
 {
     public class State(RotationModule module) : CommonState(module) { }
 
     protected State _state;
 
-    protected float PelotonLeft { get; private set; }
     protected float SwiftcastLeft { get; private set; }
     protected float TrueNorthLeft { get; private set; }
     protected float CombatTimer { get; private set; }
 
-    protected xbase(RotationModuleManager manager, Actor player) : base(manager, player)
+    protected Baseakechi(RotationModuleManager manager, Actor player) : base(manager, player)
     {
         _state = new(this);
     }
@@ -50,13 +45,13 @@ public abstract class xbase<AID, TraitID> : LegacyModule where AID : Enum where 
         Hints.ActionsToExecute.Push(ActionID.MakeSpell(aid), target, priority);
     }
 
-    protected void QueueOGCD(Action<float> ogcdFun)
+    protected void QueueOGCD(Action<float> oGCDFun)
     {
         var deadline = _state.GCD > 0 ? _state.GCD : float.MaxValue;
         if (_state.CanWeave(deadline - _state.OGCDSlotLength))
-            ogcdFun(deadline - _state.OGCDSlotLength);
+            oGCDFun(deadline - _state.OGCDSlotLength);
         if (_state.CanWeave(deadline))
-            ogcdFun(deadline);
+            oGCDFun(deadline);
     }
 
     /// <summary>
@@ -137,13 +132,8 @@ public abstract class xbase<AID, TraitID> : LegacyModule where AID : Enum where 
 
     protected int NumMeleeAOETargets() => Hints.NumPriorityTargetsInAOECircle(Player.Position, 5);
 
-    protected PositionCheck IsSplashTarget => (Actor primary, Actor other) => Hints.TargetInAOECircle(other, primary.Position, 5);
-    protected PositionCheck Is25yRectTarget => (Actor primary, Actor other) => Hints.TargetInAOERect(other, Player.Position, Player.DirectionTo(primary), 25, 4);
-
     public sealed override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, float forceMovementIn)
     {
-        var pelo = Player.FindStatus(BRD.SID.Peloton);
-        PelotonLeft = pelo != null ? _state.StatusDuration(pelo.Value.ExpireAt) : 0;
         SwiftcastLeft = StatusLeft(WHM.SID.Swiftcast);
         TrueNorthLeft = StatusLeft(DRG.SID.TrueNorth);
 
@@ -156,13 +146,12 @@ public abstract class xbase<AID, TraitID> : LegacyModule where AID : Enum where 
     }
 
     public abstract void Exec(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay);
-
     protected (float Left, int Stacks) Status<SID>(SID status) where SID : Enum => _state.StatusDetails(Player, status, Player.InstanceID);
     protected float StatusLeft<SID>(SID status) where SID : Enum => Status(status).Left;
     protected int StatusStacks<SID>(SID status) where SID : Enum => Status(status).Stacks;
 }
 
-static class xtensions
+static class Extensionsakechi
 {
     public static RotationModuleDefinition.ConfigRef<Targeting> DefineTargeting<Index>(this RotationModuleDefinition def, Index trackname)
          where Index : Enum
