@@ -46,27 +46,33 @@ class Heatstroke(BossModule module) : Components.StayMove(module)
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if ((SID)status.ID == SID.Heatstroke)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
         {
-            if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+            if ((SID)status.ID == SID.Heatstroke)
             {
                 Requirements[slot] = Requirement.Stay;
                 _heatstroke.Set(Raid.FindSlot(actor.InstanceID));
+                if (actor == Module.Raid.Player()!)
+                    expiresAt = status.ExpireAt;
             }
-            if (actor == Module.Raid.Player()!)
-                expiresAt = status.ExpireAt;
+            else if ((SID)status.ID == SID.Pyretic)
+            {
+                _pyretic.Set(Raid.FindSlot(actor.InstanceID));
+                Requirements[slot] = Requirement.Stay;
+            }
         }
-        else if ((SID)status.ID == SID.Pyretic)
-            _pyretic.Set(Raid.FindSlot(actor.InstanceID));
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        if ((SID)status.ID == SID.Heatstroke)
-            _heatstroke.Clear(Raid.FindSlot(actor.InstanceID));
-        else if ((SID)status.ID == SID.Pyretic)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
         {
-            if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+            if ((SID)status.ID == SID.Heatstroke)
+            {
+                _heatstroke.Clear(Raid.FindSlot(actor.InstanceID));
+                Requirements[slot] = Requirement.None;
+            }
+            else if ((SID)status.ID == SID.Pyretic)
             {
                 Requirements[slot] = Requirement.None;
                 expired = true;
@@ -108,35 +114,38 @@ class ColdSweats(BossModule module) : Components.StayMove(module)
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if ((SID)status.ID == SID.ColdSweats)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
         {
-            if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+            if ((SID)status.ID == SID.ColdSweats)
             {
                 Requirements[slot] = Requirement.Move;
                 _coldsweats.Set(Raid.FindSlot(actor.InstanceID));
+                if (actor == Module.Raid.Player()!)
+                    ExpiresAt = status.ExpireAt;
             }
-            if (actor == Module.Raid.Player()!)
-                ExpiresAt = status.ExpireAt;
-        }
-        else if ((SID)status.ID == SID.FreezingUp && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
-        {
-            Requirements[slot] = Requirement.Move;
-            _freezing.Set(Raid.FindSlot(actor.InstanceID));
+            else if ((SID)status.ID == SID.FreezingUp)
+            {
+                Requirements[slot] = Requirement.Move;
+                _freezing.Set(Raid.FindSlot(actor.InstanceID));
+            }
         }
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        if ((SID)status.ID == SID.ColdSweats && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
         {
-            Requirements[slot] = Requirement.None;
-            _coldsweats.Clear(Raid.FindSlot(actor.InstanceID));
-        }
-        else if ((SID)status.ID == SID.FreezingUp && Raid.FindSlot(actor.InstanceID) is var slot2 && slot2 >= 0 && slot2 < Requirements.Length)
-        {
-            Requirements[slot2] = Requirement.None;
-            ExpiresAt = default;
-            _freezing.Clear(Raid.FindSlot(actor.InstanceID));
+            if ((SID)status.ID == SID.ColdSweats)
+            {
+                Requirements[slot] = Requirement.None;
+                _coldsweats.Clear(Raid.FindSlot(actor.InstanceID));
+            }
+            else if ((SID)status.ID == SID.FreezingUp)
+            {
+                Requirements[slot] = Requirement.None;
+                ExpiresAt = default;
+                _freezing.Clear(Raid.FindSlot(actor.InstanceID));
+            }
         }
     }
 
