@@ -36,7 +36,7 @@ class MagitekBitLasers(BossModule module) : Components.GenericAOEs(module)
             {
                 if (Type == Types.SatelliteLaser && WorldState.CurrentTime > _times[0])
                     yield return new(rect, p.Position, p.Rotation, _times[1]);
-                if ((Type == Types.DiffractiveLaser && WorldState.CurrentTime > _times[0]) || Type == Types.LaserShower)
+                if (Type == Types.DiffractiveLaser && WorldState.CurrentTime > _times[0] || Type == Types.LaserShower)
                 {
                     if (NumCasts < 5 && p.Rotation.AlmostEqual(startrotation, maxError))
                         yield return new(rect, p.Position, p.Rotation, _times[1], ArenaColor.Danger);
