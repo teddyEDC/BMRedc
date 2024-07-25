@@ -10,7 +10,7 @@ class Spikesicle(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            yield return _aoes[0] with { Color = ArenaColor.Danger };
+            yield return _aoes[0] with { Color = Colors.Danger };
         if (_aoes.Count > 1)
             yield return _aoes[1];
     }
@@ -56,7 +56,7 @@ class SphereShatter(BossModule module) : Components.GenericAOEs(module, ActionID
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            yield return _aoes[0] with { Color = ArenaColor.Danger };
+            yield return _aoes[0] with { Color = Colors.Danger };
         if (_aoes.Count > 1)
             yield return _aoes[1];
     }

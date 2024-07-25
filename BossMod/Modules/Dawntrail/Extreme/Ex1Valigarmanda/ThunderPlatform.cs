@@ -26,8 +26,8 @@ class ThunderPlatform(BossModule module) : BossComponent(module)
                     var cellLevitating = ((x ^ z) & 1) != 0;
                     if (cellLevitating != highlightLevitate)
                     {
-                        _shape.Draw(Arena, Module.Center + new WDir(-5 - 10 * x, -10 + 10 * z), default, ArenaColor.AOE);
-                        _shape.Draw(Arena, Module.Center + new WDir(+5 + 10 * x, -10 + 10 * z), default, ArenaColor.AOE);
+                        _shape.Draw(Arena, Module.Center + new WDir(-5 - 10 * x, -10 + 10 * z), default, Colors.AOE);
+                        _shape.Draw(Arena, Module.Center + new WDir(+5 + 10 * x, -10 + 10 * z), default, Colors.AOE);
                     }
                 }
             }

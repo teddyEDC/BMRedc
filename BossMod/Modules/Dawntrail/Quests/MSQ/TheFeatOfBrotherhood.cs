@@ -93,7 +93,7 @@ class DualPyresSteelfoldStrike(BossModule module) : Components.GenericAOEs(modul
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            yield return _aoes[0] with { Color = ArenaColor.Danger };
+            yield return _aoes[0] with { Color = Colors.Danger };
         if (_aoes.Count > 1)
             yield return _aoes[1] with { Risky = false };
     }
@@ -215,7 +215,7 @@ class InnerWake(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 class OuterWake(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.OuterWake), new AOEShapeDonut(6, 40));
 class BattleBreaker(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BattleBreaker));
 class HeartOfTuralRaidwides(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.HeartOfTural), "Raidwides x7");
-class HeartOfTural(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HeartOfTural), new AOEShapeRect(20, 20, InvertForbiddenZone: true), color: ArenaColor.SafeFromAOE)
+class HeartOfTural(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HeartOfTural), new AOEShapeRect(20, 20, InvertForbiddenZone: true), color: Colors.SafeFromAOE)
 {
     private const string hint = "Wait in safe area!";
     public override void AddHints(int slot, Actor actor, TextHints hints)

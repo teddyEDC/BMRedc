@@ -111,7 +111,7 @@ sealed class AIManager : IDisposable
             return -1;
         var group = GroupManager.Instance()->GetGroup();
         var slot = -1;
-        for (int i = 0; i < group->MemberCount; ++i)
+        for (var i = 0; i < group->MemberCount; ++i)
         {
             if (group->PartyMembers[i].HomeWorld == source.World.RowId && group->PartyMembers[i].NameString == source.PlayerName)
             {
@@ -211,7 +211,7 @@ sealed class AIManager : IDisposable
                 configModified = HandleMaxDistanceSlotCommand(messageData);
                 break;
             default:
-                Service.Log($"[AI] Unknown command: {messageData[0]}");
+                Service.ChatGui.Print($"[AI] Unknown command: {messageData[0]}");
                 break;
         }
 
@@ -249,7 +249,7 @@ sealed class AIManager : IDisposable
     {
         if (messageData.Length < 2)
         {
-            Service.Log("[AI] Missing follow target.");
+            Service.ChatGui.Print("[AI] Missing follow target.");
             return false;
         }
 
@@ -269,7 +269,7 @@ sealed class AIManager : IDisposable
             }
             else
             {
-                Service.Log($"[AI] Unknown party member: {string.Join(" ", messageData.Skip(1))}");
+                Service.ChatGui.Print($"[AI] Unknown party member: {string.Join(" ", messageData.Skip(1))}");
                 return false;
             }
         }
@@ -279,7 +279,7 @@ sealed class AIManager : IDisposable
     private bool ToggleDebugMenu()
     {
         _config.DrawUI = !_config.DrawUI;
-        Service.Log($"[AI] AI menu is now {(_config.DrawUI ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] AI menu is now {(_config.DrawUI ? "enabled" : "disabled")}");
         return true;
     }
 
@@ -298,11 +298,11 @@ sealed class AIManager : IDisposable
                     _config.ForbidActions = false;
                     break;
                 default:
-                    Service.Log($"[AI] Unknown forbid actions command: {messageData[1]}");
+                    Service.ChatGui.Print($"[AI] Unknown forbid actions command: {messageData[1]}");
                     return _config.ForbidActions;
             }
         }
-        Service.Log($"[AI] Forbid actions is now {(_config.ForbidActions ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Forbid actions is now {(_config.ForbidActions ? "enabled" : "disabled")}");
         return _config.ForbidActions;
     }
 
@@ -321,11 +321,11 @@ sealed class AIManager : IDisposable
                     _config.ForbidMovement = false;
                     break;
                 default:
-                    Service.Log($"[AI] Unknown forbid movement command: {messageData[1]}");
+                    Service.ChatGui.Print($"[AI] Unknown forbid movement command: {messageData[1]}");
                     return _config.ForbidMovement;
             }
         }
-        Service.Log($"[AI] Forbid movement is now {(_config.ForbidMovement ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Forbid movement is now {(_config.ForbidMovement ? "enabled" : "disabled")}");
         return _config.ForbidMovement;
     }
 
@@ -344,11 +344,11 @@ sealed class AIManager : IDisposable
                     _config.FollowOutOfCombat = false;
                     break;
                 default:
-                    Service.Log($"[AI] Unknown follow out of combat command: {messageData[1]}");
+                    Service.ChatGui.Print($"[AI] Unknown follow out of combat command: {messageData[1]}");
                     return _config.FollowOutOfCombat;
             }
         }
-        Service.Log($"[AI] Follow out of combat is now {(_config.FollowOutOfCombat ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Follow out of combat is now {(_config.FollowOutOfCombat ? "enabled" : "disabled")}");
         return _config.FollowOutOfCombat;
     }
 
@@ -376,12 +376,12 @@ sealed class AIManager : IDisposable
                     _config.FollowDuringActiveBossModule = false;
                     break;
                 default:
-                    Service.Log($"[AI] Unknown follow during combat command: {messageData[1]}");
+                    Service.ChatGui.Print($"[AI] Unknown follow during combat command: {messageData[1]}");
                     return _config.FollowDuringCombat;
             }
         }
-        Service.Log($"[AI] Follow during combat is now {(_config.FollowDuringCombat ? "enabled" : "disabled")}");
-        Service.Log($"[AI] Follow during active boss module is now {(_config.FollowDuringActiveBossModule ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Follow during combat is now {(_config.FollowDuringCombat ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Follow during active boss module is now {(_config.FollowDuringActiveBossModule ? "enabled" : "disabled")}");
         return _config.FollowDuringCombat;
     }
 
@@ -405,12 +405,12 @@ sealed class AIManager : IDisposable
                     _config.FollowDuringActiveBossModule = false;
                     break;
                 default:
-                    Service.Log($"[AI] Unknown follow during active boss module command: {messageData[1]}");
+                    Service.ChatGui.Print($"[AI] Unknown follow during active boss module command: {messageData[1]}");
                     return _config.FollowDuringActiveBossModule;
             }
         }
-        Service.Log($"[AI] Follow during active boss module is now {(_config.FollowDuringActiveBossModule ? "enabled" : "disabled")}");
-        Service.Log($"[AI] Follow during combat is now {(_config.FollowDuringCombat ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Follow during active boss module is now {(_config.FollowDuringActiveBossModule ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Follow during combat is now {(_config.FollowDuringCombat ? "enabled" : "disabled")}");
         return _config.FollowDuringActiveBossModule;
     }
 
@@ -429,11 +429,11 @@ sealed class AIManager : IDisposable
                     _config.FollowTarget = false;
                     break;
                 default:
-                    Service.Log($"[AI] Unknown follow target command: {messageData[1]}");
+                    Service.ChatGui.Print($"[AI] Unknown follow target command: {messageData[1]}");
                     return _config.FollowTarget;
             }
         }
-        Service.Log($"[AI] Following targets is now {(_config.FollowTarget ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"[AI] Following targets is now {(_config.FollowTarget ? "enabled" : "disabled")}");
         return _config.FollowTarget;
     }
 
@@ -441,7 +441,7 @@ sealed class AIManager : IDisposable
     {
         if (messageData.Length < 2)
         {
-            Service.Log("[AI] Missing positional type.");
+            Service.ChatGui.Print("[AI] Missing positional type.");
             return false;
         }
         SetPositional(messageData[1]);
@@ -465,27 +465,27 @@ sealed class AIManager : IDisposable
                 _config.DesiredPositional = Positional.Front;
                 break;
             default:
-                Service.Log($"[AI] Unknown positional: {positional}");
+                Service.ChatGui.Print($"[AI] Unknown positional: {positional}");
                 return;
         }
-        Service.Log($"[AI] Desired positional set to {_config.DesiredPositional}");
+        Service.ChatGui.Print($"[AI] Desired positional set to {_config.DesiredPositional}");
     }
 
     private bool HandleMaxDistanceTargetCommand(string[] messageData)
     {
         if (messageData.Length < 2)
         {
-            Service.Log("[AI] Missing distance value.");
+            Service.ChatGui.Print("[AI] Missing distance value.");
             return false;
         }
         var distanceStr = messageData[1].Replace(',', '.');
         if (!float.TryParse(distanceStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var distance))
         {
-            Service.Log("[AI] Invalid distance value.");
+            Service.ChatGui.Print("[AI] Invalid distance value.");
             return false;
         }
         _config.MaxDistanceToTarget = distance;
-        Service.Log($"[AI] Max distance to target set to {distance}");
+        Service.ChatGui.Print($"[AI] Max distance to target set to {distance}");
         return true;
     }
 
@@ -493,17 +493,17 @@ sealed class AIManager : IDisposable
     {
         if (messageData.Length < 2)
         {
-            Service.Log("[AI] Missing distance value.");
+            Service.ChatGui.Print("[AI] Missing distance value.");
             return false;
         }
         var distanceStr = messageData[1].Replace(',', '.');
         if (!float.TryParse(distanceStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var distance))
         {
-            Service.Log("[AI] Invalid distance value.");
+            Service.ChatGui.Print("[AI] Invalid distance value.");
             return false;
         }
         _config.MaxDistanceToSlot = distance;
-        Service.Log($"[AI] Max distance to slot set to {distance}");
+        Service.ChatGui.Print($"[AI] Max distance to slot set to {distance}");
         return true;
     }
 
