@@ -90,8 +90,5 @@ public sealed class ColorConfig : ConfigNode
     [PropertyDisplay("Waymark: 4")]
     public Color Waymark4 = new(0xffbc567a);
 
-    public static ColorConfig GetDefaultConfig()
-    {
-        return new ColorConfig();
-    }
+    public static ColorConfig DefaultConfig => new();
 }

@@ -164,7 +164,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void ResetColors()
     {
-        var defaultConfig = ColorConfig.GetDefaultConfig();
+        var defaultConfig = ColorConfig.DefaultConfig;
         var currentConfig = Service.Config.Get<ColorConfig>();
 
         currentConfig.PlannerBackground = defaultConfig.PlannerBackground;
