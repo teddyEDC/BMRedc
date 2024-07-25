@@ -193,7 +193,7 @@ public sealed class ReplayManager(RotationDatabase rotationDB, string logDirecto
             return;
 
         var numSelected = _replayEntries.Count(e => e.Selected);
-        bool shouldSelectAll = _replayEntries.Count == 0 || numSelected < _replayEntries.Count;
+        var shouldSelectAll = _replayEntries.Count == 0 || numSelected < _replayEntries.Count;
         if (ImGui.Button(shouldSelectAll ? "Select all" : "Unselect all", new(80, 0)))
         {
             foreach (var e in _replayEntries)

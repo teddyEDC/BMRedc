@@ -153,10 +153,52 @@ public sealed class Plugin : IDalamudPlugin
             case "AR":
                 ParseAutorotationCommands(split);
                 break;
+            case "RESETCOLORS":
+                ResetColors();
+                break;
             case "RESTOREROTATION":
                 ToggleRestoreRotation();
                 break;
         }
+    }
+
+    private void ResetColors()
+    {
+        var defaultConfig = ColorConfig.GetDefaultConfig();
+        var currentConfig = Service.Config.Get<ColorConfig>();
+
+        currentConfig.PlannerBackground = defaultConfig.PlannerBackground;
+        currentConfig.PlannerBackgroundHighlight = defaultConfig.PlannerBackgroundHighlight;
+        currentConfig.PlannerCooldown = defaultConfig.PlannerCooldown;
+        currentConfig.PlannerFallback = defaultConfig.PlannerFallback;
+        currentConfig.PlannerEffect = defaultConfig.PlannerEffect;
+        currentConfig.PlannerWindow = defaultConfig.PlannerWindow;
+        currentConfig.ArenaBackground = defaultConfig.ArenaBackground;
+        currentConfig.ArenaBorder = defaultConfig.ArenaBorder;
+        currentConfig.ArenaAOE = defaultConfig.ArenaAOE;
+        currentConfig.ArenaSafeFromAOE = defaultConfig.ArenaSafeFromAOE;
+        currentConfig.ArenaDanger = defaultConfig.ArenaDanger;
+        currentConfig.ArenaSafe = defaultConfig.ArenaSafe;
+        currentConfig.ArenaTrap = defaultConfig.ArenaTrap;
+        currentConfig.ArenaPC = defaultConfig.ArenaPC;
+        currentConfig.ArenaEnemy = defaultConfig.ArenaEnemy;
+        currentConfig.ArenaObject = defaultConfig.ArenaObject;
+        currentConfig.ArenaPlayerInteresting = defaultConfig.ArenaPlayerInteresting;
+        currentConfig.ArenaPlayerGeneric = defaultConfig.ArenaPlayerGeneric;
+        currentConfig.ArenaVulnerable = defaultConfig.ArenaVulnerable;
+        currentConfig.ArenaFutureVulnerable = defaultConfig.ArenaFutureVulnerable;
+        currentConfig.Shadows = defaultConfig.Shadows;
+        currentConfig.WaymarkA = defaultConfig.WaymarkA;
+        currentConfig.WaymarkB = defaultConfig.WaymarkB;
+        currentConfig.WaymarkC = defaultConfig.WaymarkC;
+        currentConfig.WaymarkD = defaultConfig.WaymarkD;
+        currentConfig.Waymark1 = defaultConfig.Waymark1;
+        currentConfig.Waymark2 = defaultConfig.Waymark2;
+        currentConfig.Waymark3 = defaultConfig.Waymark3;
+        currentConfig.Waymark4 = defaultConfig.Waymark4;
+
+        currentConfig.Modified.Fire();
+        Service.ChatGui.Print("Colors have been reset to default values.");
     }
 
     private bool ToggleRestoreRotation()
@@ -164,7 +206,7 @@ public sealed class Plugin : IDalamudPlugin
         var config = Service.Config.Get<ActionTweaksConfig>();
         config.RestoreRotation = !config.RestoreRotation;
         config.Modified.Fire();
-        Service.Log($"Restore character orientation after action use is now {(config.RestoreRotation ? "enabled" : "disabled")}");
+        Service.ChatGui.Print($"Restore character orientation after action use is now {(config.RestoreRotation ? "enabled" : "disabled")}");
         return true;
     }
 
@@ -189,7 +231,7 @@ public sealed class Plugin : IDalamudPlugin
         _amex.FinishActionGather();
         ExecuteHints();
 
-        bool uiHidden = Service.GameGui.GameUiHidden || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Service.Condition[ConditionFlag.WatchingCutscene78] || Service.Condition[ConditionFlag.WatchingCutscene];
+        var uiHidden = Service.GameGui.GameUiHidden || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Service.Condition[ConditionFlag.WatchingCutscene78] || Service.Condition[ConditionFlag.WatchingCutscene];
         if (!uiHidden)
         {
             Service.WindowSystem?.Draw();
