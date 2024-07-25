@@ -6,6 +6,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using System.IO;
 using System.Reflection;
 
 namespace BossMod;
@@ -87,7 +88,10 @@ public sealed class Plugin : IDalamudPlugin
         _configUI = new(Service.Config, _ws, _rotationDB);
         _wndBossmod = new(_bossmod);
         _wndBossmodHints = new(_bossmod);
-        _wndReplay = new(_ws, _rotationDB, new(dalamud.ConfigDirectory.FullName + "/replays"));
+        var config = Service.Config.Get<ReplayManagementConfig>();
+        var replayFolder = string.IsNullOrEmpty(config.ReplayFolder) ? dalamud.ConfigDirectory.FullName + "/replays" : config.ReplayFolder;
+        _wndReplay = new ReplayManagementWindow(_ws, _rotationDB, new DirectoryInfo(replayFolder));
+        config.Modified.ExecuteAndSubscribe(() => _wndReplay.UpdateLogDirectory());
         _wndRotation = new(_rotation, _amex, () => OpenConfigUI("Presets"));
         _wndDebug = new(_ws, _rotation, _amex);
 
