@@ -255,8 +255,7 @@ public class TheFeatOfBrotherhood(WorldState ws, Actor primary) : BossModule(ws,
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        foreach (var s in Enemies(OID.OathOfFire))
-            Arena.Actor(s, ArenaColor.Enemy);
+        Arena.Actor(PrimaryActor);
+        Arena.Actors(Enemies(OID.OathOfFire));
     }
 }

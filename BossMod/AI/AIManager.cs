@@ -184,19 +184,19 @@ sealed class AIManager : IDisposable
                 configModified = ToggleDebugMenu();
                 break;
             case "FORBIDACTIONS":
-                configModified = ToggleForbidActions();
+                configModified = ToggleForbidActions(messageData);
                 break;
             case "FORDBIDMOVEMENT":
-                configModified = ToggleForbidMovement();
+                configModified = ToggleForbidMovement(messageData);
                 break;
             case "FOLLOWOUTOFCOMBAT":
-                configModified = ToggleFollowOutOfCombat();
+                configModified = ToggleFollowOutOfCombat(messageData);
                 break;
             case "FOLLOWCOMBAT":
-                configModified = ToggleFollowCombat();
+                configModified = ToggleFollowCombat(messageData);
                 break;
             case "FOLLOWMODULE":
-                configModified = ToggleFollowModule();
+                configModified = ToggleFollowModule(messageData);
                 break;
             case "FOLLOWTARGET":
                 configModified = ToggleFollowTarget(messageData);
@@ -283,53 +283,135 @@ sealed class AIManager : IDisposable
         return true;
     }
 
-    private bool ToggleForbidActions()
+    private bool ToggleForbidActions(string[] messageData)
     {
-        _config.ForbidActions = !_config.ForbidActions;
+        if (messageData.Length == 1)
+            _config.ForbidActions = !_config.ForbidActions;
+        else
+        {
+            switch (messageData[1].ToUpperInvariant())
+            {
+                case "ON":
+                    _config.ForbidActions = true;
+                    break;
+                case "OFF":
+                    _config.ForbidActions = false;
+                    break;
+                default:
+                    Service.Log($"[AI] Unknown forbid actions command: {messageData[1]}");
+                    return _config.ForbidActions;
+            }
+        }
         Service.Log($"[AI] Forbid actions is now {(_config.ForbidActions ? "enabled" : "disabled")}");
-        return true;
+        return _config.ForbidActions;
     }
 
-    private bool ToggleForbidMovement()
+    private bool ToggleForbidMovement(string[] messageData)
     {
-        _config.ForbidMovement = !_config.ForbidMovement;
+        if (messageData.Length == 1)
+            _config.ForbidMovement = !_config.ForbidMovement;
+        else
+        {
+            switch (messageData[1].ToUpperInvariant())
+            {
+                case "ON":
+                    _config.ForbidMovement = true;
+                    break;
+                case "OFF":
+                    _config.ForbidMovement = false;
+                    break;
+                default:
+                    Service.Log($"[AI] Unknown forbid movement command: {messageData[1]}");
+                    return _config.ForbidMovement;
+            }
+        }
         Service.Log($"[AI] Forbid movement is now {(_config.ForbidMovement ? "enabled" : "disabled")}");
-        return true;
+        return _config.ForbidMovement;
     }
 
-    private bool ToggleFollowOutOfCombat()
+    private bool ToggleFollowOutOfCombat(string[] messageData)
     {
-        _config.FollowOutOfCombat = !_config.FollowOutOfCombat;
+        if (messageData.Length == 1)
+            _config.FollowOutOfCombat = !_config.FollowOutOfCombat;
+        else
+        {
+            switch (messageData[1].ToUpperInvariant())
+            {
+                case "ON":
+                    _config.FollowOutOfCombat = true;
+                    break;
+                case "OFF":
+                    _config.FollowOutOfCombat = false;
+                    break;
+                default:
+                    Service.Log($"[AI] Unknown follow out of combat command: {messageData[1]}");
+                    return _config.FollowOutOfCombat;
+            }
+        }
         Service.Log($"[AI] Follow out of combat is now {(_config.FollowOutOfCombat ? "enabled" : "disabled")}");
-        return true;
+        return _config.FollowOutOfCombat;
     }
 
-    private bool ToggleFollowCombat()
+    private bool ToggleFollowCombat(string[] messageData)
     {
-        if (_config.FollowDuringCombat)
+        if (messageData.Length == 1)
         {
-            _config.FollowDuringCombat = false;
-            _config.FollowDuringActiveBossModule = false;
+            if (_config.FollowDuringCombat)
+            {
+                _config.FollowDuringCombat = false;
+                _config.FollowDuringActiveBossModule = false;
+            }
+            else
+                _config.FollowDuringCombat = true;
         }
         else
-            _config.FollowDuringCombat = true;
+        {
+            switch (messageData[1].ToUpperInvariant())
+            {
+                case "ON":
+                    _config.FollowDuringCombat = true;
+                    break;
+                case "OFF":
+                    _config.FollowDuringCombat = false;
+                    _config.FollowDuringActiveBossModule = false;
+                    break;
+                default:
+                    Service.Log($"[AI] Unknown follow during combat command: {messageData[1]}");
+                    return _config.FollowDuringCombat;
+            }
+        }
         Service.Log($"[AI] Follow during combat is now {(_config.FollowDuringCombat ? "enabled" : "disabled")}");
         Service.Log($"[AI] Follow during active boss module is now {(_config.FollowDuringActiveBossModule ? "enabled" : "disabled")}");
-        return true;
+        return _config.FollowDuringCombat;
     }
 
-    private bool ToggleFollowModule()
+    private bool ToggleFollowModule(string[] messageData)
     {
-        if (_config.FollowDuringActiveBossModule)
-            _config.FollowDuringActiveBossModule = false;
+        if (messageData.Length == 1)
+        {
+            _config.FollowDuringActiveBossModule = !_config.FollowDuringActiveBossModule;
+            if (!_config.FollowDuringCombat)
+                _config.FollowDuringCombat = true;
+        }
         else
         {
-            _config.FollowDuringActiveBossModule = true;
-            _config.FollowDuringCombat = true;
+            switch (messageData[1].ToUpperInvariant())
+            {
+                case "ON":
+                    _config.FollowDuringActiveBossModule = true;
+                    _config.FollowDuringCombat = true;
+                    break;
+                case "OFF":
+                    _config.FollowDuringActiveBossModule = false;
+                    break;
+                default:
+                    Service.Log($"[AI] Unknown follow during active boss module command: {messageData[1]}");
+                    return _config.FollowDuringActiveBossModule;
+            }
         }
         Service.Log($"[AI] Follow during active boss module is now {(_config.FollowDuringActiveBossModule ? "enabled" : "disabled")}");
         Service.Log($"[AI] Follow during combat is now {(_config.FollowDuringCombat ? "enabled" : "disabled")}");
-        return true;
+        return _config.FollowDuringActiveBossModule;
     }
 
     private bool ToggleFollowTarget(string[] messageData)
