@@ -24,8 +24,8 @@ public sealed class Plugin : IDalamudPlugin
     private readonly ActionManagerEx _amex;
     private readonly WorldStateGameSync _wsSync;
     private readonly RotationModuleManager _rotation;
-    private readonly AIManager _ai;
-    private readonly Broadcast _broadcast;
+    private readonly AI.AIManager _ai;
+    private readonly AI.Broadcast _broadcast;
     private readonly IPCProvider _ipc;
     private TimeSpan _prevUpdateTime;
 
