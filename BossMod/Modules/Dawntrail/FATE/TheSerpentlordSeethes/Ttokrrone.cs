@@ -27,6 +27,10 @@ public enum AID : uint
     LeftwardSandspout = 39816, // Helper->location, 2.1s cast, range 60 90-degree cone
     DeadlyDustcloakLeftward = 39844, // Helper->location, 2.1s cast, range 13 circle
 
+    FangwardSandspoutVisual = 37313, // Boss->self, 5.2+0,8s cast, single-target
+    FangwardSandspout = 39813, // Helper->location, 2.1s cast, range 60 90-degree cone
+    DeadlyDustcloakFangward = 39841, // Helper->location, 2.1s cast, range 13 circle
+
     DesertTempestVisualDonut = 37332, // Boss->self, 7.3+0,7s cast, single-target
     DesertTempestVisualCircle = 37331, // Boss->self, 7.3+0,7s cast, single-target
     DesertTempestVisualConeDonutSegment = 37333, // Boss->self, 7.3+0,7s cast, single-target
@@ -58,20 +62,17 @@ public enum AID : uint
     TailwardDustdevilVisualCCW = 37322, // Boss->self, 7.2+0,8s cast, single-target
     TailwardDustdevilVisualCW = 37318, // Boss->self, 7.2+0,8s cast, single-target
     TailwardDustdevilFirst = 39818, // Helper->location, 2.1s cast, range 60 90-degree cone
-    DeadlyDustcloakTailwardDustdevil1 = 39846, // Helper->location, 2.1s cast, range 13 circle
-    DeadlyDustcloakTailwardDustdevil2 = 39848, // Helper->location, 0.9s cast, range 13 circle
+    DeadlyDustcloakTailwardDDFirst = 39846, // Helper->location, 2.1s cast, range 13 circle
+    DeadlyDustcloakTailwardDDRest = 39848, // Helper->location, 0.9s cast, range 13 circle
     LeftwardSandspoutDDVisual = 37326, // Boss->self, no cast, single-target
     LeftwardSandspoutDDRest = 39820, // Helper->location, 0.9s cast, range 60 90-degree cone
 
     FangwardDustdevilVisualCCW = 37321, // Boss->self, 7.2+0,8s cast, single-target
     FangwardDustdevilVisualCW = 37317, // Boss->self, 7.2+0,8s cast, single-target
-    FangwardDustdevilVisual3 = 37313, // Boss->self, 5.2+0,8s cast, single-target
     FangwardDustdevilFirst = 39817, // Helper->location, 2.1s cast, range 60 90-degree cone
-    DeadlyDustcloakFangwardCW = 39845, // Helper->location, 2.1s cast, range 13 circle
-    FangwardDustdevilCCW = 39813, // Helper->location, 2.1s cast, range 60 90-degree cone
-    DeadlyDustcloakFangwardCCW = 39841, // Helper->location, 2.1s cast, range 13 circle
+    DeadlyDustcloakFangwardDDFirst = 39845, // Helper->location, 2.1s cast, range 13 circle
+    DeadlyDustcloakdFangwardDDRest = 39847, // Helper->location, 0.9s cast, range 13 circle
     RightwardSandspoutDDRest = 39819, // Helper->location, 0.9s cast, range 60 90-degree cone
-    DeadlyDustcloakRightwardDDRest = 39847, // Helper->location, 0.9s cast, range 13 circle
     RightwardSandspoutDDVisual = 37325 // Boss->self, no cast, single-target
 }
 
