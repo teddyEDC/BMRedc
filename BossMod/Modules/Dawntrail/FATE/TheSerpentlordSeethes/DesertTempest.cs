@@ -20,7 +20,7 @@ class DesertTempest(BossModule module) : Components.GenericAOEs(module)
             case AID.DesertTempestVisualDonut:
                 AddAOEs(donut, null, spell);
                 break;
-            case AID.DesertTempestCircle:
+            case AID.DesertTempestVisualCircle:
                 AddAOEs(circle, null, spell);
                 break;
             case AID.DesertTempestVisualConeDonutSegment:
