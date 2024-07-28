@@ -24,8 +24,8 @@ public enum AID : uint
     Neurotoxify = 38331, // Boss->self, 5.0s cast, range 40 circle
 
     Cocopult = 37307, // Boss->players, 5.0s cast, range 5 circle, stack
-    RavagingRootsCW = 37373, // Boss->self, 5.0s cast, range 30 width 6 cross, 8x, 45° increment
-    RavagingRootsCCW = 37374, // Boss->self, 5.0s cast, range 30 width 6 cross, 8x, -45° increment
+    RavagingRootsCW = 37373, // Boss->self, 5.0s cast, range 30 width 6 cross, 8x, -45° increment
+    RavagingRootsCCW = 37374, // Boss->self, 5.0s cast, range 30 width 6 cross, 8x, 45° increment
     RavagingRootsRest = 37375, // Boss->self, no cast, range 30 width 6 cross
 }
 

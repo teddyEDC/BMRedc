@@ -6,6 +6,7 @@ class Sandspout(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(13);
     private static readonly Angle a180 = 180.Degrees();
     private static readonly Angle a90 = 90.Degrees();
+    private static readonly Angle a0 = 0.Degrees();
     private readonly List<AOEInstance> _aoes = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
@@ -22,6 +23,9 @@ class Sandspout(BossModule module) : Components.GenericAOEs(module)
                 break;
             case AID.RightwardSandspoutVisual:
                 AddAOEs(-a90, spell);
+                break;
+            case AID.FangwardSandspoutVisual:
+                AddAOEs(a0, spell);
                 break;
         }
     }
@@ -40,6 +44,7 @@ class Sandspout(BossModule module) : Components.GenericAOEs(module)
             case AID.TailwardSandspout:
             case AID.RightwardSandspout:
             case AID.LeftwardSandspout:
+            case AID.FangwardSandspout:
                 _aoes.Clear();
                 break;
         }
