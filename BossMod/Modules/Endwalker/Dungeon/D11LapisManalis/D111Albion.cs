@@ -185,7 +185,7 @@ public record struct Stampede(bool Active, WPos Position, Angle Rotation, List<A
 {
     public int Count = 0;
     public DateTime Reset = default;
-    public static readonly Stampede Default = new(false, default, default, []);
+    public static readonly Stampede Default = new();
 }
 
 class IcyThroes(BossModule module) : Components.GenericBaitAway(module)
