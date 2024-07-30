@@ -153,7 +153,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
     private void ResetIfNecessary(ref Stampede stampede)
     {
         if (stampede.Reset != default && WorldState.CurrentTime > stampede.Reset)
-            stampede = Stampede.Default with { Beasts = [] };
+            stampede = Stampede.Default;
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
