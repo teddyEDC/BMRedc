@@ -69,7 +69,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
         return new(new AOEShapeRect(length, 5), position, stampede.Rotation);
     }
 
-    private static float CalculateStampedeLength(List<Actor> beasts) => (beasts[0].Position - beasts[^1].Position).Length();
+    private static float CalculateStampedeLength(IReadOnlyList<Actor> beasts) => (beasts[0].Position - beasts[^1].Position).Length();
 
     public override void OnEventEnvControl(byte index, uint state)
     {
@@ -133,7 +133,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
         {
             var stampede = stampedeList[i];
             UpdateStampede(ref stampede);
-            ResetIfNecessary(ref stampede);
+            ResetStampede(ref stampede);
             stampedeList[i] = stampede;
         }
         stampedes = new Queue<Stampede>(stampedeList);
@@ -144,13 +144,15 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
         foreach (var oid in new[] { OID.WildBeasts4, OID.WildBeasts3, OID.WildBeasts2, OID.WildBeasts1 })
         {
             var beasts = Module.Enemies(oid);
+            var updatedBeasts = stampede.Beasts.ToList();
             foreach (var b in beasts)
-                if (b.Position.InRect(stampede.Position, stampede.Rotation, 0, 10, 5) && !stampede.Beasts.Contains(b) && stampede.Active)
-                    stampede.Beasts.Add(b);
+                if (b.Position.InRect(stampede.Position, stampede.Rotation, 0, 10, 5) && !updatedBeasts.Contains(b) && stampede.Active)
+                    updatedBeasts.Add(b);
+            stampede = new Stampede(stampede.Active, stampede.Position, stampede.Rotation, updatedBeasts);
         }
     }
 
-    private void ResetIfNecessary(ref Stampede stampede)
+    private void ResetStampede(ref Stampede stampede)
     {
         if (stampede.Reset != default && WorldState.CurrentTime > stampede.Reset)
             stampede = new();
@@ -181,11 +183,10 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-public record struct Stampede(bool Active, WPos Position, Angle Rotation, List<Actor> Beasts)
+public record struct Stampede(bool Active, WPos Position, Angle Rotation, IReadOnlyList<Actor> Beasts)
 {
     public int Count;
     public DateTime Reset;
-    public readonly IReadOnlyList<Actor> BeastsReadOnly => Beasts;
 }
 
 class IcyThroes(BossModule module) : Components.GenericBaitAway(module)
