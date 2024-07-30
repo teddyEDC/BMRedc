@@ -185,6 +185,7 @@ public record struct Stampede(bool Active, WPos Position, Angle Rotation, List<A
 {
     public int Count;
     public DateTime Reset;
+    public readonly IReadOnlyList<Actor> BeastsReadOnly => Beasts;
 }
 
 class IcyThroes(BossModule module) : Components.GenericBaitAway(module)
