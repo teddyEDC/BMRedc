@@ -153,7 +153,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
     private void ResetIfNecessary(ref Stampede stampede)
     {
         if (stampede.Reset != default && WorldState.CurrentTime > stampede.Reset)
-            stampede = Stampede.Default;
+            stampede = new();
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -183,9 +183,8 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
 
 public record struct Stampede(bool Active, WPos Position, Angle Rotation, List<Actor> Beasts)
 {
-    public int Count = 0;
-    public DateTime Reset = default;
-    public static readonly Stampede Default = new();
+    public int Count;
+    public DateTime Reset;
 }
 
 class IcyThroes(BossModule module) : Components.GenericBaitAway(module)
