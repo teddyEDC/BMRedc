@@ -206,9 +206,9 @@ public sealed class Plugin : IDalamudPlugin
     private bool ToggleAnticheat()
     {
         var config = Service.Config.Get<ActionTweaksConfig>();
-        config.DisableAnticheat = !config.DisableAnticheat;
+        config.ActivateAnticheat = !config.ActivateAnticheat;
         config.Modified.Fire();
-        Service.Log($"The animation lock anticheat is now {(config.DisableAnticheat ? "enabled" : "disabled")}");
+        Service.Log($"The animation lock anticheat is now {(config.ActivateAnticheat ? "enabled" : "disabled")}");
         return true;
     }
 

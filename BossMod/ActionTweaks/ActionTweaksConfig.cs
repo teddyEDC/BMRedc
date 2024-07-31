@@ -58,5 +58,5 @@ public sealed class ActionTweaksConfig : ConfigNode
     }
     [PropertyDisplay("Target selection for ground-targeted abilities")]
     public GroundTargetingMode GTMode = GroundTargetingMode.Manual;
-    public bool DisableAnticheat = false;
+    public bool ActivateAnticheat = true;
 }
