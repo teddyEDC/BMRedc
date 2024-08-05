@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Dungeon.D07TenderValley.D074GreatSerpentOfTural;
+﻿namespace BossMod.Dawntrail.Dungeon.D07TenderValley.D074GreatestSerpentOfTural;
 
 public enum OID : uint
 {
@@ -57,13 +57,13 @@ public enum IconID : uint
 
 class DubiousTulidisasterArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCustom square = new([new Square(D074GreatSerpentOfTural.ArenaCenter, 15)], [new Square(D074GreatSerpentOfTural.ArenaCenter, 12)]);
+    private static readonly AOEShapeCustom square = new([new Square(D074GreatestSerpentOfTural.ArenaCenter, 15)], [new Square(D074GreatestSerpentOfTural.ArenaCenter, 12)]);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.DubiousTulidisaster && Module.Arena.Bounds == D074GreatSerpentOfTural.StartingBounds)
+        if ((AID)spell.Action.ID == AID.DubiousTulidisaster && Module.Arena.Bounds == D074GreatestSerpentOfTural.StartingBounds)
             _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 4.8f));
     }
 
@@ -71,13 +71,13 @@ class DubiousTulidisasterArenaChange(BossModule module) : Components.GenericAOEs
     {
         if (state == 0x00020001 && index == 0x00)
         {
-            Module.Arena.Bounds = D074GreatSerpentOfTural.DefaultBounds;
+            Module.Arena.Bounds = D074GreatestSerpentOfTural.DefaultBounds;
             _aoe = null;
         }
     }
 }
 
-class ScreesOfFury(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(4), (uint)IconID.Tankbuster, ActionID.MakeSpell(AID.ScreesOfFury), 5.3f, true)
+class ScreesOfFury(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(3), (uint)IconID.Tankbuster, ActionID.MakeSpell(AID.ScreesOfFury), 5.3f, true)
 {
     public override void AddGlobalHints(GlobalHints hints)
     {
@@ -103,8 +103,10 @@ class GreatestFlood(BossModule module) : Components.KnockbackFromCastTarget(modu
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
-            var position = data.Item1.AlmostEqual(new(121.5f, -545.5f), 1);
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 2, 6, position ? a45 : a135, a45), data.Item2.AddSeconds(-0.8f));
+            var position1 = data.Item1.AlmostEqual(new(-121.5f, -545.5f), 1);
+            var position2 = data.Item1.AlmostEqual(new(-138.5f, -545.5f), 1);
+            var position3 = data.Item1.AlmostEqual(new(-121.5f, -562.5f), 1);
+            hints.AddForbiddenZone(ShapeDistance.InvertedCone(data.Item1, 4, position1 ? -a135 : position2 ? a135 : position3 ? -a45 : a45, a45), data.Item2.AddSeconds(-0.8f));
         }
     }
 }
@@ -187,9 +189,9 @@ class MisplacedMystery(BossModule module) : Components.SelfTargetedAOEs(module, 
 class GreatTorrent(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GreatTorrentAOE), 6, maxCasts: 10);
 class GreatTorrentSpread(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Spreadmarker, ActionID.MakeSpell(AID.GreatTorrentSpread), 6, 5.1f);
 
-class D074GreatSerpentOfTuralStates : StateMachineBuilder
+class D074GreatestSerpentOfTuralStates : StateMachineBuilder
 {
-    public D074GreatSerpentOfTuralStates(BossModule module) : base(module)
+    public D074GreatestSerpentOfTuralStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Components.StayInBounds>()
@@ -214,7 +216,7 @@ class D074GreatSerpentOfTuralStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 834, NameID = 12709)]
-public class D074GreatSerpentOfTural(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
+public class D074GreatestSerpentOfTural(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
 {
     public static readonly WPos ArenaCenter = new(-130, -554);
     public static readonly ArenaBoundsSquare StartingBounds = new(14.5f);
