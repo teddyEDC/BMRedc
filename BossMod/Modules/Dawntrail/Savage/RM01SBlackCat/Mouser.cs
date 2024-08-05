@@ -23,9 +23,9 @@ class Mouser(BossModule module) : Components.GenericAOEs(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         for (int x = -10; x <= 10; x += 10)
-            Arena.AddLine(Module.Center + new WDir(x, -20), Module.Center + new WDir(x, 20), ArenaColor.Border);
+            Arena.AddLine(Module.Center + new WDir(x, -20), Module.Center + new WDir(x, 20), Colors.Border);
         for (int z = -10; z <= 10; z += 10)
-            Arena.AddLine(Module.Center + new WDir(-20, z), Module.Center + new WDir(20, z), ArenaColor.Border);
+            Arena.AddLine(Module.Center + new WDir(-20, z), Module.Center + new WDir(20, z), Colors.Border);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -140,7 +140,7 @@ class ElevateAndEviscerate(BossModule module) : Components.CastCounter(module, A
         if (CurrentTarget == pc)
         {
             foreach (var i in _mouser.IntactCells.SetBits())
-                Mouser.CellShape.Draw(Arena, _mouser.CellCenter(i), default, ArenaColor.SafeFromAOE);
+                Mouser.CellShape.Draw(Arena, _mouser.CellCenter(i), default, Colors.SafeFromAOE);
         }
         else if (CurrentTarget != null)
         {
