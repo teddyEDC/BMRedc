@@ -5,20 +5,20 @@ namespace BossModReborn.Stormblood.Dungeon.D01SirensongSea.D012TheGovernor;
 
 public enum OID : uint
 {
-    _Gen_Actor1e8f2f = 0x1E8F2F,  // R0.500, x?, EventObj type
-    _Gen_Actor1ea2f0 = 0x1EA2F0,  // R2.000, x?, EventObj type
-    _Gen_Actor1ea2fd = 0x1EA2FD,  // R2.000, x?, EventObj type
-    _Gen_ = 0x18D6,     // R0.500, x?
-    _Gen_Actor1ea2f9 = 0x1EA2F9,  // R2.000, x?, EventObj type
-    _Gen_Actor1e8fb8 = 0x1E8FB8,  // R2.000, x?, EventObj type
-    _Gen_Actor1ea2fb = 0x1EA2FB,  // R2.000, x?, EventObj type
-    _Gen_Actor1ea2fa = 0x1EA2FA, // R2.000, x?, EventObj type
+    GenActor1e8f2f = 0x1E8F2F,  // R0.500, x?, EventObj type
+    GenActor1ea2f0 = 0x1EA2F0,  // R2.000, x?, EventObj type
+    GenActor1ea2fd = 0x1EA2FD,  // R2.000, x?, EventObj type
+    Gen = 0x18D6,     // R0.500, x?
+    GenActor1ea2f9 = 0x1EA2F9,  // R2.000, x?, EventObj type
+    GenActor1e8fb8 = 0x1E8FB8,  // R2.000, x?, EventObj type
+    GenActor1ea2fb = 0x1EA2FB,  // R2.000, x?, EventObj type
+    GenActor1ea2fa = 0x1EA2FA, // R2.000, x?, EventObj type
     Boss = 0x1AFC,   // R3.500, x?
-    _Gen_TheGroveller = 0x1AFD,   // R1.500, x?
-    _Gen2_ = 0xF9747,  // R0.500, x?, EventNpc type
-    _Gen_Actor1e8536 = 0x1E8536, // R2.000, x?, EventObj type
-    _Gen_Shortcut = 0x1E873C, // R0.500, x?, EventObj type
-    _Gen_Actor1ea2f1 = 0x1EA2F1, // R2.000, x?, EventObj type
+    GenTheGroveller = 0x1AFD,   // R1.500, x?
+    Gen2 = 0xF9747,  // R0.500, x?, EventNpc type
+    GenActor1e8536 = 0x1E8536, // R2.000, x?, EventObj type
+    GenShortcut = 0x1E873C, // R0.500, x?, EventObj type
+    GenActor1ea2f1 = 0x1EA2F1, // R2.000, x?, EventObj type
 }
 
 public enum AID : uint
@@ -66,7 +66,7 @@ class ShadowFlow(BossModule module) : GenericAOEs(module)
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        aoes.RemoveAll(aoe => aoe.Activation < module.WorldState.CurrentTime);
+        aoes.RemoveAll(aoe => aoe.Activation < Module.WorldState.CurrentTime);
 
         foreach (AOEInstance aoe in aoes)
         {
@@ -82,7 +82,7 @@ class ShadowFlow(BossModule module) : GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.Cone)
         {
-            aoes.Add(new AOEInstance(new AOEShapeCone(30f, 25.Degrees()), module.Center, caster.Rotation, WorldState.FutureTime(10)));
+            aoes.Add(new AOEInstance(new AOEShapeCone(30f, 25.Degrees()), Module.Center, caster.Rotation, WorldState.FutureTime(10)));
         }
     }
 
@@ -90,13 +90,13 @@ class ShadowFlow(BossModule module) : GenericAOEs(module)
     {
         if((AID)spell.Action.ID == AID.ShadowFlow)
         {
-            aoes.Add(new AOEInstance(new AOEShapeCircle(7f), module.Center, Activation: Module.CastFinishAt(spell, 10f)));
+            aoes.Add(new AOEInstance(new AOEShapeCircle(7f), Module.Center, Activation: Module.CastFinishAt(spell, 10f)));
         }
     }
 
     public override void OnActorCreated(Actor actor)
     {
-        if((OID)actor.OID == OID._Gen_TheGroveller)
+        if((OID)actor.OID == OID.GenTheGroveller)
         {
             Grovellers.Add(actor);
         }
@@ -104,7 +104,7 @@ class ShadowFlow(BossModule module) : GenericAOEs(module)
 
     public override void OnActorDestroyed(Actor actor)
     {
-        if ((OID)actor.OID == OID._Gen_TheGroveller)
+        if ((OID)actor.OID == OID.GenTheGroveller)
         {
             Grovellers.Remove(actor);
         }
@@ -132,6 +132,6 @@ public class DO12TheGovernor : BossModule
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actors(Enemies(OID.Boss));
-        Arena.Actors(Enemies(OID._Gen_TheGroveller));
+        Arena.Actors(Enemies(OID.GenTheGroveller));
     }
 }

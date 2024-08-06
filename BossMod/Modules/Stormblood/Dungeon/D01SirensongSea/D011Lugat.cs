@@ -5,17 +5,17 @@ namespace BossModReborn.Stormblood.Dungeon.D01SirensongSea.D011Lugat;
 
 public enum OID : uint
 {
-    _Gen_ = 0x18D6,   // R0.500, x?
-    _Gen_Actor1ea2f4 = 0x1EA2F4, // R2.000, x?, EventObj type
-    _Gen_Actor1e8f2f = 0x1E8F2F, // R0.500, x?, EventObj type
+    Gen = 0x18D6,   // R0.500, x?
+    GenActor1ea2f4 = 0x1EA2F4, // R2.000, x?, EventObj type
+    GenActor1e8f2f = 0x1E8F2F, // R0.500, x?, EventObj type
     Boss = 0x1AFB,   // R4.500, x?
-    _Gen_Actor1ea2fd = 0x1EA2FD, // R2.000, x?, EventObj type
-    _Gen_Actor1e8fb8 = 0x1E8FB8, // R2.000, x?, EventObj type
-    _Gen_Actor1ea2f2 = 0x1EA2F2, // R2.000, x?, EventObj type
-    _Gen2_ = 0xF9747,  // R0.500, x?, EventNpc type
-    _Gen_Actor1ea2f1 = 0x1EA2F1, // R2.000, x?, EventObj type
-    _Gen_Actor1e8536 = 0x1E8536, // R2.000, x?, EventObj type
-    _Gen_Shortcut = 0x1E873C, // R0.500, x?, EventObj type
+    GenActor1ea2fd = 0x1EA2FD, // R2.000, x?, EventObj type
+    GenActor1e8fb8 = 0x1E8FB8, // R2.000, x?, EventObj type
+    GenActor1ea2f2 = 0x1EA2F2, // R2.000, x?, EventObj type
+    Gen2 = 0xF9747,  // R0.500, x?, EventNpc type
+    GenActor1ea2f1 = 0x1EA2F1, // R2.000, x?, EventObj type
+    GenActor1e8536 = 0x1E8536, // R2.000, x?, EventObj type
+    GenShortcut = 0x1E873C, // R0.500, x?, EventObj type
 }
 
 public enum AID : uint
@@ -55,6 +55,6 @@ public class D011Lugat : BossModule
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actors(Enemies(OID.Boss));
-        Arena.Actors(Enemies(OID._Gen_));
+        Arena.Actors(Enemies(OID.Gen));
     }
 }
