@@ -10,13 +10,13 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
-    ShadowFlow = 8030, // Boss->self, 3.0s cast, single-target
-    ShadowFlowCone = 8031, // Gen->self, no cast, single-target
-    Shadowstrike = 8029, // Gen->player, no cast, single-target
+    ShadowFlow1 = 8030, // Boss->self, 3.0s cast, single-target
+    ShadowFlow2 = 8034, // TheGroveller->self, no cast, single-target
+    ShadowFlowCone = 8031, // TheGroveller->self, no cast, single-target
+    Shadowstrike = 8029, // TheGroveller->player, no cast, single-target
     Bloodburst = 8028, // Boss->self, 4.0s cast, range 80+R circle
     EnterNight = 8032, // Boss->player, 3.0s cast, single-target, pull 40 between centers
-    ShadowSplit = 8033, // Boss->self, 3.0s cast, single-target
-    Shadowflow = 8034 // GenTheGroveller->self, no cast, single-target
+    ShadowSplit = 8033 // Boss->self, 3.0s cast, single-target
 }
 
 public enum TetherID : uint
