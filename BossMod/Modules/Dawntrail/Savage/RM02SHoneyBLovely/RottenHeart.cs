@@ -20,7 +20,7 @@ class RottenHeartBigBurst(BossModule module) : Components.CastCounter(module, Ac
     {
         var partner = _order[pcSlot] > NumCasts ? FindPartner(pcSlot) : null;
         if (partner != null)
-            Arena.AddLine(pc.Position, partner.Position, ResolveImminent(pcSlot) ? ArenaColor.Danger : ArenaColor.Safe);
+            Arena.AddLine(pc.Position, partner.Position, ResolveImminent(pcSlot) ? Colors.Danger : Colors.Safe);
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
