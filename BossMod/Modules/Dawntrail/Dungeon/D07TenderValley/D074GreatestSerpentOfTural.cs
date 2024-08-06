@@ -89,25 +89,19 @@ class ScreesOfFury(BossModule module) : Components.BaitAwayIcon(module, new AOES
 class GreatestFlood(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GreatestFlood), 15)
 {
     private static readonly Angle a45 = 45.Degrees();
-    private static readonly Angle a135 = 135.Degrees();
-    private (WPos, DateTime) data;
+    private (WPos, DateTime, Angle) data;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            data = (caster.Position, Module.CastFinishAt(spell, 0.8f));
+            data = (caster.Position, Module.CastFinishAt(spell, 0.8f), spell.Rotation);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
-        {
-            var position1 = data.Item1.AlmostEqual(new(-121.5f, -545.5f), 1);
-            var position2 = data.Item1.AlmostEqual(new(-138.5f, -545.5f), 1);
-            var position3 = data.Item1.AlmostEqual(new(-121.5f, -562.5f), 1);
-            hints.AddForbiddenZone(ShapeDistance.InvertedCone(data.Item1, 4, position1 ? -a135 : position2 ? a135 : position3 ? -a45 : a45, a45), data.Item2.AddSeconds(-0.8f));
-        }
+            hints.AddForbiddenZone(ShapeDistance.InvertedCone(data.Item1, 4, data.Item3, a45), data.Item2.AddSeconds(-0.8f));
     }
 }
 
