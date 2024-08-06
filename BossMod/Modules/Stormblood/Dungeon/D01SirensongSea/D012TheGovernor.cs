@@ -1,133 +1,116 @@
-﻿using BossMod;
-using BossMod.Components;
-
-namespace BossModReborn.Stormblood.Dungeon.D01SirensongSea.D012TheGovernor;
+namespace BossMod.Stormblood.Dungeon.D01SirensongSea.D012TheGovernor;
 
 public enum OID : uint
 {
-    GenActor1e8f2f = 0x1E8F2F,  // R0.500, x?, EventObj type
-    GenActor1ea2f0 = 0x1EA2F0,  // R2.000, x?, EventObj type
-    GenActor1ea2fd = 0x1EA2FD,  // R2.000, x?, EventObj type
-    Gen = 0x18D6,     // R0.500, x?
-    GenActor1ea2f9 = 0x1EA2F9,  // R2.000, x?, EventObj type
-    GenActor1e8fb8 = 0x1E8FB8,  // R2.000, x?, EventObj type
-    GenActor1ea2fb = 0x1EA2FB,  // R2.000, x?, EventObj type
-    GenActor1ea2fa = 0x1EA2FA, // R2.000, x?, EventObj type
-    Boss = 0x1AFC,   // R3.500, x?
-    GenTheGroveller = 0x1AFD,   // R1.500, x?
-    Gen2 = 0xF9747,  // R0.500, x?, EventNpc type
-    GenActor1e8536 = 0x1E8536, // R2.000, x?, EventObj type
-    GenShortcut = 0x1E873C, // R0.500, x?, EventObj type
-    GenActor1ea2f1 = 0x1EA2F1, // R2.000, x?, EventObj type
+    Boss = 0x1AFC, // R3.5
+    TheGroveller = 0x1AFD, // R1.5
+    Helper = 0x18D6 // R0.5
 }
 
 public enum AID : uint
 {
-    ShadowFlow = 8030,
-    Cone = 8031,
-    EnterNight = 8032
+    AutoAttack = 872, // Boss->player, no cast, single-target
+    ShadowFlow = 8030, // Boss->self, 3.0s cast, single-target
+    ShadowFlowCone = 8031, // Gen->self, no cast, single-target
+    Shadowstrike = 8029, // Gen->player, no cast, single-target
+    Bloodburst = 8028, // Boss->self, 4.0s cast, range 80+R circle
+    EnterNight = 8032, // Boss->player, 3.0s cast, single-target, pull 40 between centers
+    ShadowSplit = 8033, // Boss->self, 3.0s cast, single-target
+    Shadowflow = 8034 // GenTheGroveller->self, no cast, single-target
 }
 
-class Tether(BossModule module) : GenericAOEs(module)
+public enum TetherID : uint
 {
-    private AOEInstance aoe = new(new AOEShapeCircle(module.Arena.Bounds.Radius - 2), module.Center);
-    private bool active;
+    EnterNight = 61 // Boss->player
+}
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+public enum IconID : uint
+{
+    EnterNight = 22 // player
+}
+
+class EnterNightPull(BossModule module) : Components.Knockback(module)
+{
+    private (Actor, DateTime) target;
+    public override IEnumerable<Source> Sources(int slot, Actor actor)
     {
-        if (active)
-        {
-            yield return aoe;
-        }
+        if (target.Item1 == actor)
+            yield return new(Module.PrimaryActor.Position, 40, target.Item2, default, default, Kind.TowardsOrigin);
     }
 
-    public override void OnTethered(Actor source, ActorTetherInfo tether)
+    public override void OnEventIcon(Actor actor, uint iconID)
     {
-        if (tether.ID == 61 && tether.Target == Module.WorldState.Party.Player()?.InstanceID)
+        if (iconID is ((uint)IconID.EnterNight))
         {
-            active = true;
+            target.Item1 = actor;
+            target.Item2 = Module.WorldState.FutureTime(3);
         }
     }
 
     public override void OnUntethered(Actor source, ActorTetherInfo tether)
     {
-        if (tether.ID == 61)
+        if (tether.ID == (uint)TetherID.EnterNight)
+            target = default;
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (target.Item1 == actor)
         {
-            active = false;
+            hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.ArmsLength), actor, ActionQueue.Priority.High);
+            hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Surecast), actor, ActionQueue.Priority.High);
         }
     }
 }
 
+class EnterNight(BossModule module) : Components.StretchTetherSingle(module, (uint)TetherID.EnterNight, 16, activationDelay: 4.3f);
 
-class ShadowFlow(BossModule module) : GenericAOEs(module)
+class ShadowFlow(BossModule module) : Components.GenericAOEs(module)
 {
-    public List<AOEInstance> aoes = [];
-    public List<Actor> Grovellers = [];
+    private static readonly AOEShapeCircle circle = new(6);
+    private static readonly AOEShapeCone cone = new(22, 23.Degrees());
+    private readonly List<AOEInstance> aoes = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => aoes.Count > 5 ? aoes : [];
+
+    public override void Update()
     {
-        aoes.RemoveAll(aoe => aoe.Activation < Module.WorldState.CurrentTime);
-
-        foreach (AOEInstance aoe in aoes)
-        {
-            yield return aoe;
-        }
-        foreach (Actor groveller in Grovellers)
-        {
-            yield return new AOEInstance(new AOEShapeCircle(7f), groveller.Position);
-        }
+        if (aoes.Count > 0)
+            aoes.RemoveAll(aoe => aoe.Activation < Module.WorldState.CurrentTime);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.Cone)
+        if ((AID)spell.Action.ID == AID.ShadowFlowCone)
         {
-            aoes.Add(new AOEInstance(new AOEShapeCone(30f, 25.Degrees()), Module.Center, caster.Rotation, WorldState.FutureTime(10)));
-        }
-    }
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        if((AID)spell.Action.ID == AID.ShadowFlow)
-        {
-            aoes.Add(new AOEInstance(new AOEShapeCircle(7f), Module.Center, Activation: Module.CastFinishAt(spell, 10f)));
-        }
-    }
-
-    public override void OnActorCreated(Actor actor)
-    {
-        if((OID)actor.OID == OID.GenTheGroveller)
-        {
-            Grovellers.Add(actor);
-        }
-    }
-
-    public override void OnActorDestroyed(Actor actor)
-    {
-        if ((OID)actor.OID == OID.GenTheGroveller)
-        {
-            Grovellers.Remove(actor);
+            var activation = WorldState.FutureTime(8);
+            aoes.Add(new(cone, DO12TheGovernor.ArenaCenter, caster.Rotation, activation));
+            if (aoes.Count == 6)
+            {
+                aoes.Add(new(circle, DO12TheGovernor.ArenaCenter, default, activation));
+                foreach (var g in Module.Enemies(OID.TheGroveller))
+                    aoes.Add(new(circle, g.Position, default, activation));
+            }
         }
     }
 }
-
 
 class DO12TheGovernorStates : StateMachineBuilder
 {
     public DO12TheGovernorStates(BossModule module) : base(module)
     {
-        TrivialPhase().
-            ActivateOnEnter<ShadowFlow>().
-            ActivateOnEnter<Tether>();
+        TrivialPhase()
+            .ActivateOnEnter<ShadowFlow>()
+            .ActivateOnEnter<EnterNightPull>()
+            .ActivateOnEnter<EnterNight>();
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6072)]
-public class DO12TheGovernor(WorldState ws, Actor primary) : BossModule(ws, primary, new WPos(-8, 79), new ArenaBoundsCircle(20))
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6072)]
+public class DO12TheGovernor(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    protected override void DrawEnemies(int pcSlot, Actor pc)
-    {
-        Arena.Actors(Enemies(OID.Boss));
-        Arena.Actors(Enemies(OID.GenTheGroveller));
-    }
+    public static readonly WPos ArenaCenter = new(-8, 79);
+    private static readonly List<Shape> union = [new Circle(ArenaCenter, 19.25f)];
+    private static readonly List<Shape> difference = [new Rectangle(new(-1.5f, 60.5f), 20, 1.25f, 20.Degrees()), new Rectangle(new(-8, 99), 20, 1)];
+    private static readonly ArenaBounds arena = new ArenaBoundsComplex(union, difference);
 }

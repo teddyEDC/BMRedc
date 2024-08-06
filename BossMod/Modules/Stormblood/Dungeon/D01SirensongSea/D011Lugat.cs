@@ -1,58 +1,52 @@
-﻿using BossMod;
-using BossMod.Components;
-
-namespace BossModReborn.Stormblood.Dungeon.D01SirensongSea.D011Lugat;
+namespace BossMod.Stormblood.Dungeon.D01SirensongSea.D011Lugat;
 
 public enum OID : uint
 {
-    Gen = 0x18D6,   // R0.500, x?
-    GenActor1ea2f4 = 0x1EA2F4, // R2.000, x?, EventObj type
-    GenActor1e8f2f = 0x1E8F2F, // R0.500, x?, EventObj type
-    Boss = 0x1AFB,   // R4.500, x?
-    GenActor1ea2fd = 0x1EA2FD, // R2.000, x?, EventObj type
-    GenActor1e8fb8 = 0x1E8FB8, // R2.000, x?, EventObj type
-    GenActor1ea2f2 = 0x1EA2F2, // R2.000, x?, EventObj type
-    Gen2 = 0xF9747,  // R0.500, x?, EventNpc type
-    GenActor1ea2f1 = 0x1EA2F1, // R2.000, x?, EventObj type
-    GenActor1e8536 = 0x1E8536, // R2.000, x?, EventObj type
-    GenShortcut = 0x1E873C, // R0.500, x?, EventObj type
+    Boss = 0x1AFB, // R4.5
+    Helper = 0x18D6 // R0.5
 }
 
 public enum AID : uint
 {
-    AmorphousApplause = 8022,
-    Hydroball = 8023,
-    ConcussiveOscillationBoss = 8026,
-    ConcussiveOscillation = 8027
+    AutoAttack = 872, // Boss->player, no cast, single-target
+    AmorphousApplause = 8022, // Boss->location, 5.0s cast, range 20+R 180-degree cone
+    Hydroball = 8023, // Boss->players, 5.0s cast, range 5 circle
+    SeaSwallowsAll = 8024, // Boss->location, 3.0s cast, range 60 circle, pull 30 between centers
+    ConcussiveOscillation = 8027, // Helper->location, 4.0s cast, range 8 circle
+    ConcussiveOscillationBoss = 8026, // Boss->location, 4.0s cast, range 7 circle
+    Overtow = 8025 // Boss->location, 3.0s cast, range 60 circle, knockback 30, away from source
 }
 
-public enum IOD : uint
+public enum IconID : uint
 {
-    Stack = 62
+    Stackmarker = 62
 }
-class ConcussiveOscillationBoss(BossModule module) : LocationTargetedAOEs(module, ActionID.MakeSpell(AID.ConcussiveOscillationBoss), 8);
-class ConcussiveOscillation(BossModule module) : LocationTargetedAOEs(module, ActionID.MakeSpell(AID.ConcussiveOscillation), 8);
-class AmorphousApplause(BossModule module) : SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AmorphousApplause), new AOEShapeCone(30, 90.Degrees()));
-class Hydroball(BossModule module) : StackWithCastTargets(module, ActionID.MakeSpell(AID.Hydroball), 5, 4);
+
+class ConcussiveOscillationBoss(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.ConcussiveOscillationBoss), 7);
+class ConcussiveOscillation(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.ConcussiveOscillation), 8);
+class AmorphousApplause(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AmorphousApplause), new AOEShapeCone(24.5f, 90.Degrees()));
+class Hydroball(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Hydroball), 5, 5, 4, 4);
+class SeaSwallowsAll(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SeaSwallowsAll));
+class Overtow(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Overtow));
 
 class D011LugatStates : StateMachineBuilder
 {
     public D011LugatStates(BossModule module) : base(module)
     {
-        TrivialPhase().
-            ActivateOnEnter<Hydroball>().
-            ActivateOnEnter<AmorphousApplause>().
-            ActivateOnEnter<ConcussiveOscillation>().
-            ActivateOnEnter<ConcussiveOscillationBoss>();
+        TrivialPhase()
+            .ActivateOnEnter<Overtow>()
+            .ActivateOnEnter<SeaSwallowsAll>()
+            .ActivateOnEnter<Hydroball>()
+            .ActivateOnEnter<AmorphousApplause>()
+            .ActivateOnEnter<ConcussiveOscillation>()
+            .ActivateOnEnter<ConcussiveOscillationBoss>();
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6071)]
-public class D011Lugat(WorldState ws, Actor primary) : BossModule(ws, primary, new WPos(-1.465f, -217.254f), new ArenaBoundsCircle(20))
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6071)]
+public class D011Lugat(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    protected override void DrawEnemies(int pcSlot, Actor pc)
-    {
-        Arena.Actors(Enemies(OID.Boss));
-        Arena.Actors(Enemies(OID.Gen));
-    }
+    private static readonly List<Shape> union = [new Circle(new(-2.7f, -217), 21.5f), new Rectangle(new(-0.9f, -237.7f), 5, 1f, 5.Degrees())];
+    private static readonly List<Shape> difference = [new Rectangle(new(-3, -195), 20, 1.25f)];
+    private static readonly ArenaBounds arena = new ArenaBoundsComplex(union, difference);
 }

@@ -1,68 +1,90 @@
-﻿using BossMod;
-using BossMod.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BossModReborn.Stormblood.Dungeon.D01SirensongSea.D013Lorelei;
+namespace BossMod.Stormblood.Dungeon.D01SirensongSea.D013Lorelei;
 
 public enum OID : uint
 {
-    Boss = 0x1AFE,   // R3.360, x?
-    GenExit = 0x1E850B, // R0.500, x?, EventObj type
-    GenActor1e8f2f = 0x1E8F2F, // R0.500, x?, EventObj type
-    GenActor1ea2f6 = 0x1EA2F6, // R2.000, x?, EventObj type
-    GenActor1e8fb8 = 0x1E8FB8, // R2.000, x?, EventObj type
-    GenActor1ea2ff = 0x1EA2FF, // R2.000, x?, EventObj type
-    GenActor1ea2f7 = 0x1EA2F7, // R2.000, x?, EventObj type
-    GenActor1ea300 = 0x1EA300, // R0.500, x?, EventObj type
+    Boss = 0x1AFE, // R3.36
+    ArenaVoidzone = 0x1EA2FF, // R2.0
+    Voidzone = 0x1EA300 // R0.5
 }
 
 public enum AID : uint
 {
-    VoidWater = 8040
+    IllWill = 8035, // Boss->player, no cast, single-target
+    VirginTears = 8041, // Boss->self, 3.0s cast, single-target
+    MorbidAdvance = 8037, // Boss->self, 5.0s cast, range 80+R circle
+    HeadButt = 8036, // Boss->player, no cast, single-target
+    SomberMelody = 8039, // Boss->self, 4.0s cast, range 80+R circle
+    MorbidRetreat = 8038, // Boss->self, 5.0s cast, range 80+R circle
+    VoidWaterIII = 8040 // Boss->location, 3.5s cast, range 8 circle
 }
 
-class VoidWater(BossModule module) : LocationTargetedAOEs(module, ActionID.MakeSpell(AID.VoidWater), 10);
-
-class Puddles(BossModule module) : GenericAOEs(module)
+class VirginTearsArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<AOEInstance> aoes = [];
+    private static readonly ArenaBoundsCircle smallerBounds = new(15.75f);
+    private static readonly AOEShapeDonut donut = new(15.75f, 22);
+    private AOEInstance? _aoe;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => aoes;
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
-    public override void OnActorCreated(Actor actor)
+    public override void OnActorEState(Actor actor, ushort state)
     {
-        if((OID)actor.OID == OID.GenActor1ea300)
+        if (state == 0x001)
         {
-            aoes.Add(new AOEInstance(new AOEShapeCircle(7f), actor.Position));
+            Arena.Bounds = D013Lorelei.DefaultArena;
+            Arena.Center = D013Lorelei.DefaultArena.Center;
+        }
+        else if (state == 0x002)
+        {
+            _aoe = null;
+            Arena.Bounds = smallerBounds;
+            Arena.Center = D013Lorelei.ArenaCenter;
         }
     }
 
-    public override void OnActorDestroyed(Actor actor)
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((OID)actor.OID == OID.GenActor1ea300)
+        if ((AID)spell.Action.ID == AID.VirginTears && Module.Arena.Bounds == D013Lorelei.DefaultArena)
         {
-            aoes.Remove(aoes.First());
+            if (++NumCasts > 3)
+                _aoe = new(donut, D013Lorelei.ArenaCenter, default, Module.CastFinishAt(spell, 0.7f));
         }
     }
 }
+
+class MorbidAdvance(BossModule module) : Components.ActionDrivenForcedMarch(module, ActionID.MakeSpell(AID.MorbidAdvance), 3, default, 1)
+{
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Voidzone>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation) && z.Risky) ?? false) || !Module.InBounds(pos);
+}
+
+class MorbidRetreat(BossModule module) : Components.ActionDrivenForcedMarch(module, ActionID.MakeSpell(AID.MorbidRetreat), 3, 180.Degrees(), 1)
+{
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Voidzone>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation) && z.Risky) ?? false) || !Module.InBounds(pos);
+}
+
+class SomberMelody(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SomberMelody));
+class VoidWaterIII(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.VoidWaterIII), 8);
+class Voidzone(BossModule module) : Components.PersistentVoidzone(module, 7, m => m.Enemies(OID.Voidzone).Where(z => z.EventState != 7));
 
 class D013LoreleiStates : StateMachineBuilder
 {
     public D013LoreleiStates(BossModule module) : base(module)
     {
-        TrivialPhase().
-            ActivateOnEnter<Puddles>().
-            ActivateOnEnter<StayInBounds>().
-            ActivateOnEnter<VoidWater>();
+        TrivialPhase()
+            .ActivateOnEnter<Components.StayInBounds>()
+            .ActivateOnEnter<VirginTearsArenaChange>()
+            .ActivateOnEnter<Voidzone>()
+            .ActivateOnEnter<MorbidAdvance>()
+            .ActivateOnEnter<MorbidRetreat>()
+            .ActivateOnEnter<SomberMelody>()
+            .ActivateOnEnter<VoidWaterIII>();
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6074)]
-public class D013Lorelei(WorldState ws, Actor primary) : BossModule(ws, primary, new WPos(-44.564f, 465.154f), new ArenaBoundsCircle(15))
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6074)]
+public class D013Lorelei(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultArena.Center, DefaultArena)
 {
-    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(Enemies(OID.Boss));
+    public static readonly WPos ArenaCenter = new(-44.5f, 465);
+    private static readonly List<Shape> union = [new Circle(ArenaCenter, 21.6f)];
+    private static readonly List<Shape> difference = [new Rectangle(new(-44.5f, 443), 20, 1)];
+    public static readonly ArenaBounds DefaultArena = new ArenaBoundsComplex(union, difference);
 }
