@@ -43,7 +43,7 @@ class Tether(BossModule module) : GenericAOEs(module)
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
     {
-        if (tether.ID == 61 && tether.Target == module.WorldState.Party.Player()?.InstanceID)
+        if (tether.ID == 61 && tether.Target == Module.WorldState.Party.Player()?.InstanceID)
         {
             active = true;
         }
