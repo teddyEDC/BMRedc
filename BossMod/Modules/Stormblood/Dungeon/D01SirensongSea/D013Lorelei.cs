@@ -29,20 +29,24 @@ class VoidWater(BossModule module) : LocationTargetedAOEs(module, ActionID.MakeS
 
 class Puddles(BossModule module) : GenericAOEs(module)
 {
-    private List<AOEInstance> aoes = [];
+    private readonly List<AOEInstance> aoes = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => aoes;
 
     public override void OnActorCreated(Actor actor)
     {
         if((OID)actor.OID == OID.GenActor1ea300)
+        {
             aoes.Add(new AOEInstance(new AOEShapeCircle(7f), actor.Position));
+        }
     }
 
     public override void OnActorDestroyed(Actor actor)
     {
         if ((OID)actor.OID == OID.GenActor1ea300)
+        {
             aoes.Remove(aoes.First());
+        }
     }
 }
 
@@ -58,10 +62,7 @@ class D013LoreleiStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6074)]
-public class D013Lorelei : BossModule
+public class D013Lorelei(WorldState ws, Actor primary) : BossModule(ws, primary, new WPos(-44.564f, 465.154f), new ArenaBoundsCircle(15))
 {
-    public D013Lorelei(WorldState ws, Actor primary) : base(ws, primary, new(-44.564f, 465.154f), new ArenaBoundsCircle(15)) { }
-
-    protected override void DrawEnemies(int pcSlot, Actor pc) =>
-        Arena.Actors(Enemies(OID.Boss));
+    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(Enemies(OID.Boss));
 }
