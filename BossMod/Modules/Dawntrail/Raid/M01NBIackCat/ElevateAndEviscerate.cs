@@ -44,9 +44,14 @@ class ElevateAndEviscerateHint(BossModule module) : Components.GenericAOEs(modul
         var tether = Module.FindComponent<ElevateAndEviscerate>()!.Tether;
         if (tether != default && actor == tether.target)
         {
-            var tiles = Module.FindComponent<ArenaChanges>()!.DamagedTiles;
-            foreach (var t in tiles.OfType<Square>())
-                yield return new(rect, t.Center, Color: Colors.FutureVulnerable, Risky: false);
+            var damagedCells = Module.FindComponent<ArenaChanges>()!.DamagedCells;
+            var tiles = ArenaChanges.Tiles;
+
+            foreach (var index in damagedCells.SetBits())
+            {
+                var tile = tiles[index];
+                yield return new AOEInstance(rect, tile.Center, Color: Colors.FutureVulnerable, Risky: false);
+            }
         }
     }
 }
