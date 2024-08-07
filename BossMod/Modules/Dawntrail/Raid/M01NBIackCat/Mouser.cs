@@ -6,17 +6,10 @@ class ArenaChanges(BossModule module) : BossComponent(module)
     public static readonly WPos ArenaCenter = new(100, 100);
     public static readonly ArenaBoundsSquare DefaultBounds = new(20);
     private static readonly Square defaultSquare = new(ArenaCenter, 20);
-    private static readonly WPos[] tilePositions =
-    [
-        new(85, 85), new(95, 85), new(105, 85), new(115, 85), new(85, 95),
-        new(95, 95), new(105, 95), new(115, 95), new(85, 105), new(95, 105),
-        new(105, 105), new(115, 105), new(85, 115), new(95, 115), new(105, 115),
-        new(115, 115)
-    ];
-    public readonly List<Shape> DamagedTiles = [];
-    private readonly List<Shape> brokenTiles = [];
-
-    private static readonly Square[] tiles = tilePositions.Select(pos => new Square(pos, 5)).ToArray();
+    public BitMask DamagedCells;
+    public BitMask DestroyedCells;
+    public static readonly Square[] Tiles = Enumerable.Range(0, 16)
+        .Select(index => new Square(CellCenter(index), 5)).ToArray();
 
     public override void OnEventEnvControl(byte index, uint state)
     {
@@ -25,46 +18,36 @@ class ArenaChanges(BossModule module) : BossComponent(module)
         // 0x04, 0x05, 0x06, 0x07
         // 0x08, 0x09, 0x0A, 0x0B
         // 0x0C, 0x0D, 0x0E, 0x0F
+        if (index > 0x0F)
+            return;
         if (state == 0x00020001) // tile gets damaged
-            AddTileToList(DamagedTiles, index);
+            DamagedCells.Set(index);
         else if (state == 0x00200010) // tile gets broken
-            MoveTileBetweenLists(DamagedTiles, brokenTiles, index);
+        {
+            DamagedCells.Clear(index);
+            DestroyedCells.Set(index);
+        }
         else if (state is 0x01000004 or 0x00800004) // tile gets repaired
-            RemoveTileFromLists(index);
-    }
-
-    private void AddTileToList(List<Shape> list, byte index)
-    {
-        if (index < tiles.Length)
-            list.Add(tiles[index]);
-    }
-
-    private void MoveTileBetweenLists(List<Shape> fromList, List<Shape> toList, byte index)
-    {
-        if (index < tiles.Length)
         {
-            var tile = tiles[index];
-            fromList.Remove(tile);
-            toList.Add(tile);
-            UpdateArenaBounds();
+            DamagedCells.Clear(index);
+            DestroyedCells.Clear(index);
         }
+        UpdateArenaBounds();
     }
 
-    private void RemoveTileFromLists(byte index)
+    private static WPos CellCenter(int index)
     {
-        if (index < tiles.Length)
-        {
-            var tile = tiles[index];
-            DamagedTiles.Remove(tile);
-            brokenTiles.Remove(tile);
-            UpdateArenaBounds();
-        }
+        var x = -15 + 10 * (index & 3);
+        var z = -15 + 10 * (index >> 2);
+        return ArenaCenter + new WDir(x, z);
     }
 
     private void UpdateArenaBounds()
     {
+        var brokenTiles = Tiles.Where((tile, index) => DestroyedCells[index]).ToList();
         arena = new ArenaBoundsComplex([defaultSquare], brokenTiles, Offset: -0.5f);
-        Module.Arena.Bounds = arena;
+        Arena.Bounds = arena;
+        Arena.Center = arena.Center;
     }
 }
 

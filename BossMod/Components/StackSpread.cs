@@ -312,6 +312,7 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
             {
                 CurrentBaits.RemoveAt(0);
                 castCounter = 0;
+                ++NumCasts;
             }
         }
     }
@@ -360,7 +361,7 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
 
         if (ActiveBaits.Count() > 1 && isBaitTarget)
         {
-            var isInOtherBaitShape = ActiveBaits.Any(x => actor.Position.InRect(x.Source.Position, (x.Target.Position - x.Source.Position).Normalized(), Range, 0, 2 * HalfWidth));
+            var isInOtherBaitShape = ActiveBaits.Any(x => x.Target != actor && actor.Position.InRect(x.Source.Position, (x.Target.Position - x.Source.Position).Normalized(), Range, 0, 2 * HalfWidth));
             if (isInOtherBaitShape)
                 hints.Add(HintAvoidOther);
         }
