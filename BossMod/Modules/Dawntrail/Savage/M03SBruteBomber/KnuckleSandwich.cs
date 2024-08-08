@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM03SBruteBomber;
+﻿namespace BossMod.Dawntrail.Savage.M03SBruteBomber;
 
 class KnuckleSandwich(BossModule module) : Components.GenericSharedTankbuster(module, default, 6)
 {

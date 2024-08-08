@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM03SBruteBomber;
+﻿namespace BossMod.Dawntrail.Savage.M03SBruteBomber;
 
 class OctupleLariatOut(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.OctupleLariatOutAOE), new AOEShapeCircle(10));
 class OctupleLariatIn(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.OctupleLariatInAOE), new AOEShapeDonut(10, 60));

@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM03SBruteBomber;
+﻿namespace BossMod.Dawntrail.Savage.M03SBruteBomber;
 
 class OctoboomDiveProximity(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.OctoboomDiveProximityAOE), new AOEShapeCircle(20)); // TODO: verify falloff
 class OctoboomDiveKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.OctoboomDiveKnockbackAOE), 25);

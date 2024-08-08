@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM03SBruteBomber;
+﻿namespace BossMod.Dawntrail.Savage.M03SBruteBomber;
 
 class BombarianSpecial(BossModule module) : Components.UniformStackSpread(module, 5, 5, alwaysShowSpreads: true)
 {

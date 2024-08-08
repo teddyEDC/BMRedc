@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM03SBruteBomber;
+﻿namespace BossMod.Dawntrail.Savage.M03SBruteBomber;
 
 public enum OID : uint
 {

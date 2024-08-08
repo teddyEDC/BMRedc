@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM03SBruteBomber;
+﻿namespace BossMod.Dawntrail.Savage.M03SBruteBomber;
 
 class FinalFusedownSelfDestruct(BossModule module) : Components.GenericAOEs(module)
 {
