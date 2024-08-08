@@ -35,6 +35,14 @@ public class BossModuleConfig : ConfigNode
     [PropertySlider(0.1f, 100, Speed = 1)]
     public float CardinalsFontSize = 17;
 
+    [PropertyDisplay("Waymark font size")]
+    [PropertySlider(0.1f, 100, Speed = 1)]
+    public float WaymarkFontSize = 22;
+
+    [PropertyDisplay("Actor triangle scale factor")]
+    [PropertySlider(0.1f, 10, Speed = 0.1f)]
+    public float ActorScale = 1;
+
     [PropertyDisplay("Show waymarks on radar")]
     public bool ShowWaymarks = false;
 

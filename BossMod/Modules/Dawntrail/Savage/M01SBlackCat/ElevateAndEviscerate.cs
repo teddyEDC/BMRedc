@@ -15,20 +15,16 @@ class ElevateAndEviscerateShockwave(BossModule module) : Components.GenericAOEs(
                 yield return new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.CurrentTarget.Position)), default, _kb.CurrentDeadline.AddSeconds(2));
             else if (_kb.CurrentKnockbackDistance == 10 && Module.InBounds(_kb.Cache))
                 yield return new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.Cache)), default, _kb.CurrentDeadline.AddSeconds(4.2f));
-            if (aoe != null)
-                yield return (AOEInstance)aoe;
         }
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        if ((AID)spell.Action.ID is AID.ElevateAndEviscerateHit or AID.ElevateAndEviscerateKnockback && Module.InBounds(_kb.Cache))
-            aoe = new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.Cache)), default, Module.CastFinishAt(spell, _kb.CurrentKnockbackDistance == 0 ? 3.8f : 6));
+        if (aoe != null && _kb.LastTarget != actor)
+            yield return (AOEInstance)aoe;
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.ElevateAndEviscerateImpactHit or AID.ElevateAndEviscerateImpactKnockback)
+        if ((AID)spell.Action.ID is AID.ElevateAndEviscerateHitAOE or AID.ElevateAndEviscerateKnockbackAOE && Module.InBounds(_kb.Cache))
+            aoe = new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.Cache)), default, Module.WorldState.FutureTime(_kb.CurrentKnockbackDistance == 0 ? 1.4f : 3.6f));
+        else if ((AID)spell.Action.ID is AID.ElevateAndEviscerateImpactHit or AID.ElevateAndEviscerateImpactKnockback)
             aoe = null;
     }
 }
@@ -37,6 +33,7 @@ class ElevateAndEviscerate(BossModule module) : Components.Knockback(module, ign
 {
     private Actor? _nextTarget; // target selection icon appears before cast start
     public Actor? CurrentTarget; // for current mechanic
+    public Actor? LastTarget; // for current mechanic
     public DateTime CurrentDeadline; // for current target - expected time when stun starts, which is deadline for positioning
     public int CurrentKnockbackDistance;
     public WPos Cache;
@@ -93,7 +90,9 @@ class ElevateAndEviscerate(BossModule module) : Components.Knockback(module, ign
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.ElevateAndEviscerateShockwave)
+        if ((AID)spell.Action.ID is AID.ElevateAndEviscerateHitAOE or AID.ElevateAndEviscerateKnockbackAOE)
+            LastTarget = CurrentTarget;
+        else if ((AID)spell.Action.ID == AID.ElevateAndEviscerateShockwave)
         {
             ++NumCasts;
             CurrentTarget = null;
