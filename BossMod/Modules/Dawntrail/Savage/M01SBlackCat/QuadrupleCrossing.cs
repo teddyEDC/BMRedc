@@ -90,12 +90,12 @@ class QuadrupleCrossingProtean(BossModule module) : Components.GenericBaitAway(m
 class QuadrupleCrossingAOE(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = [];
-
+    private bool ready;
     private static readonly AOEShapeCone _shape = new(100, 22.5f.Degrees());
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (_aoes.Count > 0)
+        if (ready)
         {
             var aoeCount = Math.Clamp(_aoes.Count, 0, 4);
             for (var i = aoeCount; i < _aoes.Count; i++)
@@ -122,5 +122,7 @@ class QuadrupleCrossingAOE(BossModule module) : Components.GenericAOEs(module)
                     _aoes.RemoveAt(0);
                 break;
         }
+        if (_aoes.Count == 8)
+            ready = true;
     }
 }

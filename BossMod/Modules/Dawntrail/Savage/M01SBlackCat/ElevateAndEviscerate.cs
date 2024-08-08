@@ -2,6 +2,7 @@ namespace BossMod.Dawntrail.Savage.M01SBlackCat;
 
 class ElevateAndEviscerateShockwave(BossModule module) : Components.GenericAOEs(module, default, "GTFO from shockwave!")
 {
+    private AOEInstance? aoe;
     private static readonly AOEShapeCross cross = new(60, 5);
     private readonly ElevateAndEviscerate _kb = module.FindComponent<ElevateAndEviscerate>()!;
 
@@ -9,18 +10,26 @@ class ElevateAndEviscerateShockwave(BossModule module) : Components.GenericAOEs(
     {
         if (_kb.CurrentTarget != null && _kb.CurrentTarget != actor)
         {
-            yield return new(cross, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.CurrentTarget.Position)), default, _kb.CurrentDeadline);
+            yield return new(cross, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.CurrentTarget.Position)), default, _kb.CurrentDeadline.AddSeconds(3.2f));
             if (_kb.CurrentKnockbackDistance == 0)
-                yield return new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.CurrentTarget.Position)), default, _kb.CurrentDeadline);
-            else if (_kb.CurrentKnockbackDistance == 10 && _kb.Sources(slot, _kb.CurrentTarget).Any())
-                yield return new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.CalculateMovements(slot, _kb.CurrentTarget).First().to)), default, _kb.CurrentDeadline);
+                yield return new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.CurrentTarget.Position)), default, _kb.CurrentDeadline.AddSeconds(2));
+            else if (_kb.CurrentKnockbackDistance == 10 && Module.InBounds(_kb.Cache))
+                yield return new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.Cache)), default, _kb.CurrentDeadline.AddSeconds(4.2f));
+            if (aoe != null)
+                yield return (AOEInstance)aoe;
         }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.ElevateAndEviscerateKnockback or AID.ElevateAndEviscerateImpactHit)
-            ++NumCasts;
+        if ((AID)spell.Action.ID is AID.ElevateAndEviscerateHit or AID.ElevateAndEviscerateKnockback && Module.InBounds(_kb.Cache))
+            aoe = new(Mouser.Rect, ArenaChanges.CellCenter(ArenaChanges.CellIndex(_kb.Cache)), default, Module.CastFinishAt(spell, _kb.CurrentKnockbackDistance == 0 ? 3.8f : 6));
+    }
+
+    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    {
+        if ((AID)spell.Action.ID is AID.ElevateAndEviscerateImpactHit or AID.ElevateAndEviscerateImpactKnockback)
+            aoe = null;
     }
 }
 
@@ -30,6 +39,7 @@ class ElevateAndEviscerate(BossModule module) : Components.Knockback(module, ign
     public Actor? CurrentTarget; // for current mechanic
     public DateTime CurrentDeadline; // for current target - expected time when stun starts, which is deadline for positioning
     public int CurrentKnockbackDistance;
+    public WPos Cache;
 
     public override PlayerPriority CalcPriority(int pcSlot, Actor pc, int playerSlot, Actor player, ref uint customColor)
         => player == CurrentTarget ? PlayerPriority.Danger : PlayerPriority.Irrelevant;
@@ -38,6 +48,14 @@ class ElevateAndEviscerate(BossModule module) : Components.Knockback(module, ign
     {
         if (CurrentTarget != null && actor == CurrentTarget && CurrentKnockbackDistance > 0)
             yield return new(Arena.Center, CurrentKnockbackDistance, CurrentDeadline, Direction: actor.Rotation, Kind: Kind.DirForward);
+    }
+
+    public override void Update()
+    {
+        if (CurrentTarget != null && Sources(0, CurrentTarget).Any())
+            Cache = CalculateMovements(0, CurrentTarget).First().to;
+        else if (CurrentTarget != null)
+            Cache = CurrentTarget.Position;
     }
 
     public override void OnEventIcon(Actor actor, uint iconID)

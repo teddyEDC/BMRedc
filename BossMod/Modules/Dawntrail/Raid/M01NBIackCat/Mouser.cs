@@ -35,7 +35,21 @@ class ArenaChanges(BossModule module) : BossComponent(module)
         UpdateArenaBounds();
     }
 
-    private static WPos CellCenter(int index)
+    public static int CellIndex(WPos pos)
+    {
+        var off = pos - ArenaCenter;
+        return (CoordinateIndex(off.Z) << 2) | CoordinateIndex(off.X);
+    }
+
+    private static int CoordinateIndex(float coord) => coord switch
+    {
+        < -10 => 0,
+        < 0 => 1,
+        < 10 => 2,
+        _ => 3
+    };
+
+    public static WPos CellCenter(int index)
     {
         var x = -15 + 10 * (index & 3);
         var z = -15 + 10 * (index >> 2);
@@ -54,7 +68,7 @@ class ArenaChanges(BossModule module) : BossComponent(module)
 class Mouser(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = [];
-    private static readonly AOEShapeRect rect = new(5, 5, 5);
+    public static readonly AOEShapeRect Rect = new(5, 5, 5);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -71,16 +85,19 @@ class Mouser(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.MouserTelegraphFirst or AID.MouserTelegraphSecond)
-            _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.WorldState.FutureTime(9.7f)));
+            _aoes.Add(new(Rect, caster.Position, spell.Rotation, Module.WorldState.FutureTime(9.7f)));
+    }
+
+    public override void OnEventEnvControl(byte index, uint state)
+    {
+        if (index <= 0x0F && state is 0x00020001 or 0x00200010 && _aoes.Count > 0)
+            _aoes.RemoveAt(0);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.Mouser)
-        {
-            _aoes.RemoveAt(0);
+        if ((AID)spell.Action.ID == AID.Mouser)
             if (++NumCasts == 19)
                 NumCasts = 0;
-        }
     }
 }
