@@ -1,10 +1,8 @@
-﻿using BossMod.Global.MaskedCarnivale.Stage19.Act1;
+﻿namespace BossMod.Dawntrail.Savage.M03SBruteBomber;
 
-namespace BossMod.Dawntrail.Savage.RM03SBruteBomber;
-
-class RM03SBruteBomberStates : StateMachineBuilder
+class M03SBruteBomberStates : StateMachineBuilder
 {
-    public RM03SBruteBomberStates(BossModule module) : base(module)
+    public M03SBruteBomberStates(BossModule module) : base(module)
     {
         DeathPhase(0, SinglePhase);
     }
