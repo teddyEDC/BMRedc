@@ -12,7 +12,7 @@ class BarbarousBarrageTowers(BossModule module) : Components.GenericTowers(modul
         // draw next towers to aim knockback
         if (CurState != State.None)
             foreach (var p in TowerPositions(CurState == State.NextNS ? State.NextCorners : CurState + 1))
-                Arena.AddCircle(p, 4, ArenaColor.Object);
+                Arena.AddCircle(p, 4, Colors.Object);
     }
 
     public override void OnEventEnvControl(byte index, uint state)

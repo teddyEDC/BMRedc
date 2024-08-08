@@ -12,7 +12,7 @@ class TagTeamLariatCombo(BossModule module) : Components.GenericAOEs(module)
         foreach (var aoe in AOEs)
         {
             var safe = _tetherSource[slot]?.Position.AlmostEqual(aoe.Origin, 25) ?? false;
-            yield return aoe with { Color = safe ? ArenaColor.SafeFromAOE : ArenaColor.AOE, Risky = !safe };
+            yield return aoe with { Color = safe ? Colors.SafeFromAOE : Colors.AOE, Risky = !safe };
         }
     }
 
@@ -78,7 +78,7 @@ class FusesOfFuryMurderousMist : Components.SelfTargetedAOEs
 {
     public FusesOfFuryMurderousMist(BossModule module) : base(module, ActionID.MakeSpell(AID.FusesOfFuryMurderousMist), new AOEShapeCone(40, 135.Degrees()))
     {
-        Color = ArenaColor.SafeFromAOE;
+        Color = Colors.SafeFromAOE;
         Risky = false;
     }
 

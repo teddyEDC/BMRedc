@@ -17,8 +17,8 @@ class Fusefield(BossModule module) : BossComponent(module)
         {
             if (s.order == _orders[pcSlot])
             {
-                Arena.AddLine(s.spark.Position, s.target.Position, ArenaColor.Safe);
-                Arena.Actor(s.spark, ArenaColor.Object, true);
+                Arena.AddLine(s.spark.Position, s.target.Position, Colors.Safe);
+                Arena.Actor(s.spark, Colors.Object, true);
             }
         }
     }
