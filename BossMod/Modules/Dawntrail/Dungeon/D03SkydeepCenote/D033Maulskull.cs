@@ -248,7 +248,7 @@ class WroughtFire(BossModule module) : Components.BaitAwayCast(module, ActionID.
     }
 }
 
-class BuildingHeat(BossModule module) : WithCastTargets(module, ActionID.MakeSpell(AID.BuildingHeat), 6, 4);
+class BuildingHeat(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BuildingHeat), 6, 4);
 class Ashlayer(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Ashlayer));
 
 class D033MaulskullStates : StateMachineBuilder
