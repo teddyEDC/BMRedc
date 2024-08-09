@@ -137,7 +137,7 @@ class Sweethearts(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-abstract class Heartsick(BossModule module, bool roles) : Components.StackWithIcon(module, (uint)IconID.Heartsick, ActionID.MakeSpell(AID.Heartsick), 6, 7, roles ? 2 : 4)
+abstract class Heartsick(BossModule module, bool roles) : Components.StackWithIcon(module, (uint)IconID.Heartsick, ActionID.MakeSpell(AID.Heartsick), 6, 7, roles ? 2 : 4, roles ? 2 : 4)
 {
     private readonly HoneyBLiveHearts? _hearts = module.FindComponent<HoneyBLiveHearts>();
 
