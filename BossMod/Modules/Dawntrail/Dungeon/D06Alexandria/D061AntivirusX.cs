@@ -122,18 +122,25 @@ class Cytolysis(BossModule module) : Components.RaidwideCast(module, ActionID.Ma
 
 class Quarantine(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine), 6, 5.1f, 3, 3)
 {
+    private readonly Disinfection _tb = module.FindComponent<Disinfection>()!;
+    public override void Update()
+    {
+        if (!ActiveStacks.Any())
+            return;
+        var forbidden = Raid.WithSlot().WhereActor(p => _tb.ActiveBaits.Any(x => x.Target == p)).Mask();
+        foreach (ref var t in Stacks.AsSpan())
+            t.ForbiddenPlayers = forbidden;
+    }
+
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!Module.FindComponent<Disinfection>()!.CurrentBaits.Any(x => x.Target == actor))
+        if (!_tb.CurrentBaits.Any(x => x.Target == actor) && actor == ActiveStacks.FirstOrDefault().Target)
         {
-            if (actor == ActiveStacks.FirstOrDefault().Target && Raid.WithoutSlot().Any(x => x.Type == ActorType.Buddy))
-            {
-                var party = Raid.WithoutSlot().Where(x => !x.IsDead);
-                List<Actor> exclude = [actor, Module.FindComponent<Disinfection>()!.CurrentBaits[0].Target];
-                var closestAlly = party.Exclude(exclude).Closest(actor.Position);
-                if (closestAlly != null)
-                    hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestAlly.Position, 3), ActiveStacks.First().Activation);
-            }
+            var party = Raid.WithoutSlot().Where(x => !x.IsDead);
+            List<Actor> exclude = [actor, _tb.CurrentBaits[0].Target];
+            var closestAlly = party.Exclude(exclude).Closest(actor.Position);
+            if (closestAlly != null)
+                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestAlly.Position, 3), ActiveStacks.First().Activation);
             else
                 base.AddAIHints(slot, actor, assignment, hints);
         }
@@ -142,6 +149,7 @@ class Quarantine(BossModule module) : Components.StackWithIcon(module, (uint)Ico
 
 class Disinfection(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(6), (uint)IconID.Tankbuster, ActionID.MakeSpell(AID.Disinfection), centerAtTarget: true)
 {
+    private readonly Quarantine? _stack = module.FindComponent<Quarantine>();
     public override void AddGlobalHints(GlobalHints hints)
     {
         if (CurrentBaits.Count > 0)
@@ -150,7 +158,7 @@ class Disinfection(BossModule module) : Components.BaitAwayIcon(module, new AOES
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!CurrentBaits.Any(x => x.Target == actor) && Module.FindComponent<Quarantine>()!.ActiveStacks.Any(x => x.Activation.AddSeconds(-2) >= Module.WorldState.CurrentTime))
+        if (!CurrentBaits.Any(x => x.Target == actor) && _stack != null && _stack.ActiveStacks.Any(x => x.Activation.AddSeconds(-2) >= Module.WorldState.CurrentTime))
         { }
         else
             base.AddAIHints(slot, actor, assignment, hints);

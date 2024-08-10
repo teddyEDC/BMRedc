@@ -109,8 +109,12 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
                 hints.AddForbiddenZone(ShapeDistance.Circle(stackWith.Target.Position, stackWith.Radius * 2), stackWith.Activation);
             // if player got stackmarker and is playing with NPCs, go to a NPC to stack with them since they will likely not come to you
             if (Raid.WithoutSlot().Any(x => x.Type == ActorType.Buddy))
+            {
+                var forbidden = new List<Func<WPos, float>>();
                 foreach (var stackWith in ActiveStacks.Where(s => s.Target == actor))
-                    hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Raid.WithoutSlot().FirstOrDefault(x => !x.IsDead && !IsStackTarget(x))!.Position, 1), stackWith.Activation);
+                    forbidden.Add(ShapeDistance.InvertedCircle(Raid.WithoutSlot().FirstOrDefault(x => !x.IsDead && !IsStackTarget(x))!.Position, 1));
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), ActiveStacks.FirstOrDefault().Activation);
+            }
         }
         else if (!IsSpreadTarget(actor))
         {
