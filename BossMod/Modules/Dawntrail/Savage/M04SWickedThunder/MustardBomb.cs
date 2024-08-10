@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
+namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class MustardBomb(BossModule module) : Components.UniformStackSpread(module, 0, 6, alwaysShowSpreads: true)
 {

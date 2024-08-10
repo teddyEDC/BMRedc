@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
+namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class ElectrifyingWitchHuntBurst(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ElectrifyingWitchHuntBurst), new AOEShapeRect(40, 8));
 

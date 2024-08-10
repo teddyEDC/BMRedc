@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
+namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class WideningNarrowingWitchHunt(BossModule module) : Components.GenericAOEs(module)
 {

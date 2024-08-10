@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
+namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class BewitchingFlight(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BewitchingFlightAOE), new AOEShapeRect(40, 2.5f));
 class WickedJolt(BossModule module) : Components.TankSwap(module, ActionID.MakeSpell(AID.WickedJolt), ActionID.MakeSpell(AID.WickedJolt), ActionID.MakeSpell(AID.WickedJoltSecond), 3.2f, new AOEShapeRect(60, 2.5f), false);
