@@ -1,6 +1,4 @@
-﻿using BossMod.Dawntrail.Dungeon.D08Deadwalk.D081Leonogg;
-
-namespace BossMod.Dawntrail.Dungeon.D08Deadwalk.D083Traumerei;
+﻿namespace BossMod.Dawntrail.Dungeon.D08TheStrayboroughDeadwalk.D083Traumerei;
 
 public enum OID : uint
 {
