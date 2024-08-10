@@ -262,14 +262,14 @@ class M04SWickedThunderStates : StateMachineBuilder
     private void AzureThunder(uint id, float delay)
     {
         ActorCast(id, _module.BossP2, AID.AzureThunder, delay, 5, true, "Raidwide")
-            .OnExit(() => Module.Arena.Bounds = RM04WickedThunder.P2CircleBounds) // at the end of the cast arena changes to circle
+            .OnExit(() => Module.Arena.Bounds = M04SWickedThunder.P2CircleBounds) // at the end of the cast arena changes to circle
             .SetHint(StateMachine.StateHint.Raidwide);
     }
 
     private void WickedThunder(uint id, float delay)
     {
         ActorCast(id, _module.BossP2, AID.WickedThunder, delay, 5, true, "Raidwide")
-            .OnEnter(() => Module.Arena.Bounds = RM04WickedThunder.P2DefaultBounds) // at the beginning of the cast arena changes back to square
+            .OnEnter(() => Module.Arena.Bounds = M04SWickedThunder.P2DefaultBounds) // at the beginning of the cast arena changes back to square
             .SetHint(StateMachine.StateHint.Raidwide);
     }
 
@@ -374,7 +374,7 @@ class M04SWickedThunderStates : StateMachineBuilder
         ActorCast(id + 0x10, _module.BossP2, AID.FlameSlash, 3.1f, 6, true)
             .ActivateOnEnter<FlameSlash>();
         ComponentCondition<FlameSlash>(id + 0x12, 1, comp => comp.NumCasts > 0, "Destroy center")
-            .OnExit(() => Module.Arena.Bounds = RM04WickedThunder.P2TowersBounds);
+            .OnExit(() => Module.Arena.Bounds = M04SWickedThunder.P2TowersBounds);
         ActorCast(id + 0x20, _module.BossP2, AID.RainingSwords, 2.2f, 2, true)
             .ActivateOnEnter<RainingSwords>();
         ComponentCondition<RainingSwords>(id + 0x22, 1, comp => comp.NumCasts > 0, "Towers")
@@ -391,7 +391,7 @@ class M04SWickedThunderStates : StateMachineBuilder
         ComponentCondition<ChainLightning>(id + 0x47, 2.7f, comp => comp.NumCasts >= 24)
             .DeactivateOnExit<ChainLightning>();
         ComponentCondition<FlameSlash>(id + 0x50, 1, comp => !comp.SmallArena, "Restore center")
-            .OnExit(() => Module.Arena.Bounds = RM04WickedThunder.P2DefaultBounds)
+            .OnExit(() => Module.Arena.Bounds = M04SWickedThunder.P2DefaultBounds)
             .DeactivateOnExit<FlameSlash>();
         AetherialConversionResolve(id + 0x60, 0.4f, true);
     }
@@ -417,7 +417,7 @@ class M04SWickedThunderStates : StateMachineBuilder
         ComponentCondition<SunriseSabbathElectronStream>(id + 0x81, 0.5f, comp => comp.NumCasts > 4, "Baits 2")
             .DeactivateOnExit<SunriseSabbathElectronStream>()
             .DeactivateOnExit<SunriseSabbath>()
-            .OnExit(() => Module.Arena.Bounds = RM04WickedThunder.P2DefaultBounds); // restore bounds (set to circle by azure thunder)
+            .OnExit(() => Module.Arena.Bounds = M04SWickedThunder.P2DefaultBounds); // restore bounds (set to circle by azure thunder)
         AetherialConversionResolve(id + 0x90, 0.9f, true);
     }
 

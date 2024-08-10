@@ -22,7 +22,7 @@ class QuadrupleCrossingProtean(BossModule module) : Components.GenericBaitAway(m
     {
         base.DrawArenaForeground(pcSlot, pc);
         if (_clone != null && CurrentBaits.Count == 0)
-            Arena.Actor(_clone.Position + 10 * (_clone.Rotation + _jumpDirection).ToDirection(), _clone.Rotation, ArenaColor.Object);
+            Arena.Actor(_clone.Position + 10 * (_clone.Rotation + _jumpDirection).ToDirection(), _clone.Rotation, Colors.Object);
     }
 
     public override void OnActorCreated(Actor actor)

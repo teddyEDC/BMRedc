@@ -25,7 +25,8 @@ class StampedingThunder(BossModule module) : Components.GenericAOEs(module)
             case AID.StampedingThunderFinish:
                 ++NumCasts;
                 AOE = null;
-                Module.Arena.Bounds = caster.Position.X < Module.Center.X ? RM04WickedThunder.P1IonClusterRBounds : RM04WickedThunder.P1IonClusterLBounds;
+                Module.Arena.Bounds = M04SWickedThunder.IonClusterBounds;
+                Module.Arena.Center = new(M04SWickedThunder.P1DefaultCenter.X + 3 * (M04SWickedThunder.P1DefaultCenter.X - caster.Position.X), M04SWickedThunder.P1DefaultCenter.Z);
                 SmallArena = true;
                 break;
         }
@@ -35,7 +36,8 @@ class StampedingThunder(BossModule module) : Components.GenericAOEs(module)
     {
         if (index == 0 && state is 0x00400004 or 0x00800004)
         {
-            Module.Arena.Bounds = RM04WickedThunder.P1DefaultBounds;
+            Arena.Bounds = M04SWickedThunder.P1DefaultBounds;
+            Arena.Center = M04SWickedThunder.P1DefaultCenter;
             SmallArena = false;
         }
     }
