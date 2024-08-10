@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM04WickedThunder;
+﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class Sabertail(BossModule module) : Components.Exaflare(module, new AOEShapeCircle(6))
 {

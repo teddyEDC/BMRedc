@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM04WickedThunder;
+﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class ElectropeEdgeWitchgleam(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.ElectropeEdgeWitchgleamAOE))
 {
@@ -78,7 +78,7 @@ class LightningCage(BossModule module) : Components.GenericAOEs(module, ActionID
         foreach (var i in _aoePattern.SetBits())
             yield return new(_cell, CellCenter(i), default, _activation);
         foreach (var i in SafeCells(slot))
-            yield return new(_cell, CellCenter(i), default, _activation, ArenaColor.SafeFromAOE, false);
+            yield return new(_cell, CellCenter(i), default, _activation, Colors.SafeFromAOE, false);
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)

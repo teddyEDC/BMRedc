@@ -1,10 +1,10 @@
-﻿namespace BossMod.Dawntrail.Savage.RM04WickedThunder;
+﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
-class RM04WickedThunderStates : StateMachineBuilder
+class M04SWickedThunderStates : StateMachineBuilder
 {
-    private readonly RM04WickedThunder _module;
+    private readonly M04SWickedThunder _module;
 
-    public RM04WickedThunderStates(RM04WickedThunder module) : base(module)
+    public M04SWickedThunderStates(M04SWickedThunder module) : base(module)
     {
         _module = module;
         SimplePhase(0, SinglePhase, "Single phase")
@@ -244,8 +244,8 @@ class RM04WickedThunderStates : StateMachineBuilder
 
         Targetable(id + 0x10, false, 0.1f, "Boss disappears");
         ActorTargetable(id + 0x20, _module.BossP2, true, 11.9f, "Boss reappears")
-            .OnEnter(() => Module.Arena.Center = RM04WickedThunder.P2Center)
-            .OnEnter(() => Module.Arena.Bounds = RM04WickedThunder.P2Bounds)
+            .OnEnter(() => Module.Arena.Center = M04SWickedThunder.P2Center)
+            .OnEnter(() => Module.Arena.Bounds = M04SWickedThunder.P2Bounds)
             .SetHint(StateMachine.StateHint.DowntimeEnd);
 
         ActorCast(id + 0x30, _module.BossP2, AID.CrossTailSwitch, 7.2f, 5, true);
@@ -298,8 +298,8 @@ class RM04WickedThunderStates : StateMachineBuilder
     {
         ActorCast(id, _module.BossP2, AID.MustardBomb, delay, 8, true)
             .ActivateOnEnter<MustardBomb>();
-        ComponentCondition<MustardBomb>(id + 2, 0.8f, comp => comp.CurMechanic > Savage.RM04WickedThunder.MustardBomb.Mechanic.Tethers, "Spread");
-        ComponentCondition<MustardBomb>(id + 3, 9.7f, comp => comp.CurMechanic > Savage.RM04WickedThunder.MustardBomb.Mechanic.Nisi, "Nisi")
+        ComponentCondition<MustardBomb>(id + 2, 0.8f, comp => comp.CurMechanic > Savage.M04SWickedThunder.MustardBomb.Mechanic.Tethers, "Spread");
+        ComponentCondition<MustardBomb>(id + 3, 9.7f, comp => comp.CurMechanic > Savage.M04SWickedThunder.MustardBomb.Mechanic.Nisi, "Nisi")
             .DeactivateOnExit<MustardBomb>();
     }
 

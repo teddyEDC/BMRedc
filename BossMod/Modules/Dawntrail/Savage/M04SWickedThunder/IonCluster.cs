@@ -1,6 +1,4 @@
-﻿using BossMod.Endwalker.Alliance.A30Trash2;
-
-namespace BossMod.Dawntrail.Savage.RM04WickedThunder;
+﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class StampedingThunder(BossModule module) : Components.GenericAOEs(module)
 {
@@ -27,8 +25,8 @@ class StampedingThunder(BossModule module) : Components.GenericAOEs(module)
             case AID.StampedingThunderFinish:
                 ++NumCasts;
                 AOE = null;
-                Module.Arena.Bounds = RM04WickedThunder.IonClusterBounds;
-                Module.Arena.Center = new(RM04WickedThunder.DefaultCenter.X + 3 * (RM04WickedThunder.DefaultCenter.X - caster.Position.X), RM04WickedThunder.DefaultCenter.Z);
+                Module.Arena.Bounds = M04SWickedThunder.IonClusterBounds;
+                Module.Arena.Center = new(M04SWickedThunder.DefaultCenter.X + 3 * (M04SWickedThunder.DefaultCenter.X - caster.Position.X), M04SWickedThunder.DefaultCenter.Z);
                 SmallArena = true;
                 break;
         }
@@ -38,8 +36,8 @@ class StampedingThunder(BossModule module) : Components.GenericAOEs(module)
     {
         if (index == 0 && state is 0x00400004 or 0x00800004)
         {
-            Module.Arena.Bounds = RM04WickedThunder.DefaultBounds;
-            Module.Arena.Center = RM04WickedThunder.DefaultCenter;
+            Module.Arena.Bounds = M04SWickedThunder.DefaultBounds;
+            Module.Arena.Center = M04SWickedThunder.DefaultCenter;
             SmallArena = false;
         }
     }
@@ -57,9 +55,9 @@ class ElectronStream(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_posCaster?.CastInfo != null)
-            yield return new(_shape, _posCaster.Position, _posCaster.CastInfo.Rotation, Module.CastFinishAt(_posCaster.CastInfo), _positron[slot] ? ArenaColor.AOE : ArenaColor.SafeFromAOE, _positron[slot]);
+            yield return new(_shape, _posCaster.Position, _posCaster.CastInfo.Rotation, Module.CastFinishAt(_posCaster.CastInfo), _positron[slot] ? Colors.AOE : Colors.SafeFromAOE, _positron[slot]);
         if (_negCaster?.CastInfo != null)
-            yield return new(_shape, _negCaster.Position, _negCaster.CastInfo.Rotation, Module.CastFinishAt(_negCaster.CastInfo), _negatron[slot] ? ArenaColor.AOE : ArenaColor.SafeFromAOE, _negatron[slot]);
+            yield return new(_shape, _negCaster.Position, _negCaster.CastInfo.Rotation, Module.CastFinishAt(_negCaster.CastInfo), _negatron[slot] ? Colors.AOE : Colors.SafeFromAOE, _negatron[slot]);
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
@@ -196,18 +194,18 @@ class ElectronStreamCurrent(BossModule module) : Components.GenericAOEs(module, 
             case SID.ColliderConductor:
                 var source = FindDesignatedBaitSource(pc);
                 if (source.actor != null && FindBaitTarget(source.slot, source.actor) is var target && target != null)
-                    _shapeBait.Outline(Arena, source.actor.Position, Angle.FromDirection(target.Position - source.actor.Position), ArenaColor.Safe);
+                    _shapeBait.Outline(Arena, source.actor.Position, Angle.FromDirection(target.Position - source.actor.Position), Colors.Safe);
                 break;
         }
 
         foreach (var p in SafeSpots(pcSlot, pc))
-            Arena.AddCircle(p, 1, ArenaColor.Safe);
+            Arena.AddCircle(p, 1, Colors.Safe);
     }
 
     public override void AddMovementHints(int slot, Actor actor, MovementHints movementHints)
     {
         foreach (var p in SafeSpots(slot, actor))
-            movementHints.Add(actor.Position, p, ArenaColor.Safe);
+            movementHints.Add(actor.Position, p, Colors.Safe);
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)

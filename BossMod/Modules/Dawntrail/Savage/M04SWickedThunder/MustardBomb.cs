@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Savage.RM04WickedThunder;
+﻿namespace BossMod.Dawntrail.Savage.M04SWickedThunder;
 
 class MustardBomb(BossModule module) : Components.UniformStackSpread(module, 0, 6, alwaysShowSpreads: true)
 {
@@ -43,7 +43,7 @@ class MustardBomb(BossModule module) : Components.UniformStackSpread(module, 0, 
 
         if (CurMechanic == Mechanic.Tethers && _tetherTarget != null)
             foreach (var (_, p) in Raid.WithSlot().IncludedInMask(_bombTargets))
-                Arena.AddLine(_tetherTarget.Position, p.Position, ArenaColor.Danger);
+                Arena.AddLine(_tetherTarget.Position, p.Position, Colors.Danger);
     }
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
