@@ -200,7 +200,10 @@ public sealed class Plugin : IDalamudPlugin
         currentConfig.Waymark2 = defaultConfig.Waymark2;
         currentConfig.Waymark3 = defaultConfig.Waymark3;
         currentConfig.Waymark4 = defaultConfig.Waymark4;
-
+        currentConfig.ButtonPushColor1 = defaultConfig.ButtonPushColor1;
+        currentConfig.ButtonPushColor2 = defaultConfig.ButtonPushColor2;
+        currentConfig.TextColors = defaultConfig.TextColors;
+        currentConfig.PositionalColors = defaultConfig.PositionalColors;
         currentConfig.Modified.Fire();
         Service.Log("Colors have been reset to default values.");
     }

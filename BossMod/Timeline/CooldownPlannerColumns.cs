@@ -219,7 +219,7 @@ public class CooldownPlannerColumns : Timeline.ColumnGroup
             {
                 if (md.Configs[i].AssociatedActions.Contains(a.ID))
                 {
-                    col.AddHistoryEntryDot(_encStart, a.Timestamp, $"{a.ID} -> {ReplayUtils.ParticipantString(a.MainTarget, a.Timestamp)} #{a.GlobalSequence}", 0xffffffff).AddActionTooltip(a);
+                    col.AddHistoryEntryDot(_encStart, a.Timestamp, $"{a.ID} -> {ReplayUtils.ParticipantString(a.MainTarget, a.Timestamp)} #{a.GlobalSequence}", Colors.TextColor1).AddActionTooltip(a);
                 }
             }
             cols.Add(col);

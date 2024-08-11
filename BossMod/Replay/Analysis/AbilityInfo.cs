@@ -382,7 +382,7 @@ class AbilityInfo : CommonEnumInfo
         UITree.NodeProperties map(KeyValuePair<ActionID, ActionData> kv)
         {
             var name = kv.Key.Type == ActionType.Spell ? _aidType?.GetEnumName(kv.Key.ID) : null;
-            return new($"{kv.Key:X} ({name})", false, name == null ? 0xff00ffff : 0xffffffff);
+            return new($"{kv.Key:X} ({name})", false, name == null ? Colors.TextColor2 : Colors.TextColor1);
         }
         foreach (var (aid, data) in tree.Nodes(_data, map))
         {

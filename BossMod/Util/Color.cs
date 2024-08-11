@@ -78,4 +78,25 @@ public static class Colors
     public static uint Waymark2 => _config.Waymark2.ABGR;
     public static uint Waymark3 => _config.Waymark3.ABGR;
     public static uint Waymark4 => _config.Waymark4.ABGR;
+    public static uint ButtonPushColor1 => _config.ButtonPushColor1.ABGR;
+    public static uint ButtonPushColor2 => _config.ButtonPushColor2.ABGR;
+    public static uint TextColor1 => _config.TextColors[0].ABGR;
+    public static uint TextColor2 => _config.TextColors[1].ABGR;
+    public static uint TextColor3 => _config.TextColors[2].ABGR;
+    public static uint TextColor4 => _config.TextColors[3].ABGR;
+    public static uint TextColor5 => _config.TextColors[4].ABGR;
+    public static uint TextColor6 => _config.TextColors[5].ABGR;
+    public static uint TextColor7 => _config.TextColors[6].ABGR;
+    public static uint TextColor8 => _config.TextColors[7].ABGR;
+    public static uint TextColor9 => _config.TextColors[8].ABGR;
+    public static uint TextColor10 => _config.TextColors[9].ABGR;
+    public static uint TextColor11 => _config.TextColors[10].ABGR;
+    public static uint TextColor12 => _config.TextColors[11].ABGR;
+    public static uint TextColor13 => _config.TextColors[12].ABGR;
+    public static uint TextColor14 => _config.TextColors[13].ABGR;
+    public static uint TextColor15 => _config.TextColors[14].ABGR;
+    public static uint PositionalColor1 => _config.PositionalColors[0].ABGR;
+    public static uint PositionalColor2 => _config.PositionalColors[1].ABGR;
+    public static uint PositionalColor3 => _config.PositionalColors[2].ABGR;
+    public static uint PositionalColor4 => _config.PositionalColors[3].ABGR;
 }

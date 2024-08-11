@@ -31,7 +31,7 @@ public sealed class UIRotationWindow : UIWindow
         if (player == null)
             return;
 
-        using (ImRaii.PushColor(ImGuiCol.Button, 0xff000080, _mgr.Preset == RotationModuleManager.ForceDisable))
+        using (ImRaii.PushColor(ImGuiCol.Button, Colors.ButtonPushColor1, _mgr.Preset == RotationModuleManager.ForceDisable))
         {
             if (ImGui.Button("X"))
             {
@@ -42,7 +42,7 @@ public sealed class UIRotationWindow : UIWindow
         foreach (var p in _mgr.Database.Presets.Presets.Where(p => p.Modules.Any(m => RotationModuleRegistry.Modules[m.Key].Definition.Classes[(int)player.Class])))
         {
             ImGui.SameLine();
-            using var col = ImRaii.PushColor(ImGuiCol.Button, 0xff008080, _mgr.Preset == p);
+            using var col = ImRaii.PushColor(ImGuiCol.Button, Colors.ButtonPushColor2, _mgr.Preset == p);
             if (ImGui.Button(p.Name))
             {
                 _mgr.Preset = _mgr.Preset == p ? null : p;
@@ -111,6 +111,6 @@ public sealed class UIRotationWindow : UIWindow
     }
 
     private uint PositionalColor(bool imminent, bool correct) => imminent
-        ? (correct ? 0xff00ff00 : 0xff0000ff)
-        : (correct ? 0xffffffff : 0xff00ffff);
+        ? (correct ? Colors.PositionalColor1 : Colors.PositionalColor2)
+        : (correct ? Colors.PositionalColor3 : Colors.PositionalColor4);
 }

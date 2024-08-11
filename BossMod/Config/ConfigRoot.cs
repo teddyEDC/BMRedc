@@ -1,5 +1,4 @@
-﻿using BossMod.AI;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
