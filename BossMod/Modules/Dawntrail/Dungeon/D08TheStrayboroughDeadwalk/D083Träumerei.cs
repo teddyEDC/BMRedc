@@ -2,15 +2,10 @@
 
 public enum OID : uint
 {
-    Boss = 0x421F, // R26.000, x1
-    Helper = 0x233C, // R0.500, x6, 523 type
-
-    Actor1e8f2f = 0x1E8F2F, // R0.500, x1, EventObj type
-    Actor1e8fb8 = 0x1E8FB8, // R2.000, x1, EventObj type
-
-    StrayGeist = 0x4221, // R2.000, x0 (spawn during fight)
-    StrayPhantagenitrix = 0x4220, // R1.500, x20
-    StrayTableSet = 0x42C1, // R0.500, x1
+    Boss = 0x421F, // R26.0
+    StrayGeist = 0x4221, // R2.0
+    StrayPhantagenitrix = 0x4220, // R1.5
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -41,7 +36,7 @@ public enum AID : uint
 
     GhostcrusherVisual = 37142, // Boss->self, 5.0s cast, single-target, line stack
     GhostcrusherMarker = 37144, // Helper->player, no cast, single-target
-    Ghostcrusher = 37143, // Helper->self, no cast, range 80 width 8 rect
+    Ghostcrusher = 37143 // Helper->self, no cast, range 80 width 8 rect
 }
 
 public enum SID : uint
@@ -162,6 +157,7 @@ class BitterRegret1(BossModule module) : Components.SelfTargetedAOEs(module, Act
 class BitterRegret2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BitterRegret2), new AOEShapeRect(50, 6));
 class BitterRegret3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BitterRegret3), new AOEShapeRect(40, 2), 5);
 class Impact(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Impact), new AOEShapeRect(40, 2));
+class Ghostcrusher(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.GhostcrusherMarker), ActionID.MakeSpell(AID.Ghostcrusher), 5, 80, maxStackSize: 4);
 class Ghostduster(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.Ghostduster), 8)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -170,9 +166,6 @@ class Ghostduster(BossModule module) : Components.SpreadFromCastTargets(module, 
             base.AddAIHints(slot, actor, assignment, hints);
     }
 }
-
-class GhostcrusherStack(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.Ghostduster), 8);
-class Ghostcrusher(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.GhostcrusherMarker), ActionID.MakeSpell(AID.Ghostcrusher), 5, 80, maxStackSize: 4);
 
 class D083TräumereiStates : StateMachineBuilder
 {
