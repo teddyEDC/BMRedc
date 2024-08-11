@@ -45,13 +45,35 @@ public enum IconID : uint
     ChasingAOE = 197 // player
 }
 
+class MaliciousMistArenaChange(BossModule module) : Components.GenericAOEs(module)
+{
+    private static readonly AOEShapeDonut donut = new(14, 20);
+    private AOEInstance? _aoe;
+
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    {
+        if ((AID)spell.Action.ID == AID.MaliciousMist && Module.Arena.Bounds == D081HisRoyalHeadnessLeonoggI.StartingBounds)
+            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 0.9f));
+    }
+
+    public override void OnEventEnvControl(byte index, uint state)
+    {
+        if (state == 0x00020001 && index == 0x00)
+        {
+            Module.Arena.Bounds = D081HisRoyalHeadnessLeonoggI.DefaultBounds;
+            _aoe = null;
+        }
+    }
+}
+
 class LoomingNightmare(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(4), ActionID.MakeSpell(AID.LoomingNightmareFirst), ActionID.MakeSpell(AID.LoomingNightmareRest), 3, 1.6f, 5, true, (uint)IconID.ChasingAOE)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
         if (Actors.Contains(actor))
-            hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center, 14), Activation);
+            hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center, 13.5f), Activation);
     }
 }
 
@@ -131,6 +153,7 @@ class D081HisRoyalHeadnessLeonoggIStates : StateMachineBuilder
     public D081HisRoyalHeadnessLeonoggIStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<MaliciousMistArenaChange>()
             .ActivateOnEnter<MaliciousMist>()
             .ActivateOnEnter<LoomingNightmare>()
             .ActivateOnEnter<EvilScheme>()
@@ -140,5 +163,10 @@ class D081HisRoyalHeadnessLeonoggIStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 981, NameID = 13073)]
-public class D081HisRoyalHeadnessLeonoggI(WorldState ws, Actor primary) : BossModule(ws, primary, new(0, 150), new ArenaBoundsCircle(20));
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 981, NameID = 13073)]
+public class D081HisRoyalHeadnessLeonoggI(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
+{
+    public static readonly WPos ArenaCenter = new(0, 150);
+    public static readonly ArenaBoundsCircle StartingBounds = new(19.5f);
+    public static readonly ArenaBoundsCircle DefaultBounds = new(14);
+}

@@ -62,6 +62,10 @@ public sealed class ColorConfig : ConfigNode
 
     [PropertyDisplay("Arena: future vulnerable")]
     public Color ArenaFutureVulnerable = new(0x80ff00ff);
+    [PropertyDisplay("Arena: other 1")]
+    public Color ArenaOther1 = new(0xffff0080);
+    [PropertyDisplay("Arena: other 2")]
+    public Color ArenaOther2 = new(0xff8080ff);
 
     [PropertyDisplay("Outlines and shadows")]
     public Color Shadows = new(0xFF000000);
