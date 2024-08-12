@@ -159,10 +159,9 @@ class Compression(BossModule module) : Components.SelfTargetedAOEs(module, Actio
 class Overexposure(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.OverexposureMarker), ActionID.MakeSpell(AID.Overexposure), 5, 40, 3);
 class LightOfDevotion(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.LightOfDevotionMarker), ActionID.MakeSpell(AID.LightOfDevotion), 5.5f, 40, 3)
 {
-    public override void Update()
+    public override void OnEventEnvControl(byte index, uint state)
     {
-        // as soon as limit break phase ends the line stack gets cancelled
-        if (CurrentBaits.Count > 0 && !Module.Enemies(OID.LightningGenerator).Any(x => !x.IsDead))
+        if (index == 0x2F && state == 0x00080004) // as soon as limit break phase ends the line stack gets cancelled
             CurrentBaits.Clear();
     }
 }
@@ -181,6 +180,12 @@ class LightOfSalvation(BossModule module) : Components.GenericBaitAway(module)
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if ((AID)spell.Action.ID == AID.LightOfSalvation)
+            CurrentBaits.Clear();
+    }
+
+    public override void OnEventEnvControl(byte index, uint state)
+    {
+        if (index == 0x2F && state == 0x00080004) // as soon as limit break phase ends the line stack gets cancelled
             CurrentBaits.Clear();
     }
 
