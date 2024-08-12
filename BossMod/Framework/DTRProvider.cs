@@ -12,8 +12,8 @@ internal sealed class DTRProvider : IDisposable
 {
     private readonly RotationModuleManager _mgr;
     private readonly AIManager _ai;
-    private readonly IDtrBarEntry _autorotationEntry = Service.DtrBar.Get("vbm-autorotation");
-    private readonly IDtrBarEntry _aiEntry = Service.DtrBar.Get("vbm-ai");
+    private readonly IDtrBarEntry _autorotationEntry = Service.DtrBar.Get("bmr-autorotation");
+    private readonly IDtrBarEntry _aiEntry = Service.DtrBar.Get("bmr-ai");
     private readonly AIConfig _aiConfig = Service.Config.Get<AIConfig>();
     private bool _wantOpenPopup;
 
@@ -25,14 +25,14 @@ internal sealed class DTRProvider : IDisposable
         _autorotationEntry.OnClick = () => _wantOpenPopup = true;
         _aiEntry.OnClick = () =>
         {
-            if (_ai.Behaviour == null)
+            if (_ai.Beh == null)
             {
                 if (!_aiConfig.Enabled)
                 {
                     _aiConfig.Enabled = true;
                     _aiConfig.Modified.Fire();
                 }
-                _ai.SwitchToFollow((int)_aiConfig.FollowSlot);
+                _ai.SwitchToFollow(_aiConfig.FollowSlot);
             }
             else
             {
@@ -51,21 +51,21 @@ internal sealed class DTRProvider : IDisposable
     {
         _autorotationEntry.Shown = _mgr.Config.ShowDTR != AutorotationConfig.DtrStatus.None;
         var (icon, name) = _mgr.Preset == null ? (BitmapFontIcon.SwordSheathed, "Idle") : _mgr.Preset == RotationModuleManager.ForceDisable ? (BitmapFontIcon.SwordSheathed, "Disabled") : (BitmapFontIcon.SwordUnsheathed, _mgr.Preset.Name);
-        Payload prefix = _mgr.Config.ShowDTR == AutorotationConfig.DtrStatus.TextOnly ? new TextPayload("vbm: ") : new IconPayload(icon);
+        Payload prefix = _mgr.Config.ShowDTR == AutorotationConfig.DtrStatus.TextOnly ? new TextPayload("bmr: ") : new IconPayload(icon);
         _autorotationEntry.Text = new SeString(prefix, new TextPayload(name));
 
         _aiEntry.Shown = _aiConfig.ShowDTR;
-        _aiEntry.Text = "AI: " + (_ai.Behaviour == null ? "Off" : "On");
+        _aiEntry.Text = "AI: " + (_ai.Beh == null ? "Off" : "On");
 
         if (_wantOpenPopup && _mgr.Player != null)
         {
-            ImGui.OpenPopup("vbm_dtr_menu");
+            ImGui.OpenPopup("bmr_dtr_menu");
             _wantOpenPopup = false;
         }
 
-        using (var popup = ImRaii.Popup("vbm_dtr_menu"))
-            if (popup)
-                if (UIRotationWindow.DrawRotationSelector(_mgr))
-                    ImGui.CloseCurrentPopup();
+        using var popup = ImRaii.Popup("bmr_dtr_menu");
+        if (popup)
+            if (UIRotationWindow.DrawRotationSelector(_mgr))
+                ImGui.CloseCurrentPopup();
     }
 }

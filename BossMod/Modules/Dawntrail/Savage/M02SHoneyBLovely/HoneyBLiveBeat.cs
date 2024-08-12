@@ -135,12 +135,6 @@ class Sweethearts(BossModule module) : Components.GenericAOEs(module)
         foreach (var w in _hearts)
             hints.AddForbiddenZone(new AOEShapeCircle(1), w.Position + w.Rotation.ToDirection());
     }
-
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
-    {
-        if ((AID)spell.Action.ID == AID.SweetheartTouch)
-            _adds.Remove(caster);
-    }
 }
 
 abstract class Heartsick(BossModule module, bool roles) : Components.StackWithIcon(module, (uint)IconID.Heartsick, ActionID.MakeSpell(AID.Heartsick), 6, 7, roles ? 2 : 4, roles ? 2 : 4)

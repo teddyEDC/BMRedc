@@ -81,7 +81,7 @@ public sealed class UIRotationWindow : UIWindow
         if (mgr.Player == null)
             return modified;
 
-        using (ImRaii.PushColor(ImGuiCol.Button, 0xff000080, mgr.Preset == RotationModuleManager.ForceDisable))
+        using (ImRaii.PushColor(ImGuiCol.Button, Colors.ButtonPushColor1, mgr.Preset == RotationModuleManager.ForceDisable))
         {
             if (ImGui.Button("X"))
             {
@@ -93,7 +93,7 @@ public sealed class UIRotationWindow : UIWindow
         foreach (var p in mgr.Database.Presets.PresetsForClass(mgr.Player.Class))
         {
             ImGui.SameLine();
-            using var col = ImRaii.PushColor(ImGuiCol.Button, 0xff008080, mgr.Preset == p);
+            using var col = ImRaii.PushColor(ImGuiCol.Button, Colors.ButtonPushColor2, mgr.Preset == p);
             if (ImGui.Button(p.Name))
             {
                 mgr.Preset = mgr.Preset == p ? null : p;

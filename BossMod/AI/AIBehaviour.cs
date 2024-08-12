@@ -33,7 +33,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             return;
 
         // keep master in focus
-        if (_config.FocusTargetMaster)
+        if (_config.FocusTargetLeader)
             FocusMaster(master);
 
         _afkMode = !master.InCombat && (WorldState.CurrentTime - _masterLastMoved).TotalSeconds > 10;
@@ -115,7 +115,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         if (_followMaster && !_config.FollowTarget || _followMaster && _config.FollowTarget && target == null)
             return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, _config.MaxDistanceToSlot, new(), Positional.Any);
         if (_followMaster && _config.FollowTarget && target != null)
-            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, _config.DesiredPositional);
+            return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, target != player ? _config.DesiredPositional : Positional.Any);
         if (targeting.Target == null)
             return NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, null, 0, new(), Positional.Any);
         var adjRange = targeting.PreferredRange + player.HitboxRadius + targeting.Target.Actor.HitboxRadius;

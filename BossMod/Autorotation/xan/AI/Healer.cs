@@ -112,8 +112,8 @@ public class HealerAI(RotationModuleManager manager, Actor player) : AIBase(mana
     {
         var candidates = strategy.Option(Track.RaiseTarget).As<RaiseTarget>() switch
         {
-            RaiseTarget.Everyone => World.Actors.Where(x => x.Type is ActorType.Player or ActorType.DutySupport && x.IsAlly),
-            RaiseTarget.Alliance => World.Party.WithoutSlot(true, false),
+            RaiseTarget.Everyone => World.Actors.Where(x => x.Type is ActorType.Player or ActorType.Buddy && x.IsAlly),
+            RaiseTarget.Alliance => World.Party.WithoutSlot(true),
             _ => World.Party.WithoutSlot(true, true)
         };
 

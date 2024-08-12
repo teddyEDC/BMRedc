@@ -39,9 +39,6 @@ sealed class AIConfig : ConfigNode
     [PropertyDisplay("Follow target")]
     public bool FollowTarget = false;
 
-    [PropertyDisplay($"Override positional")]
-    public bool OverridePositional = true;
-
     [PropertyDisplay("Desired positional when following target")]
     [PropertyCombo(["Any", "Flank", "Rear", "Front"])]
     public Positional DesiredPositional = Positional.Any;
