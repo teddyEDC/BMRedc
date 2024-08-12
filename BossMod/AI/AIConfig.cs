@@ -12,7 +12,7 @@ sealed class AIConfig : ConfigNode
     [PropertyDisplay("Draw UI")]
     public bool DrawUI = true;
 
-    [PropertyDisplay("Focus target leader")]
+    [PropertyDisplay("Focus target master")]
     public bool FocusTargetLeader = true;
 
     [PropertyDisplay("Broadcast keypresses to other windows")]
@@ -38,6 +38,9 @@ sealed class AIConfig : ConfigNode
 
     [PropertyDisplay("Follow target")]
     public bool FollowTarget = false;
+
+    [PropertyDisplay($"Override positional")]
+    public bool OverridePositional = true;
 
     [PropertyDisplay("Desired positional when following target")]
     [PropertyCombo(["Any", "Flank", "Rear", "Front"])]

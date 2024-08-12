@@ -94,11 +94,7 @@ public abstract class RotationModule(RotationModuleManager manager, Actor player
     public virtual string DescribeState() => "";
 
     // utility to check action/trait unlocks
-    public bool ActionUnlocked(ActionID action)
-    {
-        var def = ActionDefinitions.Instance[action];
-        return def != null && def.AllowedClasses[(int)Player.Class] && Player.Level >= def.MinLevel && (ActionDefinitions.Instance.UnlockCheck?.Invoke(def.UnlockLink) ?? true);
-    }
+    public bool ActionUnlocked(ActionID action) => ActionDefinitions.Instance[action]?.IsUnlocked(World, Player) ?? false;
 
     public bool TraitUnlocked(uint id)
     {
@@ -113,7 +109,7 @@ public abstract class RotationModule(RotationModuleManager manager, Actor player
     protected Actor? ResolveTargetOverride(in StrategyValue strategy) => Manager.ResolveTargetOverride(strategy);
 
     // TODO: reconsider...
-    protected unsafe T GetGauge<T>() where T : unmanaged
+    public unsafe T GetGauge<T>() where T : unmanaged
     {
         T res = default;
         ((ulong*)&res)[1] = World.Client.GaugePayload.Low;
