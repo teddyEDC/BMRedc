@@ -61,15 +61,10 @@ class ImpactArenaChange(BossModule module) : BossComponent(module)
             }
         }
     }
-
-    public override void Update()
+    public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        var player = Module.Raid.Player()!;
         if (active)
-            if (GhostlyGuise.IsGhostly(player))
-                Arena.Bounds = D083Träumerei.DefaultBounds;
-            else
-                Module.Arena.Bounds = D083Träumerei.CrossBounds;
+            Arena.Bounds = GhostlyGuise.IsGhostly(pc) ? D083Träumerei.DefaultBounds : D083Träumerei.CrossBounds;
     }
 }
 
