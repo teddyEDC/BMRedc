@@ -192,6 +192,7 @@ public sealed class Plugin : IDalamudPlugin
         currentConfig.ArenaPlayerGeneric = defaultConfig.ArenaPlayerGeneric;
         currentConfig.ArenaVulnerable = defaultConfig.ArenaVulnerable;
         currentConfig.ArenaFutureVulnerable = defaultConfig.ArenaFutureVulnerable;
+        currentConfig.ArenaMeleeRangeIndicator = defaultConfig.ArenaMeleeRangeIndicator;
         currentConfig.ArenaOther1 = defaultConfig.ArenaOther1;
         currentConfig.ArenaOther2 = defaultConfig.ArenaOther2;
         currentConfig.Shadows = defaultConfig.Shadows;

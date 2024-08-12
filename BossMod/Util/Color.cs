@@ -67,6 +67,7 @@ public static class Colors
     public static uint PlayerGeneric => _config.ArenaPlayerGeneric.ABGR;
     public static uint Vulnerable => _config.ArenaVulnerable.ABGR;
     public static uint FutureVulnerable => _config.ArenaFutureVulnerable.ABGR;
+    public static uint MeleeRangeIndicator => _config.ArenaMeleeRangeIndicator.ABGR;
     public static uint Other1 => _config.ArenaOther1.ABGR;
     public static uint Other2 => _config.ArenaOther2.ABGR;
     public static uint Shadows => _config.Shadows.ABGR;

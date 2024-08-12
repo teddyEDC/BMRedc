@@ -44,6 +44,8 @@ public sealed class ColorConfig : ConfigNode
 
     [PropertyDisplay("Arena: future vulnerable")]
     public Color ArenaFutureVulnerable = new(0x80ff00ff);
+    [PropertyDisplay("Arena: melee range indicator")]
+    public Color ArenaMeleeRangeIndicator = new(0xffff0000);
     [PropertyDisplay("Arena: other 1")]
     public Color ArenaOther1 = new(0xffff0080);
     [PropertyDisplay("Arena: other 2")]
