@@ -97,7 +97,7 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
         // TODO: think how to improve this, current implementation works, but isn't particularly good - e.g. nearby players tend to move to same spot, turn around, etc.
         // ideally we should provide per-mechanic spread spots, but for simple cases we should try to let melee spread close and healers/rdd spread far from main target...
         foreach (var spreadFrom in ActiveSpreads.Where(s => s.Target != actor))
-            hints.AddForbiddenZone(ShapeDistance.Circle(spreadFrom.Target.Position, spreadFrom.Radius), spreadFrom.Activation);
+            hints.AddForbiddenZone(ShapeDistance.Circle(spreadFrom.Target.Position, spreadFrom.Radius + 0.25f), spreadFrom.Activation);
 
         foreach (var avoid in ActiveStacks.Where(s => s.Target != actor && (s.ForbiddenPlayers[slot] || !s.IsInside(actor) && (s.CorrectAmountInside(Module) || s.TooManyInside(Module)) || s.IsInside(actor) && s.TooManyInside(Module))))
             hints.AddForbiddenZone(ShapeDistance.Circle(avoid.Target.Position, avoid.Radius), avoid.Activation);
@@ -121,7 +121,7 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
             // TODO: handle multi stacks better...
             var closestStack = ActiveStacks.Where(s => s.InsufficientAmountInside(Module) && !s.ForbiddenPlayers[slot]).MinBy(s => (s.Target.Position - actor.Position).LengthSq());
             if (closestStack.Target != null)
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestStack.Target.Position, closestStack.Radius), closestStack.Activation);
+                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestStack.Target.Position, closestStack.Radius - 0.25f), closestStack.Activation);
         }
 
         if (RaidwideOnResolve)
