@@ -20,12 +20,12 @@ sealed class AIManager : IDisposable
     public WorldState WorldState => Autorot.Bossmods.WorldState;
     public float ForceMovementIn => Beh?.ForceMovementIn ?? float.MaxValue;
 
-    public AIManager(RotationModuleManager autorot, ActionManagerEx amex)
+    public AIManager(RotationModuleManager autorot, ActionManagerEx amex, MovementOverride movement)
     {
         Instance = this;
         _wndAI = new AIManagementWindow(this);
         Autorot = autorot;
-        Controller = new(amex);
+        Controller = new(amex, movement);
         _config = Service.Config.Get<AIConfig>();
         Service.ChatGui.ChatMessage += OnChatMessage;
         Service.CommandManager.AddHandler("/bmrai", new Dalamud.Game.Command.CommandInfo(OnCommand) { HelpMessage = "Toggle AI mode" });
@@ -55,7 +55,7 @@ sealed class AIManager : IDisposable
             Beh.Execute(player, master);
         else
             Controller.Clear();
-        Controller.Update(player);
+        Controller.Update(player, Autorot.Hints);
     }
 
     public void SwitchToIdle()
