@@ -23,7 +23,7 @@ public enum AID : uint
 
     QuarantineVisual = 36384, // Boss->self, 3.0s cast, single-target
     Quarantine = 36386, // Helper->players, no cast, range 6 circle, stack
-    Disinfection = 36385, // Helper->player, no cast, range 6 circle, tank buster cleave
+    Disinfection = 36385, // Helper->player, no cast, range 6 circle, tankbuster cleave
 
     Cytolysis = 36387, // Boss->self, 5.0s cast, range 40 circle
 }
