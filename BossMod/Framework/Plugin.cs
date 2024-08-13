@@ -21,6 +21,7 @@ public sealed class Plugin : IDalamudPlugin
     private readonly AIHints _hints;
     private readonly BossModuleManager _bossmod;
     private readonly AIHintsBuilder _hintsBuilder;
+    private readonly MovementOverride _movementOverride;
     private readonly ActionManagerEx _amex;
     private readonly WorldStateGameSync _wsSync;
     private readonly RotationModuleManager _rotation;
@@ -60,7 +61,6 @@ public sealed class Plugin : IDalamudPlugin
         MultiboxUnlock.Exec();
         Network.IDScramble.Initialize();
         Camera.Instance = new();
-        MovementOverride.Instance = new();
 
         Service.Config.Initialize();
         Service.Config.LoadFromFile(dalamud.ConfigFile);
@@ -78,12 +78,13 @@ public sealed class Plugin : IDalamudPlugin
         _hints = new();
         _bossmod = new(_ws);
         _hintsBuilder = new(_ws, _bossmod);
-        _amex = new(_ws, _hints);
+        _movementOverride = new();
+        _amex = new(_ws, _hints, _movementOverride);
         _wsSync = new(_ws, _amex);
         _rotation = new(_rotationDB, _bossmod, _hints);
-        _ai = new(_rotation, _amex);
+        _ai = new(_rotation, _amex, _movementOverride);
         _broadcast = new();
-        _ipc = new(_rotation, _amex);
+        _ipc = new(_rotation, _amex, _movementOverride);
         _dtr = new(_rotation, _ai);
 
         _configUI = new(Service.Config, _ws, _rotationDB);
@@ -115,6 +116,7 @@ public sealed class Plugin : IDalamudPlugin
         _rotation.Dispose();
         _wsSync.Dispose();
         _amex.Dispose();
+        _movementOverride.Dispose();
         _hintsBuilder.Dispose();
         _bossmod.Dispose();
         _dtr.Dispose();
@@ -246,8 +248,8 @@ public sealed class Plugin : IDalamudPlugin
         _bossmod.Update();
         _hintsBuilder.Update(_hints, PartyState.PlayerSlot);
         _amex.QueueManualActions();
-        var userPreventingCast = _amex.InputOverride.IsMoveRequested() && !_amex.Config.PreventMovingWhileCasting;
-        _rotation.Update(_amex.AnimationLockDelayEstimate, userPreventingCast ? 0 : _ai.ForceMovementIn);
+        var userPreventingCast = _movementOverride.IsMoveRequested() && !_amex.Config.PreventMovingWhileCasting;
+        _rotation.Update(_amex.AnimationLockDelayEstimate, userPreventingCast ? 0 : _ai.ForceMovementIn, _movementOverride.IsMoving());
         _ai.Update();
         _broadcast.Update();
         _amex.FinishActionGather();
@@ -274,6 +276,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private unsafe void ExecuteHints()
     {
+        _movementOverride.DesiredDirection = _hints.ForcedMovement;
         // update forced target, if needed (TODO: move outside maybe?)
         if (_hints.ForcedTarget != null)
         {

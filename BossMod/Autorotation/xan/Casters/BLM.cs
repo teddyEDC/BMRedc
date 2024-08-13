@@ -2,6 +2,7 @@
 using FFXIVClientStructs.FFXIV.Client.Game.Gauge;
 
 namespace BossMod.Autorotation.xan;
+
 public sealed class BLM(RotationModuleManager manager, Actor player) : Castxan<AID, TraitID>(manager, player)
 {
     public static RotationModuleDefinition Definition()
@@ -150,8 +151,10 @@ public sealed class BLM(RotationModuleManager manager, Actor player) : Castxan<A
         {
             if (Unlocked(TraitID.UmbralHeart))
                 FirePhaseAOE(strategy);
-            else
+            else if (Unlocked(AID.Fire2)) // loll
                 FireAOELowLevel(strategy, primaryTarget);
+            else
+                IceAOELowLevel(strategy, primaryTarget);
         }
         else
             FirePhaseST(strategy, primaryTarget);
@@ -262,7 +265,7 @@ public sealed class BLM(RotationModuleManager manager, Actor player) : Castxan<A
 
         if (MP >= 3000)
             PushGCD(AID.Fire2, BestAOETarget);
-        else if (MP >= 800)
+        else if (MP >= 800 && Unlocked(AID.Flare))
             PushGCD(AID.Flare, BestAOETarget);
         else
         {
@@ -275,7 +278,7 @@ public sealed class BLM(RotationModuleManager manager, Actor player) : Castxan<A
 
     private void IcePhase(StrategyValues strategy, Actor? primaryTarget)
     {
-        if (NumAOETargets > 2)
+        if (NumAOETargets > 2 && Unlocked(AID.Blizzard2))
         {
             if (Unlocked(TraitID.UmbralHeart))
                 IcePhaseAOE(strategy, primaryTarget);
