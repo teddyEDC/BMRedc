@@ -7,7 +7,7 @@ namespace BossMod;
 public sealed class AIHintsBuilder : IDisposable
 {
     private const float RaidwideSize = 30;
-
+    private const float XAxisModifier = 0.5f;
     private readonly WorldState _ws;
     private readonly BossModuleManager _bmm;
     private readonly EventSubscriptions _subscriptions;
@@ -89,16 +89,16 @@ public sealed class AIHintsBuilder : IDisposable
         AOEShape? shape = data.CastType switch
         {
             2 => new AOEShapeCircle(data.EffectRange), // used for some point-blank aoes and enemy location-targeted - does not add caster hitbox
-            3 => new AOEShapeCone(data.EffectRange + actor.HitboxRadius, DetermineConeAngle(data) * 0.5f),
-            4 => new AOEShapeRect(data.EffectRange + actor.HitboxRadius, data.XAxisModifier * 0.5f),
-            5 => new AOEShapeCircle(data.EffectRange + actor.HitboxRadius),
+            3 => new AOEShapeCone(data.EffectRange, DetermineConeAngle(data) * XAxisModifier),
+            4 => new AOEShapeRect(data.EffectRange, data.XAxisModifier * XAxisModifier),
+            5 => new AOEShapeCircle(data.EffectRange),
             //6 => ???
             //7 => new AOEShapeCircle(data.EffectRange), - used for player ground-targeted circles a-la asylum
-            //8 => charge rect
-            //10 => new AOEShapeDonut(actor.HitboxRadius, data.EffectRange), // TODO: find a way to determine inner radius (omen examples: 28762 - 4/40 - gl_sircle_4004bp1)
-            //11 => cross == 12 + another 12 rotated 90 degrees
-            12 => new AOEShapeRect(data.EffectRange, data.XAxisModifier * 0.5f),
-            13 => new AOEShapeCone(data.EffectRange, DetermineConeAngle(data) * 0.5f),
+            8 => new AOEShapeRect((actor.CastInfo!.LocXZ - actor.Position).Length(), data.XAxisModifier * XAxisModifier),
+            10 => new AOEShapeDonut(3, data.EffectRange), // TODO: find a way to determine inner radius (omen examples: 28762 - 4/40 - gl_sircle_4004bp1)
+            11 => new AOEShapeCross(data.EffectRange, data.XAxisModifier * XAxisModifier),
+            12 => new AOEShapeRect(data.EffectRange, data.XAxisModifier * XAxisModifier),
+            13 => new AOEShapeCone(data.EffectRange, DetermineConeAngle(data) * XAxisModifier),
             _ => null
         };
         if (shape == null)
