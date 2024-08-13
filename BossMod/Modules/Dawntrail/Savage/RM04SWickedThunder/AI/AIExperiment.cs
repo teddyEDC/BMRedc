@@ -1,7 +1,7 @@
 ﻿#if DEBUG
 using BossMod.Autorotation;
 
-namespace BossMod.Dawntrail.Savage.RM04SWickedThunder.AI;
+namespace BossMod.Dawntrail.Savage.M04SWickedThunder.AI;
 
 sealed class AIExperiment(RotationModuleManager manager, Actor player) : RotationModule(manager, player)
 {
@@ -11,7 +11,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
 
     public static RotationModuleDefinition Definition()
     {
-        var res = new RotationModuleDefinition("AI Experiment", "Experimental encounter-specific rotation", "veyn", RotationModuleQuality.WIP, new(~1ul), 100, 1, typeof(RM04SWickedThunder));
+        var res = new RotationModuleDefinition("AI Experiment", "Experimental encounter-specific rotation", "veyn", RotationModuleQuality.WIP, new(~1ul), 100, 1, typeof(M04SWickedThunder));
         res.Define(Track.ElectrifyingWitchHunt).As<ElectrifyingWitchHuntStrategy>("ElectrifyingWitchHunt", "EWH")
             .AddOption(ElectrifyingWitchHuntStrategy.None, "None", "Do nothing")
             .AddOption(ElectrifyingWitchHuntStrategy.NWNear, "NWNear", "NW prefer near (MT spot)");
@@ -24,7 +24,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
 
     public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, float forceMovementIn, bool isMoving)
     {
-        if (Manager.Bossmods.ActiveModule is not RM04SWickedThunder module)
+        if (Manager.Bossmods.ActiveModule is not M04SWickedThunder module)
             return;
 
         var ewh = strategy.Option(Track.ElectrifyingWitchHunt).As<ElectrifyingWitchHuntStrategy>();
@@ -62,9 +62,9 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
     private float Speed() => Player.FindStatus(50) != null ? 7.8f : 6;
 
     // default spot: max melee at z=-5
-    private WPos ElectrifyingWitchHuntInitialPosition(RM04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy) => module.Center - new WDir(5.9f, 5);
+    private WPos ElectrifyingWitchHuntInitialPosition(M04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy) => module.Center - new WDir(5.9f, 5);
 
-    private WPos ElectrifyingWitchHuntFirstDodge(RM04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy)
+    private WPos ElectrifyingWitchHuntFirstDodge(M04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy)
     {
         var burst = module.FindComponent<ElectrifyingWitchHuntBurst>();
         var electray = module.FindComponent<Electray>();
@@ -84,7 +84,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
         return ElectrifyingWitchHuntInitialPosition(module, strategy);
     }
 
-    private WPos ElectrifyingWitchHuntSecondDodge(RM04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy)
+    private WPos ElectrifyingWitchHuntSecondDodge(M04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy)
     {
         var burst = module.FindComponent<ElectrifyingWitchHuntBurst>();
         var resolve = module.FindComponent<ElectrifyingWitchHuntResolve>();
@@ -104,9 +104,9 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
         return ElectrifyingWitchHuntInitialPosition(module, strategy);
     }
 
-    private WPos WNWitchHuntInitialPosition(RM04SWickedThunder module) => module.Center - new WDir(0, 7);
+    private WPos WNWitchHuntInitialPosition(M04SWickedThunder module) => module.Center - new WDir(0, 7);
 
-    private WPos WNWitchHuntDodge(RM04SWickedThunder module, WNWitchHuntStrategy strategy, int nextBait)
+    private WPos WNWitchHuntDodge(M04SWickedThunder module, WNWitchHuntStrategy strategy, int nextBait)
     {
         var bait = module.FindComponent<WideningNarrowingWitchHuntBait>()?.CurMechanic ?? WideningNarrowingWitchHuntBait.Mechanic.None;
         var aoe = module.FindComponent<WideningNarrowingWitchHunt>();
