@@ -63,9 +63,9 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
     private float Speed() => Player.FindStatus(50) != null ? 7.8f : 6;
 
     // default spot: max melee at z=-5
-    private WPos ElectrifyingWitchHuntInitialPosition(RM04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy) => module.Center - new WDir(5.9f, 5);
+    private WPos ElectrifyingWitchHuntInitialPosition(M04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy) => module.Center - new WDir(5.9f, 5);
 
-    private WPos ElectrifyingWitchHuntPreTeleport(RM04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy)
+    private WPos ElectrifyingWitchHuntPreTeleport(M04SWickedThunder module, ElectrifyingWitchHuntStrategy strategy)
     {
         var off = Player.Position - module.Center;
         var distSq = off.LengthSq();

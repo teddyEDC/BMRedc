@@ -30,8 +30,8 @@ class IntersectionTest : TestWindow
         ImGui.TextUnformatted($"Intersect: {intersect}");
 
         _arena.Begin(default);
-        _arena.AddCone(default, _coneRadius, _coneDirDeg.Degrees(), _coneHalfAngleDeg.Degrees(), ArenaColor.Safe);
-        _arena.AddCircle(circleCenter.ToWPos(), _circleRadius, ArenaColor.Danger);
-        _arena.End();
+        _arena.AddCone(default, _coneRadius, _coneDirDeg.Degrees(), _coneHalfAngleDeg.Degrees(), Colors.Safe);
+        _arena.AddCircle(circleCenter.ToWPos(), _circleRadius, Colors.Danger);
+        MiniArena.End();
     }
 }
