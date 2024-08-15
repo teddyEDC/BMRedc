@@ -116,23 +116,23 @@ public class GenericWildCharge(BossModule module, float halfWidth, ActionID aid 
         => Raid.WithSlot().Any(ia => (PlayerRoles[ia.Item1] == role1 || PlayerRoles[ia.Item1] == role2) && InAOE(aoe, ia.Item2) && (ia.Item2.Position - aoe.origin).LengthSq() < thresholdSq);
 }
 
-// simple line stack where target is determined by 'target select' cast
-public class SimpleLineStack(BossModule module, float halfWidth, float fixedLength, ActionID aidTargetSelect, ActionID aidResolve, float activationDelay) : GenericWildCharge(module, halfWidth, aidResolve, fixedLength)
-{
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
-    {
-        if (spell.Action == aidTargetSelect)
-        {
-            Source = Module.PrimaryActor;
-            Activation = WorldState.FutureTime(activationDelay);
-            foreach (var (i, p) in Raid.WithSlot(true))
-                PlayerRoles[i] = p.InstanceID == spell.MainTargetID ? PlayerRole.Target : PlayerRole.Share;
-        }
-        else if (spell.Action == WatchedAction)
-        {
-            ++NumCasts;
-            Source = null;
-            Array.Fill(PlayerRoles, PlayerRole.Ignore);
-        }
-    }
-}
+// // simple line stack where target is determined by 'target select' cast
+// public class SimpleLineStack(BossModule module, float halfWidth, float fixedLength, ActionID aidTargetSelect, ActionID aidResolve, float activationDelay) : GenericWildCharge(module, halfWidth, aidResolve, fixedLength)
+// {
+//     public override void OnEventCast(Actor caster, ActorCastEvent spell)
+//     {
+//         if (spell.Action == aidTargetSelect)
+//         {
+//             Source = Module.PrimaryActor;
+//             Activation = WorldState.FutureTime(activationDelay);
+//             foreach (var (i, p) in Raid.WithSlot(true))
+//                 PlayerRoles[i] = p.InstanceID == spell.MainTargetID ? PlayerRole.Target : PlayerRole.Share;
+//         }
+//         else if (spell.Action == WatchedAction)
+//         {
+//             ++NumCasts;
+//             Source = null;
+//             Array.Fill(PlayerRoles, PlayerRole.Ignore);
+//         }
+//     }
+// }
