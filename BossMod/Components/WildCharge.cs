@@ -123,7 +123,7 @@ public class GenericWildCharge(BossModule module, float halfWidth, ActionID aid 
 //     {
 //         if (spell.Action == aidTargetSelect)
 //         {
-//             Source = Module.PrimaryActor;
+//             Source = caster;
 //             Activation = WorldState.FutureTime(activationDelay);
 //             foreach (var (i, p) in Raid.WithSlot(true))
 //                 PlayerRoles[i] = p.InstanceID == spell.MainTargetID ? PlayerRole.Target : PlayerRole.Share;
