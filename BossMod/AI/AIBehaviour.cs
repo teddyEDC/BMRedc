@@ -40,7 +40,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         var forbidActions = _config.ForbidActions || ctrl.IsMounted || _afkMode || autorot.Preset != null && autorot.Preset != AIPreset;
 
         Targeting target = new();
-        if (!forbidActions && autorot.ActiveModules != null)
+        if (!forbidActions && autorot.ActiveModules != null && autorot.ActiveModules.Count > 0)
         {
             target = SelectPrimaryTarget(player, master);
             if (target.Target != null || TargetIsForbidden(player.TargetID))
