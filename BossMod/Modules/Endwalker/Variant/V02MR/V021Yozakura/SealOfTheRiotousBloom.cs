@@ -8,8 +8,6 @@ class SealOfRiotousBloom(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(9);
     private static readonly AOEShapeDonut donut = new(5, 60);
     private static readonly AOEShapeCone cone = new(70, 22.5f.Degrees());
-    private static readonly Angle[] anglesIntercardinals = [-45.003f.Degrees(), 44.998f.Degrees(), 134.999f.Degrees(), -135.005f.Degrees()];
-    private static readonly Angle[] anglesCardinals = [-90.004f.Degrees(), -0.003f.Degrees(), 180.Degrees(), 89.999f.Degrees()];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes.Take(5);
 
@@ -46,11 +44,11 @@ class SealOfRiotousBloom(BossModule module) : Components.GenericAOEs(module)
                 break;
 
             case Element.Thunder:
-                AddConeAOEs(anglesCardinals, activation);
+                AddConeAOEs(Helpers.AnglesCardinals, activation);
                 break;
 
             case Element.Water:
-                AddConeAOEs(anglesIntercardinals, activation);
+                AddConeAOEs(Helpers.AnglesIntercardinals, activation);
                 break;
 
             case Element.Wind:
