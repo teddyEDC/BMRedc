@@ -5,7 +5,7 @@ class SeasonsOfTheFleeting(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCone cone = new(70, 22.5f.Degrees());
     private static readonly AOEShapeRect rect = new(46, 2.5f);
     private readonly List<AOEInstance> _aoes = [];
-    private HashSet<AID> castEnd = [AID.SeasonOfEarth, AID.SeasonOfWater, AID.SeasonOfFire, AID.SeasonOfLightning];
+    private readonly HashSet<AID> castEnd = [AID.SeasonOfEarth, AID.SeasonOfWater, AID.SeasonOfFire, AID.SeasonOfLightning];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
