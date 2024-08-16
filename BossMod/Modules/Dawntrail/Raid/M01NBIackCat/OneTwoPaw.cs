@@ -8,6 +8,11 @@ class OneTwoPaw(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCone cone = new(60, 90.Degrees());
     private static readonly List<Angle> angles = [89.999f.Degrees(), -90.004f.Degrees()];
     private Actor? helper;
+    private static readonly HashSet<AID> oneTwoPaw = [AID.OneTwoPaw1, AID.OneTwoPaw2, AID.OneTwoPaw3, AID.OneTwoPaw4];
+    private static readonly HashSet<AID> leapingVisuals = [AID.LeapingBlackCatCrossingVisual1, AID.LeapingBlackCatCrossingVisual2,
+    AID.LeapingBlackCatCrossingVisual3, AID.LeapingBlackCatCrossingVisual4];
+    private static readonly HashSet<AID> allOneTwoPaws = [.. oneTwoPaw, .. new HashSet<AID> { AID.LeapingOneTwoPaw1,
+    AID.LeapingOneTwoPaw2, AID.LeapingOneTwoPaw3, AID.LeapingOneTwoPaw4}];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -28,15 +33,13 @@ class OneTwoPaw(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
+        if (oneTwoPaw.Contains((AID)spell.Action.ID))
+        {
+            _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
+            _aoes.SortBy(x => x.Activation);
+        }
         switch ((AID)spell.Action.ID)
         {
-            case AID.OneTwoPaw1:
-            case AID.OneTwoPaw2:
-            case AID.OneTwoPaw3:
-            case AID.OneTwoPaw4:
-                _aoes.Add(new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
-                _aoes.SortBy(x => x.Activation);
-                break;
             case AID.LeapingOneTwoPawVisual1:
             case AID.LeapingOneTwoPawVisual3:
                 _currentPattern = Pattern.EastWest;
@@ -51,30 +54,14 @@ class OneTwoPaw(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        switch ((AID)spell.Action.ID)
+        if (leapingVisuals.Contains((AID)spell.Action.ID))
+            helper = null;
+
+        else if (_aoes.Count > 0 && allOneTwoPaws.Contains((AID)spell.Action.ID))
         {
-            case AID.LeapingBlackCatCrossingVisual1:
-            case AID.LeapingBlackCatCrossingVisual2:
-            case AID.LeapingBlackCatCrossingVisual3:
-            case AID.LeapingBlackCatCrossingVisual4:
-                helper = null;
-                break;
+            _currentPattern = Pattern.None;
+            _aoes.RemoveAt(0);
         }
-        if (_aoes.Count > 0)
-            switch ((AID)spell.Action.ID)
-            {
-                case AID.OneTwoPaw1:
-                case AID.OneTwoPaw2:
-                case AID.OneTwoPaw3:
-                case AID.OneTwoPaw4:
-                case AID.LeapingOneTwoPaw1:
-                case AID.LeapingOneTwoPaw2:
-                case AID.LeapingOneTwoPaw3:
-                case AID.LeapingOneTwoPaw4:
-                    _currentPattern = Pattern.None;
-                    _aoes.RemoveAt(0);
-                    break;
-            }
     }
 
     private void InitIfReady()
