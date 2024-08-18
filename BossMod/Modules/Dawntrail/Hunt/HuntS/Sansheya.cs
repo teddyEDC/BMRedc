@@ -110,6 +110,8 @@ class TwinscorchedHaloVeil(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeDonut donut = new(10, 40);
     private static readonly AOEShapeCircle circle = new(15);
     private readonly List<AOEInstance> _aoes = [];
+    private static readonly HashSet<AID> castEnd = [AID.HaloOfHeat2, AID.VeilOfHeat2, AID.ScorchingLeft1,
+    AID.ScorchingLeft2, AID.ScorchingRight1, AID.ScorchingRight2];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -149,19 +151,8 @@ class TwinscorchedHaloVeil(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count == 0)
-            return;
-        switch ((AID)spell.Action.ID)
-        {
-            case AID.HaloOfHeat2:
-            case AID.VeilOfHeat2:
-            case AID.ScorchingLeft1:
-            case AID.ScorchingLeft2:
-            case AID.ScorchingRight1:
-            case AID.ScorchingRight2:
-                _aoes.RemoveAt(0);
-                break;
-        }
+        if (_aoes.Count > 0 && castEnd.Contains((AID)spell.Action.ID))
+            _aoes.RemoveAt(0);
     }
 }
 

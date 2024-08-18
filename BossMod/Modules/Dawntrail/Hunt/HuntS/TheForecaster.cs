@@ -53,6 +53,8 @@ class ForecastClimateChange(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(10);
     private static readonly AOEShapeCross cross = new(40, 2.5f);
     private readonly List<AOEInstance> _aoes = [];
+    private static readonly HashSet<AID> castEnd = [AID.WeatherChannelFirstCircle, AID.WeatherChannelFirstCross, AID.WeatherChannelFirstDonut,
+    AID.WeatherChannelFirstRect, AID.WeatherChannelRestCircle, AID.WeatherChannelRestDonut, AID.WeatherChannelRestRect, AID.WeatherChannelRestCross];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -115,7 +117,7 @@ class ForecastClimateChange(BossModule module) : Components.GenericAOEs(module)
         currentClimateChange = ClimateChange.None;
     }
 
-    private AOEShape GetShapeForForecast(Forecast forecast, int index)
+    private static AOEShape GetShapeForForecast(Forecast forecast, int index)
     {
         AOEShape[] hgwShapes = [circle, rect, donut];
         AOEShape[] gwhShapes = [rect, donut, circle];
@@ -146,21 +148,8 @@ class ForecastClimateChange(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count == 0)
-            return;
-        switch ((AID)spell.Action.ID)
-        {
-            case AID.WeatherChannelFirstCircle:
-            case AID.WeatherChannelFirstCross:
-            case AID.WeatherChannelFirstDonut:
-            case AID.WeatherChannelFirstRect:
-            case AID.WeatherChannelRestCircle:
-            case AID.WeatherChannelRestDonut:
-            case AID.WeatherChannelRestRect:
-            case AID.WeatherChannelRestCross:
-                _aoes.RemoveAt(0);
-                break;
-        }
+        if (_aoes.Count > 0 && castEnd.Contains((AID)spell.Action.ID))
+            _aoes.RemoveAt(0);
     }
 }
 

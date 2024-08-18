@@ -2,7 +2,7 @@ namespace BossMod.Dawntrail.Raid.M01NBlackCat;
 
 class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
 {
-    public readonly List<AOEInstance> AOEs = [];
+    private readonly List<AOEInstance> _aoes = [];
     private bool sorted;
     private static readonly AOEShapeCircle circle = new(11);
     private static readonly HashSet<AID> chargeTelegraphs = [AID.PredaceousPounceTelegraphCharge1, AID.PredaceousPounceTelegraphCharge2,
@@ -15,13 +15,13 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (AOEs.Count > 0)
+        if (_aoes.Count > 0)
         {
-            var aoeCount = Math.Clamp(AOEs.Count, 0, 2);
-            for (var i = aoeCount; i < AOEs.Count; i++)
-                yield return AOEs[i];
+            var aoeCount = Math.Clamp(_aoes.Count, 0, 2);
+            for (var i = aoeCount; i < _aoes.Count; i++)
+                yield return _aoes[i];
             for (var i = 0; i < aoeCount; i++)
-                yield return AOEs[i] with { Color = Colors.Danger };
+                yield return _aoes[i] with { Color = Colors.Danger };
         }
     }
 
@@ -30,19 +30,15 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
         if (chargeTelegraphs.Contains((AID)spell.Action.ID))
         {
             var dir = spell.LocXZ - caster.Position;
-            AOEs.Add(new(new AOEShapeRect(dir.Length(), 3), caster.Position, Angle.FromDirection(dir), Module.CastFinishAt(spell)));
+            _aoes.Add(new(new AOEShapeRect(dir.Length(), 3), caster.Position, Angle.FromDirection(dir), Module.CastFinishAt(spell)));
         }
         else if (circleTelegraphs.Contains((AID)spell.Action.ID))
-            AOEs.Add(new(circle, caster.Position, default, Module.CastFinishAt(spell)));
-        if (AOEs.Count == 12 && !sorted)
+            _aoes.Add(new(circle, caster.Position, default, Module.CastFinishAt(spell)));
+        if (_aoes.Count == 12 && !sorted)
         {
-            AOEs.SortBy(x => x.Activation);
-            for (var i = 0; i < AOEs.Count; i++)
-            {
-                var aoe = AOEs[i];
-                aoe.Activation = Module.WorldState.FutureTime(13.5f + i * 0.5f);
-                AOEs[i] = aoe;
-            }
+            _aoes.SortBy(x => x.Activation);
+            for (var i = 0; i < _aoes.Count; i++)
+                _aoes[i] = new(_aoes[i].Shape, _aoes[i].Origin, _aoes[i].Rotation, Module.WorldState.FutureTime(13.5f + i * 0.5f));
             sorted = true;
         }
     }
@@ -52,8 +48,8 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
         if (castEnd.Contains((AID)spell.Action.ID))
         {
             ++NumCasts;
-            if (AOEs.Count > 0)
-                AOEs.RemoveAt(0);
+            if (_aoes.Count > 0)
+                _aoes.RemoveAt(0);
         }
     }
 }
