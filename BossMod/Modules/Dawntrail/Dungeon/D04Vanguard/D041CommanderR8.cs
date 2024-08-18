@@ -141,8 +141,8 @@ class RapidRotary(BossModule module) : Components.GenericAOEs(module)
         for (var i = 0; i < 3; i++)
         {
             var angle = initialAngle - i * a120;
-            _aoes.Add(new AOEInstance(shape1, Module.Center, angle, finishAt.AddSeconds(ActivationDelay + i * ActivationDelayIncrement)));
-            _aoes.Add(new AOEInstance(shape2, Module.Center, angle, finishAt.AddSeconds(ActivationDelay + i * ActivationDelayIncrement)));
+            _aoes.Add(new(shape1, Module.Center, angle, finishAt.AddSeconds(ActivationDelay + i * ActivationDelayIncrement)));
+            _aoes.Add(new(shape2, Module.Center, angle, finishAt.AddSeconds(ActivationDelay + i * ActivationDelayIncrement)));
         }
     }
 

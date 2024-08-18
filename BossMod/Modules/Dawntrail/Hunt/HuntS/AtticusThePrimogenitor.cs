@@ -64,9 +64,23 @@ class Brutality(BossModule module) : Components.CastHint(module, ActionID.MakeSp
 
 class BreathSequence(BossModule module) : Components.GenericAOEs(module)
 {
-    private List<AOEInstance> _aoes = [];
+    private readonly List<AOEInstance> _aoes = [];
     private static readonly Angle angle = 120.Degrees();
     private static readonly AOEShapeCone cone = new(40, 60.Degrees());
+    private static readonly HashSet<ushort> frontHead = new(
+        new[] { NPCYell.FrontHead1, NPCYell.FrontHead2, NPCYell.FrontHead3, NPCYell.FrontHead4,
+                NPCYell.FrontHead5, NPCYell.FrontHead6, NPCYell.FrontHead7, NPCYell.FrontHead8, NPCYell.FrontHead9, NPCYell.FrontHead10 }
+        .Select(x => (ushort)x));
+    private static readonly HashSet<ushort> leftHead = new(
+        new[] { NPCYell.LeftHead1, NPCYell.LeftHead2, NPCYell.LeftHead3, NPCYell.LeftHead4,
+                NPCYell.LeftHead5, NPCYell.LeftHead6, NPCYell.LeftHead7, NPCYell.LeftHead8, NPCYell.LeftHead9, NPCYell.LeftHead10 }
+        .Select(x => (ushort)x));
+    private static readonly HashSet<ushort> rightHead = new(
+        new[] { NPCYell.RightHead1, NPCYell.RightHead2, NPCYell.RightHead3, NPCYell.RightHead4,
+                NPCYell.RightHead5, NPCYell.RightHead6, NPCYell.RightHead7, NPCYell.RightHead8, NPCYell.RightHead9, NPCYell.RightHead10 }
+        .Select(x => (ushort)x));
+    private static readonly HashSet<AID> castEnd = [AID.BreathSequenceFirstFront, AID.BreathSequenceFirstLeft, AID.BreathSequenceFirstRight,
+               AID.BreathSequenceRestFront, AID.BreathSequenceRestLeft, AID.BreathSequenceRestRight];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -79,45 +93,12 @@ class BreathSequence(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorNpcYell(Actor actor, ushort id)
     {
         var activation = Module.WorldState.FutureTime(10.5f); // placeholder, gets replaced when sequence starts
-        switch (id)
-        {
-            case (ushort)NPCYell.FrontHead1:
-            case (ushort)NPCYell.FrontHead2:
-            case (ushort)NPCYell.FrontHead3:
-            case (ushort)NPCYell.FrontHead4:
-            case (ushort)NPCYell.FrontHead5:
-            case (ushort)NPCYell.FrontHead6:
-            case (ushort)NPCYell.FrontHead7:
-            case (ushort)NPCYell.FrontHead8:
-            case (ushort)NPCYell.FrontHead9:
-            case (ushort)NPCYell.FrontHead10:
-                _aoes.Add(new(cone, actor.Position, actor.Rotation, activation));
-                break;
-            case (ushort)NPCYell.LeftHead1:
-            case (ushort)NPCYell.LeftHead2:
-            case (ushort)NPCYell.LeftHead3:
-            case (ushort)NPCYell.LeftHead4:
-            case (ushort)NPCYell.LeftHead5:
-            case (ushort)NPCYell.LeftHead6:
-            case (ushort)NPCYell.LeftHead7:
-            case (ushort)NPCYell.LeftHead8:
-            case (ushort)NPCYell.LeftHead9:
-            case (ushort)NPCYell.LeftHead10:
-                _aoes.Add(new(cone, actor.Position, actor.Rotation + angle, activation));
-                break;
-            case (ushort)NPCYell.RightHead1:
-            case (ushort)NPCYell.RightHead2:
-            case (ushort)NPCYell.RightHead3:
-            case (ushort)NPCYell.RightHead4:
-            case (ushort)NPCYell.RightHead5:
-            case (ushort)NPCYell.RightHead6:
-            case (ushort)NPCYell.RightHead7:
-            case (ushort)NPCYell.RightHead8:
-            case (ushort)NPCYell.RightHead9:
-            case (ushort)NPCYell.RightHead10:
-                _aoes.Add(new(cone, actor.Position, actor.Rotation - angle, activation));
-                break;
-        }
+        if (frontHead.Contains(id))
+            _aoes.Add(new(cone, actor.Position, actor.Rotation, activation));
+        else if (leftHead.Contains(id))
+            _aoes.Add(new(cone, actor.Position, actor.Rotation + angle, activation));
+        else if (rightHead.Contains(id))
+            _aoes.Add(new(cone, actor.Position, actor.Rotation - angle, activation));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -128,43 +109,26 @@ class BreathSequence(BossModule module) : Components.GenericAOEs(module)
                 case AID.BreathSequenceFirstFront:
                 case AID.BreathSequenceFirstLeft:
                 case AID.BreathSequenceFirstRight:
-                    var updatedAOEs = new List<AOEInstance>();
                     for (var i = 0; i < _aoes.Count; i++)
-                    {
-                        var a = _aoes[i];
-                        var activationTime = 2.3f * i;
-                        var updatedAOE = new AOEInstance(a.Shape, a.Origin, a.Rotation, Module.CastFinishAt(spell, activationTime));
-                        updatedAOEs.Add(updatedAOE);
-                    }
-                    _aoes = updatedAOEs;
+                        _aoes[i] = new(_aoes[i].Shape, _aoes[i].Origin, _aoes[i].Rotation, Module.CastFinishAt(spell, 2.3f * i));
                     break;
             }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count > 0)
-            switch ((AID)spell.Action.ID)
-            {
-                case AID.BreathSequenceFirstFront:
-                case AID.BreathSequenceFirstLeft:
-                case AID.BreathSequenceFirstRight:
-                    _aoes.RemoveAt(0);
-                    break;
-            }
+        HandleAOERemoval((AID)spell.Action.ID);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count > 0)
-            switch ((AID)spell.Action.ID)
-            {
-                case AID.BreathSequenceRestFront:
-                case AID.BreathSequenceRestLeft:
-                case AID.BreathSequenceRestRight:
-                    _aoes.RemoveAt(0);
-                    break;
-            }
+        HandleAOERemoval((AID)spell.Action.ID);
+    }
+
+    private void HandleAOERemoval(AID actionID)
+    {
+        if (_aoes.Count > 0 && castEnd.Contains(actionID))
+            _aoes.RemoveAt(0);
     }
 }
 

@@ -179,6 +179,8 @@ class SoullessStreamFireBlizzardCombo(BossModule module) : Components.GenericAOE
     private static readonly AOEShapeDonut donut = new(6, 40);
     private static readonly AOEShapeCircle circle = new(15);
     private readonly List<AOEInstance> _aoes = [];
+    private static readonly HashSet<AID> castEnd = [AID.SoullessStream1, AID.SoullessStream2, AID.SoullessStream3, AID.SoullessStream4,
+    AID.BlizzardIV2, AID.BlizzardIV3, AID.BlizzardIV4, AID.FireIV2, AID.FireIV3, AID.FireIV4];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -212,23 +214,8 @@ class SoullessStreamFireBlizzardCombo(BossModule module) : Components.GenericAOE
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count == 0)
-            return;
-        switch ((AID)spell.Action.ID)
-        {
-            case AID.SoullessStream1:
-            case AID.SoullessStream2:
-            case AID.SoullessStream3:
-            case AID.SoullessStream4:
-            case AID.BlizzardIV2:
-            case AID.BlizzardIV3:
-            case AID.BlizzardIV4:
-            case AID.FireIV2:
-            case AID.FireIV3:
-            case AID.FireIV4:
-                _aoes.RemoveAt(0);
-                break;
-        }
+        if (_aoes.Count > 0 && castEnd.Contains((AID)spell.Action.ID))
+            _aoes.RemoveAt(0);
     }
 }
 
