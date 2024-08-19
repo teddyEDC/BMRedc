@@ -65,7 +65,7 @@ class FlameBreath(BossModule module) : Components.GenericAOEs(module)
         return (caster.Position - Module.Center).LengthSq() > 625;
     }
 
-    private WPos CalculatePosition(Actor caster)
+    private static WPos CalculatePosition(Actor caster)
     {
         var isIntercardinal = IsCasterIntercardinal(caster);
         var distance = isIntercardinal ? intercardinalDistance : 22;
