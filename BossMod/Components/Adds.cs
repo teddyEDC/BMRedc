@@ -21,7 +21,7 @@ public class AddsMulti(BossModule module, uint[] oids) : BossComponent(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actors(Actors, ArenaColor.Enemy);
+        Arena.Actors(Actors);
     }
 
     public override void OnActorCreated(Actor actor)

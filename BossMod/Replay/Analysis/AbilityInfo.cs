@@ -516,7 +516,7 @@ class AbilityInfo : CommonEnumInfo
 
         var data = _data.GetOrAdd(action.ID);
         data.CasterOIDs.Add(action.Source.OID);
-        if (action.MainTarget != null && action.MainTarget.Type is not ActorType.Player and not ActorType.DutySupport)
+        if (action.MainTarget != null && action.MainTarget.Type is not ActorType.Player and not ActorType.Buddy)
             data.TargetOIDs.Add(action.MainTarget.OID);
         data.SeenTargetSelf |= action.Source == action.MainTarget;
         data.SeenTargetOtherEnemy |= action.MainTarget != action.Source && action.MainTarget?.Type == ActorType.Enemy;
@@ -537,7 +537,7 @@ class AbilityInfo : CommonEnumInfo
 
         var data = _data.GetOrAdd(cast.ID);
         data.CasterOIDs.Add(caster.OID);
-        if (cast.Target != null && cast.Target.Type is not ActorType.Player and not ActorType.DutySupport)
+        if (cast.Target != null && cast.Target.Type is not ActorType.Player and not ActorType.Buddy)
             data.TargetOIDs.Add(cast.Target.OID);
         data.SeenTargetSelf |= caster == cast.Target;
         data.SeenTargetOtherEnemy |= cast.Target != caster && cast.Target?.Type == ActorType.Enemy;

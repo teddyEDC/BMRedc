@@ -150,8 +150,6 @@ public struct NavigationDecision
 
             var playerOrientationToTarget = (player.Position - targetPos.Value).Normalized().Dot(targetRot.ToDirection());
 
-            var playerOrientationToTarget = (player.Position - targetPos.Value).Normalized().Dot(targetRot.ToDirection());
-
             var inPositional = positional switch
             {
                 Positional.Rear => playerOrientationToTarget < -0.7071068f,
