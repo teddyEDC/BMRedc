@@ -18,7 +18,7 @@ public enum AID : uint
     FlameBreathVisual3 = 32552, // ClonedShieldDragon->self, no cast, single-target
     FlameBreath = 32864, // Helper->self, 3.5s cast, range 50 30-degree cone
     PiercingLaser = 32547, // Boss->self, 2.5s cast, range 40 width 5 rect
-    OrderRelay = 32545, // Boss->self, 8.0s cast, single-target
+    OrderRelay = 32545 // Boss->self, 8.0s cast, single-target
 }
 
 class FlameBreath(BossModule module) : Components.GenericAOEs(module)
@@ -41,16 +41,10 @@ class FlameBreath(BossModule module) : Components.GenericAOEs(module)
         {
             var activation = Module.WorldState.FutureTime(9.6f);
 
-            if (IsCasterFarFromCenter(caster))
-            {
-                var aoePosition = CalculatePosition(caster);
-                _aoes.Add(new(cone, aoePosition, caster.Rotation, activation));
-            }
+            if ((caster.Position - Module.Center).LengthSq() > 625)
+                _aoes.Add(new(cone, CalculatePosition(caster), caster.Rotation, activation));
             else
-            {
-                var roundedPosition = RoundPosition(caster.Position);
-                _aoes.Add(new(cone, roundedPosition, caster.Rotation, activation));
-            }
+                _aoes.Add(new(cone, RoundPosition(caster.Position), caster.Rotation, activation));
         }
     }
 
@@ -58,11 +52,6 @@ class FlameBreath(BossModule module) : Components.GenericAOEs(module)
     {
         if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.FlameBreath)
             _aoes.RemoveAt(0);
-    }
-
-    private bool IsCasterFarFromCenter(Actor caster)
-    {
-        return (caster.Position - Module.Center).LengthSq() > 625;
     }
 
     private static WPos CalculatePosition(Actor caster)
