@@ -112,7 +112,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
 
     private void AddSource(WDir direction, AOEShapeRect shape, Angle angle)
     {
-        _sources.Add(new Source(Module.Center + direction, 20, Activation, shape, angle, Kind.DirForward));
+        _sources.Add(new(Module.Center + direction, 20, Activation, shape, angle, Kind.DirForward));
     }
 
     private void AddSourceAndData(WDir direction, AOEShapeRect shape, Angle angle)
@@ -121,9 +121,9 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
         Data.Add((_sources.Last().Origin, angle));
     }
 
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
+    public override void Update()
     {
-        if ((AID)spell.Action.ID is AID.ExtrasensoryExpulsionNorthSouth or AID.ExtrasensoryExpulsionWestEast)
+        if (Data.Count > 0 && Module.WorldState.CurrentTime > Activation)
         {
             _sources.Clear();
             Data.Clear();

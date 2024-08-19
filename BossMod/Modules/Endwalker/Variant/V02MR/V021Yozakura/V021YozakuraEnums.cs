@@ -5,6 +5,7 @@ public enum OID : uint
     Boss = 0x3EDB, // R3.45
     ShishuYamabiko = 0x3F00, // R0.8
     MirroredYozakura = 0x3EDC, // R3.45
+    MudVoidzone = 0x1EB907, // R0.5
     MudBubble = 0x3EDD, // R4.0
     Kuromaru = 0x3EDF, // R0.4
     Shiromaru = 0x3EE0, // R0.4
@@ -64,14 +65,14 @@ public enum AID : uint
 
     //Left Rainy
     Bunshin = 33662, // Boss->self, 5.0s cast, single-target
-    Shadowflight = 33663, // Boss->self, 3.0s cast, single-target
-    ShadowflightAOE = 33664, // MirroredYozakura->self, 2.5s cast, range 10 width 6 rect
+    ShadowflightVisual = 33663, // Boss->self, 3.0s cast, single-target
+    Shadowflight = 33664, // MirroredYozakura->self, 2.5s cast, range 10 width 6 rect
     MudrainVisual = 33673, // Boss->self, 3.0s cast, single-target
     Mudrain = 33674, // Helper->location, 3.8s cast, range 5 circle
     IcebloomVisual = 33675, // Boss->self, 3.0s cast, single-target
     Icebloom = 33676, // Helper->location, 3.0s cast, range 6 circle
-    MudPie = 33677, // Boss->self, 3.0s cast, single-target
-    MudPieAOE = 33678, // MudBubble->self, 4.0s cast, range 60 width 6 rect
+    MudPieVisual = 33677, // Boss->self, 3.0s cast, single-target
+    MudPie = 33678, // MudBubble->self, 4.0s cast, range 60 width 6 rect
 
     //Middle Rope Pulled
     ArtOfTheFluff1 = 33693, // Shibamaru/Kuromaru->self, 6.5s cast, range 60 circle, gaze
@@ -90,8 +91,8 @@ public enum AID : uint
     LevinblossomLanceRest = 33690, // Helper->self, no cast, range 60 width 7 rect
 
     TatamiTrap = 33684, // Boss->self, 3.0s cast, single-target
-    TatamiGaeshi = 33685, // Boss->self, 3.0s cast, single-target
-    TatamiGaeshiAOE = 33686, // Helper->self, 3.8s cast, range 40 width 10 rect
+    TatamiGaeshiVisual = 33685, // Boss->self, 3.0s cast, single-target
+    TatamiGaeshi = 33686, // Helper->self, 3.8s cast, range 40 width 10 rect
 
     //Right No Dogu
     RockMebuki = 33697, // Boss->self, 3.0s cast, single-target

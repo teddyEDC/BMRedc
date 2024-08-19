@@ -16,15 +16,15 @@ class V021YozakuraStates : StateMachineBuilder
             //Left Rainy
             .ActivateOnEnter<Mudrain>()
             .ActivateOnEnter<Icebloom>()
-            .ActivateOnEnter<ShadowflightAOE>()
-            .ActivateOnEnter<MudPieAOE>()
+            .ActivateOnEnter<Shadowflight>()
+            .ActivateOnEnter<MudPie>()
             //Middle Rope Pulled
             .ActivateOnEnter<FireblossomFlare>()
             .ActivateOnEnter<ArtOfTheFluff1>()
             .ActivateOnEnter<ArtOfTheFluff2>()
             //Middle Rope Unpulled
             .ActivateOnEnter<LevinblossomLance>()
-            .ActivateOnEnter<TatamiGaeshiAOE>()
+            .ActivateOnEnter<TatamiGaeshi>()
             //Standard
             .ActivateOnEnter<ArenaChange>()
             .ActivateOnEnter<Components.StayInBounds>()

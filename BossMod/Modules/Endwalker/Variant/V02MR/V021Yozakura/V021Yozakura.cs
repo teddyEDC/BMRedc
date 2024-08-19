@@ -11,10 +11,10 @@ class LevinblossomStrike(BossModule module) : Components.LocationTargetedAOEs(mo
 class DriftingPetals(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.DriftingPetals), 15, ignoreImmunes: true);
 
 //Left Rainy
-class Mudrain(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Mudrain), 5); //persistent AOE, needs to be handled differently
+class Mudrain(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5, ActionID.MakeSpell(AID.Mudrain), module => module.Enemies(OID.MudVoidzone).Where(z => z.EventState != 7), 0.7f);
 class Icebloom(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Icebloom), 6);
-class ShadowflightAOE(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ShadowflightAOE), new AOEShapeRect(10, 3));
-class MudPieAOE(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.MudPieAOE), new AOEShapeRect(60, 3));
+class Shadowflight(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Shadowflight), new AOEShapeRect(10, 3));
+class MudPie(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.MudPie), new AOEShapeRect(60, 3));
 
 //Middle Rope Pulled
 class FireblossomFlare(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.FireblossomFlare), 6);
@@ -22,7 +22,7 @@ class ArtOfTheFluff1(BossModule module) : Components.CastGaze(module, ActionID.M
 class ArtOfTheFluff2(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.ArtOfTheFluff2));
 
 //Middle Rope Unpulled
-class TatamiGaeshiAOE(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RockRootArrangementVisual), new AOEShapeCircle(4));
+class TatamiGaeshi(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TatamiGaeshi), new AOEShapeRect(40, 5));
 
 //Right No Dogu
 class RootArrangement : Components.StandardChasingAOEs

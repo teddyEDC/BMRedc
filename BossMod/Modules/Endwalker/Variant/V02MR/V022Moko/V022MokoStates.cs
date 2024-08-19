@@ -20,7 +20,7 @@ class V022MokoOtherPathsStates : StateMachineBuilder
             .ActivateOnEnter<GhastlyGrasp>()
             // Route 4
             .ActivateOnEnter<Spiritflame>()
-            .ActivateOnEnter<SpiritMobs>()
+            .ActivateOnEnter<Spiritflames>()
             //Standard
             .ActivateOnEnter<SpearmanOrdersFast>()
             .ActivateOnEnter<SpearmanOrdersSlow>()
@@ -29,7 +29,8 @@ class V022MokoOtherPathsStates : StateMachineBuilder
             .ActivateOnEnter<Giri>()
             .ActivateOnEnter<AzureAuspice>()
             .ActivateOnEnter<BoundlessAzure>()
-            .ActivateOnEnter<Upwell>();
+            .ActivateOnEnter<UpwellFirst>()
+            .ActivateOnEnter<UpwellRest>();
     }
 }
 
