@@ -69,6 +69,19 @@ class MaliciousMistArenaChange(BossModule module) : Components.GenericAOEs(modul
 
 class LoomingNightmare(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(4), ActionID.MakeSpell(AID.LoomingNightmareFirst), ActionID.MakeSpell(AID.LoomingNightmareRest), 3, 1.6f, 5, true, (uint)IconID.ChasingAOE)
 {
+    private int totalChasers;
+
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    {
+        base.OnCastStarted(caster, spell);
+        if (spell.Action == ActionFirst)
+        {
+            ++totalChasers;
+            if (totalChasers > 1)
+                MaxCasts = 4;
+        }
+    }
+
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);

@@ -39,7 +39,7 @@ class UpwellRest(BossModule module) : Components.Exaflare(module, new AOEShapeRe
         if ((AID)spell.Action.ID == AID.UpwellRest)
         {
             ++NumCasts;
-            var index = Lines.FindIndex(l => l.Next.AlmostEqual(caster.Position, 3) && l.Rotation.AlmostEqual(caster.Rotation, 1));
+            var index = Lines.FindIndex(l => l.Next.AlmostEqual(caster.Position, 3) && l.Rotation.AlmostEqual(caster.Rotation, Helpers.RadianConversion));
             if (index >= 0)
             {
                 AdvanceLine(Lines[index], caster.Position + 2.5f * Lines[index].Rotation.ToDirection().OrthoR());
