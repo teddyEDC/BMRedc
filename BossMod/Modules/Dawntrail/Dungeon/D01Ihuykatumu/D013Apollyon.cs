@@ -120,6 +120,7 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.CuttingWind)
+        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.CuttingWind)
             _aoes.RemoveAt(0);
     }
 }
@@ -130,7 +131,8 @@ class D013ApollyonStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<RazorZephyr>()
-            .ActivateOnEnter<Blade>()
+            .ActivateOnEnter<BladeSingle>()
+            .ActivateOnEnter<BladeMulti>()
             .ActivateOnEnter<HighWind>()
             .ActivateOnEnter<BladesOfFamine>()
             .ActivateOnEnter<Levinsickle>()
