@@ -115,19 +115,9 @@ class BreathSequence(BossModule module) : Components.GenericAOEs(module)
             }
     }
 
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        HandleAOERemoval((AID)spell.Action.ID);
-    }
-
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        HandleAOERemoval((AID)spell.Action.ID);
-    }
-
-    private void HandleAOERemoval(AID actionID)
-    {
-        if (_aoes.Count > 0 && castEnd.Contains(actionID))
+        if (_aoes.Count > 0 && castEnd.Contains((AID)spell.Action.ID))
             _aoes.RemoveAt(0);
     }
 }
