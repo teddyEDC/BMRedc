@@ -2,9 +2,9 @@ namespace BossMod.Endwalker.DeepDungeon.EurekaOrthos.DD30TiamatsClone;
 
 public enum OID : uint
 {
-    Boss = 0x3D9A, // R19.000
-    DarkWanderer = 0x3D9B, // R2.000
-    Helper = 0x233C, // R0.500
+    Boss = 0x3D9A, // R19.0
+    DarkWanderer = 0x3D9B, // R2.0
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -19,12 +19,12 @@ public enum AID : uint
     DarkWyrmwing1 = 31845, // 3D9A->self, 5.0s cast, single-target
     DarkWyrmwing2 = 31846, // 233C->self, 6.0s cast, range 40 width 16 rect, summon Heads Heading E/W from E/W Walls
     WheiMornFirst = 31847, // 3D9A->location, 5.0s cast, range 6 circle
-    WheiMornRest = 31848, // 3D9A->location, no cast, range 6 circle
+    WheiMornRest = 31848 // 3D9A->location, no cast, range 6 circle
 }
 
 public enum IconID : uint
 {
-    ChasingAOE = 197, // player
+    ChasingAOE = 197 // player
 }
 
 class WheiMorn(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(6), ActionID.MakeSpell(AID.WheiMornFirst), ActionID.MakeSpell(AID.WheiMornRest), 6, 2, 5, true, (uint)IconID.ChasingAOE);
