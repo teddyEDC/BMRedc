@@ -23,11 +23,10 @@ public enum AID : uint
     KenkiRelease = 34221, // Boss->self, 5.0s cast, range 60 circle raidwide
     AzureAuspice = 34204, // Boss->self, 5.0s cast, range 6-40 donut
 
+    BoundlessAzureVisual = 34205, // Boss->self, 2.4s cast, single-target
+    BoundlessAzure = 34206, // Helper->self, 3.0s cast, range 60 width 10 rect
     UpwellFirst = 34207, // Helper->self, 8.0s cast, range 60 width 10 rect
     UpwellRest = 34208, // Helper->self, 1.0s cast, range 60 width 5 rect
-
-    BoundlessAzure = 34205, // Boss->self, 2.4s cast, single-target
-    BoundlessAzureAOE = 34206, // Helper->self, 3.0s cast, range 60 width 10 rect
 
     IaiKasumiGiri1 = 34183, // Boss->self, 5.0s cast, range 60 270-degree cone, back safe
     IaiKasumiGiri2 = 34184, // Boss->self, 5.0s cast, range 60 270-degree cone, left safe
@@ -62,15 +61,15 @@ public enum AID : uint
 
     //Route 3
     TenguYobi = 34209, // Boss->self, 3.0s cast, single-target
-    YamaKagura = 34210, // IllComeTengu->self, 9.0s cast, range 40 width 5 rect
+    YamaKagura = 34210, // IllComeTengu->self, 9.0s cast, range 40 width 5 rect, knockback 33 dir forward
     GhastlyGraspVisual = 34211, // Boss->self, 11.0s cast, single-target
     GhastlyGrasp = 34212, // Helper->location, 11.0s cast, range 5 circle
 
     //Route 4
     Spiritspark = 34213, // Boss->self, 3.0s cast, single-target
     Spiritflame = 34214, // Helper->location, 4.0s cast, range 6 circle
+    ArmOfPurgatory = 34215, // Helper->player, no cast, single-target, touch spiritflame
 
-    //Unfinished below
     SpearmansOrders = 34197, // Boss->self, 5.5s cast, single-target
     SpearmansOrdersVisual = 34198, // Helper->self, 5.5s cast, range 40 width 40 rect
     SpearpointPushVisual = 34588, // Helper->self, no cast, single-target

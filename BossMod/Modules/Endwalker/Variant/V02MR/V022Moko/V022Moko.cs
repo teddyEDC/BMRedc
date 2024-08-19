@@ -1,7 +1,7 @@
 namespace BossMod.Endwalker.Variant.V02MR.V022Moko;
 
 class AzureAuspice(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AzureAuspice), new AOEShapeDonut(6, 60));
-class BoundlessAzure(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BoundlessAzureAOE), new AOEShapeRect(60, 5, 60));
+class BoundlessAzure(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BoundlessAzure), new AOEShapeRect(30, 5, 30));
 class KenkiRelease(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.KenkiRelease));
 class IronRain(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.IronRain), 10);
 
@@ -13,8 +13,8 @@ class VeilSever(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 class ScarletAuspice(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ScarletAuspice), new AOEShapeCircle(6));
 class MoonlessNight(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MoonlessNight));
 class Clearout(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Clearout), new AOEShapeCone(27, 90.Degrees())); // origin is detected incorrectly, need to add 5 range to correct it
-class BoundlessScarlet(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BoundlessScarlet), new AOEShapeRect(60, 5, 60));
-class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Explosion), new AOEShapeRect(60, 15, 60), 2)
+class BoundlessScarlet(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BoundlessScarlet), new AOEShapeRect(30, 5, 30));
+class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Explosion), new AOEShapeRect(30, 15, 30), 2)
 {
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -30,45 +30,32 @@ class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 //Route 3
 class GhastlyGrasp(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GhastlyGrasp), 5);
 
-class YamaKagura(BossModule module) : Components.Knockback(module)
+//Route 4
+class Spiritflame(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Spiritflame), 6);
+class Spiritflames(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<Actor> _casters = [];
-    private DateTime _activation;
-    private static readonly AOEShapeRect rect = new(40, 5, 40);
+    private static readonly AOEShapeCircle circle = new(2.4f);
+    private readonly List<Actor> _flames = [];
 
-    public override IEnumerable<Source> Sources(int slot, Actor actor)
-    {
-        foreach (var c in _casters)
-            yield return new(c.Position, 33, _activation, rect, c.Rotation - 90.Degrees(), Kind.DirLeft);
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _flames.Select(a => new AOEInstance(circle, a.Position));
 
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
-        if ((AID)spell.Action.ID == AID.YamaKagura)
+        if ((OID)actor.OID == OID.Spiritflame)
         {
-            _activation = Module.CastFinishAt(spell);
-            _casters.Add(caster);
+            if (id == 0x1E46)
+                _flames.Add(actor);
+            else if (id == 0x1E3C)
+                _flames.Remove(actor);
         }
     }
 
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if ((AID)spell.Action.ID == AID.YamaKagura)
-            _casters.Remove(caster);
+        base.AddAIHints(slot, actor, assignment, hints);
+        foreach (var w in _flames)
+            hints.AddForbiddenZone(new AOEShapeCircle(2.4f), w.Position + w.Rotation.ToDirection());
     }
-
-    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<GhastlyGrasp>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
-}
-
-//Route 4
-class Spiritflame(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Spiritflame), 6);
-class SpiritMobs(BossModule module) : Components.GenericAOEs(module)
-{
-    private readonly IReadOnlyList<Actor> _spirits = module.Enemies(OID.Spiritflame);
-
-    private static readonly AOEShapeCircle _shape = new(2);
-
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _spirits.Where(actor => !actor.IsDead).Select(b => new AOEInstance(_shape, b.Position));
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "The Combat Reborn Team", PrimaryActorOID = (uint)OID.Boss, GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12357, SortOrder = 2)]

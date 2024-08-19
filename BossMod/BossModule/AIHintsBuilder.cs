@@ -13,6 +13,7 @@ public sealed class AIHintsBuilder : IDisposable
     private readonly EventSubscriptions _subscriptions;
     private readonly Dictionary<ulong, (Actor Caster, Actor? Target, AOEShape Shape, bool IsCharge)> _activeAOEs = [];
     private ArenaBoundsCircle? _activeFateBounds;
+    private static readonly HashSet<uint> ignore = [27503, 33626]; // action IDs that the AI should ignore
 
     public AIHintsBuilder(WorldState ws, BossModuleManager bmm)
     {
@@ -84,7 +85,7 @@ public sealed class AIHintsBuilder : IDisposable
             return;
         if (data.CastType is 2 or 5 && data.EffectRange >= RaidwideSize)
             return;
-        if (actor.CastInfo!.IsSpell((AID)27503)) // friendly AOE in aitiascope that gets dodged for some reason
+        if (ignore.Contains(actor.CastInfo!.Action.ID))
             return;
         AOEShape? shape = data.CastType switch
         {
