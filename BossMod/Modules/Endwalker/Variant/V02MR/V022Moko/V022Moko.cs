@@ -54,7 +54,7 @@ class Spiritflames(BossModule module) : Components.GenericAOEs(module)
     {
         base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in _flames)
-            hints.AddForbiddenZone(new AOEShapeCircle(2.4f), w.Position + w.Rotation.ToDirection());
+            hints.AddForbiddenZone(new AOEShapeCircle(2.4f), w.Position + 1.5f * w.Rotation.ToDirection());
     }
 }
 
