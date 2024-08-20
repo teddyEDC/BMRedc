@@ -21,7 +21,12 @@ public enum AID : uint
     ColdThunder = 31855, // Boss->player, 5.0s cast, width 8 rect charge
     ThunderousCold = 31856, // Boss->player, 5.0s cast, width 8 rect charge
     Cacophony = 31864, // Boss->self, 3.0s cast, single-target
-    ChaoticChorus = 31865, // Cacophony->self, no cast, range 6 circle
+    ChaoticChorus = 31865 // Cacophony->self, no cast, range 6 circle
+}
+
+public enum TetherID : uint
+{
+    OrbTether = 17 // Cacophony->player
 }
 
 class RamsDragonVoice(BossModule module) : Components.GenericAOEs(module)
@@ -91,19 +96,54 @@ class ThunderousCold(BossModule module) : Components.BaitAwayChargeCast(module, 
 class ColdThunder(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.ColdThunder), 4);
 class RightbreathedCold(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RightbreathedCold), new AOEShapeCone(40, 90.Degrees()));
 class LeftbreathedThunder(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LeftbreathedThunder), new AOEShapeCone(40, 90.Degrees()));
-class Tether(BossModule module) : Components.StretchTetherDuo(module, 15, 5.1f);
+class ChargeTether(BossModule module) : Components.StretchTetherDuo(module, 15, 5.1f);
+
+class Cacophony(BossModule module) : Components.GenericAOEs(module)
+{
+    private static readonly AOEShapeCircle circle = new(6);
+    private readonly List<Actor> _orbs = [];
+
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        foreach (var c in _orbs)
+            yield return new(circle, c.Position);
+    }
+
+    public override void OnActorCreated(Actor actor)
+    {
+        if ((OID)actor.OID == OID.Cacophony)
+            _orbs.Add(actor);
+    }
+
+    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    {
+        if ((AID)spell.Action.ID == AID.ChaoticChorus)
+            _orbs.Remove(caster);
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.AddAIHints(slot, actor, assignment, hints);
+        foreach (var w in _orbs)
+            hints.AddForbiddenZone(new AOEShapeCircle(6), w.Position + 2 * w.Rotation.ToDirection());
+    }
+}
+
+class CacophonyTether(BossModule module) : Components.StretchTetherSingle(module, (uint)TetherID.OrbTether, 15);
 
 class DD50ServomechanicalChimera14XStates : StateMachineBuilder
 {
     public DD50ServomechanicalChimera14XStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<Cacophony>()
+            .ActivateOnEnter<CacophonyTether>()
             .ActivateOnEnter<RamsDragonVoice>()
             .ActivateOnEnter<ThunderousCold>()
             .ActivateOnEnter<ColdThunder>()
             .ActivateOnEnter<RightbreathedCold>()
             .ActivateOnEnter<LeftbreathedThunder>()
-            .ActivateOnEnter<Tether>();
+            .ActivateOnEnter<ChargeTether>();
     }
 }
 
