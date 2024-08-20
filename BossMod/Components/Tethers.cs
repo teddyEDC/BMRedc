@@ -195,8 +195,7 @@ public class InterceptTether(BossModule module, ActionID aid, uint tetherID) : C
 // at the end of the mechanic various things are possible, eg. single target dmg, knockback/pull, AOE etc.
 public class StretchTetherDuo(BossModule module, float minimumDistance, float activationDelay, uint tetherIDBad = 57, uint tetherIDGood = 1, AOEShape? shape = null, ActionID aid = default, uint enemyOID = default, bool knockbackImmunity = false) : GenericBaitAway(module, aid)
 {
-    public static readonly AOEShapeCone DefaultShape = new(default, default);
-    public AOEShape Shape = shape ?? DefaultShape;
+    public AOEShape? Shape = shape;
     public uint TIDGood = tetherIDGood;
     public uint TIDBad = tetherIDBad;
     public float MinimumDistance = minimumDistance;
@@ -306,7 +305,7 @@ public class StretchTetherDuo(BossModule module, float minimumDistance, float ac
         {
             if (!ActivationDelayOnActor.Any(x => x.Item1 == player))
                 ActivationDelayOnActor.Add((player, WorldState.FutureTime(ActivationDelay)));
-            CurrentBaits.Add(new(enemy, player, Shape, ActivationDelayOnActor.FirstOrDefault(x => x.Item1 == player).Item2));
+            CurrentBaits.Add(new(enemy, player, Shape ?? new AOEShapeCircle(0), ActivationDelayOnActor.FirstOrDefault(x => x.Item1 == player).Item2));
             TetherOnActor.Add((player, tether.ID));
         }
     }
@@ -375,14 +374,16 @@ public class StretchTetherDuo(BossModule module, float minimumDistance, float ac
         if (!ActiveBaits.Any())
             return;
         var immunity = IsImmune(slot, ActiveBaits.FirstOrDefault(x => x.Target == actor).Activation);
-        if (KnockbackImmunity && !immunity && ActivationDelayOnActor.Any(x => x.Item1 == actor && x.Item2.AddSeconds(-6) <= WorldState.CurrentTime))
+        var isImmune = immunity && KnockbackImmunity;
+        var couldBeImmune = !immunity && KnockbackImmunity;
+        if (couldBeImmune && ActivationDelayOnActor.Any(x => x.Item1 == actor && x.Item2.AddSeconds(-6) <= WorldState.CurrentTime))
         {
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.ArmsLength), actor, ActionQueue.Priority.High);
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Surecast), actor, ActionQueue.Priority.High);
         }
-        if (Shape != DefaultShape)
+        if (Shape != null)
             base.AddAIHints(slot, actor, assignment, hints);
-        if (ActiveBaits.Any(x => x.Target == actor) && !immunity)
+        if (ActiveBaits.Any(x => x.Target == actor) && !isImmune)
             foreach (var b in ActiveBaits.Where(x => x.Target == actor))
                 hints.AddForbiddenZone(ShapeDistance.Circle(b.Source.Position, MinimumDistance), b.Activation);
     }

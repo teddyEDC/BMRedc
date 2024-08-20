@@ -564,7 +564,7 @@ class AbilityInfo : CommonEnumInfo
                 yield return OIDString(oid);
     }
 
-    private string CastTimeString(ActionData data, Lumina.Excel.GeneratedSheets.Action? ldata)
+    private static string CastTimeString(ActionData data, Lumina.Excel.GeneratedSheets.Action? ldata)
         => data.CastTime > 0 ? string.Create(CultureInfo.InvariantCulture, $"{data.CastTime:f1}{(ldata?.Unknown38 > 0 ? $"+{ldata?.Unknown38 * 0.1f:f1}" : "")}s cast") : "no cast";
 
     private string EnumMemberString(ActionID aid, ActionData data)
@@ -574,7 +574,7 @@ class AbilityInfo : CommonEnumInfo
         return $"{name} = {aid.ID}, // {OIDListString(data.CasterOIDs)}->{JoinStrings(ActionTargetStrings(data))}, {CastTimeString(data, ldata)}, {DescribeShape(ldata)}";
     }
 
-    private string DescribeShape(Lumina.Excel.GeneratedSheets.Action? data) => data != null ? data.CastType switch
+    private static string DescribeShape(Lumina.Excel.GeneratedSheets.Action? data) => data != null ? data.CastType switch
     {
         1 => "single-target",
         2 => $"range {data.EffectRange} circle",
@@ -589,7 +589,7 @@ class AbilityInfo : CommonEnumInfo
         _ => "???"
     } : "???";
 
-    private Angle? DetermineConeAngle(Lumina.Excel.GeneratedSheets.Action data)
+    private static Angle? DetermineConeAngle(Lumina.Excel.GeneratedSheets.Action data)
     {
         var omen = data.Omen.Value;
         if (omen == null)
@@ -600,21 +600,22 @@ class AbilityInfo : CommonEnumInfo
         return pos >= 0 && pos + 6 <= path.Length && int.TryParse(path.AsSpan(pos + 3, 3), out var angle) ? angle.Degrees() : null;
     }
 
-    private float? DetermineDonutInner(Lumina.Excel.GeneratedSheets.Action data)
+    private static float? DetermineDonutInner(Lumina.Excel.GeneratedSheets.Action data)
     {
         var omen = data.Omen.Value;
         if (omen == null)
             return null;
 
         var path = omen.Path.ToString();
-        var pos = path.IndexOf("sircle_", StringComparison.Ordinal);
-        if (pos >= 0 && pos + 11 <= path.Length && int.TryParse(path.AsSpan(pos + 9, 2), out var inner))
-            return inner;
 
-        pos = path.IndexOf("circle", StringComparison.Ordinal);
-        if (pos >= 0 && pos + 10 <= path.Length && int.TryParse(path.AsSpan(pos + 8, 2), out inner))
-            return inner;
+        return ExtractInnerValueFromPath(path, "sircle_", 9)
+            ?? ExtractInnerValueFromPath(path, "sicle_", 8)
+            ?? ExtractInnerValueFromPath(path, "circle", 8);
+    }
 
-        return null;
+    private static float? ExtractInnerValueFromPath(string path, string keyword, int offset)
+    {
+        var pos = path.IndexOf(keyword, StringComparison.Ordinal);
+        return pos >= 0 && pos + offset + 2 <= path.Length && int.TryParse(path.AsSpan(pos + offset, 2), out var inner) ? inner : null;
     }
 }

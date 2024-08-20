@@ -121,11 +121,12 @@ public sealed class ConfigUI : IDisposable
         { "resetcolors", "Resets all colors to their default values." },
         { "d", "Opens the debug menu." },
         { "r", "Opens the replay menu." },
+        { "r on/off", "Starts/stops recording a replay." },
         { "gc", "Triggers the garbage collection." },
         { "cfg", "Lists all configs." }
     };
 
-    private void DrawAvailableCommands()
+    private static void DrawAvailableCommands()
     {
         ImGui.Text("Available Commands:");
         ImGui.Separator();
@@ -153,7 +154,7 @@ public sealed class ConfigUI : IDisposable
         ImGui.Text("/vbm can be used instead of /bmr and /vbmai can be used instead of /bmrai");
     }
 
-    private void DrawReadMe()
+    private static void DrawReadMe()
     {
         var discordLink = "https://discord.gg/p54TZMPnC9";
         ImGui.Text("Important information");
@@ -170,7 +171,7 @@ public sealed class ConfigUI : IDisposable
         ImGui.Text("The consequences of doing that are unexplored and unsupported.");
     }
 
-    static void RenderTextWithLink(string displayText, Uri url)
+    private static void RenderTextWithLink(string displayText, Uri url)
     {
         ImGui.PushID(url.ToString());
         ImGui.Text(displayText);
@@ -209,7 +210,7 @@ public sealed class ConfigUI : IDisposable
 
     private static string GenerateNodeName(Type t) => t.Name.EndsWith("Config", StringComparison.Ordinal) ? t.Name.Remove(t.Name.Length - "Config".Length) : t.Name;
 
-    private void SortByOrder(List<UINode> nodes)
+    private static void SortByOrder(List<UINode> nodes)
     {
         nodes.SortBy(e => e.Order);
         foreach (var n in nodes)
