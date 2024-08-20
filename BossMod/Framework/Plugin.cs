@@ -152,7 +152,7 @@ public sealed class Plugin : IDalamudPlugin
                 GC.Collect();
                 break;
             case "R":
-                _wndReplay.SetVisible(!_wndReplay.IsOpen);
+                HandleReplayCommand(split);
                 break;
             case "AR":
                 ParseAutorotationCommands(split);
@@ -169,7 +169,29 @@ public sealed class Plugin : IDalamudPlugin
         }
     }
 
-    private void ResetColors()
+    private bool HandleReplayCommand(string[] messageData)
+    {
+        if (messageData.Length == 1)
+            _wndReplay.SetVisible(!_wndReplay.IsOpen);
+        else
+        {
+            switch (messageData[1].ToUpperInvariant())
+            {
+                case "ON":
+                    _wndReplay.StartRecording();
+                    break;
+                case "OFF":
+                    _wndReplay.StopRecording();
+                    break;
+                default:
+                    Service.ChatGui.Print($"[BMR] Unknown replay command: {messageData[1]}");
+                    break;
+            }
+        }
+        return false;
+    }
+
+    private static void ResetColors()
     {
         var defaultConfig = ColorConfig.DefaultConfig;
         var currentConfig = Service.Config.Get<ColorConfig>();
@@ -214,7 +236,7 @@ public sealed class Plugin : IDalamudPlugin
         Service.Log("Colors have been reset to default values.");
     }
 
-    private bool ToggleAnticheat()
+    private static bool ToggleAnticheat()
     {
         var config = Service.Config.Get<ActionTweaksConfig>();
         config.ActivateAnticheat = !config.ActivateAnticheat;
@@ -223,7 +245,7 @@ public sealed class Plugin : IDalamudPlugin
         return true;
     }
 
-    private bool ToggleRestoreRotation()
+    private static bool ToggleRestoreRotation()
     {
         var config = Service.Config.Get<ActionTweaksConfig>();
         config.RestoreRotation = !config.RestoreRotation;
@@ -334,7 +356,7 @@ public sealed class Plugin : IDalamudPlugin
         }
     }
 
-    private void PrintAutorotationHelp()
+    private static void PrintAutorotationHelp()
     {
         Service.ChatGui.Print("Autorotation commands:");
         Service.ChatGui.Print("* /vbm ar clear - clear current preset; autorotation will do nothing unless plan is active");
@@ -344,7 +366,7 @@ public sealed class Plugin : IDalamudPlugin
         Service.ChatGui.Print("* /vbm ar toggle Preset - start executing specified preset unless it's already active; clear otherwise");
     }
 
-    private void OnConditionChanged(ConditionFlag flag, bool value)
+    private static void OnConditionChanged(ConditionFlag flag, bool value)
     {
         Service.Log($"Condition change: {flag}={value}");
     }
