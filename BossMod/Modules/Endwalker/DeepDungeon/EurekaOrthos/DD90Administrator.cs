@@ -97,15 +97,15 @@ class AetheroChemicalLaserCombo(BossModule module) : Components.GenericAOEs(modu
             _ => default
         };
 
-        _icons[iconID].Add(new AOEInstance(_shapes[shapeIndex], actor.Position, (OID)actor.OID == OID.OrbInterceptor ? default : actor.Rotation, activation));
+        _icons[iconID].Add(new(_shapes[shapeIndex], actor.Position, (OID)actor.OID == OID.OrbInterceptor ? default : actor.Rotation, activation));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         _boss = (AID)spell.Action.ID switch
         {
-            AID.PeripheralLasers => new AOEInstance(_shapes[4], caster.Position, default, Module.CastFinishAt(spell)),
-            AID.CrossLaser => new AOEInstance(_shapes[3], caster.Position, spell.Rotation, Module.CastFinishAt(spell)),
+            AID.PeripheralLasers => new(_shapes[4], caster.Position, default, Module.CastFinishAt(spell)),
+            AID.CrossLaser => new(_shapes[3], caster.Position, spell.Rotation, Module.CastFinishAt(spell)),
             _ => _boss
         };
     }

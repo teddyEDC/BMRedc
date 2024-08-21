@@ -89,36 +89,38 @@ class TeaAwhirl(BossModule module) : Components.GenericAOEs(module)
         if (state == 0x02000100)
         {
             var activation = Module.WorldState.FutureTime(11.5f);
-            if (CheckPositions(new WPos(17, -163), new WPos(17, -177)))
+            if (CheckPositions(new(17, -163), new(17, -177)))
                 AddAOEs(activation, new(3.5f, -161.5f), new(30.5f, -178.5f));
-            else if (CheckPositions(new WPos(17, -153), new WPos(10, -170)))
+            else if (CheckPositions(new(17, -153), new(10, -170)))
                 AddAOEs(activation, new(25.5f, -156.5f), new(20.5f, -178.5f));
-            else if (CheckPositions(new WPos(34, -170), null))
+            else if (CheckPositions(new(34, -170), null))
                 AddAOEs(activation, [new(8.5f, -173.5f)]);
-            else if (CheckPositions(new WPos(0, -170), null))
+            else if (CheckPositions(new(0, -170), null))
                 AddAOEs(activation, [new(25.5f, -166.5f)]);
         }
         else if (state == 0x10000800)
         {
             var activation = Module.WorldState.FutureTime(14.5f);
-            if (CheckPositions(new WPos(0, -170), new WPos(34, -170)))
+            if (CheckPositions(new(0, -170), new(34, -170)))
                 AddAOEs(activation, new(8.5f, -156.5f), new(25.5f, -183.5f));
-            else if (CheckPositions(new WPos(0, -170), new WPos(17, -187)))
+            else if (CheckPositions(new(0, -170), new(17, -187)))
                 AddAOEs(activation, new(3.5f, -178.5f), new(8.5f, -156.5f));
+            else if (CheckPositions(new(17, -187), new(17, -153)))
+                AddAOEs(activation, new(30.5f, -161.5f), new(3.5f, -178.5f));
         }
         else if (state == 0x00100001)
             AddAOEs(Module.WorldState.FutureTime(16), _cups[0].Position, _cups[1].Position);
         else if (state == 0x00400020)
         {
             var activation = Module.WorldState.FutureTime(19);
-            if (CheckPositions(new WPos(0, -170), new WPos(17, -163)))
+            if (CheckPositions(new(0, -170), new(17, -163)))
                 AddAOEs(activation, new(5, -165), new(22, -182));
-            else if (CheckPositions(new WPos(17, -177), new WPos(17, -153)))
+            else if (CheckPositions(new(17, -177), new(17, -153)))
                 AddAOEs(activation, new(5, -175), new(29, -175));
         }
     }
 
-    private bool CheckPositions(WPos pos1, WPos? pos2) => pos2 != null ? _cups.Any(x => x.Position == pos2) : _cups.Any(x => x.Position == pos1);
+    private bool CheckPositions(WPos pos1, WPos? pos2) => pos2 != null ? _cups.Any(x => x.Position == pos1) && _cups.Any(x => x.Position == pos2) : _cups.Any(x => x.Position == pos1);
 
     private void AddAOEs(DateTime activation, params WPos[] positions)
     {

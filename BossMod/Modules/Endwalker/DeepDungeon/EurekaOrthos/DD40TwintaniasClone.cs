@@ -26,6 +26,7 @@ public enum AID : uint
 class Twister(BossModule module) : Components.CastTwister(module, 1, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
 class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5, ActionID.MakeSpell(AID.BitingWind), m => m.Enemies(OID.BitingWind).Where(z => z.EventState != 7), 0.9f);
 class MeracydianSquall(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.MeracydianSquall), 5);
+
 class TwistingDive(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
