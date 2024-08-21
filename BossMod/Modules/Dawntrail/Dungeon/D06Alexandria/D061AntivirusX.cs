@@ -63,6 +63,7 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCone coneSmall = new(40, 60.Degrees());
     private static readonly AOEShapeCone coneBig = new(40, 120.Degrees());
     private readonly List<AOEInstance> _aoes = [];
+    private static readonly HashSet<AID> castEnd = [AID.PathocrossPurge, AID.PathocircuitPurge, AID.ImmuneResponseBig, AID.ImmuneResponseSmall];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -106,15 +107,8 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        switch ((AID)spell.Action.ID)
-        {
-            case AID.PathocrossPurge:
-            case AID.PathocircuitPurge:
-            case AID.ImmuneResponseBig:
-            case AID.ImmuneResponseSmall:
-                _aoes.RemoveAt(0);
-                break;
-        }
+        if (_aoes.Count > 0 && castEnd.Contains((AID)spell.Action.ID))
+            _aoes.RemoveAt(0);
     }
 }
 

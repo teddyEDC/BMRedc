@@ -8,6 +8,7 @@ class OpList(Replay replay, ModuleRegistry.Info? moduleInfo, IEnumerable<WorldSt
     private DateTime _relativeTS;
     private readonly List<(int Index, DateTime Timestamp, string Text, Action<UITree>? Children, Action? ContextMenu)> _nodes = [];
     private readonly HashSet<uint> _filteredOIDs = [];
+    public static readonly HashSet<uint> BoringOIDs = [0x3E1A, 0x3E1B, 0x3E1C];
     private readonly HashSet<ActionID> _filteredActions = [];
     private readonly HashSet<uint> _filteredStatuses = [];
     private readonly HashSet<uint> _filteredDirectorUpdateTypes = [];
@@ -70,7 +71,7 @@ class OpList(Replay replay, ModuleRegistry.Info? moduleInfo, IEnumerable<WorldSt
         var p = replay.FindParticipant(instanceID, timestamp)!;
         if ((p.OwnerID & 0xFF000000) == 0x10000000 && p.Type != ActorType.Buddy)
             return false; // player's pet/area
-        return (p.Type is not ActorType.Player and not ActorType.Buddy and not ActorType.Pet || allowPlayers) && !_filteredOIDs.Contains(p.OID);
+        return (p.Type is not ActorType.Player and not ActorType.Buddy and not ActorType.Pet || allowPlayers) && !_filteredOIDs.Contains(p.OID) && !BoringOIDs.Contains(p.OID);
     }
 
     private bool FilterInterestingStatus(Replay.Status s)

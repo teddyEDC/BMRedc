@@ -511,7 +511,7 @@ class AbilityInfo : CommonEnumInfo
 
     private void AddActionData(Replay replay, Replay.Encounter? enc, Replay.Action action)
     {
-        if (action.Source.Type is ActorType.Player or ActorType.Pet or ActorType.Chocobo or ActorType.Buddy)
+        if (action.Source.Type is ActorType.Player or ActorType.Pet or ActorType.Chocobo or ActorType.Buddy || ReplayVisualization.OpList.BoringOIDs.Contains(action.Source.OID))
             return;
 
         var data = _data.GetOrAdd(action.ID);
@@ -532,7 +532,7 @@ class AbilityInfo : CommonEnumInfo
 
     private void AddCastData(Replay replay, Replay.Participant caster, Replay.Cast cast)
     {
-        if (caster.Type is ActorType.Player or ActorType.Pet or ActorType.Chocobo or ActorType.Buddy)
+        if (caster.Type is ActorType.Player or ActorType.Pet or ActorType.Chocobo or ActorType.Buddy || ReplayVisualization.OpList.BoringOIDs.Contains(caster.OID))
             return;
 
         var data = _data.GetOrAdd(cast.ID);
