@@ -32,12 +32,12 @@ class PunishingSlice(BossModule module) : Components.GenericAOEs(module)
 
     private static readonly Dictionary<(byte index, uint state), (WPos origin, Angle rotation)> aoeSources = new()
     {
-        {(0x00, 0x00200010), (new WPos(-154.825f, 42.75f), 60.Degrees())},
-        {(0x00, 0x01000080), (new WPos(-154.825f, 55.25f), 119.997f.Degrees())},
-        {(0x00, 0x00020001), (new WPos(-144, 36.5f), -0.003f.Degrees())},
-        {(0x01, 0x00200010), (new WPos(-144, 61.5f), -180.Degrees())},
-        {(0x01, 0x01000080), (new WPos(-133.175f, 55.25f), -120.003f.Degrees())},
-        {(0x01, 0x00020001), (new WPos(-133.175f, 42.75f), -60.005f.Degrees())}
+        {(0x00, 0x00200010), (new(-154.825f, 42.75f), 60.Degrees())},
+        {(0x00, 0x01000080), (new(-154.825f, 55.25f), 119.997f.Degrees())},
+        {(0x00, 0x00020001), (new(-144, 36.5f), -0.003f.Degrees())},
+        {(0x01, 0x00200010), (new(-144, 61.5f), -180.Degrees())},
+        {(0x01, 0x01000080), (new(-133.175f, 55.25f), -120.003f.Degrees())},
+        {(0x01, 0x00020001), (new(-133.175f, 42.75f), -60.005f.Degrees())}
     };
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
@@ -47,7 +47,7 @@ class PunishingSlice(BossModule module) : Components.GenericAOEs(module)
         if (aoeSources.TryGetValue((index, state), out var source))
         {
             var activation = NumCasts == 0 ? Module.WorldState.FutureTime(13) : Module.WorldState.FutureTime(16);
-            _aoe = new AOEInstance(rect, source.origin, source.rotation, activation);
+            _aoe = new(rect, source.origin, source.rotation, activation);
         }
     }
 
