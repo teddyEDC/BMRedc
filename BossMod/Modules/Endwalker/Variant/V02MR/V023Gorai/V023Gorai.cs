@@ -56,4 +56,17 @@ public class V023Gorai(WorldState ws, Actor primary) : BossModule(ws, primary, A
         Arena.Actor(PrimaryActor);
         Arena.Actors(Enemies(OID.ShishuWhiteBaboon));
     }
+
+    protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        foreach (var e in hints.PotentialTargets)
+        {
+            e.Priority = (OID)e.Actor.OID switch
+            {
+                OID.ShishuWhiteBaboon => 2,
+                OID.Boss => 1,
+                _ => 0
+            };
+        }
+    }
 }
