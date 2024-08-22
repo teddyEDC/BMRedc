@@ -5,7 +5,7 @@ class ImpurePurgation(BossModule module) : Components.GenericAOEs(module, Action
     private readonly List<Actor> _castersPurgationFirst = [];
     private readonly List<Actor> _castersPurgationNext = [];
 
-    private static readonly AOEShape cone = new AOEShapeCone(60, 22.5f.Degrees());
+    private static readonly AOEShapeCone cone = new(60, 22.5f.Degrees());
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
