@@ -52,7 +52,7 @@ public enum SID : uint
 {
     SoulOfIce = 3411, // Helper->player, extra=0x0
     SoulOfFire = 3410, // Helper->player, extra=0x0
-    CaliburnusElement = 2552, // none->Caliburnus, extra=0x219/0x21A (0x21A = frost, 0x219 = fire)
+    CaliburnusElement = 2552 // none->Caliburnus, extra=0x219/0x21A (0x21A = frost, 0x219 = fire)
 }
 
 class Steelstrike(BossModule module) : Components.GenericAOEs(module)

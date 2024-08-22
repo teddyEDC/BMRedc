@@ -16,6 +16,7 @@ public enum OID : uint
     Thunder = 0x1EB88E, // R0.5
     Water = 0x1EB88D, // R0.5
     Fire = 0x1EB88B, // R0.5
+    ArenaWall = 0x1E8FB8, // R2.0
     Helper = 0x233C,
     Helper2 = 0x3F53
 }
@@ -85,8 +86,8 @@ public enum AID : uint
     SilentWhistle = 33691, // Boss->self, 3.0s cast, single-target, dog summons
 
     //Middle Rope Unpulled
-    LevinblossomLance1 = 33687, // Boss->self, 5.0s cast, single-target
-    LevinblossomLance2 = 33688, // Boss->self, 5.0s cast, single-target
+    LevinblossomLanceCW = 33687, // Boss->self, 5.0s cast, single-target
+    LevinblossomLanceCCW = 33688, // Boss->self, 5.0s cast, single-target
     LevinblossomLanceFirst = 33689, // Helper->self, 5.8s cast, range 60 width 7 rect
     LevinblossomLanceRest = 33690, // Helper->self, no cast, range 60 width 7 rect
 
