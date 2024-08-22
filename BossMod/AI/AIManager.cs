@@ -50,6 +50,8 @@ sealed class AIManager : IDisposable
 
     public void Update()
     {
+        Enabled = _config.Enabled;
+
         if (!WorldState.Party.Members[MasterSlot].IsValid())
             SwitchToIdle();
 

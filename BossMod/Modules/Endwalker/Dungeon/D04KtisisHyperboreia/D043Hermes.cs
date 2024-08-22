@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Dungeon.D04KtisisHyperboreia.D043Hermes;
+namespace BossMod.Endwalker.Dungeon.D04KtisisHyperboreia.D043Hermes;
 
 public enum OID : uint
 {
