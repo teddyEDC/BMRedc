@@ -27,8 +27,8 @@ class StatusInfo : CommonEnumInfo
                 {
                     var data = _data.GetOrAdd(status.ID);
                     if (status.Source != null)
-                        data.SourceOIDs.Add(status.Source.Type != ActorType.DutySupport ? status.Source.OID : 0);
-                    data.TargetOIDs.Add(status.Target.Type != ActorType.DutySupport ? status.Target.OID : 0);
+                        data.SourceOIDs.Add(status.Source.OID);
+                    data.TargetOIDs.Add(status.Target.OID);
                     data.Extras.Add(status.StartingExtra);
                 }
             }

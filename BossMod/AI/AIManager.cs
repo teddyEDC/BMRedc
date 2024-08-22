@@ -19,6 +19,7 @@ sealed class AIManager : IDisposable
 
     public WorldState WorldState => Autorot.Bossmods.WorldState;
     public float ForceMovementIn => Beh?.ForceMovementIn ?? float.MaxValue;
+    public string GetAIPreset => AiPreset?.Name ?? string.Empty;
 
     public AIManager(RotationModuleManager autorot, ActionManagerEx amex, MovementOverride movement)
     {
@@ -50,8 +51,6 @@ sealed class AIManager : IDisposable
 
     public void Update()
     {
-        Enabled = _config.Enabled;
-
         if (!WorldState.Party.Members[MasterSlot].IsValid())
             SwitchToIdle();
 
