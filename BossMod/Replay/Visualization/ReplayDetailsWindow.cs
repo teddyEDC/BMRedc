@@ -202,18 +202,18 @@ class ReplayDetailsWindow : UIWindow
         var cursor = ImGui.GetCursorScreenPos();
         var w = ImGui.GetWindowWidth() - 2 * ImGui.GetCursorPosX() - 15;
         cursor.Y += 4;
-        dl.AddLine(cursor, cursor + new Vector2(w, 0), 0xff00ffff);
+        dl.AddLine(cursor, cursor + new Vector2(w, 0), Colors.TextColor2);
 
         var curp = cursor + new Vector2(w * (float)((_curTime - _first) / (_last - _first)), 0);
-        dl.AddTriangleFilled(curp, curp + new Vector2(3, 5), curp + new Vector2(-3, 5), 0xff00ffff);
+        dl.AddTriangleFilled(curp, curp + new Vector2(3, 5), curp + new Vector2(-3, 5), Colors.TextColor2);
         foreach (var e in _player.Replay.Encounters)
         {
-            DrawCheckpoint(e.Time.Start, 0xff00ff00, cursor, w);
-            DrawCheckpoint(e.Time.End, 0xff0000ff, cursor, w);
+            DrawCheckpoint(e.Time.Start, Colors.TextColor4, cursor, w);
+            DrawCheckpoint(e.Time.End, Colors.TextColor3, cursor, w);
         }
         foreach (var m in _player.Replay.UserMarkers)
         {
-            DrawCheckpoint(m.Key, 0xffff0000, cursor, w);
+            DrawCheckpoint(m.Key, Colors.TextColor14, cursor, w);
         }
         if (ImGui.IsWindowFocused() && (ImGui.IsMouseClicked(ImGuiMouseButton.Left) || ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)))
         {
@@ -324,7 +324,7 @@ class ReplayDetailsWindow : UIWindow
                 var hints = _mgr.ActiveModule.CalculateHintsForRaidMember(slot, player);
                 foreach ((var hint, var risk) in hints)
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, risk ? 0xff00ffff : 0xff00ff00);
+                    ImGui.PushStyleColor(ImGuiCol.Text, risk ? Colors.TextColor2 : Colors.TextColor4);
                     ImGui.TextUnformatted(hint);
                     ImGui.PopStyleColor();
                     ImGui.SameLine();

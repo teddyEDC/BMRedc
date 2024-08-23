@@ -163,7 +163,7 @@ public class Timeline
 
     // API below is supposed to be called during column's Draw() function
     public void AddTooltip(List<string> strings) => _tooltip.Add(strings);
-    public void HighlightTime(float t, uint color = 0xffffffff) => _highlightTime.Add((t, color));
+    public void HighlightTime(float t, uint color = 0) => _highlightTime.Add((t, color == 0 ? BossMod.Colors.TextColor1 : color));
 
     public float TimeDeltaToScreenDelta(float dt) => dt * PixelsPerSecond;
     public float ScreenDeltaToTimeDelta(float dy) => dy / PixelsPerSecond;

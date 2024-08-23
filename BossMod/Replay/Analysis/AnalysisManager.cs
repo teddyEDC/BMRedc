@@ -100,7 +100,7 @@ sealed class AnalysisManager : IDisposable
             foreach (var n in tree.Node("Tether info", false, Colors.TextColor1, () => _tetherInfo.Get().DrawContextMenu()))
                 _tetherInfo.Get().Draw(tree);
 
-            foreach (var n in tree.Node("EnvControl info", false, 0xffffffff))
+            foreach (var n in tree.Node("EnvControl info", false, Colors.TextColor1))
                 _envControlInfo.Get().Draw(tree);
 
             foreach (var n in tree.Node("Arena bounds"))
