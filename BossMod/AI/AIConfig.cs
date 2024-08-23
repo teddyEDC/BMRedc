@@ -34,7 +34,7 @@ sealed class AIConfig : ConfigNode
     public bool FollowDuringActiveBossModule = false;
 
     [PropertyDisplay("Follow out of combat")]
-    public bool FollowOutOfCombat = true;
+    public bool FollowOutOfCombat = false;
 
     [PropertyDisplay("Follow target")]
     public bool FollowTarget = false;
