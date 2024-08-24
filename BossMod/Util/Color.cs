@@ -68,8 +68,11 @@ public static class Colors
     public static uint Vulnerable => _config.ArenaVulnerable.ABGR;
     public static uint FutureVulnerable => _config.ArenaFutureVulnerable.ABGR;
     public static uint MeleeRangeIndicator => _config.ArenaMeleeRangeIndicator.ABGR;
-    public static uint Other1 => _config.ArenaOther1.ABGR;
-    public static uint Other2 => _config.ArenaOther2.ABGR;
+    public static uint Other1 => _config.ArenaOther[0].ABGR;
+    public static uint Other2 => _config.ArenaOther[1].ABGR;
+    public static uint Other3 => _config.ArenaOther[2].ABGR;
+    public static uint Other4 => _config.ArenaOther[3].ABGR;
+    public static uint Other5 => _config.ArenaOther[4].ABGR;
     public static uint Shadows => _config.Shadows.ABGR;
     public static uint WaymarkA => _config.WaymarkA.ABGR;
     public static uint WaymarkB => _config.WaymarkB.ABGR;
@@ -96,6 +99,9 @@ public static class Colors
     public static uint TextColor13 => _config.TextColors[12].ABGR;
     public static uint TextColor14 => _config.TextColors[13].ABGR;
     public static uint TextColor15 => _config.TextColors[14].ABGR;
+    public static uint TextColor16 => _config.TextColors[15].ABGR;
+    public static uint TextColor17 => _config.TextColors[16].ABGR;
+    public static uint TextColor18 => _config.TextColors[17].ABGR;
     public static uint PositionalColor1 => _config.PositionalColors[0].ABGR;
     public static uint PositionalColor2 => _config.PositionalColors[1].ABGR;
     public static uint PositionalColor3 => _config.PositionalColors[2].ABGR;

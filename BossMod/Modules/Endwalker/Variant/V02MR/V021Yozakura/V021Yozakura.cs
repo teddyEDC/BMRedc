@@ -51,11 +51,12 @@ class Witherwind(BossModule module) : Components.GenericAOEs(module)
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "The Combat Reborn Team", GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12325, SortOrder = 1)]
-public class V021Yozakura(WorldState ws, Actor primary) : BossModule(ws, primary, primary.Position.X < -700 ? ArenaCenter1 : primary.Position.X > 700 ? ArenaCenter2 : ArenaCenter3, StartingBounds)
+public class V021Yozakura(WorldState ws, Actor primary) : BossModule(ws, primary, primary.Position.X < -700 ? ArenaCenter1 : primary.Position.X > 700 ? ArenaCenter2 : ArenaCenter3, primary.Position.X < -700 ? StartingBounds : DefaultBounds2)
 {
     public static readonly WPos ArenaCenter1 = new(-775, 16);
     public static readonly WPos ArenaCenter2 = new(737, 220);
     public static readonly WPos ArenaCenter3 = new(47, 93);
     public static readonly ArenaBoundsSquare StartingBounds = new(22.5f);
-    public static readonly ArenaBoundsSquare DefaultBounds = new(20);
+    public static readonly ArenaBoundsSquare DefaultBounds1 = new(20);
+    public static readonly ArenaBoundsSquare DefaultBounds2 = new(19.5f);
 }

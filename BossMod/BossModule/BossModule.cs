@@ -261,7 +261,7 @@ public abstract class BossModule : IDisposable
 
     private void DrawGlobalHints(BossComponent.GlobalHints hints)
     {
-        ImGui.PushStyleColor(ImGuiCol.Text, 0xffffff00);
+        ImGui.PushStyleColor(ImGuiCol.Text, Colors.TextColor11);
         foreach (var hint in hints)
         {
             ImGui.TextUnformatted(hint);

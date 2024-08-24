@@ -293,7 +293,7 @@ public class StretchTetherDuo(BossModule module, float minimumDistance, float ac
         foreach (var bait in ActiveBaits.Where(x => x.Target == target))
         {
             if (Arena.Config.ShowOutlinesAndShadows)
-                Arena.AddLine(bait.Source.Position, bait.Target.Position, 0xFF000000, 2);
+                Arena.AddLine(bait.Source.Position, bait.Target.Position, Colors.Shadows, 2);
             Arena.AddLine(bait.Source.Position, bait.Target.Position, color);
         }
     }

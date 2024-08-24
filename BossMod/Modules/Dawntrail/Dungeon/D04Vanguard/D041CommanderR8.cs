@@ -87,7 +87,7 @@ class EnhancedMobilitySword(BossModule module) : Components.GenericAOEs(module)
 
     private void AddAOE(ActorCastInfo spell, Angle offset)
     {
-        _aoe = new AOEInstance(rect, Module.Center + 5 * spell.Rotation.ToDirection(), spell.Rotation + offset, Module.CastFinishAt(spell));
+        _aoe = new(rect, Module.Center + 5 * spell.Rotation.ToDirection(), spell.Rotation + offset, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -113,7 +113,7 @@ class RapidRotary(BossModule module) : Components.GenericAOEs(module)
         for (var i = 0; i < Math.Clamp(_aoes.Count, 0, 7); i++)
         {
             var aoe = _aoes[i];
-            yield return new AOEInstance(aoe.Shape, aoe.Origin, aoe.Rotation, aoe.Activation, i < 2 ? Colors.Danger : Colors.AOE);
+            yield return new(aoe.Shape, aoe.Origin, aoe.Rotation, aoe.Activation, i < 2 ? Colors.Danger : Colors.AOE);
         }
     }
 
