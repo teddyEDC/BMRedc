@@ -22,7 +22,7 @@ class HoneyBLiveHearts(BossModule module) : BossComponent(module)
             Hearts[slot] = 0;
     }
 
-    private int NumHearts(SID sid) => sid switch
+    private static int NumHearts(SID sid) => sid switch
     {
         SID.Hearts0 => 0,
         SID.Hearts1 => 1,
@@ -107,7 +107,7 @@ class Heartsore(BossModule module) : Components.SpreadFromIcon(module, (uint)Ico
 class Sweethearts(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCircle circle = new(1);
-    private readonly List<Actor> _hearts = [];
+    private readonly HashSet<Actor> _hearts = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _hearts.Select(a => new AOEInstance(circle, a.Position));
 

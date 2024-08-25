@@ -5,7 +5,7 @@ public enum OID : uint
     Boss = 0x3EAA, // R=26.0
     MammothTentacle = 0x3EAB, // R=6.0
     Crystals = 0x3EAC, // R=0.5
-    Helper = 0x233C,
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -23,7 +23,7 @@ public enum AID : uint
     VividEyes = 33355, // Boss->self, 4.0s cast, range 20-26 donut
     WaterDrop = 34436, // Helper->player, 5.0s cast, range 6 circle
     WallopVisual = 33350, // Boss->self, no cast, single-target, visual, starts tentacle wallops
-    Wallop = 33346, // MammothTentacle->self, 3.0s cast, range 22 width 8 rect
+    Wallop = 33346 // MammothTentacle->self, 3.0s cast, range 22 width 8 rect
 }
 
 class Wallop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Wallop), new AOEShapeRect(22, 4));

@@ -16,7 +16,7 @@ public enum OID : uint
     Thunder = 0x1EB88E, // R0.5
     Water = 0x1EB88D, // R0.5
     Fire = 0x1EB88B, // R0.5
-    ArenaWall = 0x1E8FB8, // R2.0
+    LivingGaol = 0x3EE2, // R3.7
     Helper = 0x233C,
     Helper2 = 0x3F53
 }
@@ -96,35 +96,23 @@ public enum AID : uint
     TatamiGaeshi = 33686, // Helper->self, 3.8s cast, range 40 width 10 rect
 
     //Right No Dogu
-    RockMebuki = 33697, // Boss->self, 3.0s cast, single-target
+    Mebuki = 33697, // Boss->self, 3.0s cast, single-target
     RockRootArrangementVisual = 33700, // Boss->self, 5.0s cast, single-target
     RockRootArrangementFirst = 33701, // Helper->location, 3.0s cast, range 4 circle
     RockRootArrangementRest = 33702, // Helper->location, no cast, range 4 circle
+    BehindBarbs = 33698, // AccursedSeedling->player, no cast, single-target
+    Explosion = 33699, // LivingGaol->player, 15.0s cast, single-target, seedling turns into prison if touched, explodes after 15s if not killed
 
     //Right Dogu
-    Witherwind = 33703 // Boss->self, 3.0s cast, single-target
-}
-
-public enum SID : uint
-{
-    SeasonsOfTheFleeting = 3623, // none->Boss, extra=0x0
-    Unknown = 2056, // none->3EE1, extra=0x243
+    Witherwind = 33703, // Boss->self, 3.0s cast, single-target
+    CuttingLeaves = 33704 // Helper->player, no cast, single-target, touch whirlwind
 }
 
 public enum IconID : uint
 {
     Tankbuster = 218, // player
-    Icon374 = 374, // Shibamaru/Shiromaru/Kuromaru
+    Gaze = 374, // Shibamaru/Shiromaru/Kuromaru
     RotateCW = 167, // Boss
     RotateCCW = 168, // Boss
-    RootArrangement = 197, // player
-}
-
-public enum TetherID : uint
-{
-    Thunder = 6, // Helper2->Boss
-    Wind = 4, // Helper2->Boss
-    Water = 3, // Helper2->Boss
-    Fire = 5, // Helper2->Boss
-    Tether79 = 79, // Helper2->Boss
+    ChasingAOE = 197, // player
 }

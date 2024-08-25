@@ -45,7 +45,5 @@ class D031SnatcherStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (LTS, Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 789, NameID = 10717)]
 public class D031Snatcher(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
 {
-    private static readonly List<Shape> union = [new Circle(new(-375, 85), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(-375, 106.25f), 20, 2.4f), new Rectangle(new(-375, 61), 20, 2, -30.Degrees())];
-    public static readonly ArenaBoundsComplex DefaultBounds = new(union, difference);
+    private static readonly ArenaBoundsComplex DefaultBounds = new([new Circle(new(-375, 85), 19.5f)], [new Rectangle(new(-375, 106.25f), 20, 2.4f), new Rectangle(new(-375, 61), 20, 2, -30.Degrees())]);
 }

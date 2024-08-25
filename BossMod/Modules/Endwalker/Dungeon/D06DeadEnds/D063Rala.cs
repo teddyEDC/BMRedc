@@ -92,9 +92,7 @@ class D063RalaStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 792, NameID = 10316)]
-public class D063Rala(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
+public class D063Rala(WorldState ws, Actor primary) : BossModule(ws, primary, defaultBounds.Center, defaultBounds)
 {
-    private static readonly List<Shape> union = [new Circle(new(-380, -135), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(-380, -114.25f), 20, 2)];
-    public static readonly ArenaBoundsComplex DefaultBounds = new(union, difference);
+    private static readonly ArenaBoundsComplex defaultBounds = new([new Circle(new(-380, -135), 19.5f)], [new Rectangle(new(-380, -114.25f), 20, 2)]);
 }

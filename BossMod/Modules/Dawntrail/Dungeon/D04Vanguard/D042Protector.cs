@@ -49,6 +49,7 @@ public enum SID : uint
 {
     LaserTurretsVisual = 2056, // Boss->Boss, extra=0x2CE
     AccelerationBomb = 3802, // Helper->player, extra=0x0
+    AccelerationBombNPCs = 4144, // Helper->NPCs, extra=0x0
 }
 
 class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
@@ -178,29 +179,18 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 class BatteryCircuit(BossModule module) : Components.GenericRotatingAOE(module)
 {
     private static readonly Angle _increment = -11.Degrees();
-    private bool started;
-    private int counter;
-
     private static readonly AOEShapeCone _shape = new(30, 15.Degrees());
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.BatteryCircuitFirst && !started)
-        {
+        if ((AID)spell.Action.ID == AID.BatteryCircuitFirst)
             Sequences.Add(new(_shape, caster.Position, spell.Rotation, _increment, Module.CastFinishAt(spell), 0.5f, 34, 9));
-            Sequences.Add(new(_shape, caster.Position, spell.Rotation + 180.Degrees(), _increment, Module.CastFinishAt(spell), 0.5f, 34, 9));
-            started = true;
-        }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if ((AID)spell.Action.ID is AID.BatteryCircuitFirst or AID.BatteryCircuitRest)
-            if (++counter % 2 == 0)
-            {
-                AdvanceSequence(1, WorldState.CurrentTime);
-                AdvanceSequence(0, WorldState.CurrentTime);
-            }
+            AdvanceSequence(caster.Position, caster.Rotation, WorldState.CurrentTime);
     }
 }
 
@@ -228,47 +218,32 @@ class TrackingBolt2(BossModule module) : Components.SpreadFromCastTargets(module
 
 class AccelerationBomb(BossModule module) : Components.StayMove(module)
 {
-    private bool pausedAI;
-    private DateTime expiresAt;
-    private bool expired;
+    private readonly DateTime[] _expire = new DateTime[4];
+
+    public override void Update()
+    {
+        base.Update();
+        var deadline = WorldState.FutureTime(3);
+        for (var i = 0; i < _expire.Length; ++i)
+            Requirements[i] = _expire[i] != default && _expire[i] < deadline ? Requirement.Stay : Requirement.None;
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (Requirements[slot] == Requirement.Stay && _expire[slot] != default && _expire[slot] < WorldState.FutureTime(0.3f))
+            hints.ForcedMovement = new();
+    }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if ((SID)status.ID == SID.AccelerationBomb)
-        {
-            if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
-                Requirements[slot] = Requirement.Stay;
-            if (actor == Module.Raid.Player()!)
-                expiresAt = status.ExpireAt;
-        }
+        if ((SID)status.ID is SID.AccelerationBomb or SID.AccelerationBombNPCs && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
+            _expire[slot] = status.ExpireAt;
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        if ((SID)status.ID == SID.AccelerationBomb)
-        {
-            if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
-            {
-                Requirements[slot] = Requirement.None;
-                expired = true;
-                expiresAt = default;
-            }
-        }
-    }
-
-    public override void Update()
-    {
-        if (expiresAt != default && AI.AIManager.Instance?.Beh != null && expiresAt.AddSeconds(-0.1f) <= Module.WorldState.CurrentTime)
-        {
-            AI.AIManager.Instance?.SwitchToIdle();
-            pausedAI = true;
-        }
-        else if (expired && pausedAI)
-        {
-            AI.AIManager.Instance?.SwitchToFollow(Service.Config.Get<AI.AIConfig>().FollowSlot);
-            pausedAI = false;
-            expired = false;
-        }
+        if ((SID)status.ID is SID.AccelerationBomb or SID.AccelerationBombNPCs && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
+            _expire[slot] = default;
     }
 }
 

@@ -36,8 +36,7 @@ class DownpourMagitekChakram(BossModule module) : Components.GenericAOEs(module)
 {
     private enum Mechanic { None, Downpour, Chakram }
     private Mechanic CurrentMechanic { get; set; }
-    private static readonly AOEShapeRect squareSafe = new(4, 4, 4, default, true);
-    private static readonly AOEShapeRect squareRisky = new(4, 4, 4);
+    private static readonly AOEShapeRect square = new(4, 4, 4);
     private static readonly WPos toad = new(213, 306);
     private static readonly WPos mini = new(229, 306);
     private const string toadHint = "Walk onto green square!";
@@ -49,14 +48,14 @@ class DownpourMagitekChakram(BossModule module) : Components.GenericAOEs(module)
         if (CurrentMechanic == Mechanic.Downpour)
         {
             var breathless = actor.FindStatus(SID.Breathless) != null;
-            yield return new(breathless ? squareSafe : squareRisky, toad, Color: breathless ? Colors.SafeFromAOE : Colors.AOE);
-            yield return new(squareRisky, mini);
+            yield return new(breathless ? square with { InvertForbiddenZone = true } : square, toad, Color: breathless ? Colors.SafeFromAOE : Colors.AOE);
+            yield return new(square, mini);
         }
         else if (CurrentMechanic == Mechanic.Chakram)
         {
             var minimum = !avoidSquares && actor.FindStatus(SID.Minimum) == null;
-            yield return new(minimum ? squareSafe : squareRisky, mini, Color: minimum ? Colors.SafeFromAOE : Colors.AOE);
-            yield return new(squareRisky, toad);
+            yield return new(minimum ? square with { InvertForbiddenZone = true } : square, mini, Color: minimum ? Colors.SafeFromAOE : Colors.AOE);
+            yield return new(square, toad);
         }
     }
 

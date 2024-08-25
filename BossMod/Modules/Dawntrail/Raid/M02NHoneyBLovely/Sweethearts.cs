@@ -3,7 +3,7 @@ namespace BossMod.Dawntrail.Raid.M02NHoneyBLovely;
 class Sweethearts(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCircle circle = new(1);
-    private readonly List<Actor> _hearts = [];
+    private readonly HashSet<Actor> _hearts = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _hearts.Select(a => new AOEInstance(circle, a.Position));
 

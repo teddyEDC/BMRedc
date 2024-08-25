@@ -4,7 +4,7 @@ public enum OID : uint
 {
     Boss = 0x4042, // R=6.0
     AethericCharge = 0x4043, // R=1.0
-    Helper = 0x233C,
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -34,7 +34,7 @@ public enum AID : uint
     DarkImpact2 = 35002, // Helper->self, 8.0s cast, range 25 circle
     DeathsJourney = 34995, // Boss->self, 6.0s cast, range 8 circle
     DeathsJourney2 = 34996, // Helper->self, 6.5s cast, range 30 30-degree cone, this does the damage
-    DeathsJourney3 = 35872, // Helper->self, 6.5s cast, range 30 30-degree cone, visual
+    DeathsJourney3 = 35872 // Helper->self, 6.5s cast, range 30 30-degree cone, visual
 }
 
 class OldMagicArenaChange(BossModule module) : Components.GenericAOEs(module)

@@ -6,7 +6,7 @@ public enum OID : uint
     StonePillar = 0x4023, // R=3.0
     StonePillar2 = 0x3FD1, // R=1.5
     QuicksandVoidzone = 0x1EB90E,
-    Helper = 0x233C,
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -22,31 +22,29 @@ public enum AID : uint
     Towerfall = 34820, // StonePillar->self, 2.0s cast, range 40 width 10 rect
     EarthenGeyser = 34821, // Boss->self, 4.0s cast, single-target
     EarthenGeyser2 = 34822, // Helper->players, 5.0s cast, range 10 circle
-    PoundSand = 34443, // Boss->location, 6.0s cast, range 12 circle
+    PoundSand = 34443 // Boss->location, 6.0s cast, range 12 circle
 }
 
 class Sandblast(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Sandblast));
 
 class SandblastVoidzone(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeRect rect = new(19.5f, 2.5f, 19.5f);
-    private readonly List<AOEInstance> _aoes = [];
+    private static readonly AOEShapeCustom rect = new([new Rectangle(D132DamcyanAntlion.ArenaCenter, 19.5f, 25)], [new Rectangle(D132DamcyanAntlion.ArenaCenter, 19.5f, 20)]);
+    private AOEInstance? _aoe;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Sandblast && Module.Arena.Bounds == D132DamcyanAntlion.StartingBounds)
-        {
-            _aoes.Add(new(rect, Module.Center + new WDir(0, -22.5f), 90.Degrees(), Module.CastFinishAt(spell)));
-            _aoes.Add(new(rect, Module.Center + new WDir(0, 22.5f), 90.Degrees(), Module.CastFinishAt(spell)));
-        }
+        if ((AID)spell.Action.ID == AID.Sandblast && Arena.Bounds == D132DamcyanAntlion.StartingBounds)
+            _aoe = new(rect, Arena.Center, default, Module.CastFinishAt(spell));
     }
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x00)
         {
-            Module.Arena.Bounds = D132DamcyanAntlion.DefaultBounds;
-            _aoes.Clear();
+            Arena.Bounds = D132DamcyanAntlion.DefaultBounds;
+            _aoe = null;
         }
     }
 }
@@ -118,7 +116,7 @@ class AntlionMarch(BossModule module) : Components.GenericAOEs(module)
             _aoes.Add(new(new AOEShapeRect(dir.Length(), 4.5f), caster.Position, Angle.FromDirection(dir))); // actual charge is only 4 halfwidth, but the telegraphs and actual AOEs can be in different positions by upto 0.5y according to my logs
         }
         if ((AID)spell.Action.ID == AID.AntlionMarch)
-            _activation = Module.CastFinishAt(spell, 0.2f); //since these are charges of different length with 0s cast time, the activation times are different for each and there are different patterns, so we just pretend that they all start after the telegraphs end
+            _activation = Module.CastFinishAt(spell, 0.2f); // since these are charges of different length with 0s cast time, the activation times are different for each and there are different patterns, so we just pretend that they all start after the telegraphs end
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -213,8 +211,9 @@ class D132DamcyanAntlionStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 823, NameID = 12484)]
-public class D132DamcyanAntlion(WorldState ws, Actor primary) : BossModule(ws, primary, new(0, 60), StartingBounds)
+public class D132DamcyanAntlion(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
 {
+    public static readonly WPos ArenaCenter = new(0, 60);
     public static readonly ArenaBounds StartingBounds = new ArenaBoundsRect(19.5f, 25);
     public static readonly ArenaBounds DefaultBounds = new ArenaBoundsRect(19.5f, 20);
 }

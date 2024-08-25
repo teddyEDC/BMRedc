@@ -6,9 +6,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     private static readonly ArenaBoundsSquare squareBounds = new(24);
     private static readonly ArenaBoundsCircle smallerBounds = new(30);
     public static readonly ArenaBoundsCircle BigBounds = new(35);
-    private static readonly Circle circle = new(Center, 30);
-    private static readonly Square square = new(Center, 24);
-    private static readonly AOEShapeCustom transitionSquare = new([circle], [square]);
+    private static readonly AOEShapeCustom transitionSquare = new([new Circle(Center, 30)], [new Square(Center, 24)]);
     private static readonly AOEShapeDonut transitionSmallerBounds = new(30, 35);
     private AOEInstance? _aoe;
 
@@ -19,9 +17,9 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
         if (index == 0x1B)
         {
             if (state == 0x00080004)
-                Module.Arena.Bounds = BigBounds;
-            if (state == 0x00100001)
-                Module.Arena.Bounds = smallerBounds;
+                Arena.Bounds = BigBounds;
+            else if (state == 0x00100001)
+                Arena.Bounds = smallerBounds;
         }
     }
 
@@ -29,7 +27,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.Hieroglyphika)
             _aoe = new(transitionSquare, Center, default, Module.CastFinishAt(spell));
-        if ((AID)spell.Action.ID == AID.Whorl)
+        else if ((AID)spell.Action.ID == AID.Whorl)
             _aoe = new(transitionSmallerBounds, Center, default, Module.CastFinishAt(spell));
     }
 
@@ -37,12 +35,12 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.Hieroglyphika)
         {
-            Module.Arena.Bounds = squareBounds;
+            Arena.Bounds = squareBounds;
             _aoe = null;
         }
-        if ((AID)spell.Action.ID == AID.Whorl)
+        else if ((AID)spell.Action.ID == AID.Whorl)
         {
-            Module.Arena.Bounds = smallerBounds;
+            Arena.Bounds = smallerBounds;
             _aoe = null;
         }
     }

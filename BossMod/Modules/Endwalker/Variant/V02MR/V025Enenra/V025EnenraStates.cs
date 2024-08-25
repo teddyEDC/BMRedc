@@ -5,15 +5,16 @@ class V025EnenraStates : StateMachineBuilder
     public V025EnenraStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<ArenaChange>()
+            .ActivateOnEnter<Components.StayInBounds>()
             .ActivateOnEnter<PipeCleaner>()
             .ActivateOnEnter<Uplift>()
             .ActivateOnEnter<Snuff>()
             .ActivateOnEnter<Smoldering>()
-            .ActivateOnEnter<IntoTheFireAOE>()
+            .ActivateOnEnter<IntoTheFire>()
             .ActivateOnEnter<FlagrantCombustion>()
-            .ActivateOnEnter<SmokeRingsAOE>()
-            .ActivateOnEnter<ClearingSmokeKB>()
-            .ActivateOnEnter<KiseruClamor>()
+            .ActivateOnEnter<SmokeRings>()
+            .ActivateOnEnter<ClearingSmoke>()
             .ActivateOnEnter<StringRock>();
     }
 }
