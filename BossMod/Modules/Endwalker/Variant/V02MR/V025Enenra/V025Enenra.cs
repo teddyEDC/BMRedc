@@ -66,4 +66,10 @@ public class V025Enenra(WorldState ws, Actor primary) : BossModule(ws, primary, 
 {
     public static readonly ArenaBoundsCircle StartingBounds = new(20.5f);
     public static readonly ArenaBoundsCircle DefaultBounds = new(20);
+
+    protected override void DrawEnemies(int pcSlot, Actor pc)
+    {
+        Arena.Actor(PrimaryActor);
+        Arena.Actors(Enemies(OID.EnenraClone));
+    }
 }
