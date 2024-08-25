@@ -2,12 +2,12 @@
 
 public enum OID : uint
 {
-    Boss = 0x3F5C, // R3.450, x1
-    Helper = 0x233C, // R0.500, x13, 523 type
-    FlameAndSulphurFlame = 0x1EB893, // R0.500, EventObj type, spawn during fight
-    FlameAndSulphurRock = 0x1EB894, // R0.500, EventObj type, spawn during fight
-    ShishuWhiteBaboon = 0x3F5D, // R1.020, x0 (spawn during fight)
-    BallOfLevin = 0x3F60, // R0.690-2.300, x0 (spawn during fight)
+    Boss = 0x3F5C, // R3.45
+    FlameAndSulphurFlame = 0x1EB893, // R0.5
+    FlameAndSulphurRock = 0x1EB894, // R0.5
+    ShishuWhiteBaboon = 0x3F5D, // R1.02
+    BallOfLevin = 0x3F60, // R0.69-2.3
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -75,7 +75,7 @@ public enum AID : uint
     FightingSpiritsVisual = 34040, // Boss->self, 5.0s cast, single-target
     FightingSpirits = 34041, // Helper->self, 6.2s cast, range 30 circle
     BiwaBreakerFirst = 34045, // Boss->self, 4.0s cast, range 30 circle
-    BiwaBreakerRest = 34513, // Boss->self, no cast, range 30 circle
+    BiwaBreakerRest = 34513 // Boss->self, no cast, range 30 circle
 }
 
 public enum SID : uint
@@ -87,18 +87,12 @@ public enum SID : uint
     Transfiguration = 1608, // none->player, extra=0x1F7
     Stun = 2656, // Helper->player, extra=0x0
     AreaOfInfluenceUp = 618, // none->BallOfLevin, extra=0xA
-    SmallOrb = 2970, // Helper->BallOfLevin, extra=0x261
+    SmallOrb = 2970 // Helper->BallOfLevin, extra=0x261
 }
 
 public enum IconID : uint
 {
     RotateCW = 168, // Boss
     RotateCCW = 168, // Boss
-    Tankbuster = 344, // player
-}
-
-public enum TetherID : uint
-{
-    Tether248 = 248, // player->Boss
-    Tether80 = 80, // ShishuWhiteBaboon->player
+    Tankbuster = 344 // player
 }

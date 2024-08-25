@@ -3,7 +3,7 @@
 public enum OID : uint
 {
     Boss = 0x3EEA, //R=5.1
-    Helper = 0x233C,
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -28,13 +28,13 @@ public enum AID : uint
     Shock = 33365, // Helper->location, 3.5s cast, range 6 circle
     SpinningClaw = 33362, // Boss->self, 3.5s cast, range 10 circle
     ForkedFissures = 33361, // Helper->location, 1.0s cast, width 4 rect charge
-    SpunLightning = 33363, // Helper->self, 3.5s cast, range 30 width 8 rect
+    SpunLightning = 33363 // Helper->self, 3.5s cast, range 30 width 8 rect
 }
 
 public enum IconID : uint
 {
     Tankbuster = 218, // player
-    Stackmarker = 161, // 39D7/3DC2
+    Stackmarker = 161 // player
 }
 
 class BattleCryArenaChange(BossModule module) : Components.GenericAOEs(module)
@@ -50,11 +50,11 @@ class BattleCryArenaChange(BossModule module) : Components.GenericAOEs(module)
         {
             if (state == 0x00020001)
             {
-                Module.Arena.Bounds = D122Arkas.SmallerBounds;
+                Arena.Bounds = D122Arkas.SmallerBounds;
                 _aoe = null;
             }
-            if (state == 0x00080004)
-                Module.Arena.Bounds = D122Arkas.DefaultBounds;
+            else if (state == 0x00080004)
+                Arena.Bounds = D122Arkas.DefaultBounds;
         }
     }
 
@@ -140,7 +140,7 @@ class ForkedFissures(BossModule module) : Components.GenericAOEs(module)
             _patternEnd.AddRange(pattern.End);
             for (var i = _patternStart.Count - 1; i >= 0; i--)
             {
-                _aoes.Add(new AOEInstance(new AOEShapeRect((_patternEnd[i] - _patternStart[i]).Length(), 2), _patternStart[i], Angle.FromDirection(_patternEnd[i] - _patternStart[i]), WorldState.FutureTime(6)));
+                _aoes.Add(new(new AOEShapeRect((_patternEnd[i] - _patternStart[i]).Length(), 2), _patternStart[i], Angle.FromDirection(_patternEnd[i] - _patternStart[i]), WorldState.FutureTime(6)));
                 _patternStart.RemoveAt(i);
                 _patternEnd.RemoveAt(i);
             }
@@ -193,9 +193,6 @@ class D122ArkasStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "dhoggpt, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 822, NameID = 12337)]
 public class D122Arkas(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
 {
-    private static readonly List<Shape> union = [new Circle(new(425, -440), 14.55f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(425, -424), 20, 2.4f), new Rectangle(new(425, -455), 10, 1.25f)];
-
-    public static readonly ArenaBoundsComplex DefaultBounds = new(union, difference);
+    public static readonly ArenaBoundsComplex DefaultBounds = new([new Circle(new(425, -440), 14.55f)], [new Rectangle(new(425, -424), 20, 2.4f), new Rectangle(new(425, -455), 10, 1.25f)]);
     public static readonly ArenaBoundsCircle SmallerBounds = new(10);
 }

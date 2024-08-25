@@ -6,6 +6,7 @@ class V022MokoOtherPathsStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<ArenaChange>()
+            .ActivateOnEnter<Components.StayInBounds>()
             //Route 1
             .ActivateOnEnter<Unsheathing>()
             .ActivateOnEnter<VeilSever>()

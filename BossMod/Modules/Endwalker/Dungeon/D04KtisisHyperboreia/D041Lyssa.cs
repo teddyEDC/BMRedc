@@ -83,7 +83,5 @@ class D041LyssaStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 787, NameID = 10396)]
 public class D041Lyssa(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly List<Shape> union = [new Circle(new(-144, 49), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(-144, 28), 20, 2), new Rectangle(new(-144, 70), 20, 2)];
-    public static readonly ArenaBoundsComplex arena = new(union, difference);
+    public static readonly ArenaBoundsComplex arena = new([new Circle(new(-144, 49), 19.5f)], [new Rectangle(new(-144, 28), 20, 2), new Rectangle(new(-144, 70), 20, 2)]);
 }

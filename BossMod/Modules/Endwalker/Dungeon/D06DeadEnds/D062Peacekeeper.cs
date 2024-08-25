@@ -41,15 +41,15 @@ class DecimationArenaChange(BossModule module) : Components.GenericAOEs(module)
     {
         if (index == 0x17 && state == 0x00020001)
         {
-            Module.Arena.Bounds = D062Peacekeeper.SmallerBounds;
+            Arena.Bounds = D062Peacekeeper.SmallerBounds;
             _aoe = null;
         }
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Decimation && Module.Arena.Bounds == D062Peacekeeper.StartingBounds)
-            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 0.4f));
+        if ((AID)spell.Action.ID == AID.Decimation && Arena.Bounds == D062Peacekeeper.StartingBounds)
+            _aoe = new(donut, Arena.Center, default, Module.CastFinishAt(spell, 0.4f));
     }
 }
 

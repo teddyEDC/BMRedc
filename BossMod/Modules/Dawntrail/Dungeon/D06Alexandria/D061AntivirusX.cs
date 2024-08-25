@@ -42,15 +42,15 @@ class ImmuneResponseArenaChange(BossModule module) : Components.GenericAOEs(modu
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.ImmuneResponseVisualSmall && Module.Arena.Bounds == D061AntivirusX.StartingBounds)
-            _aoe = new(rect, Module.Center, default, Module.CastFinishAt(spell, 0.8f));
+        if ((AID)spell.Action.ID == AID.ImmuneResponseVisualSmall && Arena.Bounds == D061AntivirusX.StartingBounds)
+            _aoe = new(rect, Arena.Center, default, Module.CastFinishAt(spell, 0.8f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x03)
         {
-            Module.Arena.Bounds = D061AntivirusX.DefaultBounds;
+            Arena.Bounds = D061AntivirusX.DefaultBounds;
             _aoe = null;
         }
     }

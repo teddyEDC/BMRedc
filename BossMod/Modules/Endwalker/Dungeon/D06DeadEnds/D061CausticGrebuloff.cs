@@ -80,7 +80,7 @@ class Necrosis(BossModule module) : BossComponent(module)
         {
             if (_doomed.Count > 0 && actor.Role == Role.Healer)
                 hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Esuna), c, ActionQueue.Priority.High);
-            if (_doomed.Count > 0 && actor.Class == Class.BRD)
+            else if (_doomed.Count > 0 && actor.Class == Class.BRD)
                 hints.ActionsToExecute.Push(ActionID.MakeSpell(BRD.AID.WardensPaean), c, ActionQueue.Priority.High);
         }
     }
@@ -245,9 +245,7 @@ class D061CausticGrebuloffStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 792, NameID = 10313)]
-public class D061CausticGrebuloff(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
+public class D061CausticGrebuloff(WorldState ws, Actor primary) : BossModule(ws, primary, defaultBounds.Center, defaultBounds)
 {
-    private static readonly List<Shape> union = [new Circle(new(266.5f, -178), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(266.5f, -198.75f), 20, 2), new Rectangle(new(266.5f, -157), 20, 2)];
-    public static readonly ArenaBoundsComplex DefaultBounds = new(union, difference);
+    private static readonly ArenaBoundsComplex defaultBounds = new([new Circle(new(266.5f, -178), 19.5f)], [new Rectangle(new(266.5f, -198.75f), 20, 2), new Rectangle(new(266.5f, -157), 20, 2)]);
 }

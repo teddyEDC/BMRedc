@@ -203,7 +203,7 @@ public record class ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon 
     {
         if (Cache.TryGetValue((Poly, offset), out var cachedResult)) // caching ClampToBounds seems to lower drawtime by about 50%
             return (WDir)cachedResult;
-        if (Contains(offset))
+        if (Contains(offset) || offset.AlmostEqual(default, 0.1f)) // if actor is almost in the center of the arena, do nothing (eg donut arena)
         {
             Cache[(Poly, offset)] = offset;
             return offset;

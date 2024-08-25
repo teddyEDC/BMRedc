@@ -97,7 +97,5 @@ class D091AmbujamStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 844, NameID = 11241)]
 public class D091Ambujam(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
 {
-    private static readonly List<Shape> union = [new Circle(new(124, -90), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(124, -110.25f), 20, 2), new Rectangle(new(124, -69.5f), 20, 2)];
-    public static readonly ArenaBoundsComplex DefaultBounds = new(union, difference);
+    private static readonly ArenaBoundsComplex DefaultBounds = new([new Circle(new(124, -90), 19.5f)], [new Rectangle(new(124, -110.25f), 20, 2), new Rectangle(new(124, -69.5f), 20, 2)]);
 }
