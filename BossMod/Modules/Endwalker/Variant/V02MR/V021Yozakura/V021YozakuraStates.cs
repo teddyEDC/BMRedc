@@ -5,8 +5,11 @@ class V021YozakuraStates : StateMachineBuilder
     public V021YozakuraStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<ArenaChange>()
+            .ActivateOnEnter<Components.StayInBounds>()
             //Right No Dogu
             .ActivateOnEnter<RootArrangement>()
+            .ActivateOnEnter<AccursedSeedling>()
             //Right Dogu
             .ActivateOnEnter<Witherwind>()
             //Left Windy
@@ -26,7 +29,6 @@ class V021YozakuraStates : StateMachineBuilder
             .ActivateOnEnter<LevinblossomLance>()
             .ActivateOnEnter<TatamiGaeshi>()
             //Standard
-            .ActivateOnEnter<ArenaChange>()
             .ActivateOnEnter<Components.StayInBounds>()
             .ActivateOnEnter<GloryNeverlasting>()
             .ActivateOnEnter<KugeRantsui>()

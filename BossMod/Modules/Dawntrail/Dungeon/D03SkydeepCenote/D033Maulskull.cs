@@ -150,13 +150,13 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
+            data = (caster.Position, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()), data.Item2.AddSeconds(-0.5f));
+        if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.7s delay to wait for action effect
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 30.Degrees()), data.Item2.AddSeconds(-0.7f));
     }
 }
 
@@ -170,13 +170,13 @@ class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
+            data = (caster.Position, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()), data.Item2.AddSeconds(-0.5f));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 12, default, 20.Degrees()), data.Item2.AddSeconds(-0.7f));
     }
 }
 
@@ -195,9 +195,9 @@ class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
+        if (Sources(slot, actor).Any() || data.Item2 > Module.WorldState.CurrentTime) // 0.7s delay to wait for action effect
         {
-            var activation = data.Item2.AddSeconds(-0.5f);
+            var activation = data.Item2.AddSeconds(-0.7f);
             if (data.Item1.X == 90)
                 hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(data.Item1, 10, 15, direction, halfAngle), activation);
             else if (data.Item1.X == 110)

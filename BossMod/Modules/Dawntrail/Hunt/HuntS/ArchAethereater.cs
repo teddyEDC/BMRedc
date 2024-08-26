@@ -42,11 +42,17 @@ public enum SID : uint
 
 class Heatstroke(BossModule module) : Components.StayMove(module)
 {
-    private bool pausedAI;
-    private DateTime expiresAt;
-    private bool expired;
+    private readonly DateTime[] _expire = new DateTime[4];
     private BitMask _pyretic;
     private BitMask _heatstroke;
+
+    public override void Update()
+    {
+        base.Update();
+        var deadline = WorldState.FutureTime(3);
+        for (var i = 0; i < _expire.Length; ++i)
+            Requirements[i] = _expire[i] != default && _expire[i] < deadline ? Requirement.Stay : Requirement.None;
+    }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
@@ -54,16 +60,11 @@ class Heatstroke(BossModule module) : Components.StayMove(module)
         {
             if ((SID)status.ID == SID.Heatstroke)
             {
-                Requirements[slot] = Requirement.Stay;
                 _heatstroke.Set(Raid.FindSlot(actor.InstanceID));
-                if (actor == Module.Raid.Player()!)
-                    expiresAt = status.ExpireAt;
+                _expire[slot] = status.ExpireAt;
             }
             else if ((SID)status.ID == SID.Pyretic)
-            {
                 _pyretic.Set(Raid.FindSlot(actor.InstanceID));
-                Requirements[slot] = Requirement.Stay;
-            }
         }
     }
 
@@ -74,13 +75,11 @@ class Heatstroke(BossModule module) : Components.StayMove(module)
             if ((SID)status.ID == SID.Heatstroke)
             {
                 _heatstroke.Clear(Raid.FindSlot(actor.InstanceID));
-                Requirements[slot] = Requirement.None;
+                _expire[slot] = default;
             }
             else if ((SID)status.ID == SID.Pyretic)
             {
-                Requirements[slot] = Requirement.None;
-                expired = true;
-                expiresAt = default;
+                _expire[slot] = default;
                 _pyretic.Clear(Raid.FindSlot(actor.InstanceID));
             }
         }
@@ -94,19 +93,10 @@ class Heatstroke(BossModule module) : Components.StayMove(module)
             hints.Add("Pyretic on you! STOP everything!");
     }
 
-    public override void Update()
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (expiresAt != default && AI.AIManager.Instance?.Beh != null && expiresAt.AddSeconds(-0.1f) <= Module.WorldState.CurrentTime)
-        {
-            AI.AIManager.Instance?.SwitchToIdle();
-            pausedAI = true;
-        }
-        else if (expired && pausedAI)
-        {
-            AI.AIManager.Instance?.SwitchToFollow(Service.Config.Get<AI.AIConfig>().FollowSlot);
-            pausedAI = false;
-            expired = false;
-        }
+        if (Requirements[slot] == Requirement.Stay && _expire[slot] != default && _expire[slot] < WorldState.FutureTime(0.3f))
+            hints.ForcedMovement = new();
     }
 }
 

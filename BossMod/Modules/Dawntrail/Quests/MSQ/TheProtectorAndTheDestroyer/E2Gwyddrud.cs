@@ -98,10 +98,11 @@ class RoaringBoltKB(BossModule module) : Components.KnockbackFromCastTarget(modu
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<RoaringBolt>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 1.2s delay to wait for action effect
+        if (Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 1.2s delay to wait for action effect
         {
-            foreach (var c in component!)
-                forbidden.Add(ShapeDistance.Cone(Module.Center, 19.5f, Angle.FromDirection(c.Origin - Module.Center), 25.Degrees()));
+            if (component != null && component.Count != 0)
+                foreach (var c in component)
+                    forbidden.Add(ShapeDistance.Cone(Module.Center, 19.5f, Angle.FromDirection(c.Origin - Module.Center), 25.Degrees()));
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Activation);
         }

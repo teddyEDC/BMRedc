@@ -4,12 +4,8 @@ class AzureAuspice(BossModule module) : Components.SelfTargetedAOEs(module, Acti
 class BoundlessAzure(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BoundlessAzure), new AOEShapeRect(30, 5, 30));
 class KenkiRelease(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.KenkiRelease));
 class IronRain(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.IronRain), 10);
-
-//Route 1
 class Unsheathing(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Unsheathing), 3);
 class VeilSever(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.VeilSever), new AOEShapeRect(40, 2.5f));
-
-//Route 2
 class ScarletAuspice(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ScarletAuspice), new AOEShapeCircle(6));
 class MoonlessNight(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MoonlessNight));
 class Clearout(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Clearout), new AOEShapeCone(27, 90.Degrees())); // origin is detected incorrectly, need to add 5 range to correct it
@@ -27,10 +23,7 @@ class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
     }
 }
 
-//Route 3
 class GhastlyGrasp(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GhastlyGrasp), 5);
-
-//Route 4
 class Spiritflame(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Spiritflame), 6);
 class Spiritflames(BossModule module) : Components.GenericAOEs(module)
 {
@@ -58,8 +51,8 @@ class Spiritflames(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "The Combat Reborn Team", PrimaryActorOID = (uint)OID.Boss, GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12357, SortOrder = 2)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", PrimaryActorOID = (uint)OID.Boss, GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12357, SortOrder = 2)]
 public class V022MokoOtherPaths(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaChange.ArenaCenter, ArenaChange.StartingBounds);
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "The Combat Reborn Team", PrimaryActorOID = (uint)OID.BossP2, GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12357, SortOrder = 3)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", PrimaryActorOID = (uint)OID.BossP2, GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12357, SortOrder = 3)]
 public class V022MokoPath2(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaChange.ArenaCenter, ArenaChange.StartingBounds);

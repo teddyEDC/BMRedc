@@ -108,10 +108,23 @@ class Antediluvian(BossModule module) : Components.SelfTargetedAOEs(module, Acti
 class BodySlam(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BodySlam3), new AOEShapeCircle(8));
 class BodySlamKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BodySlam2), 10, true)
 {
+    private WPos data;
+    private DateTime activation;
+
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    {
+        base.OnCastStarted(caster, spell);
+        if ((AID)spell.Action.ID == AID.BodySlam2)
+        {
+            activation = Module.CastFinishAt(spell, 0.4f);
+            data = caster.Position;
+        }
+    }
+
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() && Module.FindComponent<Antediluvian>()!.NumCasts >= 4)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center, 10), Sources(slot, actor).FirstOrDefault().Activation);
+        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime && Module.FindComponent<Antediluvian>()!.NumCasts >= 4)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(data, 10), activation.AddSeconds(-0.4f));
     }
 }
 

@@ -71,13 +71,12 @@ class Turbine(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<BitingWind>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
         {
-            foreach (var c in component!)
-            {
-                forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, 5));
-                forbidden.Add(ShapeDistance.Cone(Module.Center, 20, Angle.FromDirection(c.Origin - Module.Center), 20.Degrees()));
-            }
+            forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, 5));
+            if (component != null && component.Count != 0)
+                foreach (var c in component)
+                    forbidden.Add(ShapeDistance.Cone(Module.Center, 20, Angle.FromDirection(c.Origin - Module.Center), 20.Degrees()));
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), activation.AddSeconds(-1));
         }

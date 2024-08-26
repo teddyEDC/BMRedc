@@ -3,9 +3,9 @@
 public enum OID : uint
 {
     Boss = 0x3EEB, //R=7.6
-    Helper = 0x233C,
     SmallCrystal = 0x1EB882, // R=0.5
     BigCrystal = 0x1EB883, // R=0.5
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -19,7 +19,7 @@ public enum AID : uint
     Tidalspout = 33343, // Helper->player, 5.0s cast, range 6 circle
     Upsweep = 33338, // Boss->self, 5.0s cast, range 40 circle
     Floodstide = 33341, // Boss->self, 3.0s cast, single-target        
-    Waterspout = 33342, // Helper->player, 5.0s cast, range 5 circle, spread
+    Waterspout = 33342 // Helper->player, 5.0s cast, range 5 circle, spread
 }
 
 class Frequencies(BossModule module) : Components.GenericAOEs(module)
@@ -90,8 +90,5 @@ class D121LyngbakrStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "dhoggpt, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 822, NameID = 12336)]
 public class D121Lyngbakr(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly List<Shape> union = [new Circle(new(-322, 120), 19.75f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(-322, 99), 20, 2.25f), new Rectangle(new(-322, 140), 20, 1.25f)];
-    public static readonly ArenaBounds arena = new ArenaBoundsComplex(union, difference);
-
+    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(-322, 120), 19.75f)], [new Rectangle(new(-322, 99), 20, 2.25f), new Rectangle(new(-322, 140), 20, 1.25f)]);
 }
