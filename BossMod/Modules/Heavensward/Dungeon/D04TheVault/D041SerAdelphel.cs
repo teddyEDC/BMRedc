@@ -89,7 +89,6 @@ class ShiningBlade(BossModule module) : Components.GenericAOEs(module)
     private static readonly WPos East = new(18.387f, -100.053f);
 
     private const int HalfWidth = 3;
-    private const float FirstActivationDelay = 0.08f;
     private const float SubsequentActivationDelay = 2.2f;
     private static readonly Angle Angle90Degrees = 90.Degrees();
     private static readonly Angle Angle180Degrees = 180.Degrees();
@@ -113,16 +112,16 @@ class ShiningBlade(BossModule module) : Components.GenericAOEs(module)
             return;
 
         var primary = Module.PrimaryActor.Position;
-        var activationTimes = GetActivationTimes();
+        var activationTimes = GetActivationTimes(WorldState.FutureTime(0.08f));
 
         if (primary.InCone(Module.Center, Angle90Degrees, ConeAngle))
-            AddAoeInstances(primary, West, South, North, East, activationTimes);
+            AddAOEs(primary, West, South, North, East, activationTimes);
         else if (primary.InCone(Module.Center, AngleMinus90Degrees, ConeAngle))
-            AddAoeInstances(primary, East, North, South, West, activationTimes);
+            AddAOEs(primary, East, North, South, West, activationTimes);
         else if (primary.InCone(Module.Center, Angle180Degrees, ConeAngle))
-            AddAoeInstances(primary, South, East, West, North, activationTimes);
+            AddAOEs(primary, South, East, West, North, activationTimes);
         else if (primary.InCone(Module.Center, Angle0Degrees, ConeAngle))
-            AddAoeInstances(primary, North, West, East, South, activationTimes);
+            AddAOEs(primary, North, West, East, South, activationTimes);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -131,9 +130,8 @@ class ShiningBlade(BossModule module) : Components.GenericAOEs(module)
             _aoes.RemoveAt(0);
     }
 
-    private List<DateTime> GetActivationTimes()
+    private static List<DateTime> GetActivationTimes(DateTime activation)
     {
-        var activation = WorldState.FutureTime(FirstActivationDelay);
         return
         [
             activation,
@@ -143,12 +141,12 @@ class ShiningBlade(BossModule module) : Components.GenericAOEs(module)
         ];
     }
 
-    private void AddAoeInstances(WPos primary, WPos first, WPos second, WPos third, WPos fourth, List<DateTime> activationTimes)
+    private void AddAOEs(WPos primary, WPos first, WPos second, WPos third, WPos fourth, List<DateTime> activationTimes)
     {
-        _aoes.Add(new AOEInstance(new AOEShapeRect((first - primary).Length(), HalfWidth), primary, Angle.FromDirection(first - primary), activationTimes[0]));
-        _aoes.Add(new AOEInstance(new AOEShapeRect((second - first).Length(), HalfWidth), first, Angle.FromDirection(second - first), activationTimes[1]));
-        _aoes.Add(new AOEInstance(new AOEShapeRect((third - second).Length(), HalfWidth), second, Angle.FromDirection(third - second), activationTimes[2]));
-        _aoes.Add(new AOEInstance(new AOEShapeRect((fourth - third).Length(), HalfWidth), third, Angle.FromDirection(fourth - third), activationTimes[3]));
+        _aoes.Add(new(new AOEShapeRect((first - primary).Length(), HalfWidth), primary, Angle.FromDirection(first - primary), activationTimes[0]));
+        _aoes.Add(new(new AOEShapeRect((second - first).Length(), HalfWidth), first, Angle.FromDirection(second - first), activationTimes[1]));
+        _aoes.Add(new(new AOEShapeRect((third - second).Length(), HalfWidth), second, Angle.FromDirection(third - second), activationTimes[2]));
+        _aoes.Add(new(new AOEShapeRect((fourth - third).Length(), HalfWidth), third, Angle.FromDirection(fourth - third), activationTimes[3]));
     }
 }
 

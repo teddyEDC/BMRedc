@@ -18,7 +18,7 @@ class BarbarousBarrageTowers(BossModule module) : Components.GenericTowers(modul
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (CurState == State.None && index is 14 or 15)
-            SetState(index == 14 ? State.NextNS : State.NextEW, 4);
+            SetState(index == 14 ? State.NextNS : State.NextEW, 4, 10.1f);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -26,25 +26,25 @@ class BarbarousBarrageTowers(BossModule module) : Components.GenericTowers(modul
         switch ((AID)spell.Action.ID)
         {
             case AID.BarbarousBarrageExplosion4:
-                SetState(State.NextCorners, 2);
+                SetState(State.NextCorners, 2, 3);
                 break;
             case AID.BarbarousBarrageExplosion2:
-                SetState(State.NextCenter, 8);
+                SetState(State.NextCenter, 8, 3);
                 break;
             case AID.BarbarousBarrageExplosion8:
-                SetState(State.Done, 1);
+                SetState(State.Done, 1, default);
                 break;
         }
     }
 
-    private void SetState(State state, int soakers)
+    private void SetState(State state, int soakers, float activation)
     {
         if (CurState != state)
         {
             CurState = state;
             Towers.Clear();
             foreach (var p in TowerPositions(state))
-                Towers.Add(new(p, 4, soakers, soakers));
+                Towers.Add(new(p, 4, soakers, soakers, default, Module.WorldState.FutureTime(activation)));
         }
     }
 
@@ -92,7 +92,7 @@ class BarbarousBarrageKnockback(BossModule module) : Components.Knockback(module
                     8 => 15,
                     _ => 0
                 };
-                yield return new(t.Position, dist, default, _shape);
+                yield return new(t.Position, dist, t.Activation, _shape);
             }
         }
     }
