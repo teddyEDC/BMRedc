@@ -80,7 +80,7 @@ class D013LoreleiStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6074)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6074)]
 public class D013Lorelei(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultArena.Center, DefaultArena)
 {
     public static readonly WPos ArenaCenter = new(-44.5f, 465);
