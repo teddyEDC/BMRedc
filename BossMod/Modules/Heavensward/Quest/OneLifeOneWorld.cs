@@ -39,7 +39,7 @@ class BladeOfLight(BossModule module) : BossComponent(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         if (Blade != null)
-            Arena.Actor(Blade, ArenaColor.Vulnerable);
+            Arena.Actor(Blade, Colors.Vulnerable);
     }
 }
 
@@ -53,7 +53,7 @@ class TargetPriorityHandler(BossModule module) : BossComponent(module)
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
         if (Knight != null && Covered != null)
-            Arena.AddLine(Knight.Position, Covered.Position, ArenaColor.Danger, 1);
+            Arena.AddLine(Knight.Position, Covered.Position, Colors.Danger, 1);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -120,5 +120,5 @@ class WarriorOfDarknessStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 194, NameID = 5240)]
+[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "xan", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 194, NameID = 5240)]
 public class WarriorOfDarkness(WorldState ws, Actor primary) : BossModule(ws, primary, new(0, 0), new ArenaBoundsCircle(20));
