@@ -89,7 +89,7 @@ class ArenaBounds
         }
     }
 
-    private WPos CalculateCentroid(List<WPos> points)
+    private static WPos CalculateCentroid(List<WPos> points)
     {
         if (points == null || points.Count == 0)
             return default; // Return zero vector if no points
@@ -108,7 +108,7 @@ class ArenaBounds
     }
 }
 
-public class ConcaveHull
+public static class ConcaveHull
 {
     private static double Distance(WPos a, WPos b) => (b - a).Length();
 
