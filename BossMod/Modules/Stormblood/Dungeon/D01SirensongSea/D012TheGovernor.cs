@@ -106,11 +106,9 @@ class DO12TheGovernorStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6072)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 238, NameID = 6072)]
 public class DO12TheGovernor(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     public static readonly WPos ArenaCenter = new(-8, 79);
-    private static readonly List<Shape> union = [new Circle(ArenaCenter, 19.25f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(-1.5f, 60.5f), 20, 1.25f, 20.Degrees()), new Rectangle(new(-8, 99), 20, 1)];
-    private static readonly ArenaBounds arena = new ArenaBoundsComplex(union, difference);
+    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(ArenaCenter, 19.25f)], [new Rectangle(new(-1.5f, 60.5f), 20, 1.25f, 20.Degrees()), new Rectangle(new(-8, 99), 20, 1)]);
 }

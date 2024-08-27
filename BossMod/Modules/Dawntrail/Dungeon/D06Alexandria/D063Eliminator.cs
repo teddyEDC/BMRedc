@@ -220,7 +220,7 @@ class D063EliminatorStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 827, NameID = 12729)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 827, NameID = 12729)]
 public class D063Eliminator(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
 {
     public static readonly WPos ArenaCenter = new(-759, -648);

@@ -83,7 +83,7 @@ class Chains(BossModule module) : BossComponent(module)
     {
         if (chaintarget != null && !chainsactive)
             hints.Add($"{chaintarget.Name} is about to be chained!");
-        if (chaintarget != null && chainsactive)
+        else if (chaintarget != null && chainsactive)
             hints.Add($"Destroy chains on {chaintarget.Name}!");
     }
 
@@ -120,23 +120,19 @@ class Chains(BossModule module) : BossComponent(module)
 
 class Aethersup(BossModule module) : Components.GenericAOEs(module)
 {
-    private DateTime _activation;
-    private Angle _rotation;
     private static readonly AOEShapeCone cone = new(24, 60.Degrees());
+    private AOEInstance _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (_activation != default)
-            yield return new(cone, Module.PrimaryActor.Position, _rotation, _activation, Risky: Module.Enemies(OID.IronChain).All(x => x.IsDead));
+        if (_aoe != default)
+            yield return _aoe with { Risky = Module.Enemies(OID.IronChain).All(x => x.IsDead) };
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Aethersup)
-        {
-            _rotation = spell.Rotation;
-            _activation = Module.CastFinishAt(spell);
-        }
+            _aoe = new(cone, Module.PrimaryActor.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -147,7 +143,7 @@ class Aethersup(BossModule module) : Components.GenericAOEs(module)
             case AID.Aethersup2:
                 if (++NumCasts == 4)
                 {
-                    _activation = default;
+                    _aoe = default;
                     NumCasts = 0;
                 }
                 break;
@@ -155,39 +151,19 @@ class Aethersup(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class PendulumFlare(BossModule module) : Components.GenericBaitAway(module, centerAtTarget: true)
+class PendulumFlare(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(20), (uint)IconID.SpreadFlare, ActionID.MakeSpell(AID.PendulumAOE1), 5.1f, true)
 {
-    public List<Actor> targets = [];
-
-    public override void OnEventIcon(Actor actor, uint iconID)
-    {
-        if (iconID == (uint)IconID.SpreadFlare)
-        {
-            CurrentBaits.Add(new(Module.PrimaryActor, actor, new AOEShapeCircle(20)));
-            targets.Add(actor);
-        }
-    }
-
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
-    {
-        if ((AID)spell.Action.ID == AID.PendulumAOE1)
-        {
-            CurrentBaits.Clear();
-            targets.Clear();
-        }
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
-        if (targets.Contains(actor))
+        if (ActiveBaits.Any(x => x.Target == actor))
             hints.AddForbiddenZone(ShapeDistance.Circle(D013Philia.ArenaCenter, 18.5f));
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         base.AddHints(slot, actor, hints);
-        if (targets.Contains(actor))
+        if (ActiveBaits.Any(x => x.Target == actor))
             hints.Add("Bait away!");
     }
 }
@@ -284,7 +260,7 @@ class FierceBeating(BossModule module) : Components.Exaflare(module, 4)
                 if (Lines[index].ExplosionsLeft == 0)
                     Lines.RemoveAt(index);
             }
-            if ((AID)spell.Action.ID == AID.FierceBeating5)
+            else if ((AID)spell.Action.ID == AID.FierceBeating5)
             {
                 var index = Lines.FindIndex(item => item.Next.AlmostEqual(spell.TargetXZ, 1));
                 AdvanceLine(Lines[index], spell.TargetXZ);
