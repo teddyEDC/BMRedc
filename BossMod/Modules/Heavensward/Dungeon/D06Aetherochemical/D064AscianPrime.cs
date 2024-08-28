@@ -102,59 +102,7 @@ public enum TetherID : uint
     ArcaneSphere = 197 // ArcaneSphere->Boss
 }
 
-class AncientCircle(BossModule module) : Components.UniformStackSpread(module, 3, 0, 4)
-{
-    // this is a donut targeted on each player, it is best solved by stacking
-    // regular stack component won't work because this is self targeted
-    private static readonly AOEShapeDonut donut = new(10, 20);
-    private DateTime activation;
-    private readonly List<Actor> actors = [];
-
-    public override void OnEventIcon(Actor actor, uint iconID)
-    {
-        if (iconID == (uint)IconID.AncientCircle)
-        {
-            activation = Module.WorldState.FutureTime(8);
-            actors.Add(actor);
-        }
-    }
-
-    public override void Update()
-    {
-        var player = Module.Raid.Player();
-        Stacks.Clear();
-        if (actors.Count > 0 && player != null)
-        {
-            var closestTarget = Raid.WithoutSlot().Exclude(player).Closest(player.Position);
-            if (closestTarget != default)
-                AddStack(closestTarget, activation);
-        }
-    }
-
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
-    {
-        if ((AID)spell.Action.ID == AID.AncientCircle)
-            actors.Clear();
-    }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Stacks.Count > 0)
-        {
-            var closestTarget = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position);
-            if (closestTarget != null)
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestTarget.Position, 2), ActiveStacks.First().Activation);
-        }
-    }
-
-    public override void DrawArenaBackground(int pcSlot, Actor pc)
-    {
-        foreach (var c in actors)
-            donut.Draw(Arena, c.Position, default, Colors.AOE);
-    }
-
-    public override void DrawArenaForeground(int pcSlot, Actor pc) { }
-}
+class AncientCircle(BossModule module) : Components.DonutStack(module, ActionID.MakeSpell(AID.AncientCircle), (uint)IconID.AncientCircle, 10, 20, 8, 4, 4);
 
 class DarkWhispers(BossModule module) : Components.UniformStackSpread(module, 0, 6, alwaysShowSpreads: true)
 {
@@ -228,15 +176,15 @@ class Stars(BossModule module) : Components.GenericAOEs(module)
         {
             if (actor.Position == _frozenStarLongTether)
             {
-                _aoesShortTether.Add(new AOEInstance(circle, _circle1, default, activation1));
-                _aoesShortTether.Add(new AOEInstance(circle, _circle2, default, activation1));
-                _aoesLongTether.Add(new AOEInstance(donut, _donut, default, activation2));
+                _aoesShortTether.Add(new(circle, _circle1, default, activation1));
+                _aoesShortTether.Add(new(circle, _circle2, default, activation1));
+                _aoesLongTether.Add(new(donut, _donut, default, activation2));
             }
-            if (actor.Position == _frozenStarShortTether)
+            else if (actor.Position == _frozenStarShortTether)
             {
-                _aoesShortTether.Add(new AOEInstance(donut, _donut, default, activation1));
-                _aoesLongTether.Add(new AOEInstance(circle, _circle1, default, activation2));
-                _aoesLongTether.Add(new AOEInstance(circle, _circle2, default, activation2));
+                _aoesShortTether.Add(new(donut, _donut, default, activation1));
+                _aoesLongTether.Add(new(circle, _circle1, default, activation2));
+                _aoesLongTether.Add(new(circle, _circle2, default, activation2));
             }
         }
     }

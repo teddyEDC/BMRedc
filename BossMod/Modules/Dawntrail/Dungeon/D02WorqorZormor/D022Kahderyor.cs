@@ -116,40 +116,8 @@ class WindEarthShot(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class WindShotStack(BossModule module) : Components.UniformStackSpread(module, 2, 0, 4)
+class WindShotStack(BossModule module) : Components.DonutStack(module, ActionID.MakeSpell(AID.WindShot), (uint)IconID.WindShot, 5, 10, 6, 4, 4)
 {
-    // this is a donut targeted on each player, it is best solved by stacking
-    private static readonly AOEShapeDonut donut = new(5, 10);
-    private DateTime activation;
-    private readonly List<Actor> actors = [];
-
-    public override void OnEventIcon(Actor actor, uint iconID)
-    {
-        if (iconID == (uint)IconID.WindShot)
-        {
-            activation = Module.WorldState.FutureTime(6);
-            actors.Add(actor);
-        }
-    }
-
-    public override void Update()
-    {
-        var player = Module.Raid.Player();
-        Stacks.Clear();
-        if (actors.Count > 0 && player != null)
-        {
-            var closestTarget = Raid.WithoutSlot().Exclude(player).Closest(player.Position);
-            if (closestTarget != default)
-                AddStack(closestTarget, activation);
-        }
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        if ((AID)spell.Action.ID == AID.WindShot)
-            actors.Clear();
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Stacks.Count > 0)
@@ -164,14 +132,6 @@ class WindShotStack(BossModule module) : Components.UniformStackSpread(module, 2
             }
         }
     }
-
-    public override void DrawArenaBackground(int pcSlot, Actor pc)
-    {
-        foreach (var c in actors)
-            donut.Draw(Arena, c.Position, default, Colors.AOE);
-    }
-
-    public override void DrawArenaForeground(int pcSlot, Actor pc) { }
 }
 
 class WindUnbound(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.WindUnbound));
