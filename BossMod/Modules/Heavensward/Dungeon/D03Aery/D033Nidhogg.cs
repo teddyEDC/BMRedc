@@ -104,7 +104,7 @@ class HorridRoarSpread(BossModule module) : Components.SpreadFromCastTargets(mod
 class HorridRoar(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HorridRoar), 6);
 class HorridBlaze(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.HorridBlaze), 6, 4, 4);
 class Massacre(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Massacre));
-class TheScarletPrice(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.TheScarletPrice));
+class TheScarletPrice(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.TheScarletPrice));
 class Roast(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Roast), new AOEShapeRect(30, 4));
 
 class D033NidhoggStates : StateMachineBuilder

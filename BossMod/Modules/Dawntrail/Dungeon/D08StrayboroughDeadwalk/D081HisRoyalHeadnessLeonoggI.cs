@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Dungeon.D08TheStrayboroughDeadwalk.D081HisRoyalHeadnessLeonoggI;
+﻿namespace BossMod.Dawntrail.Dungeon.D08StrayboroughDeadwalk.D081HisRoyalHeadnessLeonoggI;
 
 public enum OID : uint
 {
