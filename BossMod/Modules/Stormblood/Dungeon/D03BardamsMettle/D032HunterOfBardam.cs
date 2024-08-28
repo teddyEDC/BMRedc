@@ -119,7 +119,7 @@ class Tremblor(BossModule module) : Components.ConcentricAOEs(module, _shapes)
                 AID.Tremblor2 => 1,
                 _ => -1
             };
-            AdvanceSequence(order, Module.Center, WorldState.FutureTime(1.5f));
+            AdvanceSequence(order, caster.Position, WorldState.FutureTime(1.5f));
         }
     }
 }
