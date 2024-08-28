@@ -47,9 +47,9 @@ class CurtainCallArenaChange(BossModule module) : BossComponent(module)
         if (index == 0x05)
         {
             if (state == 0x00020001)
-                Module.Arena.Bounds = CurtaincallArena;
+                Arena.Bounds = CurtaincallArena;
             else if (state == 0x00080004)
-                Module.Arena.Bounds = D053Amon.arena;
+                Arena.Bounds = D053Amon.arena;
         }
     }
 }
@@ -68,7 +68,7 @@ class CurtainCall(BossModule module) : Components.CastLineOfSightAOE(module, Act
     public override IEnumerable<Actor> BlockerActors() => Module.Enemies(OID.Ice);
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        return Module.Arena.Bounds == CurtainCallArenaChange.CurtaincallArena ? InvertedAOE : [];
+        return Arena.Bounds == CurtainCallArenaChange.CurtaincallArena ? Safezones : [];
     }
 }
 

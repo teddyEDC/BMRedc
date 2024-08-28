@@ -143,7 +143,7 @@ public class StandardChasingAOEs(BossModule module, AOEShape shape, ActionID act
     {
         if (iconID == Icon)
         {
-            Activation = Module.WorldState.FutureTime(ActivationDelay);
+            Activation = WorldState.FutureTime(ActivationDelay);
             Actors.Add(actor);
         }
     }
