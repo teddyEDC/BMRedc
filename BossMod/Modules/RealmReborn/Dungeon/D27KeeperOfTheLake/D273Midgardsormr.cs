@@ -137,4 +137,11 @@ class D273MidgardsormrStates : StateMachineBuilder
 public class D273Midgardsormr(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(-40.8f, -78.2f), 18.8f)], [new Rectangle(new(-40.787f, -59.416f), 20, 1.25f)]);
+
+    protected override void DrawEnemies(int pcSlot, Actor pc)
+    {
+        Arena.Actor(PrimaryActor);
+        Arena.Actors(Enemies(OID.MirageDragon3));
+        Arena.Actors(Enemies(OID.MirageDragon4));
+    }
 }
