@@ -67,4 +67,12 @@ class FocusedTremor(BossModule module) : Components.GenericAOEs(module)
         if (circle != null && (expireAt - Module.WorldState.CurrentTime).TotalSeconds <= 8)
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
     }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        if (ActiveAOEs(slot, actor).Any(c => c.Color == Colors.AOE))
+            base.AddHints(slot, actor, hints);
+        else if (ActiveAOEs(slot, actor).Any(c => !c.Check(actor.Position)))
+            hints.Add("Go into quicksand to avoid AOE!");
+    }
 }
