@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C02AMR.C020Trash2;
+﻿namespace BossMod.Endwalker.VariantCriterion.C02AMR.C020Trash2;
 
 class Issen(BossModule module, AID aid) : Components.SingleTargetCast(module, ActionID.MakeSpell(aid));
 class NIssen(BossModule module) : Issen(module, AID.NIssen);

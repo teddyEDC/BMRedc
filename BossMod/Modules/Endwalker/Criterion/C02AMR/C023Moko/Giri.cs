@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C02AMR.C023Moko;
+﻿namespace BossMod.Endwalker.VariantCriterion.C02AMR.C023Moko;
 
 // the main complexity is that first status and cast-start happen at the same time, so we can receive them in arbitrary order
 // we need cast to know proper rotation (we can't use actor's rotation, since it's interpolated)

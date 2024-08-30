@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C01ASS.C011Silkie;
+﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C011Silkie;
 
 class FizzlingDuster(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), C011Silkie.ShapeYellow);
 class NFizzlingDuster(BossModule module) : FizzlingDuster(module, AID.NFizzlingDusterAOE);

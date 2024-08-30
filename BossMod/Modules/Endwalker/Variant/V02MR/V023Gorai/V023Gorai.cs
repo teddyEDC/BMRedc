@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V023Gorai;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V023Gorai;
 
 class Unenlightenment(BossModule module) : Components.RaidwideCastDelay(module, ActionID.MakeSpell(AID.Unenlightenment), ActionID.MakeSpell(AID.UnenlightenmentAOE), 0.5f);
 class SpikeOfFlameAOE(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.SpikeOfFlameAOE), 5);
@@ -43,7 +43,7 @@ class HumbleHammer(BossModule module) : Components.LocationTargetedAOEs(module, 
 class FightingSpirits(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.FightingSpirits));
 class BiwaBreaker(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BiwaBreakerFirst), "Raidwide x5");
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12373, SortOrder = 4)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 945, NameID = 12373, SortOrder = 4)]
 public class V023Gorai(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaChange.ArenaCenter, ArenaChange.StartingBounds)
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)

@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V023Gorai;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V023Gorai;
 
 class ImpurePurgation(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.ImpurePurgation))
 {

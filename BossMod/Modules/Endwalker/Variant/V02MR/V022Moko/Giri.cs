@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V022Moko;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V022Moko;
 
 class Giri(BossModule module) : Components.GenericAOEs(module)
 {

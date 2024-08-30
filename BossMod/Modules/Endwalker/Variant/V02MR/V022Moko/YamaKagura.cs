@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V022Moko;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V022Moko;
 
 class YamaKagura(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.YamaKagura), 33, shape: new AOEShapeRect(40, 2.5f), kind: Kind.DirForward)
 {

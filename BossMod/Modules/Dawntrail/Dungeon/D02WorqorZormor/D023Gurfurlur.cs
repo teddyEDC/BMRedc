@@ -51,15 +51,15 @@ class HeavingHaymakerArenaChange(BossModule module) : Components.GenericAOEs(mod
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.HeavingHaymaker && Module.Arena.Bounds == D023Gurfurlur.StartingBounds)
-            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.6f));
+        if ((AID)spell.Action.ID == AID.HeavingHaymaker && Arena.Bounds == D023Gurfurlur.StartingBounds)
+            _aoe = new(square, Arena.Center, default, Module.CastFinishAt(spell, 0.6f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x18)
         {
-            Module.Arena.Bounds = D023Gurfurlur.DefaultBounds;
+            Arena.Bounds = D023Gurfurlur.DefaultBounds;
             _aoe = null;
         }
     }
@@ -67,11 +67,12 @@ class HeavingHaymakerArenaChange(BossModule module) : Components.GenericAOEs(mod
 
 class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 5, m => m.Enemies(OID.BitingWind))
 {
+    private static readonly AOEShapeCircle circle = new(5);
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(new AOEShapeCircle(5), w.Origin + 3 * w.Rotation.ToDirection());
+            hints.AddForbiddenZone(circle, w.Origin + 3 * w.Rotation.ToDirection());
     }
 }
 
@@ -127,7 +128,7 @@ class GreatFlood(BossModule module) : Components.KnockbackFromCastTarget(module,
     {
         var source = Sources(slot, actor).FirstOrDefault();
         var component = Module.FindComponent<Allfire>()!.ActiveAOEs(slot, actor).Any();
-        if (!component && (source != default || Data.Item3 > Module.WorldState.CurrentTime)) // 1s delay to wait for action effect
+        if (!component && (source != default || Data.Item3 > WorldState.CurrentTime)) // 1s delay to wait for action effect
             hints.AddForbiddenZone(ShapeDistance.InvertedRect(Data.Item1, Data.Item2, 12, 0, 20), Data.Item3.AddSeconds(-1));
     }
 }
@@ -159,7 +160,7 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
                 foreach (var a in _aoesWave3)
                     yield return new(a.Shape, a.Origin, a.Rotation, a.Activation, _aoesWave2.Count > 0 ? Colors.AOE : Colors.Danger, _aoesWave2.Count == 0);
         }
-        else if ((_aoesWave3.Count > 0 || _aoesWave1.Count > 0) && (source != default || Module.FindComponent<GreatFlood>()!.Data.Item3 > Module.WorldState.CurrentTime))
+        else if ((_aoesWave3.Count > 0 || _aoesWave1.Count > 0) && (source != default || Module.FindComponent<GreatFlood>()!.Data.Item3 > WorldState.CurrentTime))
             yield return new(safespot, data.Item1, data.Item2, data.Item3, Colors.SafeFromAOE);
 
     }
@@ -233,8 +234,8 @@ class Windswrath1(BossModule module) : Components.KnockbackFromCastTarget(module
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center, 5), activation.AddSeconds(-1));
+        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5), activation.AddSeconds(-1));
     }
 }
 
@@ -272,20 +273,20 @@ class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<Whirlwind>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
         {
             base.AddAIHints(slot, actor, assignment, hints);
-            var timespan = (float)(activation - Module.WorldState.CurrentTime).TotalSeconds;
+            var timespan = (float)(activation - WorldState.CurrentTime).TotalSeconds;
             if (timespan <= 3)
             {
                 var patternWEWE = CurrentPattern == Pattern.WEWE;
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center - (patternWEWE ? new WDir(0, 1) : new(0, 1)), 5, patternWEWE ? a15 : -a15, a15));
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center - (patternWEWE ? new WDir(0, -1) : new(0, -1)), 5, patternWEWE ? -a165 : a165, a15));
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 5, patternWEWE ? a105 : -a105, a15));
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 5, patternWEWE ? -a75 : a75, a15));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center - (patternWEWE ? new WDir(0, 1) : new(0, 1)), 5, patternWEWE ? a15 : -a15, a15));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center - (patternWEWE ? new WDir(0, -1) : new(0, -1)), 5, patternWEWE ? -a165 : a165, a15));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 5, patternWEWE ? a105 : -a105, a15));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 5, patternWEWE ? -a75 : a75, a15));
             }
             else
-                forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, 8));
+                forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 8));
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation.AddSeconds(-1));
         }

@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C01ASS.C010Belladonna;
+﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C010Belladonna;
 
 public enum OID : uint
 {

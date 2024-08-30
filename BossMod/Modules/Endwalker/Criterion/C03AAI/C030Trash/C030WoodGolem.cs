@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C03AAI.C030Trash2;
+﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C030Trash2;
 
 class Tornado(BossModule module, AID aid) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(aid), 4);
 class NTornado(BossModule module) : Tornado(module, AID.NTornado);

@@ -1,4 +1,4 @@
-namespace BossMod.Modules.RealmReborn.Dungeon.D27TheKeeperoftheLake.D272MagitekGunship;
+namespace BossMod.RealmReborn.Dungeon.D29TheKeeperoftheLake.D292MagitekGunship;
 
 public enum OID : uint
 {
@@ -63,9 +63,9 @@ class Flamethrower(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class D272MagitekGunshipStates : StateMachineBuilder
+class D292MagitekGunshipStates : StateMachineBuilder
 {
-    public D272MagitekGunshipStates(BossModule module) : base(module)
+    public D292MagitekGunshipStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<CarpetBomb>()
@@ -76,8 +76,8 @@ class D272MagitekGunshipStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 32, NameID = 3373, Category = BossModuleInfo.Category.Dungeon, Expansion = BossModuleInfo.Expansion.RealmReborn)]
-public class D272MagitekGunship(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 32, NameID = 3373)]
+public class D292MagitekGunship(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly List<WPos> vertices = [new(16.14f, -167.84f), new(20.01f, -165.87f), new(20.41f, -165.51f), new(24.38f, -161.54f), new(24.66f, -161.04f),
     new(27.06f, -156.32f), new(27.23f, -155.85f), new(28.13f, -150.15f), new(28.10f, -149.58f), new(27.27f, -144.35f),

@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C01ASS.C010Armor;
+﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C010Armor;
 
 public enum OID : uint
 {

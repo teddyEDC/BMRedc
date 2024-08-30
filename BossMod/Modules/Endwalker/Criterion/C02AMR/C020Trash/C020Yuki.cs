@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C02AMR.C020Trash1;
+﻿namespace BossMod.Endwalker.VariantCriterion.C02AMR.C020Trash1;
 
 class RightSwipe(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(60, 90.Degrees()));
 class NRightSwipe(BossModule module) : RightSwipe(module, AID.NRightSwipe);
