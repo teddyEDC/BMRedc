@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V023Gorai;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V023Gorai;
 
 class WorldlyPursuit(BossModule module) : Components.GenericRotatingAOE(module)
 {

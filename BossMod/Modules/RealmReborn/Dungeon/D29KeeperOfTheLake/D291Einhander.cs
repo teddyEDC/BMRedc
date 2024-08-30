@@ -1,4 +1,4 @@
-namespace BossMod.Modules.RealmReborn.Dungeon.D27TheKeeperoftheLake.D271Einhander;
+namespace BossMod.RealmReborn.Dungeon.D29TheKeeperoftheLake.D291Einhander;
 
 public enum OID : uint
 {
@@ -26,9 +26,9 @@ class CeruleumExplosion(BossModule module) : Components.SelfTargetedAOEs(module,
 class HeavySwing(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.HeavySwing));
 class MarkXLIIIMiniCannon(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.MarkXLIIIMiniCannon), 15);
 
-class D271EinhanderStates : StateMachineBuilder
+class D291EinhanderStates : StateMachineBuilder
 {
-    public D271EinhanderStates(BossModule module) : base(module)
+    public D291EinhanderStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<AeroBlast>()
@@ -39,8 +39,8 @@ class D271EinhanderStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 32, NameID = 3369, Category = BossModuleInfo.Category.Dungeon, Expansion = BossModuleInfo.Expansion.RealmReborn)]
-public class D271Einhander(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 32, NameID = 3369)]
+public class D291Einhander(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(18.75f, -16.95f), 19.5f)], [new Rectangle(new(36.824f, -25.291f), 20, 1.25f, 67.333f.Degrees()), new Rectangle(new(1, -8.1f), 20, 1.4f, 65f.Degrees())]);
 }

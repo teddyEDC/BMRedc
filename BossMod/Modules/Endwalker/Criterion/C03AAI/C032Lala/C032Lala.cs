@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C03AAI.C032Lala;
+﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C032Lala;
 
 class ArcaneBlight(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(60, 135.Degrees()));
 class NArcaneBlight(BossModule module) : ArcaneBlight(module, AID.NArcaneBlightAOE);

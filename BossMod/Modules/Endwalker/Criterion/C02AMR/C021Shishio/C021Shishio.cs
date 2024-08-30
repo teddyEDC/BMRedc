@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C02AMR.C021Shishio;
+﻿namespace BossMod.Endwalker.VariantCriterion.C02AMR.C021Shishio;
 
 class SplittingCry(BossModule module, AID aid) : Components.BaitAwayCast(module, ActionID.MakeSpell(aid), new AOEShapeRect(60, 7));
 class NSplittingCry(BossModule module) : SplittingCry(module, AID.NSplittingCry);

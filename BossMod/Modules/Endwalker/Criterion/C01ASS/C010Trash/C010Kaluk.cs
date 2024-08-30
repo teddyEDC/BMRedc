@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C01ASS.C010Kaluk;
+﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C010Kaluk;
 
 public enum OID : uint
 {

@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Variant.V02MR.V022Moko;
+﻿namespace BossMod.Endwalker.VariantCriterion.V02MR.V022Moko;
 
 // note: each initial line sends out two 'exaflares' to the left & right
 // each subsequent exaflare moves by distance 5, and happen approximately 2s apart

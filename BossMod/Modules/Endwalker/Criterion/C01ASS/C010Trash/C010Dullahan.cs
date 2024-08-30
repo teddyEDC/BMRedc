@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C01ASS.C010Dullahan;
+﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C010Dullahan;
 
 public enum OID : uint
 {

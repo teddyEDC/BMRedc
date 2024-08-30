@@ -53,7 +53,7 @@ class SeduceOld(BossModule module) : Components.GenericAOEs(module)
         if (closedChests.Count == 0 && !addedCircles)
         {
             foreach (var c in chests)
-                closedChests.Add(new Circle(c.Position, 2.5f));
+                closedChests.Add(new(c.Position, 2.5f));
             addedCircles = true;
         }
     }
@@ -66,11 +66,11 @@ class SeduceOld(BossModule module) : Components.GenericAOEs(module)
             if (state == 0x00040008)
             {
                 closedChests.RemoveWhere(x => x.Center == chest.Position);
-                openChests.Add(new Circle(chest.Position, 2.5f));
+                openChests.Add(new(chest.Position, 2.5f));
             }
             else if (state == 0x00100020)
             {
-                closedChests.Add(new Circle(chest.Position, 2.5f));
+                closedChests.Add(new(chest.Position, 2.5f));
                 openChests.RemoveWhere(x => x.Center == chest.Position);
             }
         }

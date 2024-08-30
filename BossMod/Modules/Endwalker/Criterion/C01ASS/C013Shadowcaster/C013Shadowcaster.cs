@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C01ASS.C013Shadowcaster;
+﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C013Shadowcaster;
 
 class FiresteelFracture(BossModule module, AID aid) : Components.Cleave(module, ActionID.MakeSpell(aid), new AOEShapeCone(40, 30.Degrees()));
 class NFiresteelFracture(BossModule module) : FiresteelFracture(module, AID.NFiresteelFracture);

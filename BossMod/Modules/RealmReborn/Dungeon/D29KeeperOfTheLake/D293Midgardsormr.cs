@@ -1,4 +1,4 @@
-namespace BossMod.Modules.RealmReborn.Dungeon.D27TheKeeperoftheLake.D273Midgardsormr;
+namespace BossMod.RealmReborn.Dungeon.D29TheKeeperoftheLake.D293Midgardsormr;
 
 public enum OID : uint
 {
@@ -114,9 +114,9 @@ class AhkMorn(BossModule module) : Components.UniformStackSpread(module, 6, 0, 4
     }
 }
 
-class D273MidgardsormrStates : StateMachineBuilder
+class D293MidgardsormrStates : StateMachineBuilder
 {
-    public D273MidgardsormrStates(BossModule module) : base(module)
+    public D293MidgardsormrStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<InnerTurmoil>()
@@ -133,8 +133,8 @@ class D273MidgardsormrStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 32, NameID = 3374, Category = BossModuleInfo.Category.Dungeon, Expansion = BossModuleInfo.Expansion.RealmReborn)]
-public class D273Midgardsormr(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 32, NameID = 3374)]
+public class D293Midgardsormr(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(-40.8f, -78.2f), 18.8f)], [new Rectangle(new(-40.787f, -59.416f), 20, 1.25f)]);
 

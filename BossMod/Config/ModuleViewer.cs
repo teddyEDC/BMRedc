@@ -56,7 +56,7 @@ public sealed class ModuleViewer : IDisposable
         Customize(BossModuleInfo.Category.GoldSaucer, contentType?.GetRow(19));
         Customize(BossModuleInfo.Category.DeepDungeon, contentType?.GetRow(21));
         Customize(BossModuleInfo.Category.Ultimate, contentType?.GetRow(28));
-        Customize(BossModuleInfo.Category.Criterion, contentType?.GetRow(30));
+        Customize(BossModuleInfo.Category.VariantCriterion, contentType?.GetRow(30));
 
         var playStyle = Service.LuminaSheet<CharaCardPlayStyle>();
         Customize(BossModuleInfo.Category.Foray, playStyle?.GetRow(6));

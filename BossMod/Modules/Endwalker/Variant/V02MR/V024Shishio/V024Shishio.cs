@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V024Shishio;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V024Shishio;
 
 class NoblePursuit(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.NoblePursuit), 6);
 class Enkyo(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Enkyo));
@@ -60,7 +60,7 @@ class Yoki(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.Mak
 class RightSwipe(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RightSwipe), new AOEShapeCone(40, 90.Degrees()));
 class LeftSwipe(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LeftSwipe), new AOEShapeCone(40, 90.Degrees()));
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12428, SortOrder = 5)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 945, NameID = 12428, SortOrder = 5)]
 public class V024Shishio(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, NormalBounds)
 {
     public static readonly WPos ArenaCenter = new(-40, -300);

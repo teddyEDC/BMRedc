@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C01ASS.C012Gladiator;
+﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C012Gladiator;
 
 class RushOfMightFront(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(60, 90.Degrees()));
 class NRushOfMightFront(BossModule module) : RushOfMightFront(module, AID.NRushOfMightFront);

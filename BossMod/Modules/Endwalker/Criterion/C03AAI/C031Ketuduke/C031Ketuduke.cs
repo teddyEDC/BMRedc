@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C03AAI.C031Ketuduke;
+﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C031Ketuduke;
 
 class TidalRoar(BossModule module, AID aid) : Components.CastCounter(module, ActionID.MakeSpell(aid));
 class NTidalRoar(BossModule module) : TidalRoar(module, AID.NTidalRoarAOE);

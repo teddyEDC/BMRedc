@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V021Yozakura;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V021Yozakura;
 
 class GloryNeverlasting(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.GloryNeverlasting));
 class ArtOfTheFireblossom(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ArtOfTheFireblossom), new AOEShapeCircle(9));
@@ -70,7 +70,7 @@ class Witherwind(BossModule module) : Components.PersistentVoidzone(module, 3, m
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, Category = BossModuleInfo.Category.Criterion, GroupID = 945, NameID = 12325, SortOrder = 1)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 945, NameID = 12325, SortOrder = 1)]
 public class V021Yozakura(WorldState ws, Actor primary) : BossModule(ws, primary, primary.Position.X < -700 ? ArenaCenter1 : primary.Position.X > 700 ? ArenaCenter2 : ArenaCenter3, primary.Position.X < -700 ? StartingBounds : primary.Position.X > 700 ? DefaultBounds2 : StartingBounds)
 {
     public static readonly WPos ArenaCenter1 = new(-775, 16);
