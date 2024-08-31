@@ -160,7 +160,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
             yield return _aoe with { Risky = !componentActive };
             if (componentActive)
             {
-                var safezone = component.Data.FirstOrDefault(x => _aoe.Rotation.AlmostEqual(x.Item2 + 180.Degrees(), Helpers.RadianConversion));
+                var safezone = component.Data.FirstOrDefault(x => _aoe.Rotation.AlmostEqual(x.Item2 + 180.Degrees(), Angle.DegToRad));
                 yield return new(rect, safezone.Item1, safezone.Item2, component.Activation, Colors.SafeFromAOE, false);
             }
         }

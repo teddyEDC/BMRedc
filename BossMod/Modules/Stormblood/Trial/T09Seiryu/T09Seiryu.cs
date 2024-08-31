@@ -7,7 +7,7 @@ class CoursingRiver(BossModule module) : Components.KnockbackFromCastTarget(modu
     {
         if (!Module.FindComponent<Handprint>()!.ActiveAOEs(slot, actor).Any())
             foreach (var c in Casters)
-                hints.AddForbiddenZone(ShapeDistance.Rect(c.CastInfo!.Rotation.AlmostEqual(90.Degrees(), Helpers.RadianConversion) ? c.Position - new WDir(12.5f, 0) : c.Position - new WDir(-12.5f, 0), c.Rotation, 50, default, 20), Module.CastFinishAt(c.CastInfo));
+                hints.AddForbiddenZone(ShapeDistance.Rect(c.CastInfo!.Rotation.AlmostEqual(90.Degrees(), Angle.DegToRad) ? c.Position - new WDir(12.5f, 0) : c.Position - new WDir(-12.5f, 0), c.Rotation, 50, default, 20), Module.CastFinishAt(c.CastInfo));
     }
 }
 
