@@ -437,7 +437,7 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Stacks.Count > 0)
+        if (ActiveStacks.Any())
         {
             var closestTarget = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position);
             if (closestTarget != null)

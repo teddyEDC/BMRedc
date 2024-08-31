@@ -120,17 +120,12 @@ class WindShotStack(BossModule module) : Components.DonutStack(module, ActionID.
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Stacks.Count > 0)
-        {
-            var closestAlly = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position);
-            if (closestAlly != null)
-            {
-                var comp = Module.FindComponent<WindEarthShot>()!.ActiveAOEs(slot, actor).ToList();
-                var isSafe = comp.Any(c => c.Shape is AOEShapeDonut && !c.Check(closestAlly.Position) || c.Shape is AOEShapeCustom && c.Check(closestAlly.Position));
-                if (isSafe)
-                    hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestAlly.Position, 2), ActiveStacks.First().Activation);
-            }
-        }
+        var comp = Module.FindComponent<WindEarthShot>()!.ActiveAOEs(slot, actor).ToList();
+        var forbidden = new List<Func<WPos, float>>();
+        foreach (var c in Raid.WithoutSlot().Exclude(actor).Where(x => comp.Any(c => c.Shape is AOEShapeDonut && !c.Check(x.Position) || c.Shape is AOEShapeCustom && c.Check(x.Position))))
+            forbidden.Add(ShapeDistance.InvertedCircle(c.Position, 3));
+        if (forbidden.Count > 0)
+            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max());
     }
 }
 

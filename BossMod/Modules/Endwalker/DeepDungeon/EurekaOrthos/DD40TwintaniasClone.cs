@@ -2,7 +2,6 @@ namespace BossMod.Endwalker.DeepDungeon.EurekaOrthos.DD40TwintaniasClone;
 
 public enum OID : uint
 {
-
     Boss = 0x3D1D, // R6.0
     Twister = 0x1E8910, // R0.5
     BitingWind = 0x3D1E, // R1.0
@@ -99,4 +98,4 @@ class DD40TwintaniasCloneStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 900, NameID = 12263)]
-public class DD40TwintaniasClone(WorldState ws, Actor primary) : BossModule(ws, primary, new(-600, -300), new ArenaBoundsCircle(20));
+public class DD40TwintaniasClone(WorldState ws, Actor primary) : BossModule(ws, primary, new(-600, -300), new ArenaBoundsCircle(20)); //21.5f
