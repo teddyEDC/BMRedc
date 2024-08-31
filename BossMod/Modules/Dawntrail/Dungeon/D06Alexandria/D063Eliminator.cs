@@ -78,15 +78,15 @@ class DisruptionArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Disruption && Module.Arena.Bounds == D063Eliminator.StartingBounds)
-            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.7f));
+        if ((AID)spell.Action.ID == AID.Disruption && Arena.Bounds == D063Eliminator.StartingBounds)
+            _aoe = new(square, Arena.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x28)
         {
-            Module.Arena.Bounds = D063Eliminator.DefaultBounds;
+            Arena.Bounds = D063Eliminator.DefaultBounds;
             _aoe = null;
         }
     }
@@ -112,7 +112,7 @@ class Electray(BossModule module) : Components.SpreadFromCastTargets(module, Act
         {
             base.AddAIHints(slot, actor, assignment, hints);
             if (ActiveSpreads.Any())
-                hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center - new WDir(0, 15), 15), ActiveSpreads.First().Activation);
+                hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center - new WDir(0, 15), 15), ActiveSpreads.FirstOrDefault().Activation);
         }
     }
 }
@@ -143,7 +143,7 @@ class Impact(BossModule module) : Components.KnockbackFromCastTarget(module, Act
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || Data.Item2 > Module.WorldState.CurrentTime) // 0.4s delay to wait for action effect
+        if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.4s delay to wait for action effect
         {
             var activation = Data.Item2.AddSeconds(-0.4f);
             if (Data.Item1.Z == -640)
@@ -191,7 +191,7 @@ class LightOfSalvation(BossModule module) : Components.GenericBaitAway(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_kb.Sources(slot, actor).Any() || _kb.Data.Item2 > Module.WorldState.CurrentTime) // 0.4s delay to wait for action effect
+        if (_kb.Sources(slot, actor).Any() || _kb.Data.Item2 > WorldState.CurrentTime) // 0.4s delay to wait for action effect
         { }
         else
             base.AddAIHints(slot, actor, assignment, hints);

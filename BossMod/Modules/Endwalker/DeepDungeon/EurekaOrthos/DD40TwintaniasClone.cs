@@ -25,6 +25,8 @@ public enum AID : uint
 class Twister(BossModule module) : Components.CastTwister(module, 1, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
 class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5, ActionID.MakeSpell(AID.BitingWind), m => m.Enemies(OID.BitingWind).Where(z => z.EventState != 7), 0.9f);
 class MeracydianSquall(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.MeracydianSquall), 5);
+class TwisterHint1(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.TwisterVisual), "Twisters soon, get moving!");
+class TwisterHint2(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.TwistingDive), "Twisters soon, get moving!");
 
 class TwistingDive(BossModule module) : Components.GenericAOEs(module)
 {
@@ -41,7 +43,7 @@ class TwistingDive(BossModule module) : Components.GenericAOEs(module)
             if (id == 0x1E3A)
                 preparing = true;
             else if (preparing && id == 0x1E43)
-                _aoe = new(rect, actor.Position, actor.Rotation, Module.WorldState.FutureTime(6.9f));
+                _aoe = new(rect, actor.Position, actor.Rotation, WorldState.FutureTime(6.9f));
         }
     }
 
@@ -70,12 +72,12 @@ class Turbine(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<BitingWind>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
         {
-            forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, 5));
+            forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 5));
             if (component != null && component.Count != 0)
                 foreach (var c in component)
-                    forbidden.Add(ShapeDistance.Cone(Module.Center, 20, Angle.FromDirection(c.Origin - Module.Center), 20.Degrees()));
+                    forbidden.Add(ShapeDistance.Cone(Arena.Center, 20, Angle.FromDirection(c.Origin - Module.Center), 20.Degrees()));
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), activation.AddSeconds(-1));
         }
@@ -90,6 +92,8 @@ class DD40TwintaniasCloneStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<Twister>()
+            .ActivateOnEnter<TwisterHint1>()
+            .ActivateOnEnter<TwisterHint2>()
             .ActivateOnEnter<BitingWind>()
             .ActivateOnEnter<MeracydianSquall>()
             .ActivateOnEnter<Turbine>()
@@ -98,4 +102,4 @@ class DD40TwintaniasCloneStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 900, NameID = 12263)]
-public class DD40TwintaniasClone(WorldState ws, Actor primary) : BossModule(ws, primary, new(-600, -300), new ArenaBoundsCircle(20)); //21.5f
+public class DD40TwintaniasClone(WorldState ws, Actor primary) : BossModule(ws, primary, new(-600, -300), new ArenaBoundsCircle(20));
