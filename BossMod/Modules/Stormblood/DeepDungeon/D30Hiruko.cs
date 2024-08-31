@@ -1,6 +1,4 @@
-﻿using Clipper2Lib;
-
-namespace BossMod.Stormblood.DeepDungeon.HeavenOnHigh.D30Hiruko;
+﻿namespace BossMod.Stormblood.DeepDungeon.HeavenOnHigh.D30Hiruko;
 
 public enum OID : uint
 {

@@ -1,6 +1,5 @@
 ﻿using BossMod.Autorotation;
 using BossMod.Pathfinding;
-using Dalamud.Interface.Utility;
 using ImGuiNET;
 
 namespace BossMod.AI;

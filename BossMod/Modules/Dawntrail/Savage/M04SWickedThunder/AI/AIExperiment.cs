@@ -171,7 +171,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
         return GCD + timeToSafety >= timeToDodge ? safePos : defaultPos;
     }
 
-    private WPos IonPlatformAOEs(RM04SWickedThunder module, IonClusterPlatformStrategy strategy, bool nextIsDeadly)
+    private WPos IonPlatformAOEs(M04SWickedThunder module, IonClusterPlatformStrategy strategy, bool nextIsDeadly)
     {
         var thunder = module.FindComponent<StampedingThunder>();
         if (thunder?.AOE == null)
@@ -187,13 +187,13 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : Rotatio
         return goToDowntime ? downtimePos : uptimePos;
     }
 
-    private WPos IonPlatformMid(RM04SWickedThunder module)
+    private WPos IonPlatformMid(M04SWickedThunder module)
     {
         var thunder = module.FindComponent<StampedingThunder>();
         if (thunder?.SmallArena != true)
             return Player.Position;
 
-        var offset = module.Arena.Bounds == RM04SWickedThunder.P1IonClusterRBounds ? 1 : -1;
+        var offset = module.Arena.Bounds == M04SWickedThunder.IonClusterBounds && module.Arena.Center == new WPos(115, 100) ? 1 : -1;
         return module.Center + new WDir(offset * 10.4f, -6.2f);
     }
 }

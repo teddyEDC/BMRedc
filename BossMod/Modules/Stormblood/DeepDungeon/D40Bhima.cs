@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace BossMod.Stormblood.DeepDungeon.HeavenOnHigh.D40Bhima;
+﻿namespace BossMod.Stormblood.DeepDungeon.HeavenOnHigh.D40Bhima;
 
 public enum OID : uint
 {

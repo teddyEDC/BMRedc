@@ -143,7 +143,7 @@ public sealed class RotationModuleManager : IDisposable
     private void DirtyActiveModules(bool condition)
     {
         if (condition)
-            _activeModules = null;
+            ActiveModules = null;
     }
 
     private void OnCombatChanged(Actor actor)
