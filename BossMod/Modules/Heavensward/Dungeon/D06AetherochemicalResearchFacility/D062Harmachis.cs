@@ -1,9 +1,9 @@
-﻿namespace BossMod.Heavensward.Dungeon.D06Aetherochemical.D062Harmachis;
+﻿namespace BossMod.Heavensward.Dungeon.D06AetherochemicalResearchFacility.D062Harmachis;
 
 public enum OID : uint
 {
     Boss = 0xE9A, // R2.000-5.300, x1
-    Helper = 0x1B2, // R0.500, x3
+    Helper = 0x1B2
 }
 
 public enum AID : uint
@@ -28,7 +28,7 @@ public enum AID : uint
     WeighingOfTheHeart1 = 3790, // Boss->self, 3.0s cast, single-target
     WeighingOfTheHeart2 = 3792, // Boss->self, 3.0s cast, single-target
     WeighingOfTheHeart3 = 4328, // Boss->self, 3.0s cast, single-target
-    WeighingOfTheHeartSphinxForm = 5007, // Helper->self, no cast, single-target
+    WeighingOfTheHeartSphinxForm = 5007 // Helper->self, no cast, single-target
 }
 
 public enum SID : uint
@@ -36,13 +36,13 @@ public enum SID : uint
     Transfiguration = 705, // Boss->Boss, extra=0x1D/0x1E/0x1F
     DamageUp = 443, // Boss->Boss, extra=0x1
     Poison = 2104, // Boss->player, extra=0x0
-    Bind = 2518, // Boss->player, extra=0x0
+    Bind = 2518 // Boss->player, extra=0x0
 }
 
 public enum IconID : uint
 {
     Enumeration = 382, // Helper
-    Stack = 93, // player
+    Stack = 93 // player
 }
 
 class Paradox(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Paradox), 5);
