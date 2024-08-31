@@ -50,30 +50,30 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 
     private static readonly RectangleSE[] westRows =
     [
-        new RectangleSE(new(-192, -157), new(-187.5f, -157), HalfWidth),
-        new RectangleSE(new(-192, -147), new(-187.5f, -147), HalfWidth),
-        new RectangleSE(new(-192, -137), new(-187.5f, -137), HalfWidth),
-        new RectangleSE(new(-192, -127), new(-187.5f, -127), HalfWidth),
+        new(new(-192, -157), new(-187.5f, -157), HalfWidth),
+        new(new(-192, -147), new(-187.5f, -147), HalfWidth),
+        new(new(-192, -137), new(-187.5f, -137), HalfWidth),
+        new(new(-192, -127), new(-187.5f, -127), HalfWidth),
     ];
 
     private static readonly RectangleSE[] eastRows =
     [
-        new RectangleSE(new(-152, -157), new(-156.5f, -157), HalfWidth),
-        new RectangleSE(new(-152, -147), new(-156.5f, -147), HalfWidth),
-        new RectangleSE(new(-152, -137), new(-156.5f, -137), HalfWidth),
-        new RectangleSE(new(-152, -127), new(-156.5f, -127), HalfWidth),
+        new(new(-152, -157), new(-156.5f, -157), HalfWidth),
+        new(new(-152, -147), new(-156.5f, -147), HalfWidth),
+        new(new(-152, -137), new(-156.5f, -137), HalfWidth),
+        new(new(-152, -127), new(-156.5f, -127), HalfWidth),
     ];
 
     public static readonly Dictionary<byte, ArenaBoundsComplex> ArenaBoundsMap = new()
     {
-        { 0x2A, new ArenaBoundsComplex([defaultSquare], [westRows[1], westRows[3]]) },
-        { 0x1B, new ArenaBoundsComplex([defaultSquare], [westRows[1], westRows[3], eastRows[0], eastRows[2]]) },
-        { 0x2C, new ArenaBoundsComplex([defaultSquare], [westRows[1], westRows[2]]) },
-        { 0x1E, new ArenaBoundsComplex([defaultSquare], [westRows[1], westRows[2], eastRows[0], eastRows[3]]) },
-        { 0x2D, new ArenaBoundsComplex([defaultSquare], [westRows[0], westRows[3]]) },
-        { 0x1D, new ArenaBoundsComplex([defaultSquare], [westRows[0], westRows[3], eastRows[1], eastRows[2]]) },
-        { 0x2B, new ArenaBoundsComplex([defaultSquare], [westRows[0], westRows[2]]) },
-        { 0x1C, new ArenaBoundsComplex([defaultSquare], [westRows[0], westRows[2], eastRows[1], eastRows[3]]) },
+        { 0x2A, new([defaultSquare], [westRows[1], westRows[3]]) },
+        { 0x1B, new([defaultSquare], [westRows[1], westRows[3], eastRows[0], eastRows[2]]) },
+        { 0x2C, new([defaultSquare], [westRows[1], westRows[2]]) },
+        { 0x1E, new([defaultSquare], [westRows[1], westRows[2], eastRows[0], eastRows[3]]) },
+        { 0x2D, new([defaultSquare], [westRows[0], westRows[3]]) },
+        { 0x1D, new([defaultSquare], [westRows[0], westRows[3], eastRows[1], eastRows[2]]) },
+        { 0x2B, new([defaultSquare], [westRows[0], westRows[2]]) },
+        { 0x1C, new([defaultSquare], [westRows[0], westRows[2], eastRows[1], eastRows[3]]) },
     };
 
     private AOEInstance? _aoe;
@@ -82,8 +82,8 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Electrowave && Module.Arena.Bounds == StartingBounds)
-            _aoe = new AOEInstance(square, Module.Center, default, Module.CastFinishAt(spell, 0.7f));
+        if ((AID)spell.Action.ID == AID.Electrowave && Arena.Bounds == StartingBounds)
+            _aoe = new(square, Arena.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -91,15 +91,15 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
         if (state == 0x00020001)
         {
             if (ArenaBoundsMap.TryGetValue(index, out var value))
-                Module.Arena.Bounds = value;
+                Arena.Bounds = value;
             else if (index == 0x12)
             {
-                Module.Arena.Bounds = defaultBounds;
+                Arena.Bounds = defaultBounds;
                 _aoe = null;
             }
         }
         else if (state == 0x00080004)
-            Module.Arena.Bounds = defaultBounds;
+            Arena.Bounds = defaultBounds;
     }
 }
 
@@ -169,7 +169,7 @@ class Surge(BossModule module) : Components.Knockback(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
+        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
             var forbidden = new List<Func<WPos, float>>();
             foreach (var w in ActiveSafeWalls)
