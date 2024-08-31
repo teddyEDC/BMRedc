@@ -199,9 +199,9 @@ class DeathlyRayFaces(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.DeathlyRayFacesFirst && _aoesFirst.Count == 0 && _aoesRest.Count == 0)
         {
-            foreach (var c in Module.Enemies(OID.TheFaceOfTheBeast).Where(x => x.Rotation.AlmostEqual(caster.Rotation, Helpers.RadianConversion)))
+            foreach (var c in Module.Enemies(OID.TheFaceOfTheBeast).Where(x => x.Rotation.AlmostEqual(caster.Rotation, Angle.DegToRad)))
                 _aoesFirst.Add(new(_rect, c.Position, c.Rotation));
-            foreach (var c in Module.Enemies(OID.TheFaceOfTheBeast).Where(x => !x.Rotation.AlmostEqual(caster.Rotation, Helpers.RadianConversion)))
+            foreach (var c in Module.Enemies(OID.TheFaceOfTheBeast).Where(x => !x.Rotation.AlmostEqual(caster.Rotation, Angle.DegToRad)))
                 _aoesRest.Add(new(_rect, c.Position, c.Rotation, Module.WorldState.FutureTime(8.5f)));
         }
         if ((AID)spell.Action.ID is AID.DeathlyRayFacesFirst or AID.DeathlyRayFacesRest)

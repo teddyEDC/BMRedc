@@ -72,7 +72,7 @@ class StayInBounds(BossModule module) : BossComponent(module)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        hints.AddForbiddenZone(ShapeDistance.InvertedRect(Module.Center + new WDir(0, 19), Module.Center + new WDir(0, -19), 19));
+        hints.AddForbiddenZone(ShapeDistance.InvertedRect(Arena.Center + new WDir(0, 19), Arena.Center + new WDir(0, -19), 19));
     }
 }
 

@@ -79,25 +79,20 @@ class Buffet2(BossModule module) : Components.BaitAwayCast(module, ActionID.Make
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var b in CurrentBaits)
-            if (b.Target.InstanceID != actor.InstanceID && CurrentBaits.Count > 0)
-                hints.AddForbiddenZone(b.Shape, b.Target.Position + (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - b.Target.Position).Normalized(), b.Rotation);
+        foreach (var b in ActiveBaitsNotOn(actor))
+            hints.AddForbiddenZone(b.Shape, b.Target.Position + (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - b.Target.Position).Normalized(), b.Rotation);
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var bait in ActiveBaitsOn(pc))
-        {
             bait.Shape.Outline(Arena, bait.Target.Position + (bait.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - bait.Target.Position).Normalized(), bait.Rotation);
-        }
     }
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        if (!IgnoreOtherBaits)
-            foreach (var bait in ActiveBaitsNotOn(pc))
-                if (AlwaysDrawOtherBaits || IsClippedBy(pc, bait))
-                    bait.Shape.Draw(Arena, bait.Target.Position + (bait.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - bait.Target.Position).Normalized(), bait.Rotation);
+        foreach (var bait in ActiveBaitsNotOn(pc))
+            bait.Shape.Draw(Arena, bait.Target.Position + (bait.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - bait.Target.Position).Normalized(), bait.Rotation);
     }
 }
 

@@ -75,7 +75,7 @@ class Geyser(BossModule module) : Components.GenericAOEs(module)
             {
                 var activation = Module.WorldState.FutureTime(5.1f);
                 foreach (var (rotation, positions) in positionsByRotation)
-                    if (actor.Rotation.AlmostEqual(rotation, Helpers.RadianConversion))
+                    if (actor.Rotation.AlmostEqual(rotation, Angle.DegToRad))
                     {
                         foreach (var pos in positions)
                             _geysers.Add(new(circle, pos, default, activation));
