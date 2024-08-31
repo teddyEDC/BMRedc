@@ -110,7 +110,7 @@ class WindEarthShot(BossModule module) : Components.GenericAOEs(module)
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
-        var activeAOEs = ActiveAOEs(slot, actor);
+        var activeAOEs = ActiveAOEs(slot, actor).ToList();
         var containsENVC20 = activeAOEs.Any(c => c.Shape == ENVC20);
         var containsENVC21 = activeAOEs.Any(c => c.Shape == ENVC21);
 
