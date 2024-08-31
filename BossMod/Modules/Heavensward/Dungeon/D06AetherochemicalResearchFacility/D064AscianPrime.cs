@@ -1,4 +1,4 @@
-﻿namespace BossMod.Heavensward.Dungeon.D06Aetherochemical.D064AscianPrime;
+﻿namespace BossMod.Heavensward.Dungeon.D06AetherochemicalResearchFacility.D064AscianPrime;
 
 public enum OID : uint
 {

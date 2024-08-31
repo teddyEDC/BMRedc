@@ -437,12 +437,13 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ActiveStacks.Any())
-        {
-            var closestTarget = Raid.WithoutSlot().Exclude(actor).Closest(actor.Position);
-            if (closestTarget != null)
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestTarget.Position, Donut.InnerRadius / 3), ActiveStacks.First().Activation);
-        }
+        if (!ActiveStacks.Any())
+            return;
+        var forbidden = new List<Func<WPos, float>>();
+        foreach (var c in Raid.WithoutSlot().Exclude(actor))
+            forbidden.Add(ShapeDistance.InvertedCircle(c.Position, Donut.InnerRadius / 3));
+        if (forbidden.Count > 0)
+            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), ActiveStacks.FirstOrDefault().Activation);
     }
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)

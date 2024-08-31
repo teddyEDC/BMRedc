@@ -1,4 +1,4 @@
-﻿namespace BossMod.Heavensward.Dungeon.D06Aetherochemical.D063LahabreaIgeyorhm;
+﻿namespace BossMod.Heavensward.Dungeon.D06AetherochemicalResearchFacility.D063LahabreaIgeyorhm;
 
 public enum OID : uint
 {

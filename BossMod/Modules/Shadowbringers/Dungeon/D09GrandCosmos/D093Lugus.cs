@@ -92,6 +92,19 @@ class MortalFlame(BossModule module) : BossComponent(module)
         if (forbidden.Count > 0)
             hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max());
     }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        if (IsBurning(actor))
+            hints.Add("Pass flames debuff to furniture!");
+    }
+
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
+    {
+        if (IsBurning(pc))
+            foreach (var a in _furniture)
+                Arena.AddCircle(a.Position, a.HitboxRadius, Colors.Safe);
+    }
 }
 
 class BlackFlame(BossModule module) : Components.GenericBaitAway(module)
