@@ -197,6 +197,22 @@ public sealed class ConfigUI : IDisposable
             if (props == null)
                 continue;
 
+            // draw tooltip marker with proper alignment
+            var cursor = ImGui.GetCursorPosY();
+            ImGui.SetCursorPosY(cursor + ImGui.GetStyle().FramePadding.Y);
+            if (props.Tooltip.Length > 0)
+            {
+                UIMisc.HelpMarker(props.Tooltip);
+            }
+            else
+            {
+                using var invisible = ImRaii.PushColor(ImGuiCol.Text, 0x00000000);
+                UIMisc.IconText(Dalamud.Interface.FontAwesomeIcon.InfoCircle, "(?)");
+            }
+            ImGui.SameLine();
+            ImGui.SetCursorPosY(cursor);
+
+            // draw actual property value
             var value = field.GetValue(node);
             if (DrawProperty(props.Label, node, field, value, root, tree, ws))
             {
