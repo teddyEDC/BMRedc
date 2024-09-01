@@ -115,8 +115,8 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
             {
                 var forbidden = new List<Func<WPos, float>>();
                 foreach (var stackWith in ActiveStacks.Where(s => s.Target == actor))
-                    forbidden.Add(ShapeDistance.InvertedCircle(Raid.WithoutSlot().FirstOrDefault(x => !x.IsDead && !IsStackTarget(x))!.Position, 1));
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), ActiveStacks.FirstOrDefault().Activation);
+                    forbidden.Add(ShapeDistance.InvertedCircle(Raid.WithoutSlot().FirstOrDefault(x => !x.IsDead && !IsSpreadTarget(x) && !IsStackTarget(x))!.Position, actorStack.Radius / 3));
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), actorStack.Activation);
             }
         }
         else if (!IsSpreadTarget(actor))

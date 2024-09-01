@@ -95,12 +95,6 @@ public enum AID : uint
     TurretsTourNormalAOE2 = 22601, // AutomaticTurret->self, no cast, range 55 width 6 rect
     TurretsTourNormalAOE3 = 22600, // AutomaticTurret->location, no cast, width 6 rect charge
 
-    AutomaticTurret2 = 22597, // Gunner->self, 3.0s cast, single-target
-    TurretsTour = 22598, // Gunner->self, 5.0s cast, single-target
-    TurretsTourAOE1 = 22599, // Helper->location, 5.0s cast, width 6 rect charge
-    TurretsTourAOE2 = 22601, // AutomaticTurret->self, no cast, range 55 width 6 rect
-    TurretsTourAOE3 = 22600, // AutomaticTurret->location, no cast, width 6 rect charge
-
     SpitefulSpirit = 22574, // Warrior->self, 5.0s cast, single-target, visual (summon spheres?)
     StrongpointDefense = 22558, // Knight->self, 5.0s cast, single-target, visual (summon wards?)
     CoatOfArmsFB = 22559, // AetherialWard->self, 4.0s cast, single-target, applies front/back directional parry
