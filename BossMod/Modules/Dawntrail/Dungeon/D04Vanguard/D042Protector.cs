@@ -115,13 +115,13 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Electrowave && Module.Arena.Bounds == StartingBounds)
+        if ((AID)spell.Action.ID == AID.Electrowave && Arena.Bounds == StartingBounds)
             _aoe = new(rectArenaChange, Module.Center, default, Module.CastFinishAt(spell, 0.4f));
     }
 
     public override void Update()
     {
-        if (Module.Arena.Bounds == defaultBounds)
+        if (Arena.Bounds == defaultBounds)
         {
             var player = Module.Raid.Player()!;
             var aoeChecks = new[]
@@ -134,9 +134,9 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 
             foreach (var check in aoeChecks)
             {
-                if (ActiveAOEs(0, player).Any(c => c.Shape == check.AOE && c.Activation <= Module.WorldState.CurrentTime))
+                if (ActiveAOEs(0, player).Any(c => c.Shape == check.AOE && c.Activation <= WorldState.CurrentTime))
                 {
-                    Module.Arena.Bounds = check.Bounds;
+                    Arena.Bounds = check.Bounds;
                     _aoe = null;
                     break;
                 }
@@ -146,10 +146,10 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventEnvControl(byte index, uint state)
     {
-        var activation = Module.WorldState.FutureTime(3);
+        var activation = WorldState.FutureTime(3);
         if (state == 0x00020001 && index == 0x0C)
         {
-            Module.Arena.Bounds = defaultBounds;
+            Arena.Bounds = defaultBounds;
             _aoe = null;
         }
         else if (index == 0x0D)
@@ -169,7 +169,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
                     _aoe = new(electricFences00200010AOE, Module.Center, default, activation);
                     break;
                 case 0x02000004 or 0x10000004 or 0x00080004 or 0x00400004:
-                    Module.Arena.Bounds = defaultBounds;
+                    Arena.Bounds = defaultBounds;
                     break;
             }
         }

@@ -63,10 +63,9 @@ class WrithingRiot(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var activation = Module.WorldState.FutureTime(9.2f + _aoes.Count * 2);
+        var activation = WorldState.FutureTime(9.2f + _aoes.Count * 2);
         switch ((AID)spell.Action.ID)
         {
-
             case AID.RightSweepTelegraph:
             case AID.LeftSweepTelegraph:
                 AddAOE(coneLeftRight, caster.Position, spell.Rotation, activation);
