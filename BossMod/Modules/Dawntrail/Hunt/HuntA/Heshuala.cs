@@ -71,7 +71,7 @@ class ShockingCrossXMarksTheShock(BossModule module) : Components.GenericAOEs(mo
     private readonly SpinShock _rotation = module.FindComponent<SpinShock>()!;
     private enum Cross { None, Cardinal, Intercardinal }
     private Cross currentCross;
-    private static readonly AOEShapeCross cross = new(50, 5);
+    private static readonly AOEShapeCross _cross = new(50, 5);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
@@ -105,7 +105,7 @@ class ShockingCrossXMarksTheShock(BossModule module) : Components.GenericAOEs(mo
             var sequence = _rotation.Sequences[0];
             var rotationOffset = currentCross == Cross.Cardinal ? default : 45.Degrees();
             var activation = WorldState.FutureTime(11.5f + _rotation.Spins * 2);
-            _aoe = new(cross, sequence.Origin, sequence.Rotation + rotationOffset, activation);
+            _aoe = new(_cross, sequence.Origin, sequence.Rotation + rotationOffset, activation);
         }
     }
 }
