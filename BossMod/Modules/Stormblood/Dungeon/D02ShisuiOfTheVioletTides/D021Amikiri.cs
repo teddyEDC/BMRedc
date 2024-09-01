@@ -38,7 +38,7 @@ class DigestiveFluidBait(BossModule module) : Components.GenericBaitAway(module)
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         if (iconID == (uint)IconID.DigestiveFluid)
-            CurrentBaits.Add(new(actor, actor, circle));
+            CurrentBaits.Add(new(actor, actor, circle, WorldState.FutureTime(7.2f)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

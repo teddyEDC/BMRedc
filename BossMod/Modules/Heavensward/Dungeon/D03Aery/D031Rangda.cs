@@ -103,15 +103,15 @@ class D031RangdaStates : StateMachineBuilder
 public class D031Rangda(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly List<WPos> vertices = [new(332.34f, -228.43f), new(337.76f, -228.37f), new(338.36f, -228.27f), new(343.49f, -227.03f), new(344.03f, -226.78f),
-    new(348.50f, -224.57f), new(348.95f, -224.28f), new(353.31f, -220.68f), new(356.57f, -216.48f), new(356.89f, -215.99f),
+    new(348.5f, -224.57f), new(348.95f, -224.28f), new(353.31f, -220.68f), new(356.57f, -216.48f), new(356.89f, -215.99f),
     new(359.19f, -211.05f), new(359.34f, -210.45f), new(360.39f, -205.52f), new(360.44f, -204.98f), new(360.38f, -199.62f),
-    new(360.27f, -199.10f), new(359.12f, -194.36f), new(358.97f, -193.81f), new(356.49f, -189.12f), new(356.18f, -188.66f),
+    new(360.27f, -199.1f), new(359.12f, -194.36f), new(358.97f, -193.81f), new(356.49f, -189.12f), new(356.18f, -188.66f),
     new(353.12f, -184.91f), new(352.73f, -184.54f), new(352.12f, -184.63f), new(351.55f, -184.35f), new(336.81f, -174.73f),
-    new(336.30f, -174.57f), new(335.79f, -174.58f), new(335.24f, -174.57f), new(332.67f, -174.66f), new(323.57f, -174.39f),
-    new(322.99f, -174.43f), new(319.75f, -179.36f), new(313.09f, -188.80f), new(312.74f, -189.25f), new(310.34f, -194.39f),
-    new(310.20f, -194.89f), new(309.86f, -196.48f), new(309.73f, -196.98f), new(309.06f, -200.14f), new(309.13f, -205.80f),
-    new(309.23f, -206.40f), new(310.42f, -211.32f), new(310.60f, -211.81f), new(312.87f, -216.37f), new(313.13f, -216.84f),
-    new(316.64f, -221.13f), new(317.10f, -221.53f), new(320.95f, -224.51f), new(321.45f, -224.86f), new(326.29f, -227.11f),
+    new(336.3f, -174.57f), new(335.79f, -174.58f), new(335.24f, -174.57f), new(332.67f, -174.66f), new(323.57f, -174.39f),
+    new(322.99f, -174.43f), new(319.75f, -179.36f), new(313.09f, -188.8f), new(312.74f, -189.25f), new(310.34f, -194.39f),
+    new(310.2f, -194.89f), new(309.86f, -196.48f), new(309.73f, -196.98f), new(309.06f, -200.14f), new(309.13f, -205.8f),
+    new(309.23f, -206.4f), new(310.42f, -211.32f), new(310.6f, -211.81f), new(312.87f, -216.37f), new(313.13f, -216.84f),
+    new(316.64f, -221.13f), new(317.1f, -221.53f), new(320.95f, -224.51f), new(321.45f, -224.86f), new(326.29f, -227.11f),
     new(326.84f, -227.29f), new(332.07f, -228.41f)];
 
     private static readonly ArenaBounds arena = new ArenaBoundsComplex([new PolygonCustom(vertices)]);

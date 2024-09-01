@@ -65,12 +65,17 @@ public class GenericTowers(BossModule module, ActionID aid = default) : CastCoun
         var forbidden = new List<Func<WPos, float>>();
         if (!Towers.Any(x => x.ForbiddenSoakers[slot]))
         {
+            foreach (var t in Towers.Where(x => !x.IsInside(actor) && x.InsufficientAmountInside(Module) && x.NumInside(Module) > 0))
+                forbiddenInverted.Add(ShapeDistance.InvertedCircle(t.Position, t.Radius));
             var inTower = Towers.Any(x => x.IsInside(actor) && x.CorrectAmountInside(Module));
             var missingSoakers = !inTower && Towers.Any(x => x.InsufficientAmountInside(Module));
-            foreach (var t in Towers.Where(x => x.InsufficientAmountInside(Module) || x.IsInside(actor) && x.CorrectAmountInside(Module)))
-                forbiddenInverted.Add(ShapeDistance.InvertedCircle(t.Position, t.Radius));
-            foreach (var t in Towers.Where(x => x.TooManyInside(Module) || !x.IsInside(actor) && x.CorrectAmountInside(Module)))
-                forbidden.Add(ShapeDistance.Circle(t.Position, t.Radius));
+            if (forbiddenInverted.Count == 0)
+            {
+                foreach (var t in Towers.Where(x => x.InsufficientAmountInside(Module) || x.IsInside(actor) && x.CorrectAmountInside(Module)))
+                    forbiddenInverted.Add(ShapeDistance.InvertedCircle(t.Position, t.Radius));
+                foreach (var t in Towers.Where(x => x.TooManyInside(Module) || !x.IsInside(actor) && x.CorrectAmountInside(Module)))
+                    forbidden.Add(ShapeDistance.Circle(t.Position, t.Radius));
+            }
             if (forbidden.Count == 0 || inTower || missingSoakers && forbiddenInverted.Count > 0)
                 hints.AddForbiddenZone(p => forbiddenInverted.Select(f => f(p)).Max(), Towers[0].Activation);
             else if (forbidden.Count > 0 && !inTower)
