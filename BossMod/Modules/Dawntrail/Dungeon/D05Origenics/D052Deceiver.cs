@@ -142,7 +142,7 @@ class Surge(BossModule module) : Components.Knockback(module)
         {
             foreach (var kvp in ArenaChanges.ArenaBoundsMap)
             {
-                if (Module.Arena.Bounds == kvp.Value)
+                if (Arena.Bounds == kvp.Value)
                 {
                     return kvp.Key switch
                     {
@@ -173,7 +173,7 @@ class Surge(BossModule module) : Components.Knockback(module)
         {
             var forbidden = new List<Func<WPos, float>>();
             foreach (var w in ActiveSafeWalls)
-                forbidden.Add(ShapeDistance.InvertedRect(new(Module.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? new WDir(-4, 0) : new(4, 0), 10, 0, 20));
+                forbidden.Add(ShapeDistance.InvertedRect(new(Arena.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? new WDir(-4, 0) : new(4, 0), 10, 0, 20));
             hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation.AddSeconds(-0.8f));
         }
     }
@@ -191,7 +191,7 @@ class SurgeHint(BossModule module) : Components.GenericAOEs(module)
         var activeSafeWalls = Module.FindComponent<Surge>()!.ActiveSafeWalls;
         if (component)
             foreach (var w in activeSafeWalls)
-                yield return new(rect, new(Module.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? -90.Degrees() : 90.Degrees(), default, Colors.SafeFromAOE, false);
+                yield return new(rect, new(Arena.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? -90.Degrees() : 90.Degrees(), default, Colors.SafeFromAOE, false);
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
