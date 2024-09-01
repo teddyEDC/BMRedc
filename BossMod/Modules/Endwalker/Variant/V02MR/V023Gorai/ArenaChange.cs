@@ -29,10 +29,8 @@ class ArenaChange(BossModule module) : Components.GenericAOEs(module)
             _aoe = null;
         }
         else if (state == 0x00020001 && index == 0x3D)
-        {
-            Module.Arena.Bounds = octagonTrap;
-        }
+            Arena.Bounds = octagonTrap;
         else if (state == 0x00080004 && index == 0x3D)
-            Module.Arena.Bounds = DefaultBounds;
+            Arena.Bounds = DefaultBounds;
     }
 }
