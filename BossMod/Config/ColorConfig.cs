@@ -47,8 +47,7 @@ public sealed class ColorConfig : ConfigNode
     [PropertyDisplay("Arena: melee range indicator")]
     public Color ArenaMeleeRangeIndicator = new(0xffff0000);
     [PropertyDisplay("Arena: other")]
-    public Color[] ArenaOther = [new(0xffff0080), new(0xff8080ff), new(0xff80ff80),
-     new(0xffff8040), new(0xff40c0c0)];
+    public Color[] ArenaOther = [new(0xffff0080), new(0xff8080ff), new(0xff80ff80), new(0xffff8040), new(0xff40c0c0)];
 
     [PropertyDisplay("Outlines and shadows")]
     public Color Shadows = new(0xFF000000);
@@ -77,8 +76,7 @@ public sealed class ColorConfig : ConfigNode
     [PropertyDisplay("Waymark: 4")]
     public Color Waymark4 = new(0xffbc567a);
     [PropertyDisplay("Positional colors")]
-    public Color[] PositionalColors = [new(0xff00ff00), new(0xff0000ff), new(0xffffffff),
-     new(0xff00ffff)];
+    public Color[] PositionalColors = [new(0xff00ff00), new(0xff0000ff), new(0xffffffff), new(0xff00ffff)];
 
     [PropertyDisplay("Planner: background")]
     public Color PlannerBackground = new(0x80362b00);

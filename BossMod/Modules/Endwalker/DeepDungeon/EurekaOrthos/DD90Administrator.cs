@@ -91,9 +91,9 @@ class AetheroChemicalLaserCombo(BossModule module) : Components.GenericAOEs(modu
 
         var activation = iconID switch
         {
-            (uint)IconID.Icon1 => Module.WorldState.FutureTime(7),
-            (uint)IconID.Icon2 => Module.WorldState.FutureTime(10.5f),
-            (uint)IconID.Icon3 => Module.WorldState.FutureTime(14),
+            (uint)IconID.Icon1 => WorldState.FutureTime(7),
+            (uint)IconID.Icon2 => WorldState.FutureTime(10.5f),
+            (uint)IconID.Icon3 => WorldState.FutureTime(14),
             _ => default
         };
 
