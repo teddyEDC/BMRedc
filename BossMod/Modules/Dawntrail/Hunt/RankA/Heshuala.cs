@@ -62,7 +62,10 @@ class SpinShock(BossModule module) : Components.GenericRotatingAOE(module)
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.SpinshockFirstCCW or AID.SpinshockFirstCW or AID.SpinshockRest)
+        {
             AdvanceSequence(caster.Position, spell.Rotation, WorldState.CurrentTime);
+            --Spins;
+        }
     }
 }
 
@@ -74,7 +77,11 @@ class ShockingCrossXMarksTheShock(BossModule module) : Components.GenericAOEs(mo
     private static readonly AOEShapeCross _cross = new(50, 5);
     private AOEInstance? _aoe;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        if (_aoe != null && _rotation.Spins < 3)
+            yield return _aoe.Value;
+    }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {

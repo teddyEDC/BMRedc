@@ -2,7 +2,7 @@
 
 public enum OID : uint
 {
-    Boss = 0x43DC, // R8.500, x1
+    Boss = 0x43DC // R8.5
 }
 
 public enum AID : uint
@@ -28,20 +28,16 @@ public enum SID : uint
 }
 
 class BodyPress(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BodyPress), new AOEShapeCircle(15));
-
 class BodyPress2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BodyPress2), new AOEShapeCircle(15));
-
 class Scatterscourge1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scatterscourge1), new AOEShapeDonut(10, 40));
 
-class SlipperyScatterscourge : Components.GenericAOEs
+class SlipperyScatterscourge(BossModule module) : Components.GenericAOEs(module)
 {
     private Actor? _caster;
-    private List<AOEInstance> _activeAOEs = new();
+    private readonly List<AOEInstance> _activeAOEs = [];
     private static readonly AOEShapeRect _shapeRect = new(20, 6); // Manual adjustments due to weirdness.
     private static readonly AOEShapeDonut _shapeDonut = new(8, 40); // Manual adjustments due to weirdness.
     private static readonly AOEShapeCircle _shapeCircle = new(8); // Manual adjustments due to weirdness.
-
-    public SlipperyScatterscourge(BossModule module) : base(module) { }
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -60,12 +56,12 @@ class SlipperyScatterscourge : Components.GenericAOEs
             return;
 
         _caster = caster;
-        _activeAOEs.Add(new AOEInstance(_shapeRect, _caster.Position, _caster.Rotation, WorldState.CurrentTime.AddSeconds(10), Colors.Danger, true));
+        _activeAOEs.Add(new(_shapeRect, _caster.Position, _caster.Rotation, WorldState.FutureTime(10), Colors.Danger));
 
-        WPos rectEndPosition = GetRectEndPosition(_caster.Position, _caster.Rotation, _shapeRect.LengthFront);
+        var rectEndPosition = GetRectEndPosition(_caster.Position, _caster.Rotation, _shapeRect.LengthFront);
 
-        _activeAOEs.Add(new AOEInstance(_shapeDonut, rectEndPosition, default, WorldState.CurrentTime.AddSeconds(10), Colors.AOE, true));
-        _activeAOEs.Add(new AOEInstance(_shapeCircle, rectEndPosition, default, WorldState.CurrentTime.AddSeconds(10), Colors.SafeFromAOE, false));
+        _activeAOEs.Add(new(_shapeDonut, rectEndPosition, default, WorldState.FutureTime(10)));
+        _activeAOEs.Add(new(_shapeCircle, rectEndPosition, default, WorldState.FutureTime(10), Colors.SafeFromAOE, false));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -76,11 +72,11 @@ class SlipperyScatterscourge : Components.GenericAOEs
             var index = _activeAOEs.FindIndex(aoe => aoe.Shape == _shapeDonut);
             if (index != -1)
             {
-                _activeAOEs[index] = new AOEInstance(_shapeDonut, _activeAOEs[index].Origin, _activeAOEs[index].Rotation, WorldState.CurrentTime.AddSeconds(10), Colors.Danger, true);
+                _activeAOEs[index] = new(_shapeDonut, _activeAOEs[index].Origin, _activeAOEs[index].Rotation, WorldState.FutureTime(10), Colors.Danger, true);
                 var circleIndex = _activeAOEs.FindIndex(aoe => aoe.Shape == _shapeCircle);
                 if (circleIndex != -1)
                 {
-                    _activeAOEs[circleIndex] = new AOEInstance(_shapeCircle, _activeAOEs[circleIndex].Origin, _activeAOEs[circleIndex].Rotation, WorldState.CurrentTime.AddSeconds(10), Colors.SafeFromAOE, false);
+                    _activeAOEs[circleIndex] = new(_shapeCircle, _activeAOEs[circleIndex].Origin, _activeAOEs[circleIndex].Rotation, WorldState.FutureTime(10), Colors.SafeFromAOE, false);
                 }
             }
         }
@@ -91,26 +87,22 @@ class SlipperyScatterscourge : Components.GenericAOEs
         }
     }
 
-    private WPos GetRectEndPosition(WPos origin, Angle rotation, float lengthFront)
+    private static WPos GetRectEndPosition(WPos origin, Angle rotation, float lengthFront)
     {
-        WDir direction = rotation.ToDirection();
-        float offsetX = direction.X * lengthFront;
-        float offsetZ = direction.Z * lengthFront;
+        var direction = rotation.ToDirection();
+        var offsetX = direction.X * lengthFront;
+        var offsetZ = direction.Z * lengthFront;
         return new WPos(origin.X + offsetX, origin.Z + offsetZ);
     }
 }
 
 class PoisonGas(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PoisonGas), new AOEShapeCircle(60));
 
-class PoisonGasMarch : Components.StatusDrivenForcedMarch // TODO: AI still doesn't seem to always get the correct safe spot on this :(
+class PoisonGasMarch(BossModule module) : Components.StatusDrivenForcedMarch(module, 13, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace) // TODO: AI still doesn't seem to always get the correct safe spot on this :(
 {
-
-    public PoisonGasMarch(BossModule module)
-        : base(module, 13, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace) { }
-
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {
-        return Module.FindComponent<SlipperyScatterscourge>()?.ActiveAOEs(slot, actor).Any(a => (a.Color != Colors.SafeFromAOE) && a.Shape.Check(pos, a.Origin, a.Rotation)) ?? false;
+        return Module.FindComponent<SlipperyScatterscourge>()?.ActiveAOEs(slot, actor).Any(a => a.Color != Colors.SafeFromAOE && a.Shape.Check(pos, a.Origin, a.Rotation)) ?? false;
     }
 
     public override void AddGlobalHints(GlobalHints hints)
@@ -121,7 +113,6 @@ class PoisonGasMarch : Components.StatusDrivenForcedMarch // TODO: AI still does
 }
 
 class MalignantMucus(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.MalignantMucus));
-
 class PoisonMucus(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.PoisonMucus), 6);
 
 class KeheniheyamewiStates : StateMachineBuilder

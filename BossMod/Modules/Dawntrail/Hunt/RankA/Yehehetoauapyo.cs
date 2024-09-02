@@ -2,7 +2,7 @@
 
 public enum OID : uint
 {
-    Boss = 0x43DB, // R6.250, x1
+    Boss = 0x43DB // R6.250, x1
 }
 
 public enum AID : uint
@@ -34,20 +34,15 @@ public enum SID : uint
 
 class WhirlingOmenRaidwide(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.WhirlingOmen3), "Raidwide, no turn buffs this time!");
 
-class TailSpit : Components.GenericAOEs
+class TailSpit(BossModule module) : Components.GenericAOEs(module)
 {
-    private List<Angle> _windupDirections = new();
-    private List<AOEInstance> _activeAOEs = new();
-    private int _CastCount = 0;
+    private readonly List<Angle> _windupDirections = [];
+    private readonly List<AOEInstance> _activeAOEs = [];
+    private int _castCount;
 
     private static readonly AOEShapeCone _cone = new(40, 75.Degrees());
 
-    public TailSpit(BossModule module) : base(module) { }
-
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        return _activeAOEs;
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _activeAOEs;
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
@@ -128,22 +123,22 @@ class TailSpit : Components.GenericAOEs
 
         if (isFront)
         {
-            _activeAOEs.Add(new AOEInstance(_cone, casterPosition, facingDirection, WorldState.CurrentTime.AddSeconds(5.8), Colors.Danger, true));
+            _activeAOEs.Add(new(_cone, casterPosition, facingDirection, WorldState.FutureTime(5.8f), Colors.Danger));
         }
         else
         {
-            _activeAOEs.Add(new AOEInstance(_cone, casterPosition, facingDirection + 180.Degrees(), WorldState.CurrentTime.AddSeconds(5.8), Colors.Danger, true));
+            _activeAOEs.Add(new(_cone, casterPosition, facingDirection + 180.Degrees(), WorldState.FutureTime(5.8f), Colors.Danger));
         }
 
         if (second)
         {
             var currentAOE = _activeAOEs[1];
-            _activeAOEs[1] = new AOEInstance(currentAOE.Shape, currentAOE.Origin, currentAOE.Rotation, WorldState.CurrentTime.AddSeconds(6.6), Colors.AOE, true);
+            _activeAOEs[1] = new(currentAOE.Shape, currentAOE.Origin, currentAOE.Rotation, WorldState.FutureTime(6.6f));
         }
 
         return facingDirection;
     }
-    
+
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if (caster != Module.PrimaryActor)
@@ -152,7 +147,7 @@ class TailSpit : Components.GenericAOEs
         if ((AID)spell.Action.ID is AID.Dactail or AID.Dactail2 or AID.Dactail3
             or AID.Pteraspit or AID.Pteraspit2 or AID.Pteraspit3)
         {
-            _CastCount++;
+            _castCount++;
 
             if (_activeAOEs.Count > 0)
             {
@@ -162,13 +157,13 @@ class TailSpit : Components.GenericAOEs
             if (_activeAOEs.Count > 0)
             {
                 var currentAOE = _activeAOEs[0];
-                _activeAOEs[0] = new AOEInstance(currentAOE.Shape, currentAOE.Origin, currentAOE.Rotation, currentAOE.Activation, Colors.Danger, true);
+                _activeAOEs[0] = new(currentAOE.Shape, currentAOE.Origin, currentAOE.Rotation, currentAOE.Activation, Colors.Danger);
             }
 
-            if (_CastCount >= 2)
+            if (_castCount >= 2)
             {
                 _activeAOEs.Clear();
-                _CastCount = 0;
+                _castCount = 0;
             }
         }
     }

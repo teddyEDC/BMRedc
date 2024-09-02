@@ -2,7 +2,7 @@
 
 public enum OID : uint
 {
-    Boss = 0x4580, // R4.340, x1
+    Boss = 0x4580 // R4.34
 }
 
 public enum AID : uint
@@ -19,24 +19,19 @@ public enum AID : uint
 }
 
 class MesmerizingMarch(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.MesmerizingMarch), new AOEShapeCircle(12));
-
 class StirringSamba(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.StirringSamba), new AOEShapeCone(40, 90.Degrees()));
-
 class GlidingSwoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GlidingSwoop), new AOEShapeRect(18, 8));
-
 class MarchingSambaHint(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.MarchingSamba), "Get out, then behind!");
 
-class MarchingSamba : Components.GenericAOEs
+class MarchingSamba(BossModule module) : Components.GenericAOEs(module)
 {
     private Actor? _caster;
-    private List<AOEInstance> _activeAOEs = new();
+    private readonly List<AOEInstance> _activeAOEs = [];
     private static readonly AOEShapeCircle _shapeCircle = new(12);
     private static readonly AOEShapeCone _shapeCone = new(40, 90.Degrees());
     private DateTime _castStartTime;
     private bool _circleDangerSet = false;
     private bool _coneDrawn = false;
-
-    public MarchingSamba(BossModule module) : base(module) { }
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -45,13 +40,13 @@ class MarchingSamba : Components.GenericAOEs
 
         if (!_circleDangerSet && WorldState.CurrentTime >= _castStartTime.AddSeconds(4))
         {
-            _activeAOEs[0] = new AOEInstance(_shapeCircle, _caster.Position, default, _castStartTime.AddSeconds(4), Colors.Danger, true);
+            _activeAOEs[0] = new(_shapeCircle, _caster.Position, default, _castStartTime.AddSeconds(4), Colors.Danger);
             _circleDangerSet = true;
         }
 
         if (!_coneDrawn && WorldState.CurrentTime >= _castStartTime.AddSeconds(7))
         {
-            _activeAOEs.Add(new AOEInstance(_shapeCone, _caster.Position, _caster.Rotation, _castStartTime.AddSeconds(8), Colors.Danger, true));
+            _activeAOEs.Add(new(_shapeCone, _caster.Position, _caster.Rotation, _castStartTime.AddSeconds(8), Colors.Danger));
             _coneDrawn = true;
         }
 
@@ -70,7 +65,7 @@ class MarchingSamba : Components.GenericAOEs
         _castStartTime = WorldState.CurrentTime;
         _circleDangerSet = false;
         _coneDrawn = false;
-        _activeAOEs.Add(new AOEInstance(_shapeCircle, _caster.Position, default, _castStartTime.AddSeconds(10), Colors.AOE, false));
+        _activeAOEs.Add(new(_shapeCircle, _caster.Position, default, _castStartTime.AddSeconds(10), Risky: false));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

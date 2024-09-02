@@ -2,7 +2,7 @@
 
 public enum OID : uint
 {
-    Boss = 0x4395, // R6.000, x1
+    Boss = 0x4395 // R6.0
 }
 
 public enum AID : uint
@@ -26,13 +26,14 @@ class TargetedAdvance(BossModule module) : Components.LocationTargetedAOEs(modul
 
 class CodeExecution(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<AOEShape> _pendingShapes = new();
-    private List<AOEInstance> _activeAOEs = new();
+    private static readonly AOEShapeCircle circle = new(10);
+    private static readonly AOEShapeDonut donut = new(10, 40);
+    private static readonly AOEShapeCross cross = new(40, 5, 45.Degrees());
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        return _activeAOEs;
-    }
+    private readonly List<AOEShape> _pendingShapes = [];
+    private readonly List<AOEInstance> _activeAOEs = [];
+
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _activeAOEs;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -46,13 +47,13 @@ class CodeExecution(BossModule module) : Components.GenericAOEs(module)
                 UpdateAOEs(caster);
                 break;
             case AID.ExecutionModel1:
-                _pendingShapes.Add(new AOEShapeCircle(10));
+                _pendingShapes.Add(circle);
                 break;
             case AID.ExecutionModel2:
-                _pendingShapes.Add(new AOEShapeDonut(10, 40));
+                _pendingShapes.Add(donut);
                 break;
             case AID.ExecutionModel3:
-                _pendingShapes.Add(new AOEShapeCross(40, 5, 45.Degrees()));
+                _pendingShapes.Add(cross);
                 break;
             case AID.Reversal:
                 _pendingShapes.Reverse();
@@ -77,11 +78,11 @@ class CodeExecution(BossModule module) : Components.GenericAOEs(module)
 
         if (_pendingShapes.Count > 0)
         {
-            _activeAOEs.Add(new AOEInstance(_pendingShapes[0], actor.Position, actor.Rotation, WorldState.CurrentTime.AddSeconds(15), Colors.Danger, true));
+            _activeAOEs.Add(new(_pendingShapes[0], actor.Position, actor.Rotation, WorldState.FutureTime(15), Colors.Danger));
 
             if (_pendingShapes.Count > 1)
             {
-                _activeAOEs.Add(new AOEInstance(_pendingShapes[1], actor.Position, actor.Rotation, WorldState.CurrentTime.AddSeconds(15), Colors.AOE, false));
+                _activeAOEs.Add(new(_pendingShapes[1], actor.Position, actor.Rotation, WorldState.FutureTime(15), Risky: false));
             }
         }
     }

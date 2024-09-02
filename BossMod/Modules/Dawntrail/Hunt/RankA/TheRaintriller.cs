@@ -20,11 +20,11 @@ public enum AID : uint
     DropOfVenom = 39754, // Boss->player, 5.0s cast, range 6 circle
 }
 
-class DoReMisery : Components.GenericAOEs
+class DoReMisery(BossModule module) : Components.GenericAOEs(module)
 {
     private Actor? _caster;
-    private List<AOEInstance> _activeAOEs = new();
-    private Queue<AID> _doReMiseryActions = new();
+    private readonly List<AOEInstance> _activeAOEs = [];
+    private readonly Queue<AID> _doReMiseryActions = new();
     private static readonly AOEShapeCircle _shapeOut = new(12);
     private static readonly AOEShapeDonut _shapeIn = new(10, 40);
     private static readonly AOEShapeCone _shapeBehind = new(40, 135.Degrees());
@@ -44,15 +44,13 @@ class DoReMisery : Components.GenericAOEs
             { 17793, new[] { AID.Ribbitygibbet, AID.Ribbitygibbet, AID.Croakdown } }
         };
 
-    public DoReMisery(BossModule module) : base(module) { }
-
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         foreach (var aoe in _activeAOEs)
         {
-            if (aoe.Shape == _shapeBehind)
+            if (aoe.Shape == _shapeBehind && _caster != null)
             {
-                yield return new AOEInstance(_shapeBehind, _caster.Position, _caster.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
+                yield return new(_shapeBehind, _caster.Position, _caster.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
             }
             else
             {
@@ -63,43 +61,53 @@ class DoReMisery : Components.GenericAOEs
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action.ID is not (uint)AID.Croakdown and not (uint)AID.Ribbitygibbet and not (uint)AID.ChirpOTheWisp || _activeAOEs.Count == 0)
+        if ((AID)spell.Action.ID is not AID.Croakdown and not AID.Ribbitygibbet and not AID.ChirpOTheWisp || _activeAOEs.Count == 0)
             return;
 
         _activeAOEs.RemoveAt(0);
         _actionCount++;
 
         if (_actionCount == 1 && _activeAOEs.Count > 0 || _actionCount == 2 && _activeAOEs.Count > 0)
-            _activeAOEs[0] = new AOEInstance(_activeAOEs[0].Shape, _activeAOEs[0].Origin, _activeAOEs[0].Rotation, _activeAOEs[0].Activation, Colors.Danger, true);
+            _activeAOEs[0] = new(_activeAOEs[0].Shape, _activeAOEs[0].Origin, _activeAOEs[0].Rotation, _activeAOEs[0].Activation, Colors.Danger);
 
-        if (_doReMiseryActions.Count > 0)
-            _activeAOEs.Add(CreateAOEInstance(_doReMiseryActions.Dequeue(), WorldState.CurrentTime.AddSeconds(10), _actionCount >= 2 ? Colors.Danger : Colors.AOE, false));
+        if (_doReMiseryActions.Count > 0 && _caster != null)
+            _activeAOEs.Add(CreateAOEInstance(_doReMiseryActions.Dequeue(), WorldState.FutureTime(10), _actionCount >= 2 ? Colors.Danger : Colors.AOE, false));
 
         if (_doReMiseryActions.Count == 0 && _activeAOEs.Count == 0)
-            _activeAOEs.Clear(); _doReMiseryActions.Clear(); _actionCount = 0;
+        {
+            _activeAOEs.Clear();
+            _doReMiseryActions.Clear();
+            _actionCount = 0;
+        }
     }
 
     public override void OnActorNpcYell(Actor actor, ushort id)
     {
-        if (_caster == null) _caster = actor;
-        if (!DoReMiseryNpcYellMap.TryGetValue(id, out var actions)) return;
+        _caster ??= actor;
+        if (!DoReMiseryNpcYellMap.TryGetValue(id, out var actions))
+            return;
 
-        _doReMiseryActions.Clear(); _activeAOEs.Clear(); _actionCount = 0;
-        foreach (var action in actions) _doReMiseryActions.Enqueue(action);
+        _doReMiseryActions.Clear();
+        _activeAOEs.Clear();
+        _actionCount = 0;
+        foreach (var action in actions)
+            _doReMiseryActions.Enqueue(action);
+        if (_caster != null)
+        {
+            if (_doReMiseryActions.Count > 0)
+                _activeAOEs.Add(CreateAOEInstance(_doReMiseryActions.Dequeue(), WorldState.FutureTime(10), Colors.Danger));
 
-        if (_doReMiseryActions.Count > 0)
-            _activeAOEs.Add(CreateAOEInstance(_doReMiseryActions.Dequeue(), WorldState.CurrentTime.AddSeconds(10), Colors.Danger, true));
-
-        if (_doReMiseryActions.Count > 0)
-            _activeAOEs.Add(CreateAOEInstance(_doReMiseryActions.Dequeue(), WorldState.CurrentTime.AddSeconds(10), Colors.AOE, false));
+            if (_doReMiseryActions.Count > 0)
+                _activeAOEs.Add(CreateAOEInstance(_doReMiseryActions.Dequeue(), WorldState.FutureTime(10), Colors.AOE, false));
+        }
     }
 
-    private AOEInstance CreateAOEInstance(AID aid, DateTime activation, uint color, bool risky) => aid switch
+    private AOEInstance CreateAOEInstance(AID aid, DateTime activation, uint color, bool risky = true) => aid switch
     {
-        AID.Ribbitygibbet => new AOEInstance(_shapeIn, _caster.Position, default, activation, color, risky),
-        AID.Croakdown => new AOEInstance(_shapeOut, _caster.Position, default, activation, color, risky),
-        AID.ChirpOTheWisp => new AOEInstance(_shapeBehind, _caster.Position, _caster.Rotation, activation, color, risky),
-        _ => new AOEInstance(_shapeIn, _caster.Position, default, activation, color, risky)
+        AID.Ribbitygibbet => new(_shapeIn, _caster!.Position, default, activation, color, risky),
+        AID.Croakdown => new(_shapeOut, _caster!.Position, default, activation, color, risky),
+        AID.ChirpOTheWisp => new(_shapeBehind, _caster!.Position, _caster.Rotation, activation, color, risky),
+        _ => new(_shapeIn, _caster!.Position, default, activation, color, risky)
     };
 }
 

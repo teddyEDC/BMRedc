@@ -2,7 +2,7 @@
 
 public enum OID : uint
 {
-    Boss = 0x452C, // R3.420, x1
+    Boss = 0x452C // R3.42
 }
 
 public enum AID : uint
@@ -25,28 +25,25 @@ public enum SID : uint
     ForwardOmen = 4153,
     RearwardOmen = 4154,
     LeftwardOmen = 4155,
-    RightwardOmen = 4156,
+    RightwardOmen = 4156
 }
 
 class Level5DeathSentence(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.Level5DeathSentence), true, false, "Applies Doom");
-
 class SentinelRoar(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SentinelRoar));
-
 class WordOfTheWood(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.WordOfTheWood), new AOEShapeCone(30, 90.Degrees()));
 
-class WhispersOfTheWood : Components.GenericRotatingAOE
+class WhispersOfTheWood(BossModule module) : Components.GenericRotatingAOE(module)
 {
     private static readonly AOEShapeCone _coneShape = new(30, 90.Degrees());
-    private List<Angle> _omenDirections = new();
-    private static readonly HashSet<uint> _relevantOmens = new() { (uint)SID.ForwardOmen, (uint)SID.RearwardOmen, (uint)SID.LeftwardOmen, (uint)SID.RightwardOmen };
-
-    public WhispersOfTheWood(BossModule module) : base(module) { }
+    private readonly List<Angle> _omenDirections = [];
+    private static readonly HashSet<uint> _relevantOmens = [(uint)SID.ForwardOmen, (uint)SID.RearwardOmen, (uint)SID.LeftwardOmen, (uint)SID.RightwardOmen];
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if (actor != Module.PrimaryActor || !_relevantOmens.Contains(status.ID)) return;
+        if (actor != Module.PrimaryActor || !_relevantOmens.Contains(status.ID))
+            return;
 
-        Angle directionChange = status.ID switch
+        var directionChange = status.ID switch
         {
             (uint)SID.ForwardOmen => 0.Degrees(),
             (uint)SID.RearwardOmen => 180.Degrees(),
@@ -56,9 +53,9 @@ class WhispersOfTheWood : Components.GenericRotatingAOE
         };
 
         _omenDirections.Add(directionChange);
-        Angle newFacingDirection = actor.Rotation;
+        var newFacingDirection = actor.Rotation;
         _omenDirections.ForEach(change => newFacingDirection += change);
-        Sequences.Add(new Sequence(_coneShape, actor.Position, newFacingDirection, directionChange, WorldState.CurrentTime.AddSeconds(15), 0, 1));
+        Sequences.Add(new(_coneShape, actor.Position, newFacingDirection, directionChange, WorldState.FutureTime(15), 0, 1));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -72,27 +69,37 @@ class WhispersOfTheWood : Components.GenericRotatingAOE
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        int count = 0;
+        var count = 0;
         foreach (var s in Sequences)
         {
-            if (s.NumRemainingCasts <= 0) continue;
-            yield return new AOEInstance(s.Shape, s.Origin, s.Rotation, s.NextActivation, count == 0 ? ImminentColor : FutureColor, count == 0);
-            if (++count >= 2) break;
+            if (s.NumRemainingCasts <= 0)
+                continue;
+            yield return new(s.Shape, s.Origin, s.Rotation, s.NextActivation, count == 0 ? ImminentColor : FutureColor, count == 0);
+            if (++count >= 2)
+                break;
         }
     }
 
-    public void AdvanceSequence(int index, DateTime currentTime, bool removeWhenFinished = true)
+    public new void AdvanceSequence(int index, DateTime currentTime, bool removeWhenFinished = true)
     {
-        if (index < 0 || index >= Sequences.Count) return;
+        if (index < 0 || index >= Sequences.Count)
+            return;
         var s = Sequences[index];
-        if (--s.NumRemainingCasts <= 0 && removeWhenFinished) Sequences.RemoveAt(index);
-        else { s.Rotation += s.Increment; s.NextActivation = currentTime.AddSeconds(s.SecondsBetweenActivations); Sequences[index] = s; }
+        if (--s.NumRemainingCasts <= 0 && removeWhenFinished)
+            Sequences.RemoveAt(index);
+        else
+        {
+            s.Rotation += s.Increment;
+            s.NextActivation = currentTime.AddSeconds(s.SecondsBetweenActivations);
+            Sequences[index] = s;
+        }
     }
 
-    public bool AdvanceSequence(WPos origin, Angle rotation, DateTime currentTime, bool removeWhenFinished = true)
+    public new bool AdvanceSequence(WPos origin, Angle rotation, DateTime currentTime, bool removeWhenFinished = true)
     {
-        int index = Sequences.FindIndex(s => s.Origin.AlmostEqual(origin, 1) && s.Rotation.AlmostEqual(rotation, 0.05f));
-        if (index < 0) return false;
+        var index = Sequences.FindIndex(s => s.Origin.AlmostEqual(origin, 1) && s.Rotation.AlmostEqual(rotation, 0.05f));
+        if (index < 0)
+            return false;
         AdvanceSequence(index, currentTime, removeWhenFinished);
         return true;
     }

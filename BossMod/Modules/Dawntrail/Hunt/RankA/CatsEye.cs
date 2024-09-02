@@ -2,7 +2,7 @@
 
 public enum OID : uint
 {
-    Boss = 0x4396, // R6.020, x1
+    Boss = 0x4396 // R6.02
 }
 
 public enum AID : uint
@@ -21,25 +21,20 @@ class CatsEye1(BossModule module) : Components.LocationTargetedAOEs(module, Acti
 
 class CatsEye2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CatsEye2), 40);
 
-class CatsEye1Gaze : Components.CastGaze
+class CatsEye1Gaze(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.CatsEye1))
 {
-    public CatsEye1Gaze(BossModule module) : base(module, ActionID.MakeSpell(AID.CatsEye1), false) { }
     public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor) => _casters.Select(c => new Eye(c.CastInfo!.LocXZ, Module.CastFinishAt(c.CastInfo)));
 }
 
-class CatsEye2Gaze : Components.CastGaze
+class CatsEye2Gaze(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.CatsEye2), true)
 {
-    public CatsEye2Gaze(BossModule module) : base(module, ActionID.MakeSpell(AID.CatsEye2), true) { }
     public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor) => _casters.Select(c => new Eye(c.CastInfo!.LocXZ, Module.CastFinishAt(c.CastInfo)));
 }
 
 class GravitationalWave(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.GravitationalWave), "Raidwide!");
 
-class BloodshotGaze1 : Components.CastGaze
+class BloodshotGaze1(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.BloodshotGaze1))
 {
-    public BloodshotGaze1(BossModule module)
-        : base(module, ActionID.MakeSpell(AID.BloodshotGaze1), false) { }
-
     public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor)
     {
         var stackComponent = Module.FindComponent<BloodshotStack1>();
@@ -50,11 +45,8 @@ class BloodshotGaze1 : Components.CastGaze
     }
 }
 
-class BloodshotGaze2 : Components.CastGaze
+class BloodshotGaze2(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.BloodshotGaze2), true)
 {
-    public BloodshotGaze2(BossModule module)
-        : base(module, ActionID.MakeSpell(AID.BloodshotGaze2), true) { }
-
     public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor)
     {
         var stackComponent = Module.FindComponent<BloodshotStack2>();
@@ -66,7 +58,6 @@ class BloodshotGaze2 : Components.CastGaze
 }
 
 class BloodshotStack1(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BloodshotGaze1), 8);
-
 class BloodshotStack2(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BloodshotGaze2), 8);
 
 class CatsEyeStates : StateMachineBuilder

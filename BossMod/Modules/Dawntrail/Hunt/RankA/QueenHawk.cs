@@ -2,7 +2,7 @@
 
 public enum OID : uint
 {
-    Boss = 0x452B, // R2.400, x1
+    Boss = 0x452B // R2.4
 }
 
 public enum AID : uint
@@ -28,16 +28,9 @@ public enum SID : uint
 
 class ResonantBuzz(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ResonantBuzz), new AOEShapeCircle(40));
 
-class ResonantBuzzMarch : Components.StatusDrivenForcedMarch // TODO: AI still doesn't seem to always get the correct safe spot when BeeBeAOE is a donut.
+class ResonantBuzzMarch(BossModule module) : Components.StatusDrivenForcedMarch(module, 13, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace) // TODO: AI still doesn't seem to always get the correct safe spot when BeeBeAOE is a donut.
 {
-
-    public ResonantBuzzMarch(BossModule module)
-        : base(module, 13, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace) { }
-
-    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
-    {
-        return Module.FindComponent<BeeBeAOE>()?.ActiveAOEs(slot, actor).Any(a => (a.Color == Colors.AOE || a.Color == Colors.Danger) && a.Shape.Check(pos, a.Origin, a.Rotation)) ?? false;
-    }
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => Module.FindComponent<BeeBeAOE>()?.ActiveAOEs(slot, actor).Any(a => a.Shape.Check(pos, a.Origin, a.Rotation)) ?? false;
 
     public override void AddGlobalHints(GlobalHints hints)
     {
@@ -45,22 +38,17 @@ class ResonantBuzzMarch : Components.StatusDrivenForcedMarch // TODO: AI still d
             hints.Add("Forced March! Check debuff and aim inside safe zone!");
     }
 }
-class StraightSpindle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.StraightSpindle), new AOEShapeRect(50, 2.5f));
 
+class StraightSpindle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.StraightSpindle), new AOEShapeRect(50, 2.5f));
 class FrenziedSting(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.FrenziedSting));
 
-class BeeBeAOE : Components.GenericAOEs
+class BeeBeAOE(BossModule module) : Components.GenericAOEs(module)
 {
-    private List<AOEInstance> _activeAOEs = new();
+    private readonly List<AOEInstance> _activeAOEs = [];
     private static readonly AOEShapeCircle _shapeCircle = new(12);
     private static readonly AOEShapeDonut _shapeDonut = new(10, 40);
 
-    public BeeBeAOE(BossModule module) : base(module) { }
-
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        return _activeAOEs;
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _activeAOEs;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -70,10 +58,10 @@ class BeeBeAOE : Components.GenericAOEs
         switch ((AID)spell.Action.ID)
         {
             case AID.BeeBeGone:
-                _activeAOEs.Add(new AOEInstance(_shapeCircle, caster.Position, default, WorldState.CurrentTime.AddSeconds(15), Colors.AOE, true));
+                _activeAOEs.Add(new(_shapeCircle, caster.Position, default, WorldState.FutureTime(15)));
                 break;
             case AID.BeeBeHere:
-                _activeAOEs.Add(new AOEInstance(_shapeDonut, caster.Position, default, WorldState.CurrentTime.AddSeconds(15), Colors.AOE, true));
+                _activeAOEs.Add(new(_shapeDonut, caster.Position, default, WorldState.FutureTime(15)));
                 break;
         }
     }
@@ -87,7 +75,7 @@ class BeeBeAOE : Components.GenericAOEs
             case AID.BeeBeGone:
             case AID.BeeBeHere:
                 var currentAOE = _activeAOEs[0];
-                _activeAOEs[0] = new AOEInstance(currentAOE.Shape, currentAOE.Origin, currentAOE.Rotation, currentAOE.Activation, Colors.Danger, true);
+                _activeAOEs[0] = new(currentAOE.Shape, currentAOE.Origin, currentAOE.Rotation, currentAOE.Activation, Colors.Danger);
                 break;
         }
     }
