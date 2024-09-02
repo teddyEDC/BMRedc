@@ -1,8 +1,10 @@
 ﻿namespace BossMod.Dawntrail.Hunt.RankA.Keheniheyamewi;
+
 public enum OID : uint
 {
     Boss = 0x43DC, // R8.500, x1
 }
+
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
@@ -26,8 +28,11 @@ public enum SID : uint
 }
 
 class BodyPress(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BodyPress), new AOEShapeCircle(15));
+
 class BodyPress2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BodyPress2), new AOEShapeCircle(15));
+
 class Scatterscourge1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scatterscourge1), new AOEShapeDonut(10, 40));
+
 class SlipperyScatterscourge : Components.GenericAOEs
 {
     private Actor? _caster;
@@ -94,7 +99,9 @@ class SlipperyScatterscourge : Components.GenericAOEs
         return new WPos(origin.X + offsetX, origin.Z + offsetZ);
     }
 }
+
 class PoisonGas(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PoisonGas), new AOEShapeCircle(60));
+
 class PoisonGasMarch : Components.StatusDrivenForcedMarch // TODO: AI still doesn't seem to always get the correct safe spot on this :(
 {
 
@@ -112,7 +119,9 @@ class PoisonGasMarch : Components.StatusDrivenForcedMarch // TODO: AI still does
             hints.Add("Forced March! Check debuff and aim towards the end of the jump!");
     }
 }
+
 class MalignantMucus(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.MalignantMucus));
+
 class PoisonMucus(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.PoisonMucus), 6);
 
 class KeheniheyamewiStates : StateMachineBuilder

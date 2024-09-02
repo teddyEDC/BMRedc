@@ -21,6 +21,7 @@ public enum AID : uint
     ReverseCode1 = 38460, // Boss->self, 5.0s cast
     ReverseCode2 = 38459, // Boss->self, 5.0s cast
 }
+
 class TargetedAdvance(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.TargetedAdvance), 18);
 
 class CodeExecution(BossModule module) : Components.GenericAOEs(module)
@@ -85,6 +86,7 @@ class CodeExecution(BossModule module) : Components.GenericAOEs(module)
         }
     }
 }
+
 class SallyTheSweeperStates : StateMachineBuilder
 {
     public SallyTheSweeperStates(BossModule module) : base(module)

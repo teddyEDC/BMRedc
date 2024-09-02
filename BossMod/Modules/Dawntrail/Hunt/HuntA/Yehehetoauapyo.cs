@@ -33,6 +33,7 @@ public enum SID : uint
 }
 
 class WhirlingOmenRaidwide(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.WhirlingOmen3), "Raidwide, no turn buffs this time!");
+
 class TailSpit : Components.GenericAOEs
 {
     private List<Angle> _windupDirections = new();
@@ -142,6 +143,7 @@ class TailSpit : Components.GenericAOEs
 
         return facingDirection;
     }
+    
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if (caster != Module.PrimaryActor)

@@ -4,6 +4,7 @@ public enum OID : uint
 {
     Boss = 0x452C, // R3.420, x1
 }
+
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
@@ -18,6 +19,7 @@ public enum AID : uint
     SentinelRoar = 39491, // Boss->self, 5.0s cast, range 40 circle
     Level5DeathSentence = 39492, // Boss->self, 5.0s cast, range 30 circle
 }
+
 public enum SID : uint
 {
     ForwardOmen = 4153,
@@ -27,8 +29,11 @@ public enum SID : uint
 }
 
 class Level5DeathSentence(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.Level5DeathSentence), true, false, "Applies Doom");
+
 class SentinelRoar(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SentinelRoar));
+
 class WordOfTheWood(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.WordOfTheWood), new AOEShapeCone(30, 90.Degrees()));
+
 class WhispersOfTheWood : Components.GenericRotatingAOE
 {
     private static readonly AOEShapeCone _coneShape = new(30, 90.Degrees());
@@ -92,6 +97,7 @@ class WhispersOfTheWood : Components.GenericRotatingAOE
         return true;
     }
 }
+
 class NechucihoStates : StateMachineBuilder
 {
     public NechucihoStates(BossModule module) : base(module)

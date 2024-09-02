@@ -4,6 +4,7 @@ public enum OID : uint
 {
     Boss = 0x4580, // R4.340, x1
 }
+
 public enum AID : uint
 {
     AutoAttack = 872, //  Boss->player, no cast, single-target
@@ -18,9 +19,13 @@ public enum AID : uint
 }
 
 class MesmerizingMarch(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.MesmerizingMarch), new AOEShapeCircle(12));
+
 class StirringSamba(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.StirringSamba), new AOEShapeCone(40, 90.Degrees()));
+
 class GlidingSwoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GlidingSwoop), new AOEShapeRect(18, 8));
+
 class MarchingSambaHint(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.MarchingSamba), "Get out, then behind!");
+
 class MarchingSamba : Components.GenericAOEs
 {
     private Actor? _caster;
@@ -84,6 +89,7 @@ class MarchingSamba : Components.GenericAOEs
         }
     }
 }
+
 class PeckingFlurry(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.PeckingFlurry), "Raidwide x3!");
 
 class PkuuchaStates : StateMachineBuilder

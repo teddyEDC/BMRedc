@@ -4,6 +4,7 @@ public enum OID : uint
 {
     Boss = 0x4396, // R6.020, x1
 }
+
 public enum AID : uint
 {
     AutoAttack = 38517, // Boss->player, no cast, single-target
@@ -16,18 +17,23 @@ public enum AID : uint
 }
 
 class CatsEye1(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CatsEye1), 40);
+
 class CatsEye2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CatsEye2), 40);
+
 class CatsEye1Gaze : Components.CastGaze
 {
     public CatsEye1Gaze(BossModule module) : base(module, ActionID.MakeSpell(AID.CatsEye1), false) { }
     public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor) => _casters.Select(c => new Eye(c.CastInfo!.LocXZ, Module.CastFinishAt(c.CastInfo)));
 }
+
 class CatsEye2Gaze : Components.CastGaze
 {
     public CatsEye2Gaze(BossModule module) : base(module, ActionID.MakeSpell(AID.CatsEye2), true) { }
     public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor) => _casters.Select(c => new Eye(c.CastInfo!.LocXZ, Module.CastFinishAt(c.CastInfo)));
 }
+
 class GravitationalWave(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.GravitationalWave), "Raidwide!");
+
 class BloodshotGaze : Components.CastGaze
 {
     public BloodshotGaze(BossModule module)
@@ -42,6 +48,7 @@ class BloodshotGaze : Components.CastGaze
         return _casters.Select(c => new Eye(targetPosition ?? c.Position, Module.CastFinishAt(c.CastInfo)));
     }
 }
+
 class BloodshotStack(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BloodshotGaze), 8);
 
 class CatsEyeStates : StateMachineBuilder

@@ -27,6 +27,7 @@ public enum SID : uint
 }
 
 class ResonantBuzz(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ResonantBuzz), new AOEShapeCircle(40));
+
 class ResonantBuzzMarch : Components.StatusDrivenForcedMarch // TODO: AI still doesn't seem to always get the correct safe spot when BeeBeAOE is a donut.
 {
 
@@ -45,7 +46,9 @@ class ResonantBuzzMarch : Components.StatusDrivenForcedMarch // TODO: AI still d
     }
 }
 class StraightSpindle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.StraightSpindle), new AOEShapeRect(50, 2.5f));
+
 class FrenziedSting(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.FrenziedSting));
+
 class BeeBeAOE : Components.GenericAOEs
 {
     private List<AOEInstance> _activeAOEs = new();

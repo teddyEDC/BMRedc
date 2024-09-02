@@ -4,6 +4,7 @@ public enum OID : uint
 {
     Boss = 0x457F, // R4.800, x1
 }
+
 public enum AID : uint
 {
     // Do Re Misery has multiple AIDs with variant casts, 1 -> One Yell, 2 -> 2 Yells, 3 -> 3 Yells.
@@ -18,6 +19,7 @@ public enum AID : uint
     ChirpOTheWisp = 39753, // Boss->self, 1.0s cast, range 40 135-degree cone "Croak!"
     DropOfVenom = 39754, // Boss->player, 5.0s cast, range 6 circle
 }
+
 class DoReMisery : Components.GenericAOEs
 {
     private Actor? _caster;
@@ -100,6 +102,7 @@ class DoReMisery : Components.GenericAOEs
         _ => new AOEInstance(_shapeIn, _caster.Position, default, activation, color, risky)
     };
 }
+
 class DropOfVenom(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.DropOfVenom), 6);
 
 class TheRaintrillerStates : StateMachineBuilder
