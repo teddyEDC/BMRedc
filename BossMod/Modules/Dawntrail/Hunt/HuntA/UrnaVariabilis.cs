@@ -10,8 +10,8 @@ public enum AID : uint
     AutoAttack = 872, // Boss->player, no cast, single-target
     ProximityPlasma1 = 39106, // Boss->self, 5.0s cast, range 20 circle
     ProximityPlasma2 = 39113, // Boss->self, 1.0s cast, range 20 circle
-    RingLightning1 = 39107, // Boss->self, 5.0s cast, range 4-60 donut
-    RingLightning2 = 39114, // Boss->self, 1.0s cast, range 4-60 donut
+    RingLightning1 = 39107, // Boss->self, 5.0s cast, range 8-60 donut
+    RingLightning2 = 39114, // Boss->self, 1.0s cast, range 8-60 donut
     Magnetron = 39108, // Boss->self, 3.0s cast, range 40 circle, applies positive/negative charges
     Magnetoplasma1 = 39109, // Boss->self, 6.0s cast, range 60 circle, circle
     Magnetoplasma2 = 39111, // Boss->self, 6.0s cast, range 60 circle, circle
@@ -175,8 +175,8 @@ class MagnetismCircleDonut(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var kb = _kb.Sources(slot, actor);
-        if (!kb.Any() || kb.Any() && _kb.IsImmune(slot, kb.FirstOrDefault().Activation))
+        var kb = _kb.Sources(slot, actor).ToList();
+        if (kb.Count == 0 || kb.Count != 0 && _kb.IsImmune(slot, kb.FirstOrDefault().Activation))
             base.AddAIHints(slot, actor, assignment, hints);
     }
 }
