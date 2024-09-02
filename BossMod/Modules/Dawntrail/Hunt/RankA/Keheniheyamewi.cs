@@ -31,22 +31,38 @@ class BodyPress(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 class BodyPress2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BodyPress2), new AOEShapeCircle(15));
 class Scatterscourge1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scatterscourge1), new AOEShapeDonut(10, 40));
 
-class SlipperyScatterscourge(BossModule module) : Components.GenericAOEs(module)
+class SlipperyScatterscourge : Components.GenericAOEs
 {
     private Actor? _caster;
-    private readonly List<AOEInstance> _activeAOEs = [];
-    private static readonly AOEShapeRect _shapeRect = new(20, 6); // Manual adjustments due to weirdness.
-    private static readonly AOEShapeDonut _shapeDonut = new(8, 40); // Manual adjustments due to weirdness.
-    private static readonly AOEShapeCircle _shapeCircle = new(8); // Manual adjustments due to weirdness.
+    private readonly List<AOEInstance> _activeAOEs = new();
+    private static readonly AOEShapeRect _shapeRect = new(20, 5);
+    private static readonly AOEShapeDonut _shapeDonut = new(10, 40);
+    private static readonly AOEShapeCircle _shapeCircle = new(10);
+    private bool _finishedCast;
+
+    public SlipperyScatterscourge(BossModule module) : base(module) { }
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (_caster == null)
+        if (_caster == null || _finishedCast)
             yield break;
+
+        var rectEndPosition = GetRectEndPosition(_caster.Position, _caster.Rotation, _shapeRect.LengthFront);
 
         foreach (var aoe in _activeAOEs)
         {
-            yield return aoe;
+            if (aoe.Shape == _shapeRect)
+            {
+                yield return new AOEInstance(_shapeRect, _caster.Position, _caster.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
+            }
+            else if (aoe.Shape == _shapeDonut || aoe.Shape == _shapeCircle)
+            {
+                yield return new AOEInstance(aoe.Shape, rectEndPosition, aoe.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
+            }
+            else
+            {
+                yield return aoe;
+            }
         }
     }
 
@@ -56,34 +72,43 @@ class SlipperyScatterscourge(BossModule module) : Components.GenericAOEs(module)
             return;
 
         _caster = caster;
-        _activeAOEs.Add(new(_shapeRect, _caster.Position, _caster.Rotation, WorldState.FutureTime(10), Colors.Danger));
+        _finishedCast = false;
+        _activeAOEs.Add(new AOEInstance(_shapeRect, _caster.Position, _caster.Rotation, WorldState.FutureTime(10), Colors.Danger));
 
         var rectEndPosition = GetRectEndPosition(_caster.Position, _caster.Rotation, _shapeRect.LengthFront);
 
-        _activeAOEs.Add(new(_shapeDonut, rectEndPosition, default, WorldState.FutureTime(10)));
-        _activeAOEs.Add(new(_shapeCircle, rectEndPosition, default, WorldState.FutureTime(10), Colors.SafeFromAOE, false));
+        _activeAOEs.Add(new AOEInstance(_shapeDonut, rectEndPosition, default, WorldState.FutureTime(10)));
+        _activeAOEs.Add(new AOEInstance(_shapeCircle, rectEndPosition, default, WorldState.FutureTime(10), Colors.SafeFromAOE, false));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.SlipperyScatterscourge)
         {
-            _activeAOEs.RemoveAll(aoe => aoe.Shape == _shapeRect);
             var index = _activeAOEs.FindIndex(aoe => aoe.Shape == _shapeDonut);
             if (index != -1)
             {
-                _activeAOEs[index] = new(_shapeDonut, _activeAOEs[index].Origin, _activeAOEs[index].Rotation, WorldState.FutureTime(10), Colors.Danger, true);
+                _activeAOEs[index] = new AOEInstance(_shapeDonut, _activeAOEs[index].Origin, _activeAOEs[index].Rotation, WorldState.FutureTime(10), Colors.Danger, true);
                 var circleIndex = _activeAOEs.FindIndex(aoe => aoe.Shape == _shapeCircle);
                 if (circleIndex != -1)
                 {
-                    _activeAOEs[circleIndex] = new(_shapeCircle, _activeAOEs[circleIndex].Origin, _activeAOEs[circleIndex].Rotation, WorldState.FutureTime(10), Colors.SafeFromAOE, false);
+                    _activeAOEs[circleIndex] = new AOEInstance(_shapeCircle, _activeAOEs[circleIndex].Origin, _activeAOEs[circleIndex].Rotation, WorldState.FutureTime(10), Colors.SafeFromAOE, false);
                 }
             }
+            _finishedCast = true;
         }
         else if (spell.Action.ID == (uint)AID.Scatterscourge2)
         {
             _activeAOEs.RemoveAll(aoe => aoe.Shape == _shapeDonut || aoe.Shape == _shapeCircle);
             _caster = null;
+        }
+    }
+
+    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    {
+        if (spell.Action.ID == (uint)AID.WildCharge && _caster != null)
+        {
+            _activeAOEs.RemoveAll(aoe => aoe.Shape == _shapeRect);
         }
     }
 
@@ -108,7 +133,7 @@ class PoisonGasMarch(BossModule module) : Components.StatusDrivenForcedMarch(mod
     public override void AddGlobalHints(GlobalHints hints)
     {
         if (Module.PrimaryActor.CastInfo?.IsSpell(AID.PoisonGas) ?? false)
-            hints.Add("Forced March! Check debuff and aim towards the end of the jump!");
+            hints.Add("Forced March! Check debuff and aim towards the safe zone!");
     }
 }
 
