@@ -1,19 +1,23 @@
 ﻿namespace BossMod.AI;
 
-[ConfigDisplay(Name = "AI settings (very experimental!!!)", Order = 6)]
+[ConfigDisplay(Name = "AI Configuration", Order = 6)]
 sealed class AIConfig : ConfigNode
 {
-    [PropertyDisplay("Enable AI")]
+    // ui settings
+    [PropertyDisplay("Enable AI", tooltip: "Disclaimer: AI is very experimental, use at your own risk!")]
     public bool Enabled = false;
 
     [PropertyDisplay("Show status in DTR bar")]
     public bool ShowDTR = false;
 
-    [PropertyDisplay("Draw UI")]
+    [PropertyDisplay("Show AI management window")]
     public bool DrawUI = true;
 
     [PropertyDisplay("Focus target master")]
     public bool FocusTargetLeader = true;
+
+    [PropertyDisplay("Show AI/Navi status on TitleBar")]
+    public bool ShowStatusOnTitlebar = true;
 
     [PropertyDisplay("Broadcast keypresses to other windows")]
     public bool BroadcastToSlaves = false;
