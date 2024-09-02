@@ -18,6 +18,20 @@ public class Chains(BossModule module, uint tetherID, ActionID aid = default, fl
         return _partner[pcSlot] == player ? PlayerPriority.Danger : PlayerPriority.Irrelevant;
     }
 
+    public override void OnTethered(Actor source, ActorTetherInfo tether)
+    {
+        if (tether.ID == TID)
+        {
+            TethersAssigned = true;
+            var target = WorldState.Actors.Find(tether.Target);
+            if (target != null)
+            {
+                SetPartner(source.InstanceID, target);
+                SetPartner(target.InstanceID, source);
+            }
+        }
+    }
+
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         if (_partner[pcSlot] is var partner && partner != null)
