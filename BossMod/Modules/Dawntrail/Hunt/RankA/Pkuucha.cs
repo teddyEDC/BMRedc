@@ -30,8 +30,8 @@ class MarchingSamba(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle _shapeCircle = new(12);
     private static readonly AOEShapeCone _shapeCone = new(40, 90.Degrees());
     private DateTime _castStartTime;
-    private bool _circleDangerSet = false;
-    private bool _coneDrawn = false;
+    private bool _circleDangerSet;
+    private bool _coneDrawn;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {

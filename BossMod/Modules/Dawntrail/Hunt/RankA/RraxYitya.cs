@@ -31,7 +31,7 @@ class HiddenWingblades(BossModule module) : Components.GenericAOEs(module)
     private readonly Queue<(AID, Angle)> _wingbladeCasts = new();
     private readonly List<AOEInstance> _activeAOEs = [];
     private static readonly AOEShapeCone _shape = new(25, 90.Degrees());
-    private int _castCount = 0;
+    private int _castCount;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _activeAOEs.Where(aoe => WorldState.CurrentTime < aoe.Activation.AddSeconds(10));
 

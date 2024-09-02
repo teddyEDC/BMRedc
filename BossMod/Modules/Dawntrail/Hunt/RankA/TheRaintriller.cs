@@ -28,7 +28,7 @@ class DoReMisery(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle _shapeOut = new(12);
     private static readonly AOEShapeDonut _shapeIn = new(10, 40);
     private static readonly AOEShapeCone _shapeBehind = new(40, 135.Degrees());
-    private int _actionCount = 0;
+    private int _actionCount;
 
     private static readonly Dictionary<ushort, AID[]> DoReMiseryNpcYellMap = new()
         {
