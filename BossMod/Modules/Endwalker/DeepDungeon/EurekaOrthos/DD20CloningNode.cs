@@ -65,7 +65,7 @@ class FlameBreath(BossModule module) : Components.GenericAOEs(module)
     private static bool IsCasterIntercardinal(Actor caster)
     {
         foreach (var angle in Helpers.AnglesIntercardinals)
-            if (caster.Rotation.AlmostEqual(angle, Helpers.RadianConversion))
+            if (caster.Rotation.AlmostEqual(angle, Angle.DegToRad))
                 return true;
         return false;
     }

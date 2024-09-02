@@ -11,7 +11,7 @@ class SixBladedKhadga(BossModule module) : Components.GenericAOEs(module)
         if (_spell.Count > 0)
             yield return new(cone, Module.PrimaryActor.Position, _spell[0].Rotation, _start.AddSeconds(NumCasts * 2), Colors.Danger);
         if (_spell.Count > 1)
-            yield return new(cone, Module.PrimaryActor.Position, _spell[1].Rotation, _start.AddSeconds(2 + NumCasts * 2), Risky: !_spell[1].Rotation.AlmostEqual(_spell[0].Rotation + 180.Degrees(), Helpers.RadianConversion));
+            yield return new(cone, Module.PrimaryActor.Position, _spell[1].Rotation, _start.AddSeconds(2 + NumCasts * 2), Risky: !_spell[1].Rotation.AlmostEqual(_spell[0].Rotation + 180.Degrees(), Angle.DegToRad));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

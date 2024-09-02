@@ -96,17 +96,17 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     {
         if (position.AlmostEqual(new(182.7f, 8.75f), 0.1f))
         {
-            AddSourceAndData(new WDir(QuarterWidth, -HalfHeight), rectNS, angles[0]);
-            AddSourceAndData(new WDir(-QuarterWidth, HalfHeight), rectNS, angles[1]);
-            AddSource(new WDir(0, -QuarterHeight), rectEW, angles[2]);
-            AddSource(new WDir(0, QuarterHeight), rectEW, angles[3]);
+            AddSourceAndData(new(QuarterWidth, -HalfHeight), rectNS, angles[0]);
+            AddSourceAndData(new(-QuarterWidth, HalfHeight), rectNS, angles[1]);
+            AddSource(new(0, -QuarterHeight), rectEW, angles[2]);
+            AddSource(new(0, QuarterHeight), rectEW, angles[3]);
         }
         else if (position.AlmostEqual(new(182.5f, -8.75f), 0.1f))
         {
-            AddSourceAndData(new WDir(-QuarterWidth, -HalfHeight), rectNS, angles[0]);
-            AddSourceAndData(new WDir(QuarterWidth, HalfHeight), rectNS, angles[1]);
-            AddSource(new WDir(0, -QuarterHeight), rectEW, angles[3]);
-            AddSource(new WDir(0, QuarterHeight), rectEW, angles[2]);
+            AddSourceAndData(new(-QuarterWidth, -HalfHeight), rectNS, angles[0]);
+            AddSourceAndData(new(QuarterWidth, HalfHeight), rectNS, angles[1]);
+            AddSource(new(0, -QuarterHeight), rectEW, angles[3]);
+            AddSource(new(0, QuarterHeight), rectEW, angles[2]);
         }
     }
 
@@ -133,7 +133,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
+        if (Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
             var forbiddenZones = Data.Select(w => ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight - 0.5f, 0, QuarterWidth)).ToList();
             hints.AddForbiddenZone(p => forbiddenZones.Max(f => f(p)), Activation.AddSeconds(-0.8f));
@@ -160,7 +160,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
             yield return _aoe with { Risky = !componentActive };
             if (componentActive)
             {
-                var safezone = component.Data.FirstOrDefault(x => _aoe.Rotation.AlmostEqual(x.Item2 + 180.Degrees(), Helpers.RadianConversion));
+                var safezone = component.Data.FirstOrDefault(x => _aoe.Rotation.AlmostEqual(x.Item2 + 180.Degrees(), Angle.DegToRad));
                 yield return new(rect, safezone.Item1, safezone.Item2, component.Activation, Colors.SafeFromAOE, false);
             }
         }

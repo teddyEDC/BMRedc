@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Variant.V02MR.V025Enenra;
+﻿namespace BossMod.Endwalker.VariantCriterion.V02MR.V025Enenra;
 
 public enum OID : uint
 {

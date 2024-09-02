@@ -224,52 +224,44 @@ public class StretchTetherDuo(BossModule module, float minimumDistance, float ac
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        switch (status.ID)
-        {
-            case 3054: //Guard in PVP
-            case (uint)WHM.SID.Surecast:
-            case (uint)WAR.SID.ArmsLength:
-                var slot1 = Raid.FindSlot(actor.InstanceID);
-                if (slot1 >= 0)
-                    PlayerImmunes[slot1].RoleBuffExpire = status.ExpireAt;
-                break;
-            case 1722: //Bluemage Diamondback
-            case (uint)WAR.SID.InnerStrength:
-                var slot2 = Raid.FindSlot(actor.InstanceID);
-                if (slot2 >= 0)
-                    PlayerImmunes[slot2].JobBuffExpire = status.ExpireAt;
-                break;
-            case 2345: //Lost Manawall in Bozja
-                var slot3 = Raid.FindSlot(actor.InstanceID);
-                if (slot3 >= 0)
-                    PlayerImmunes[slot3].DutyBuffExpire = status.ExpireAt;
-                break;
-        }
+        var slot = Raid.FindSlot(actor.InstanceID);
+        if (slot >= 0)
+            switch (status.ID)
+            {
+                case 3054: //Guard in PVP
+                case (uint)WHM.SID.Surecast:
+                case (uint)WAR.SID.ArmsLength:
+                    PlayerImmunes[slot].RoleBuffExpire = status.ExpireAt;
+                    break;
+                case 1722: //Bluemage Diamondback
+                case (uint)WAR.SID.InnerStrength:
+                    PlayerImmunes[slot].JobBuffExpire = status.ExpireAt;
+                    break;
+                case 2345: //Lost Manawall in Bozja
+                    PlayerImmunes[slot].DutyBuffExpire = status.ExpireAt;
+                    break;
+            }
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        switch (status.ID)
-        {
-            case 3054: //Guard in PVP
-            case (uint)WHM.SID.Surecast:
-            case (uint)WAR.SID.ArmsLength:
-                var slot1 = Raid.FindSlot(actor.InstanceID);
-                if (slot1 >= 0)
-                    PlayerImmunes[slot1].RoleBuffExpire = new();
-                break;
-            case 1722: //Bluemage Diamondback
-            case (uint)WAR.SID.InnerStrength:
-                var slot2 = Raid.FindSlot(actor.InstanceID);
-                if (slot2 >= 0)
-                    PlayerImmunes[slot2].JobBuffExpire = new();
-                break;
-            case 2345: //Lost Manawall in Bozja
-                var slot3 = Raid.FindSlot(actor.InstanceID);
-                if (slot3 >= 0)
-                    PlayerImmunes[slot3].DutyBuffExpire = new();
-                break;
-        }
+        var slot = Raid.FindSlot(actor.InstanceID);
+        if (slot >= 0)
+            switch (status.ID)
+            {
+                case 3054: //Guard in PVP
+                case (uint)WHM.SID.Surecast:
+                case (uint)WAR.SID.ArmsLength:
+                    PlayerImmunes[slot].RoleBuffExpire = new();
+                    break;
+                case 1722: //Bluemage Diamondback
+                case (uint)WAR.SID.InnerStrength:
+                    PlayerImmunes[slot].JobBuffExpire = new();
+                    break;
+                case 2345: //Lost Manawall in Bozja
+                    PlayerImmunes[slot].DutyBuffExpire = new();
+                    break;
+            }
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)

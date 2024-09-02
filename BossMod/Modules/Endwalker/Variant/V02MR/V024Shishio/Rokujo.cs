@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Variant.V02MR.V024Shishio;
+﻿namespace BossMod.Endwalker.VariantCriterion.V02MR.V024Shishio;
 
 class OnceOnRokujo(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.OnceOnRokujo), new AOEShapeRect(30, 7, 30));
 class TwiceOnRokujo(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TwiceOnRokujo), new AOEShapeRect(30, 7, 30));

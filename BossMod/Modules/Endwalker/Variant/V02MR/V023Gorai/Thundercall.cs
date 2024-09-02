@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V023Gorai;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V023Gorai;
 
 class Thundercall(BossModule module) : Components.GenericAOEs(module)
 {
@@ -13,7 +13,7 @@ class Thundercall(BossModule module) : Components.GenericAOEs(module)
     {
         if (counter < 2 && (OID)actor.OID == OID.BallOfLevin)
         {
-            _aoes.Add(new(circleBig, actor.Position, default, Module.WorldState.FutureTime(10.8f)));
+            _aoes.Add(new(circleBig, actor.Position, default, WorldState.FutureTime(10.8f)));
             ++counter;
         }
     }
@@ -22,7 +22,7 @@ class Thundercall(BossModule module) : Components.GenericAOEs(module)
     {
         if ((OID)actor.OID == OID.BallOfLevin && (SID)status.ID == SID.SmallOrb)
         {
-            var activation = Module.WorldState.FutureTime(10);
+            var activation = WorldState.FutureTime(10);
             _aoes.Add(new(circleSmall, actor.Position, default, activation));
             foreach (var a in Module.Enemies(OID.BallOfLevin).Except([actor]))
                 _aoes.Add(new(circleBig, a.Position, default, activation));

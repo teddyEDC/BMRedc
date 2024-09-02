@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Variant.V02MR.V022Moko;
+﻿namespace BossMod.Endwalker.VariantCriterion.V02MR.V022Moko;
 
 // note: each initial line sends out two 'exaflares' to the left & right
 // each subsequent exaflare moves by distance 5, and happen approximately 2s apart
@@ -39,7 +39,7 @@ class UpwellRest(BossModule module) : Components.Exaflare(module, new AOEShapeRe
         if ((AID)spell.Action.ID == AID.UpwellRest)
         {
             ++NumCasts;
-            var index = Lines.FindIndex(l => l.Next.AlmostEqual(caster.Position, 3) && l.Rotation.AlmostEqual(caster.Rotation, Helpers.RadianConversion));
+            var index = Lines.FindIndex(l => l.Next.AlmostEqual(caster.Position, 3) && l.Rotation.AlmostEqual(caster.Rotation, Angle.DegToRad));
             if (index >= 0)
             {
                 AdvanceLine(Lines[index], caster.Position + 2.5f * Lines[index].Rotation.ToDirection().OrthoR());

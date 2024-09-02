@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V021Yozakura;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V021Yozakura;
 
 class SealOfRiotousBloom(BossModule module) : Components.GenericAOEs(module)
 {

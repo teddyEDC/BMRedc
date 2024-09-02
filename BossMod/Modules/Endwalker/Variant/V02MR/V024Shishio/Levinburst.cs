@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V024Shishio;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V024Shishio;
 
 class Levinburst(BossModule module) : Components.GenericAOEs(module)
 {

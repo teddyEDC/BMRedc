@@ -40,17 +40,12 @@ class FlamesOfFury(BossModule module) : Components.LocationTargetedAOEs(module, 
 
 class FlamesOfFuryBait(BossModule module) : Components.GenericBaitAway(module)
 {
-    private bool targeted;
-    private Actor? target;
+    private static readonly AOEShapeCircle circle = new(10);
 
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         if (iconID == (uint)IconID.Baitaway)
-        {
-            CurrentBaits.Add(new(actor, actor, new AOEShapeCircle(10)));
-            targeted = true;
-            target = actor;
-        }
+            CurrentBaits.Add(new(actor, actor, circle));
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -61,21 +56,20 @@ class FlamesOfFuryBait(BossModule module) : Components.GenericBaitAway(module)
         {
             CurrentBaits.Clear();
             NumCasts = 0;
-            targeted = false;
         }
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
-        if (target == actor && targeted)
+        if (CurrentBaits.Any(x => x.Target == actor))
             hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center, 17.5f));
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (target == actor && targeted)
-            hints.Add("Bait voidzone away! (3 times)");
+        if (CurrentBaits.Any(x => x.Target == actor))
+            hints.Add("Bait away! (3 times)");
     }
 }
 

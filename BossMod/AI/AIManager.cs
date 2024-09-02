@@ -63,7 +63,7 @@ sealed class AIManager : IDisposable
             Beh.Execute(player, master);
         else
             Controller.Clear();
-        Controller.Update(player, Autorot.Hints);
+        Controller.Update(player, Autorot.Hints, WorldState.CurrentTime);
     }
 
     public void SwitchToIdle()

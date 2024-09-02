@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Criterion.C03AAI.C033Statice;
+﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C033Statice;
 
 class Fireworks(BossModule module) : Components.UniformStackSpread(module, 3, 20, 2, 2, true)
 {

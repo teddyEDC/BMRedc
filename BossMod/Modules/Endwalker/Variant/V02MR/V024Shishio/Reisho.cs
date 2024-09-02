@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V024Shishio;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V024Shishio;
 
 class Reisho1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ReishoFirst), new AOEShapeCircle(6));
 class Reisho2(BossModule module) : Components.PersistentVoidzone(module, 6, m => m.Enemies(OID.HauntingThrall))

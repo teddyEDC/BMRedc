@@ -46,7 +46,7 @@ class PunishingSlice(BossModule module) : Components.GenericAOEs(module)
     {
         if (aoeSources.TryGetValue((index, state), out var source))
         {
-            var activation = NumCasts == 0 ? Module.WorldState.FutureTime(13) : Module.WorldState.FutureTime(16);
+            var activation = NumCasts == 0 ? WorldState.FutureTime(13) : WorldState.FutureTime(16);
             _aoe = new(rect, source.origin, source.rotation, activation);
         }
     }

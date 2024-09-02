@@ -1,4 +1,4 @@
-namespace BossMod.Endwalker.Variant.V02MR.V023Gorai;
+namespace BossMod.Endwalker.VariantCriterion.V02MR.V023Gorai;
 
 class MalformedPrayer(BossModule module) : Components.GenericTowers(module)
 {
@@ -14,7 +14,7 @@ class MalformedPrayer(BossModule module) : Components.GenericTowers(module)
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && towerSources.TryGetValue(index, out var source))
-            Towers.Add(new(source, 4, activation: Module.WorldState.FutureTime(9)));
+            Towers.Add(new(source, 4, activation: WorldState.FutureTime(9)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
