@@ -76,7 +76,7 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
         if (tether.ID == (uint)TetherID.Magnetism)
         {
             var target = WorldState.Actors.Find(tether.Target)!;
-            var activation = Module.WorldState.FutureTime(10);
+            var activation = WorldState.FutureTime(10);
             if (IsPull(source, target))
                 sourceByActor.Add((target, new(source.Position, 10, activation, Kind: Kind.TowardsOrigin)));
             else if (IsKnockback(source, target))
@@ -108,7 +108,7 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
         {
             var target = sourceByActor.FirstOrDefault(x => x.Item1 == actor);
             var offset = target.Item2.Kind == Kind.TowardsOrigin ? 180.Degrees() : default;
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Module.Center, 15, 18, Angle.FromDirection(target.Item2.Origin - Module.Center) + offset, 35.Degrees()));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Arena.Center, 15, 18, Angle.FromDirection(target.Item2.Origin - Arena.Center) + offset, 35.Degrees()));
         }
     }
 }
@@ -149,15 +149,15 @@ class NerveGasRingAndAutoCannons(BossModule module) : Components.GenericAOEs(mod
     {
         if ((AID)spell.Action.ID == AID.NerveGasRing)
         {
-            _aoes.Add(new(donut, Module.Center, default, Module.CastFinishAt(spell), Risky: false));
-            _aoes.Add(new(cross, Module.Center, default, Module.CastFinishAt(spell)));
+            _aoes.Add(new(donut, Arena.Center, default, Module.CastFinishAt(spell), Risky: false));
+            _aoes.Add(new(cross, Arena.Center, default, Module.CastFinishAt(spell)));
         }
         if (_aoes.Count == 0 && (AID)spell.Action.ID == AID.AutoCannons)
-            _aoes.Add(new(cross, Module.Center, default, Module.CastFinishAt(spell)));
+            _aoes.Add(new(cross, Arena.Center, default, Module.CastFinishAt(spell)));
         else if (_aoes.Count == 2 && (AID)spell.Action.ID == AID.AutoCannons)
         {
             _aoes.RemoveAt(1);
-            _aoes.Add(new(cross, Module.Center, default, Module.CastFinishAt(spell)));
+            _aoes.Add(new(cross, Arena.Center, default, Module.CastFinishAt(spell)));
         }
     }
 

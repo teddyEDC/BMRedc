@@ -16,8 +16,8 @@ public enum AID : uint
     DynamicPoundKB = 24694, // Helper->self, no cast, range 50 width 50 rect, knockback 9, dir left/right
     DynamicScraplineMinus = 25158, // Boss->self, 7.0s cast, range 8 circle
     DynamicScraplinePlus = 25328, // Boss->self, 7.0s cast, range 8 circle
-    DynamicScraplineMinusKB = 25053, // Helper->self, no cast, range 50 circle, pull 5, between centers
-    DynamicScraplineMinusPull = 25054, // Helper->self, no cast, range 50 circle, knockback 5, away from source
+    DynamicScraplineKB = 25053, // Helper->self, no cast, range 50 circle, pull 5, between centers
+    DynamicScraplinePull = 25054, // Helper->self, no cast, range 50 circle, knockback 5, away from source
 
     ElectromagneticRelease1 = 25327, // Helper->self, 9.5s cast, range 40 width 6 rect
     ElectromagneticRelease2 = 25329, // Helper->self, 9.5s cast, range 8 circle
@@ -68,13 +68,15 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
     private enum Shape { None, Rect, Circle }
     private MagneticPole CurrentPole { get; set; }
     private Shape CurrentShape { get; set; }
-    private readonly List<(Actor, uint)> iconOnActor = [];
+    private readonly HashSet<(Actor, uint)> iconOnActor = [];
     private DateTime activation;
     private Angle rotation;
     private const int RectDistance = 9;
     private const int CircleDistance = 5;
     private readonly Angle offset = 90.Degrees();
     private static readonly AOEShapeCone _shape = new(30, 90.Degrees());
+    private bool done;
+    private DateTime activation2;
 
     private bool IsKnockback(Actor actor, Shape shape, MagneticPole pole)
         => CurrentShape == shape && CurrentPole == pole && iconOnActor.Contains((actor, (uint)(pole == MagneticPole.Plus ? IconID.Plus : IconID.Minus)));
@@ -108,7 +110,7 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
         if (iconID is ((uint)IconID.Plus) or ((uint)IconID.Minus))
         {
             iconOnActor.Add((actor, iconID));
-            activation = Module.WorldState.FutureTime(7);
+            activation = WorldState.FutureTime(8.1f);
         }
     }
 
@@ -137,28 +139,38 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.DynamicPoundMinus or AID.DynamicPoundPlus or AID.DynamicScraplineMinus or AID.DynamicScraplinePlus)
+        if ((AID)spell.Action.ID is AID.DynamicPoundKB or AID.DynamicPoundPull or AID.DynamicScraplinePull or AID.DynamicScraplinePull)
         {
+            done = true;
+            activation2 = WorldState.FutureTime(1);
+        }
+    }
+
+    public override void Update()
+    {
+        if (activation2 != default && done && WorldState.CurrentTime > activation2) // delay clearing knockbacks/pulls to wait for action effects
+        {
+            CurrentPole = MagneticPole.None;
             CurrentShape = Shape.None;
             iconOnActor.Clear();
+            activation2 = default;
+            done = false;
         }
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
-        {
-            if (IsKnockback(actor, Shape.Circle, MagneticPole.Plus) || IsKnockback(actor, Shape.Circle, MagneticPole.Minus))
-                forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, 10));
-            else if (IsPull(actor, Shape.Circle, MagneticPole.Plus) || IsPull(actor, Shape.Circle, MagneticPole.Minus))
-                forbidden.Add(ShapeDistance.Circle(Module.Center, 13));
-            else if (IsKnockback(actor, Shape.Rect, MagneticPole.Plus) || IsKnockback(actor, Shape.Rect, MagneticPole.Minus))
-                forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, 6));
-            else if (IsPull(actor, Shape.Rect, MagneticPole.Plus) || IsPull(actor, Shape.Rect, MagneticPole.Minus))
-                forbidden.Add(ShapeDistance.Rect(Module.Center, rotation, 15, 15, 12));
-            if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation);
-        }
+        if (IsKnockback(actor, Shape.Circle, MagneticPole.Plus) || IsKnockback(actor, Shape.Circle, MagneticPole.Minus))
+            forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 10));
+        else if (IsPull(actor, Shape.Circle, MagneticPole.Plus) || IsPull(actor, Shape.Circle, MagneticPole.Minus))
+            forbidden.Add(ShapeDistance.Circle(Arena.Center, 13));
+        else if (IsKnockback(actor, Shape.Rect, MagneticPole.Plus) || IsKnockback(actor, Shape.Rect, MagneticPole.Minus))
+            forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 6));
+        else if (IsPull(actor, Shape.Rect, MagneticPole.Plus) || IsPull(actor, Shape.Rect, MagneticPole.Minus))
+            forbidden.Add(ShapeDistance.Rect(Arena.Center, rotation, 15, 15, 12));
+        if (forbidden.Count > 0)
+            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation);
     }
 }
 

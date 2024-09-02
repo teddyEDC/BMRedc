@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace BossMod.Endwalker.Dungeon.D02TowerOfBabil.D022Lugae;
+﻿namespace BossMod.Endwalker.Dungeon.D02TowerOfBabil.D022Lugae;
 
 public enum OID : uint
 {
