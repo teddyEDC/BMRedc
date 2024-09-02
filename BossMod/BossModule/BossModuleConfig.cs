@@ -1,6 +1,6 @@
 ﻿namespace BossMod;
 
-[ConfigDisplay(Name = "Boss Modules and Radar", Order = 1)]
+[ConfigDisplay(Name = "Boss modules and radar", Order = 1)]
 public class BossModuleConfig : ConfigNode
 {
     // boss module settings
@@ -86,21 +86,6 @@ public class BossModuleConfig : ConfigNode
     [PropertyDisplay("Show movement hints in world", tooltip: "Not used very much, but can show you arrows in the game world to indicate where to move for certain mechanics")]
     public bool ShowWorldArrows = false;
 
-    [PropertyDisplay("Show boss module demo out of instances (useful for configuring windows)")]
-    public bool ShowDemo = false;
-
-    [PropertyDisplay("Always show all alive party members")]
-    public bool ShowIrrelevantPlayers = false;
-
-    [PropertyDisplay("Show outlines and shadows on various radar markings")]
-    public bool ShowOutlinesAndShadows = false;
-
     [PropertyDisplay("Show melee range indicator")]
     public bool ShowMeleeRangeIndicator = false;
-
-    [PropertyDisplay("Allow modules to automatically use actions (eg anti knockback, etc)")]
-    public bool AllowAutomaticActions = true;
-
-    [PropertyDisplay("Minimal maturity for the module to be loaded")]
-    public BossModuleInfo.Maturity MinMaturity = BossModuleInfo.Maturity.Contributed;
 }

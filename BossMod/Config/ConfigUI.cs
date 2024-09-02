@@ -31,10 +31,9 @@ public sealed class ConfigUI : IDisposable
         _ws = ws;
         _mv = new(rotationDB?.Plans, ws);
         _presets = rotationDB != null ? new(rotationDB.Presets) : null;
-        _tabs.Add("About", ConfigAboutTab.Draw);
         _tabs.Add("Settings", () => DrawNodes(_roots));
-        _tabs.Add("Supported Duties", () => _mv.Draw(_tree, _ws));
-        _tabs.Add("Autorotation Presets", () => _presets?.Draw());
+        _tabs.Add("Modules", () => _mv.Draw(_tree, _ws));
+        _tabs.Add("Autorotation presets", () => _presets?.Draw());
 
         Dictionary<Type, UINode> nodes = [];
         foreach (var n in config.Nodes)
@@ -157,7 +156,6 @@ public sealed class ConfigUI : IDisposable
 
     private static void DrawReadMe()
     {
-        var discordLink = "https://discord.gg/p54TZMPnC9";
         ImGui.Text("Important information");
         ImGui.Separator();
         ImGui.Text("This is a FORK of veyn's BossMod (VBM).");
@@ -165,28 +163,19 @@ public sealed class ConfigUI : IDisposable
         ImGui.Text("Please do not ask him for any support for problems you encounter while using this fork.");
         ImGui.Spacing();
         ImGui.Text("Instead visit the Combat Reborn Discord and ask for support there:");
-        RenderTextWithLink(discordLink, new Uri(discordLink));
+        if (ImGui.Button("Combat Reborn Discord"))
+            Process.Start("explorer.exe", "https://discord.gg/p54TZMPnC9");
+
         ImGui.NewLine();
         ImGui.Text("Please also make sure to not load VBM and this fork at the same time.");
         ImGui.Spacing();
         ImGui.Text("The consequences of doing that are unexplored and unsupported.");
-    }
-
-    private static void RenderTextWithLink(string displayText, Uri url)
-    {
-        ImGui.PushID(url.ToString());
-        ImGui.Text(displayText);
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-                Process.Start(new ProcessStartInfo(url.ToString()) { UseShellExecute = true });
-        }
-        var textSize = ImGui.CalcTextSize(displayText);
-        var drawList = ImGui.GetWindowDrawList();
-        var cursorPos = ImGui.GetCursorScreenPos();
-        drawList.AddLine(cursorPos, new Vector2(cursorPos.X + textSize.X, cursorPos.Y), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 1, 1)));
-        ImGui.PopID();
+        ImGui.NewLine();
+        if (ImGui.Button("BossMod Reborn GitHub"))
+            Process.Start("explorer.exe", "https://github.com/FFXIV-CombatReborn/BossmodReborn");
+        ImGui.SameLine();
+        if (ImGui.Button("BossMod Wiki"))
+            Process.Start("explorer.exe", "https://github.com/awgil/ffxiv_bossmod/wiki");
     }
 
     public static void DrawNode(ConfigNode node, ConfigRoot root, UITree tree, WorldState ws)
