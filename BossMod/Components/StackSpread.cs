@@ -281,6 +281,8 @@ public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon,
     {
         if (spell.Action == StackAction)
         {
+            if (Stacks.Count == 1 && Stacks.Any(x => x.Target.InstanceID != spell.MainTargetID))
+                Stacks[0] = new(WorldState.Actors.Find(spell.MainTargetID)!, Stacks[0].Radius, Stacks[0].MinSize, Stacks[0].MaxSize, Stacks[0].Activation, Stacks[0].ForbiddenPlayers);
             if (++castCounter == MaxCasts)
             {
                 Stacks.RemoveAll(s => s.Target.InstanceID == spell.MainTargetID);
