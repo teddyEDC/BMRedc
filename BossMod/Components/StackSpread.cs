@@ -282,7 +282,7 @@ public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon,
         if (spell.Action == StackAction)
         {
             if (Stacks.Count == 1 && Stacks.Any(x => x.Target.InstanceID != spell.MainTargetID))
-                Stacks[0] = new(WorldState.Actors.Find(spell.MainTargetID)!, Stacks[0].Radius, Stacks[0].MinSize, Stacks[0].MaxSize, Stacks[0].Activation, Stacks[0].ForbiddenPlayers);
+                Stacks[0] = Stacks[0] with { Target = WorldState.Actors.Find(spell.MainTargetID)! };
             if (++castCounter == MaxCasts)
             {
                 Stacks.RemoveAll(s => s.Target.InstanceID == spell.MainTargetID);
@@ -330,9 +330,11 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
             CurrentBaits.Add(new(caster, WorldState.Actors.Find(spell.MainTargetID)!, new AOEShapeRect(Range, HalfWidth), WorldState.FutureTime(ActionDelay)));
         else if (spell.Action == AidResolve && CurrentBaits.Count > 0)
         {
+            if (CurrentBaits.Count == 1 && CurrentBaits.Any(x => x.Target.InstanceID != spell.MainTargetID))
+                CurrentBaits[0] = CurrentBaits[0] with { Target = WorldState.Actors.Find(spell.MainTargetID)! };
             if (++castCounter == MaxCasts)
             {
-                CurrentBaits.RemoveAt(0);
+                CurrentBaits.RemoveAll(s => s.Target.InstanceID == spell.MainTargetID);
                 castCounter = 0;
                 ++NumCasts;
             }
