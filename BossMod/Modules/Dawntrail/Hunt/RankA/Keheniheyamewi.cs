@@ -31,16 +31,14 @@ class BodyPress(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 class BodyPress2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BodyPress2), new AOEShapeCircle(15));
 class Scatterscourge1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scatterscourge1), new AOEShapeDonut(10, 40));
 
-class SlipperyScatterscourge : Components.GenericAOEs
+class SlipperyScatterscourge(BossModule module) : Components.GenericAOEs(module)
 {
     private Actor? _caster;
-    private readonly List<AOEInstance> _activeAOEs = new();
+    private readonly List<AOEInstance> _activeAOEs = [];
     private static readonly AOEShapeRect _shapeRect = new(20, 5);
     private static readonly AOEShapeDonut _shapeDonut = new(10, 40);
     private static readonly AOEShapeCircle _shapeCircle = new(10);
     private bool _finishedCast;
-
-    public SlipperyScatterscourge(BossModule module) : base(module) { }
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -53,11 +51,11 @@ class SlipperyScatterscourge : Components.GenericAOEs
         {
             if (aoe.Shape == _shapeRect)
             {
-                yield return new AOEInstance(_shapeRect, _caster.Position, _caster.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
+                yield return new(_shapeRect, _caster.Position, _caster.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
             }
             else if (aoe.Shape == _shapeDonut || aoe.Shape == _shapeCircle)
             {
-                yield return new AOEInstance(aoe.Shape, rectEndPosition, aoe.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
+                yield return new(aoe.Shape, rectEndPosition, aoe.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
             }
             else
             {
@@ -73,12 +71,12 @@ class SlipperyScatterscourge : Components.GenericAOEs
 
         _caster = caster;
         _finishedCast = false;
-        _activeAOEs.Add(new AOEInstance(_shapeRect, _caster.Position, _caster.Rotation, WorldState.FutureTime(10), Colors.Danger));
+        _activeAOEs.Add(new(_shapeRect, _caster.Position, _caster.Rotation, WorldState.FutureTime(10), Colors.Danger));
 
         var rectEndPosition = GetRectEndPosition(_caster.Position, _caster.Rotation, _shapeRect.LengthFront);
 
-        _activeAOEs.Add(new AOEInstance(_shapeDonut, rectEndPosition, default, WorldState.FutureTime(10)));
-        _activeAOEs.Add(new AOEInstance(_shapeCircle, rectEndPosition, default, WorldState.FutureTime(10), Colors.SafeFromAOE, false));
+        _activeAOEs.Add(new(_shapeDonut, rectEndPosition, default, WorldState.FutureTime(10)));
+        _activeAOEs.Add(new(_shapeCircle, rectEndPosition, default, WorldState.FutureTime(10), Colors.SafeFromAOE, false));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -88,11 +86,11 @@ class SlipperyScatterscourge : Components.GenericAOEs
             var index = _activeAOEs.FindIndex(aoe => aoe.Shape == _shapeDonut);
             if (index != -1)
             {
-                _activeAOEs[index] = new AOEInstance(_shapeDonut, _activeAOEs[index].Origin, _activeAOEs[index].Rotation, WorldState.FutureTime(10), Colors.Danger, true);
+                _activeAOEs[index] = new(_shapeDonut, _activeAOEs[index].Origin, _activeAOEs[index].Rotation, WorldState.FutureTime(10), Colors.Danger, true);
                 var circleIndex = _activeAOEs.FindIndex(aoe => aoe.Shape == _shapeCircle);
                 if (circleIndex != -1)
                 {
-                    _activeAOEs[circleIndex] = new AOEInstance(_shapeCircle, _activeAOEs[circleIndex].Origin, _activeAOEs[circleIndex].Rotation, WorldState.FutureTime(10), Colors.SafeFromAOE, false);
+                    _activeAOEs[circleIndex] = new(_shapeCircle, _activeAOEs[circleIndex].Origin, _activeAOEs[circleIndex].Rotation, WorldState.FutureTime(10), Colors.SafeFromAOE, false);
                 }
             }
             _finishedCast = true;
@@ -117,7 +115,7 @@ class SlipperyScatterscourge : Components.GenericAOEs
         var direction = rotation.ToDirection();
         var offsetX = direction.X * lengthFront;
         var offsetZ = direction.Z * lengthFront;
-        return new WPos(origin.X + offsetX, origin.Z + offsetZ);
+        return new(origin.X + offsetX, origin.Z + offsetZ);
     }
 }
 
