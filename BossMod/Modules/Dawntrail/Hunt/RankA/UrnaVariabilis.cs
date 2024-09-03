@@ -185,12 +185,14 @@ class ProximityPlasma1(BossModule module) : Components.SelfTargetedAOEs(module, 
 class RingLightning1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RingLightning1), new AOEShapeDonut(8, 60));
 class ThunderousShower(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.ThunderousShower), 6, 8);
 class Electrowave(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Electrowave));
+class Magnetron(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Magnetron));
 
 class UrnaVariabilisStates : StateMachineBuilder
 {
     public UrnaVariabilisStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<Magnetron>()
             .ActivateOnEnter<Magnetism>()
             .ActivateOnEnter<MagnetismCircleDonut>()
             .ActivateOnEnter<ProximityPlasma1>()

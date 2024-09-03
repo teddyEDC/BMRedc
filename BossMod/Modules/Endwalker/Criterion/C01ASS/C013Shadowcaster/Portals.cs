@@ -30,10 +30,7 @@ class PortalsAOE(BossModule module, AID aid, OID movedOID, float activationDelay
     private readonly AOEShape _shape = shape;
     private readonly List<(WPos pos, Angle rot, DateTime activation)> _origins = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        return _origins.Select(o => new AOEInstance(_shape, o.pos, o.rot, o.activation));
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _origins.Select(o => new AOEInstance(_shape, o.pos, o.rot, o.activation));
 
     public override void OnActorEAnim(Actor actor, uint state)
     {

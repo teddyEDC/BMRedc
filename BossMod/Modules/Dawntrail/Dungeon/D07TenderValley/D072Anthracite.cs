@@ -40,11 +40,16 @@ public enum AID : uint
     ChimneySmack = 38468, // Helper->player, 5.0s cast, single-target, tankbuster
 }
 
-class Anthrabomb1(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Anthrabomb1), 10);
-class Anthrabomb2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Anthrabomb2), 10);
+class Anthrabomb(BossModule module, AID aid) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(aid), 10);
+class Anthrabomb1(BossModule module) : Anthrabomb(module, AID.Anthrabomb1);
+class Anthrabomb2(BossModule module) : Anthrabomb(module, AID.Anthrabomb2);
+
 class AnthrabombSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.AnthrabombSpread), 6);
-class HotBlast1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HotBlast1), new AOEShapeRect(40, 3));
-class HotBlast2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HotBlast2), new AOEShapeRect(40, 3));
+
+class HotBlast(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40, 3));
+class HotBlast1(BossModule module) : HotBlast(module, AID.HotBlast1);
+class HotBlast2(BossModule module) : HotBlast(module, AID.HotBlast2);
+
 class CarbonaceousCombustion(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.CarbonaceousCombustion));
 class ChimneySmack(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.ChimneySmack));
 class BurningCoals(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BurningCoals), 6, 4, 4);

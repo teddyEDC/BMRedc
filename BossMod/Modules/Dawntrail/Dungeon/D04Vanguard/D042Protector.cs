@@ -212,8 +212,11 @@ class BlastCannon(BossModule module) : Components.SelfTargetedAOEs(module, Actio
 class Shock(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Shock), 3);
 class HomingCannon(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HomingCannon), new AOEShapeRect(50, 1));
 class Bombardment(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Bombardment), 5);
-class Electrowhirl1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Electrowhirl1), new AOEShapeCircle(6));
-class Electrowhirl2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Electrowhirl2), new AOEShapeCircle(6));
+
+class Electrowhirl(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(6));
+class Electrowhirl1(BossModule module) : Electrowhirl(module, AID.Electrowhirl1);
+class Electrowhirl2(BossModule module) : Electrowhirl(module, AID.Electrowhirl2);
+
 class TrackingBolt2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.TrackingBolt2), 8);
 
 class AccelerationBomb(BossModule module) : Components.StayMove(module)
