@@ -193,4 +193,10 @@ public class D033AencThon(WorldState ws, Actor primary) : BossModule(ws, primary
             };
         }
     }
+
+    protected override void DrawEnemies(int pcSlot, Actor pc)
+    {
+        Arena.Actor(PrimaryActor);
+        Arena.Actor(Enemies(OID.LiarsLyre).FirstOrDefault(), Colors.Object);
+    }
 }
