@@ -306,7 +306,7 @@ public class StackWithIcon(BossModule module, uint icon, ActionID aid, float rad
 
 // generic single hit "line stack" component, usually do not have an iconID, instead players get marked by cast event
 // usually these have 50 range and 4 halfWidth, but it can be modified
-public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolve, float activationDelay, float range = 50, float halfWidth = 4, int minStackSize = 4, int maxStackSize = int.MaxValue, int maxCasts = 1) : GenericBaitAway(module)
+public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolve, float activationDelay, float range = 50, float halfWidth = 4, int minStackSize = 4, int maxStackSize = int.MaxValue, int maxCasts = 1, bool markerIsFinalTarget = true) : GenericBaitAway(module)
 {
     // TODO: add forbidden slots logic?
     // TODO: add logic for min and max stack size
@@ -318,6 +318,7 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
     public int MaxStackSize { get; init; } = maxStackSize;
     public int MinStackSize { get; init; } = minStackSize;
     public int MaxCasts { get; init; } = maxCasts; // for stacks where the final AID hits multiple times
+    public bool MarkerIsFinalTarget { get; init; } = markerIsFinalTarget; // rarely the marked player is not the target of the line stack
     public HashSet<Actor> ForbiddenActors { get; init; } = [];
     private int castCounter;
     public const string HintStack = "Stack!";
@@ -330,13 +331,25 @@ public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolv
             CurrentBaits.Add(new(caster, WorldState.Actors.Find(spell.MainTargetID)!, new AOEShapeRect(Range, HalfWidth), WorldState.FutureTime(ActionDelay)));
         else if (spell.Action == AidResolve && CurrentBaits.Count > 0)
         {
-            if (CurrentBaits.Count == 1 && CurrentBaits.Any(x => x.Target.InstanceID != spell.MainTargetID))
-                CurrentBaits[0] = CurrentBaits[0] with { Target = WorldState.Actors.Find(spell.MainTargetID)! };
-            if (++castCounter == MaxCasts)
+            if (MarkerIsFinalTarget)
             {
-                CurrentBaits.RemoveAll(s => s.Target.InstanceID == spell.MainTargetID);
-                castCounter = 0;
-                ++NumCasts;
+                if (CurrentBaits.Count == 1 && CurrentBaits.Any(x => x.Target.InstanceID != spell.MainTargetID))
+                    CurrentBaits[0] = CurrentBaits[0] with { Target = WorldState.Actors.Find(spell.MainTargetID)! };
+                if (++castCounter == MaxCasts)
+                {
+                    CurrentBaits.RemoveAll(s => s.Target.InstanceID == spell.MainTargetID);
+                    castCounter = 0;
+                    ++NumCasts;
+                }
+            }
+            else
+            {
+                if (++castCounter == MaxCasts)
+                {
+                    CurrentBaits.RemoveAt(0);
+                    castCounter = 0;
+                    ++NumCasts;
+                }
             }
         }
     }
