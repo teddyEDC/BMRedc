@@ -88,7 +88,7 @@ class Heatstroke(BossModule module) : Components.StayMove(module)
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         if (_heatstroke[slot])
-            hints.Add($"Heatstroke on you in {(actor.FindStatus(SID.Heatstroke)!.Value.ExpireAt - Module.WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
+            hints.Add($"Heatstroke on you in {(actor.FindStatus(SID.Heatstroke)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
         else if (_pyretic[slot])
             hints.Add("Pyretic on you! STOP everything!");
     }
@@ -146,7 +146,7 @@ class ColdSweats(BossModule module) : Components.StayMove(module)
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         if (_coldsweats[slot])
-            hints.Add($"Cold Sweats on you in {(actor.FindStatus(SID.ColdSweats)!.Value.ExpireAt - Module.WorldState.CurrentTime).TotalSeconds:f1}s. (Freezing!)");
+            hints.Add($"Cold Sweats on you in {(actor.FindStatus(SID.ColdSweats)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Freezing!)");
         else if (_freezing[slot])
             hints.Add("Freezing on you! MOVE!");
     }

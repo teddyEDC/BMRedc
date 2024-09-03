@@ -41,10 +41,7 @@ class EnterNightPull(BossModule module) : Components.Knockback(module)
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         if (iconID is ((uint)IconID.EnterNight))
-        {
-            target.Item1 = actor;
-            target.Item2 = Module.WorldState.FutureTime(3);
-        }
+            target = (actor, WorldState.FutureTime(3));
     }
 
     public override void OnUntethered(Actor source, ActorTetherInfo tether)
@@ -76,7 +73,7 @@ class ShadowFlow(BossModule module) : Components.GenericAOEs(module)
     public override void Update()
     {
         if (aoes.Count > 0)
-            aoes.RemoveAll(aoe => aoe.Activation < Module.WorldState.CurrentTime);
+            aoes.RemoveAll(aoe => aoe.Activation < WorldState.CurrentTime);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

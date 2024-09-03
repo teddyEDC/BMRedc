@@ -2,12 +2,12 @@
 
 public enum OID : uint
 {
-    Boss = 0x1056, // R2.200, x1
-    Helper = 0xD25, // R0.500, x13, mixed types
-    Charibert = 0xF71EE, // R0.500, x0 (spawn during fight), EventNpc type
-    DawnKnight = 0x1057, // R2.000, x0 (spawn during fight)
-    DuskKnight = 0x1058, // R2.000, x0 (spawn during fight)
-    HolyFlame = 0x1059, // R1.500, x0 (spawn during fight)
+    Boss = 0x1056, // R2.2
+    Charibert = 0xF71EE, // R0.5
+    DawnKnight = 0x1057, // R2.0
+    DuskKnight = 0x1058, // R2.0
+    HolyFlame = 0x1059, // R1.5
+    Helper = 0xD25
 }
 
 public enum AID : uint
@@ -32,16 +32,18 @@ public enum AID : uint
     BlackKnightsTour = 4153, // DuskKnight->self, 3.0s cast, range 40+R width 4 rect
 
     TurretChargeDawnKnight = 4154, // Helper->player, no cast, only triggers if inside hitbox
-    TurretChargeRestDuskKnight = 4155, // Helper->player, no cast, only triggers if inside hitbox
+    TurretChargeRestDuskKnight = 4155 // Helper->player, no cast, only triggers if inside hitbox
 }
 
 public enum TetherID : uint
 {
-    HolyChain = 9, // player->player
+    HolyChain = 9 // player->player
 }
 
-class WhiteKnightsTour(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.WhiteKnightsTour), new AOEShapeRect(40, 2));
-class BlackKnightsTour(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlackKnightsTour), new AOEShapeRect(40, 2));
+class KnightsTour(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40, 2));
+class WhiteKnightsTour(BossModule module) : KnightsTour(module, AID.WhiteKnightsTour);
+class BlackKnightsTour(BossModule module) : KnightsTour(module, AID.BlackKnightsTour);
+
 class AltarPyre(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AltarPyre));
 
 class HeavensflameAOE(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HeavensflameAOE), 5);

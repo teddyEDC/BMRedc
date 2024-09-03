@@ -26,7 +26,7 @@ public enum AID : uint
     ToxinShower = 28508, // Helper->self, 2.5s cast, range 21 circle
 
     ModelStateChange1 = 28502, // Boss->self, no cast, single-target
-    ModelStateChange2 = 28506, // Boss->self, no cast, single-target
+    ModelStateChange2 = 28506 // Boss->self, no cast, single-target
 }
 
 class ToxinShowerCorrosiveVenom(BossModule module) : Components.GenericAOEs(module)
@@ -49,7 +49,7 @@ class ToxinShowerCorrosiveVenom(BossModule module) : Components.GenericAOEs(modu
     {
         if (_statePositions.TryGetValue(index, out var statePosition) && statePosition.TryGetValue(state, out var position))
         {
-            var activation = Module.WorldState.FutureTime(10.5f);
+            var activation = WorldState.FutureTime(10.5f);
             _aoes.Add(new(circle, position, default, activation));
         }
     }

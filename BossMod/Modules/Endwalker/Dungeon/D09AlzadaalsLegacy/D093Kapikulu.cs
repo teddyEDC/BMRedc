@@ -3,7 +3,7 @@
 public enum OID : uint
 {
     Boss = 0x36C1, // R=5.0
-    Helper = 0x233C, // R0.500, x29, 523 type
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -25,13 +25,13 @@ public enum AID : uint
     Teleport = 28514, // Boss->location, no cast, single-target
     WildWeave = 28521, // Boss->self, 4.0s cast, single-target
     RotaryGaleVisual = 28524, // Boss->self, 4.0+1,0s cast, single-target
-    RotaryGale = 28525, // Helper->players, 5.0s cast, range 5 circle, spread
+    RotaryGale = 28525 // Helper->players, 5.0s cast, range 5 circle, spread
 }
 
 public enum TetherID : uint
 {
     SpinTether = 177, // player->Boss
-    ManaExplosion = 188, // Boss->Helper
+    ManaExplosion = 188 // Boss->Helper
 }
 
 class BillowingBoltsArenaChange(BossModule module) : BossComponent(module)
@@ -40,8 +40,8 @@ class BillowingBoltsArenaChange(BossModule module) : BossComponent(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.BillowingBolts && Module.Arena.Bounds != smallerBounds)
-            Module.Arena.Bounds = smallerBounds;
+        if ((AID)spell.Action.ID == AID.BillowingBolts && Arena.Bounds != smallerBounds)
+            Arena.Bounds = smallerBounds;
     }
 }
 
@@ -63,7 +63,7 @@ class ManaExplosion(BossModule module) : Components.GenericAOEs(module)
         if (tether.ID == (uint)TetherID.ManaExplosion)
         {
             _target = WorldState.Actors.Find(tether.Target)!;
-            _activation = Module.WorldState.FutureTime(11.5f); // some variation here, have seen upto almost 12.3s
+            _activation = WorldState.FutureTime(11.5f); // some variation here, have seen upto almost 12.3s
         }
     }
 

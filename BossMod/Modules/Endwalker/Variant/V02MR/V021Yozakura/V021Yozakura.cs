@@ -25,12 +25,12 @@ class DriftingPetals(BossModule module) : Components.KnockbackFromCastTarget(mod
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<Mudrain>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
         {
             forbidden.Add(ShapeDistance.InvertedCircle(data, 5));
             if (component != null && component.Count != 0)
                 foreach (var c in component)
-                    forbidden.Add(ShapeDistance.Cone(data, 20, Angle.FromDirection(c.Origin - Module.Center), 20.Degrees()));
+                    forbidden.Add(ShapeDistance.Cone(data, 20, Angle.FromDirection(c.Origin - Arena.Center), 20.Degrees()));
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), activation.AddSeconds(-1.5f));
         }
@@ -56,7 +56,7 @@ class RootArrangement(BossModule module) : Components.StandardChasingAOEs(module
     {
         base.AddAIHints(slot, actor, assignment, hints);
         if (Actors.Contains(actor))
-            hints.AddForbiddenZone(ShapeDistance.Rect(Module.Center + new WDir(19, 0), Module.Center + new WDir(-19, 0), 20), Activation);
+            hints.AddForbiddenZone(ShapeDistance.Rect(Arena.Center + new WDir(19, 0), Arena.Center + new WDir(-19, 0), 20), Activation);
     }
 }
 

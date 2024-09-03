@@ -17,7 +17,7 @@ class ArenaBounds(BossModule module) : Components.GenericAOEs(module)
         if (index == 0x1C)
         {
             if (state == 0x00020001)
-                _aoe = new(triangleCutOut, A13Azeyma.NormalCenter, default, Module.WorldState.FutureTime(5.7f));
+                _aoe = new(triangleCutOut, A13Azeyma.NormalCenter, default, WorldState.FutureTime(5.7f));
             else if (state == 0x00200010)
             {
                 _aoe = null;

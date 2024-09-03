@@ -42,7 +42,7 @@ public enum AID : uint
 public enum SID : uint
 {
     CannonOrder = 2552, // none->ArmoredDrudge, extra=0x180/0x181 (first/second wave)
-    ReflectionShield = 2195, // none->Boss, extra=0x182/0x183 (NE+SW/NW+SE)
+    ReflectionShield = 2195 // none->Boss, extra=0x182/0x183 (NE+SW/NW+SE)
 }
 
 class Voidzone(BossModule module) : Components.GenericAOEs(module)
@@ -61,7 +61,7 @@ class Voidzone(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ArticulatedBits)
-            _aoe = new(circle, Module.Center, default, Module.CastFinishAt(spell, 0.8f));
+            _aoe = new(circle, Arena.Center, default, Module.CastFinishAt(spell, 0.8f));
     }
 }
 
@@ -109,8 +109,8 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
 
     private void AddTwoWaveAOEs(byte modelState)
     {
-        var activationFirst = Module.WorldState.FutureTime(7.1f);
-        var activationSecond = Module.WorldState.FutureTime(15);
+        var activationFirst = WorldState.FutureTime(7.1f);
+        var activationSecond = WorldState.FutureTime(15);
 
         if (modelState == 4)
         {
@@ -126,7 +126,7 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
 
     private void AddOneWaveAOEs(byte modelState)
     {
-        var activation = Module.WorldState.FutureTime(6.9f);
+        var activation = WorldState.FutureTime(6.9f);
 
         if (modelState == 4)
             AddConeAOEs(activation, angle135, angleM45);
@@ -142,7 +142,7 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
     private void AddConeAOEs(DateTime activation, params Angle[] angles)
     {
         foreach (var angle in angles)
-            _aoesCones.Add(new AOEInstance(cone, Module.Center, angle, activation));
+            _aoesCones.Add(new(cone, Arena.Center, angle, activation));
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
@@ -150,7 +150,7 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
         if ((SID)status.ID == SID.CannonOrder)
         {
             var activation = status.Extra == 0x180 ? 6.9f : 15;
-            _aoesRects.Add(new(rectShort, actor.Position, actor.Rotation, Module.WorldState.FutureTime(activation)));
+            _aoesRects.Add(new(rectShort, actor.Position, actor.Rotation, WorldState.FutureTime(activation)));
         }
     }
 

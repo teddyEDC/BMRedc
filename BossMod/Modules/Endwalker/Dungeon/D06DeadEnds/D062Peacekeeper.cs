@@ -27,7 +27,7 @@ public enum AID : uint
     SmallBoreLaser = 28352, // PerpetualWarMachine->self, 5.0s cast, range 20 width 4 rect
     Teleport = 28350, // PerpetualWarMachine->location, no cast, single-target
     VisualModelChange1 = 28357, // Boss->self, no cast, single-target
-    VisualModelChange2 = 25926, // Boss->self, no cast, single-target
+    VisualModelChange2 = 25926 // Boss->self, no cast, single-target
 }
 
 class DecimationArenaChange(BossModule module) : Components.GenericAOEs(module)
@@ -90,12 +90,12 @@ class EclipsingExhaustKnockback(BossModule module) : Components.KnockbackFromCas
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<Peacefire>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
+        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 0.5s delay to wait for action effect
         {
             foreach (var c in component!)
             {
-                forbidden.Add(ShapeDistance.InvertedCircle(Module.Center, 5));
-                forbidden.Add(ShapeDistance.Cone(Module.Center, 16, Angle.FromDirection(c.Origin - Module.Center), 36.Degrees()));
+                forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 5));
+                forbidden.Add(ShapeDistance.Cone(Arena.Center, 16, Angle.FromDirection(c.Origin - Module.Center), 36.Degrees()));
             }
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Activation.AddSeconds(-0.5f));

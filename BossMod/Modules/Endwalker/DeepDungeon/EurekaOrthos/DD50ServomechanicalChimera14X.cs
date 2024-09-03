@@ -92,10 +92,14 @@ class RamsDragonVoice(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class ThunderousCold(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.ThunderousCold), 4);
-class ColdThunder(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.ColdThunder), 4);
-class RightbreathedCold(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RightbreathedCold), new AOEShapeCone(40, 90.Degrees()));
-class LeftbreathedThunder(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LeftbreathedThunder), new AOEShapeCone(40, 90.Degrees()));
+class TC(BossModule module, AID aid) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(aid), 4);
+class ThunderousCold(BossModule module) : TC(module, AID.ThunderousCold);
+class ColdThunder(BossModule module) : TC(module, AID.ColdThunder);
+
+class Breath(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(40, 90.Degrees()));
+class RightbreathedCold(BossModule module) : Breath(module, AID.RightbreathedCold);
+class LeftbreathedThunder(BossModule module) : Breath(module, AID.LeftbreathedThunder);
+
 class ChargeTether(BossModule module) : Components.StretchTetherDuo(module, 15, 5.1f);
 
 class Cacophony(BossModule module) : Components.GenericAOEs(module)

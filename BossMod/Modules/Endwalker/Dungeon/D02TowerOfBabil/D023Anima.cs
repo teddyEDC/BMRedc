@@ -76,9 +76,9 @@ class ArenaChange(BossModule module) : BossComponent(module)
         if (index == 0x03)
         {
             if (state == 0x00020001)
-                Module.Arena.Center = D023Anima.LowerArenaCenter;
+                Arena.Center = D023Anima.LowerArenaCenter;
             if (state == 0x00080004)
-                Module.Arena.Center = D023Anima.UpperArenaCenter;
+                Arena.Center = D023Anima.UpperArenaCenter;
         }
     }
 
@@ -114,7 +114,7 @@ class BoundlessPain(BossModule module) : Components.GenericAOEs(module)
         switch ((AID)spell.Action.ID)
         {
             case AID.BoundlessPainPull:
-                _aoe = new(circle, Module.Arena.Center);
+                _aoe = new(circle, Arena.Center);
                 break;
             case AID.BoundlessPainFirst:
             case AID.BoundlessPainRest:
@@ -131,7 +131,7 @@ class BoundlessPain(BossModule module) : Components.GenericAOEs(module)
     {
         base.AddAIHints(slot, actor, assignment, hints);
         if (ActiveAOEs(slot, actor).Any())
-            hints.AddForbiddenZone(ShapeDistance.Rect(Module.Center, Module.Center + new WDir(0, 20), 20));
+            hints.AddForbiddenZone(ShapeDistance.Rect(Arena.Center, Arena.Center + new WDir(0, 20), 20));
     }
 }
 
@@ -153,7 +153,7 @@ class CoffinScratch(BossModule module) : Components.StandardChasingAOEs(module, 
     {
         base.AddAIHints(slot, actor, assignment, hints);
         if (Actors.Contains(actor))
-            hints.AddForbiddenZone(ShapeDistance.Rect(Module.Center + new WDir(19, 0), Module.Center + new WDir(-19, 0), 20), Activation);
+            hints.AddForbiddenZone(ShapeDistance.Rect(Arena.Center + new WDir(19, 0), Arena.Center + new WDir(-19, 0), 20), Activation);
         else if (Chasers.Any(x => x.Target == actor))
             hints.AddForbiddenZone(ShapeDistance.InvertedRect(actor.Position, 90.Degrees(), 40, 40, 3));
     }

@@ -12,7 +12,7 @@ public enum OID : uint
     OnisClaw = 0x3F85, // R13.2
     IllComeTengu = 0x3F86, // R2.0
     Spiritflame = 0x3F87, // R2.4
-    Helper = 0x233C, // R0.5
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -74,12 +74,12 @@ public enum AID : uint
     SpearmansOrdersVisual = 34198, // Helper->self, 5.5s cast, range 40 width 40 rect
     SpearpointPushVisual = 34588, // Helper->self, no cast, single-target
     SpearpointPushFast = 34199, // Helper->self, no cast, range 3 width 4 rect
-    SpearpointPushSlow = 34514, // Helper->self, no cast, range 2 width 4 rect
+    SpearpointPushSlow = 34514 // Helper->self, no cast, range 2 width 4 rect
 }
 
 public enum SID : uint
 {
     GiriDirection = 2970, // none->Boss, extra=0x248/0x24A/0x249/0x24B
     unknown = 2056, // none->AshigaruKyuhei/AshigaruSohei1/AshigaruSohei2/Boss/Spiritflame, extra=0x1E8/0x26E/0x26B/0x257
-    unknown2 = 2193, // none->Boss, extra=0x266/0x267
+    unknown2 = 2193 // none->Boss, extra=0x266/0x267
 }

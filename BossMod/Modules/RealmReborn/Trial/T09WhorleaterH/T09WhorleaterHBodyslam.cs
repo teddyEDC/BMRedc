@@ -42,7 +42,7 @@ class BodySlamAOE(BossModule module) : Components.GenericAOEs(module)
         if (Module.PrimaryActor.Position.Z != LeviathanZ && Module.PrimaryActor.Position.Z != 0)
         {
             LeviathanZ = Module.PrimaryActor.Position.Z;
-            _aoe = new(rect, Module.PrimaryActor.Position, Module.PrimaryActor.Rotation, Module.WorldState.FutureTime(2.6f));
+            _aoe = new(rect, Module.PrimaryActor.Position, Module.PrimaryActor.Rotation, WorldState.FutureTime(2.6f));
         }
     }
 

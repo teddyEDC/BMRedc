@@ -130,7 +130,7 @@ class GreatestLabyrinth(BossModule module) : Components.GenericAOEs(module)
         if (index != 0x01)
             return;
 
-        var activation = Module.WorldState.FutureTime(10);
+        var activation = WorldState.FutureTime(10);
 
         switch (state)
         {

@@ -59,7 +59,7 @@ class ChaoticUndercurrent(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        var activation = Module.WorldState.FutureTime(7.7f);
+        var activation = WorldState.FutureTime(7.7f);
         switch ((AID)spell.Action.ID)
         {
             case AID.ChaoticUndercurrentBlueVisual:
@@ -104,7 +104,7 @@ class ChaoticUndercurrent(BossModule module) : Components.GenericAOEs(module)
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var component = Module.FindComponent<CosmicKissKnockback>()!;
-        if (component.Sources(slot, actor).Any() || component.Activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
+        if (component.Sources(slot, actor).Any() || component.Activation > WorldState.CurrentTime) // 0.8s delay to wait for action effect
         { } // remove forbidden zones while knockback is active to not confuse the AI
         else
             base.AddAIHints(slot, actor, assignment, hints);
@@ -149,7 +149,7 @@ class CosmicKissRect(BossModule module) : Components.GenericAOEs(module)
     private void AddAOEs(IEnumerable<int> indices, float delay)
     {
         foreach (var index in indices)
-            _aoes.Add(new(rect, coords[index], rotation, Module.WorldState.FutureTime(delay)));
+            _aoes.Add(new(rect, coords[index], rotation, WorldState.FutureTime(delay)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -181,22 +181,22 @@ class CosmicKissKnockback(BossModule module) : Components.KnockbackFromCastTarge
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<ChaoticUndercurrent>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 0.8s delay to wait for action effect
+        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 0.8s delay to wait for action effect
         {
             if (component!.Any(x => x.Origin.Z == -152) && component!.Any(x => x.Origin.Z == -162))
             {
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 7, Degrees0, Degrees45));
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 7, Degrees180, Degrees45));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 7, Degrees0, Degrees45));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 7, Degrees180, Degrees45));
             }
             else if (component!.Any(x => x.Origin.Z == -142) && component!.Any(x => x.Origin.Z == -172))
             {
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 7, Degrees90, Degrees45));
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 7, -Degrees90, Degrees45));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 7, Degrees90, Degrees45));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 7, -Degrees90, Degrees45));
             }
             else if (component!.Any(x => x.Origin.Z == -142) && component!.Any(x => x.Origin.Z == -152))
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 7, Degrees180, Degrees90));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 7, Degrees180, Degrees90));
             else if (component!.Any(x => x.Origin.Z == -162) && component!.Any(x => x.Origin.Z == -172))
-                forbidden.Add(ShapeDistance.InvertedCone(Module.Center, 7, Degrees0, Degrees90));
+                forbidden.Add(ShapeDistance.InvertedCone(Arena.Center, 7, Degrees0, Degrees90));
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), Activation);
         }

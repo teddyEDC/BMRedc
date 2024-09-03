@@ -42,19 +42,19 @@ class Geyser(BossModule module) : Components.GenericAOEs(module)
         {
             OID.GeyserHelper1, new Dictionary<Angle, List<WPos>>
             {
-                { 0.Degrees(), new List<WPos> { new(0, 14.16f), new(-9, 45.16f) } },
-                { 180.Degrees(), new List<WPos> { new(9, 15.16f), new(0, 46.16f) } },
-                { -90.Degrees(), new List<WPos> { new(-15, 21.16f), new(16, 30.16f) } },
-                { 90.Degrees(), new List<WPos> { new(-16, 30.16f), new(15, 39.16f) } }
+                { 0.Degrees(), [new(0, 14.16f), new(-9, 45.16f)] },
+                { 180.Degrees(), [new(9, 15.16f), new(0, 46.16f)] },
+                { -90.Degrees(), [new(-15, 21.16f), new(16, 30.16f)] },
+                { 90.Degrees(), [new(-16, 30.16f), new(15, 39.16f)] }
             }
         },
         {
             OID.GeyserHelper2, new Dictionary<Angle, List<WPos>>
             {
-                { 0.Degrees(), new List<WPos> { new(0, 35.16f), new(-9, 15.16f), new(7, 23.16f) } },
-                { 90.Degrees(), new List<WPos> { new(-15, 39.16f), new(-7, 23.16f), new(5, 30.16f) } },
-                { 180.Degrees(), new List<WPos> { new(9, 45.16f), new(-7, 37.16f), new(0, 25.16f) } },
-                { -90.Degrees(), new List<WPos> { new(7, 37.16f), new(15, 21.16f), new(-5, 30.16f) } }
+                { 0.Degrees(), [new(0, 35.16f), new(-9, 15.16f), new(7, 23.16f)] },
+                { 90.Degrees(),  [new(-15, 39.16f), new(-7, 23.16f), new(5, 30.16f)] },
+                { 180.Degrees(), [new(9, 45.16f), new(-7, 37.16f), new(0, 25.16f)] },
+                { -90.Degrees(), [new(7, 37.16f), new(15, 21.16f), new(-5, 30.16f)] }
             }
         }
     };
@@ -73,7 +73,7 @@ class Geyser(BossModule module) : Components.GenericAOEs(module)
         {
             if (GeyserPositions.TryGetValue((OID)actor.OID, out var positionsByRotation))
             {
-                var activation = Module.WorldState.FutureTime(5.1f);
+                var activation = WorldState.FutureTime(5.1f);
                 foreach (var (rotation, positions) in positionsByRotation)
                     if (actor.Rotation.AlmostEqual(rotation, Angle.DegToRad))
                     {

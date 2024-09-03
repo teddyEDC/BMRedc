@@ -1,8 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.V02MR.V024Shishio;
 
-class OnceOnRokujo(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.OnceOnRokujo), new AOEShapeRect(30, 7, 30));
-class TwiceOnRokujo(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TwiceOnRokujo), new AOEShapeRect(30, 7, 30));
-class ThriceOnRokujo(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ThriceOnRokujo), new AOEShapeRect(30, 7, 30))
+class Rokujos(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(30, 7, 30))
 {
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -13,6 +11,10 @@ class ThriceOnRokujo(BossModule module) : Components.SelfTargetedAOEs(module, Ac
         return aoes;
     }
 }
+
+class OnceOnRokujo(BossModule module) : Rokujos(module, AID.OnceOnRokujo);
+class TwiceOnRokujo(BossModule module) : Rokujos(module, AID.TwiceOnRokujo);
+class ThriceOnRokujo(BossModule module) : Rokujos(module, AID.ThriceOnRokujo);
 
 class Rokujo(BossModule module) : Components.GenericAOEs(module)
 {
