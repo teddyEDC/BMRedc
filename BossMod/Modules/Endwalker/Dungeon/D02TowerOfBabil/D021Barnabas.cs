@@ -50,15 +50,15 @@ class ArenaChange(BossModule module) : Components.GenericAOEs(module)
     {
         if (index == 0x00 && state == 0x00020001)
         {
-            Module.Arena.Bounds = D021Barnabas.SmallerBounds;
+            Arena.Bounds = D021Barnabas.SmallerBounds;
             _aoe = null;
         }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.GroundAndPound1 or AID.GroundAndPound2 && Module.Arena.Bounds == D021Barnabas.StartingBounds)
-            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 6.1f));
+        if ((AID)spell.Action.ID is AID.GroundAndPound1 or AID.GroundAndPound2 && Arena.Bounds == D021Barnabas.StartingBounds)
+            _aoe = new(donut, Arena.Center, default, Module.CastFinishAt(spell, 6.1f));
     }
 }
 
@@ -174,18 +174,20 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
     }
 }
 
-class ElectromagneticRelease1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ElectromagneticRelease1), new AOEShapeRect(40, 3));
-class ElectromagneticRelease2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ElectromagneticRelease2), new AOEShapeCircle(8));
+class Cleave(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40, 3));
+class ElectromagneticRelease1(BossModule module) : Cleave(module, AID.ElectromagneticRelease1);
+class GroundAndPound1(BossModule module) : Cleave(module, AID.GroundAndPound1);
+class GroundAndPound2(BossModule module) : Cleave(module, AID.GroundAndPound2);
+class DynamicPoundMinus(BossModule module) : Cleave(module, AID.DynamicPoundMinus);
+class DynamicPoundPlus(BossModule module) : Cleave(module, AID.DynamicPoundPlus);
 
-class GroundAndPound1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GroundAndPound1), new AOEShapeRect(40, 3));
-class GroundAndPound2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GroundAndPound2), new AOEShapeRect(40, 3));
+class Circles(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(8));
+class ElectromagneticRelease2(BossModule module) : Circles(module, AID.ElectromagneticRelease2);
+class DynamicScraplineMinus(BossModule module) : Circles(module, AID.DynamicScraplineMinus);
+class DynamicScraplinePlus(BossModule module) : Circles(module, AID.DynamicScraplinePlus);
+class RollingScrapline(BossModule module) : Circles(module, AID.RollingScrapline);
+class Shock(BossModule module) : Circles(module, AID.Shock);
 
-class DynamicPoundMinus(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DynamicPoundMinus), new AOEShapeRect(40, 3));
-class DynamicPoundPlus(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DynamicPoundPlus), new AOEShapeRect(40, 3));
-class DynamicScraplineMinus(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DynamicScraplineMinus), new AOEShapeCircle(8));
-class DynamicScraplinePlus(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DynamicScraplinePlus), new AOEShapeCircle(8));
-class RollingScrapline(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RollingScrapline), new AOEShapeCircle(8));
-class Shock(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Shock), new AOEShapeCircle(8));
 class ShockingForce(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.ShockingForce), 6, 4, 4);
 
 class D021BarnabasStates : StateMachineBuilder

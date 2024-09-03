@@ -92,7 +92,7 @@ class BreathSequence(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorNpcYell(Actor actor, ushort id)
     {
-        var activation = Module.WorldState.FutureTime(10.5f); // placeholder, gets replaced when sequence starts
+        var activation = WorldState.FutureTime(10.5f); // placeholder, gets replaced when sequence starts
         if (frontHead.Contains(id))
             _aoes.Add(new(cone, actor.Position, actor.Rotation, activation));
         else if (leftHead.Contains(id))

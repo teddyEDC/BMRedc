@@ -12,12 +12,12 @@ public enum AID : uint
     HeadAttack = 31842, // 233C->player, no cast, single-target
     AutoAttack = 32702, // 3D9A->player, no cast, single-target
     CreatureOfDarkness = 31841, // 3D9A->self, 3.0s cast, single-target, summon Heads E<->W heading S
-    DarkMegaflare1 = 31849, // 3D9A->self, 3.0s cast, single-target
-    DarkMegaflare2 = 31850, // 233C->location, 3.0s cast, range 6 circle
-    DarkWyrmtail1 = 31843, // 3D9A->self, 5.0s cast, single-target
-    DarkWyrmtail2 = 31844, // 233C->self, 6.0s cast, range 40 width 16 rect, summon Heads Heading E/W from Middle Lane
-    DarkWyrmwing1 = 31845, // 3D9A->self, 5.0s cast, single-target
-    DarkWyrmwing2 = 31846, // 233C->self, 6.0s cast, range 40 width 16 rect, summon Heads Heading E/W from E/W Walls
+    DarkMegaflareVisual = 31849, // 3D9A->self, 3.0s cast, single-target
+    DarkMegaflare = 31850, // 233C->location, 3.0s cast, range 6 circle
+    DarkWyrmtailVisual = 31843, // 3D9A->self, 5.0s cast, single-target
+    DarkWyrmtail = 31844, // 233C->self, 6.0s cast, range 40 width 16 rect, summon Heads Heading E/W from Middle Lane
+    DarkWyrmwingVisual = 31845, // 3D9A->self, 5.0s cast, single-target
+    DarkWyrmwing = 31846, // 233C->self, 6.0s cast, range 40 width 16 rect, summon Heads Heading E/W from E/W Walls
     WheiMornFirst = 31847, // 3D9A->location, 5.0s cast, range 6 circle
     WheiMornRest = 31848 // 3D9A->location, no cast, range 6 circle
 }
@@ -28,9 +28,11 @@ public enum IconID : uint
 }
 
 class WheiMorn(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(6), ActionID.MakeSpell(AID.WheiMornFirst), ActionID.MakeSpell(AID.WheiMornRest), 6, 2, 5, true, (uint)IconID.ChasingAOE);
-class DarkMegaflare(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.DarkMegaflare2), 6);
-class DarkWyrmwing(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkWyrmwing2), new AOEShapeRect(40, 8));
-class DarkWyrmtail(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkWyrmtail2), new AOEShapeRect(40, 8));
+class DarkMegaflare(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.DarkMegaflare), 6);
+
+class DarkWyrm(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40, 8));
+class DarkWyrmwing(BossModule module) : DarkWyrm(module, AID.DarkWyrmwing);
+class DarkWyrmtail(BossModule module) : DarkWyrm(module, AID.DarkWyrmtail);
 
 class CreatureOfDarkness(BossModule module) : Components.GenericAOEs(module)
 {
@@ -53,7 +55,7 @@ class CreatureOfDarkness(BossModule module) : Components.GenericAOEs(module)
         {
             if (animState1 == 1)
                 _heads.Add(actor);
-            if (animState1 == 0)
+            else if (animState1 == 0)
                 _heads.Remove(actor);
         }
     }

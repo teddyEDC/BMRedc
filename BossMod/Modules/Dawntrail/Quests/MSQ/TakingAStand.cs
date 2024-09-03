@@ -99,7 +99,7 @@ class MagickedStandard(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorCreated(Actor actor)
     {
-        var activation = Module.WorldState.FutureTime(12.6f);
+        var activation = WorldState.FutureTime(12.6f);
         if ((OID)actor.OID == OID.MagickedStandardGreen)
             _aoes.Add(new(donut, actor.Position, default, activation));
         else if ((OID)actor.OID == OID.MagickedStandardOrange)

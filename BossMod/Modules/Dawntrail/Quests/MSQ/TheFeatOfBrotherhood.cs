@@ -127,7 +127,7 @@ class RoaringStarRect(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
         if (id == 0x1E46)
-            _aoes.Add(new(rect, actor.Position, actor.Rotation, Module.WorldState.FutureTime(8.5f)));
+            _aoes.Add(new(rect, actor.Position, actor.Rotation, WorldState.FutureTime(8.5f)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -147,7 +147,7 @@ class SublimeHeat(BossModule module) : Components.GenericAOEs(module)
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if ((AID)spell.Action.ID == AID.CelestialFlame)
-            _aoes.Add(new(circle, caster.Position, default, Module.WorldState.FutureTime(7.5f)));
+            _aoes.Add(new(circle, caster.Position, default, WorldState.FutureTime(7.5f)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

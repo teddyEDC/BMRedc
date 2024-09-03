@@ -68,7 +68,7 @@ class NeedleStormSuperstormHeavyWeightNeedles(BossModule module) : Components.Ge
         {
             var component = Module.FindComponent<BarrelBreaker>()!;
             var isKnockback = component.Sources(slot, actor).Any();
-            var isStillSafe = component.Activation != default && component.Activation > Module.WorldState.CurrentTime;
+            var isStillSafe = component.Activation != default && component.Activation > WorldState.CurrentTime;
             var isKnockbackImmune = isKnockback && component.IsImmune(slot, component.Sources(slot, actor).First().Activation);
             var isKnockbackButImmune = isKnockback && isKnockbackImmune;
             var areConesActive = _aoesCones.Count > 0;
@@ -145,14 +145,14 @@ class BarrelBreaker(BossModule module) : Components.KnockbackFromCastTarget(modu
 
     public override void Update()
     {
-        if (Activation != default && Activation < Module.WorldState.CurrentTime)
+        if (Activation != default && Activation < WorldState.CurrentTime)
             Activation = default;
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
-        if (Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 1s delay to wait for action effect
         {
             var cactusSmall = Module.Enemies(OID.CactusSmall).FirstOrDefault(x => x.Position == new WPos(-55, 455));
             forbidden.Add(ShapeDistance.InvertedDonutSector(origin, 4, 5, cactusSmall != default ? a135 : -a135, a5));

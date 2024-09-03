@@ -102,7 +102,7 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
     private void AddAOEs(WPos pos, float delay)
     {
         foreach (var angle in angles)
-            _aoes.Add(new(rect, pos, angle, Module.WorldState.FutureTime(delay)));
+            _aoes.Add(new(rect, pos, angle, WorldState.FutureTime(delay)));
     }
 
     public override void OnActorCreated(Actor actor)

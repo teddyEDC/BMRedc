@@ -3,8 +3,8 @@
 public enum OID : uint
 {
     Boss = 0x34C4, // R=6.65
+    WeepingMiasma = 0x34C5, // R=1.0
     Helper = 0x233C,
-    WeepingMiasma = 0x34C5 // R=1.0
 }
 
 public enum AID : uint

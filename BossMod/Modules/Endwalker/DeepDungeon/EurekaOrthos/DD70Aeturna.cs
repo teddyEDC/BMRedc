@@ -9,19 +9,19 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 6497, // 3D1B->player, no cast, single-target
-    FallingRock = 31441, // 233C->self, 2.5s cast, range 3 circle
-    Ferocity = 31442, // 3D1B->self, 5.0s cast, single-target
-    FerocityTetherStretchSuccess = 31443, // 3D1B->player, no cast, single-target
-    FerocityTetherStretchFail = 31444, // 3D1B->player, no cast, single-target
-    Impact = 31438, // 3D1C->self, 2.5s cast, range 5 circle
-    PreternaturalTurnCircle = 31436, // 3D1B->self, 6.0s cast, range 15 circle
-    PreternaturalTurnDonut = 31437, // 3D1B->self, 6.0s cast, range 6-30 donut
-    Roar = 31435, // 3D1B->self, 5.0s cast, range 60 circle
-    ShatterCircle = 31439, // 3D1C->self, 3.0s cast, range 8 circle
-    ShatterCone = 31440, // 3D1C->self, 2.5s cast, range 18+R 150-degree cone
-    SteelClaw = 31445, // 3D1B->player, 5.0s cast, single-target
-    Teleport = 31446 // 3D1B->location, no cast, single-target, boss teleports mid
+    AutoAttack = 6497, // Boss->player, no cast, single-target
+    FallingRock = 31441, // Helper->self, 2.5s cast, range 3 circle
+    Ferocity = 31442, // Boss->self, 5.0s cast, single-target
+    FerocityTetherStretchSuccess = 31443, // Boss->player, no cast, single-target
+    FerocityTetherStretchFail = 31444, // Boss->player, no cast, single-target
+    Impact = 31438, // AllaganCrystal->self, 2.5s cast, range 5 circle
+    PreternaturalTurnCircle = 31436, // Boss->self, 6.0s cast, range 15 circle
+    PreternaturalTurnDonut = 31437, // Boss->self, 6.0s cast, range 6-30 donut
+    Roar = 31435, // Boss->self, 5.0s cast, range 60 circle
+    ShatterCircle = 31439, // AllaganCrystal->self, 3.0s cast, range 8 circle
+    ShatterCone = 31440, // AllaganCrystal->self, 2.5s cast, range 18+R 150-degree cone
+    SteelClaw = 31445, // Boss->player, 5.0s cast, single-target
+    Teleport = 31446 // Boss->location, no cast, single-target, boss teleports mid
 }
 
 class SteelClaw(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.SteelClaw));

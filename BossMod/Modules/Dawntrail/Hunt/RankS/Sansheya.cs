@@ -74,7 +74,7 @@ class Boiling(BossModule module) : Components.StayMove(module)
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         if (_boiling[slot])
-            hints.Add($"Boiling on you in {(actor.FindStatus(SID.Boiling)!.Value.ExpireAt - Module.WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
+            hints.Add($"Boiling on you in {(actor.FindStatus(SID.Boiling)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
         else if (_pyretic[slot])
             hints.Add("Pyretic on you! STOP everything!");
     }

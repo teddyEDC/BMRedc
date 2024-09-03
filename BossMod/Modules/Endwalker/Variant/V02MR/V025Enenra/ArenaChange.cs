@@ -8,15 +8,15 @@ class ArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.FlagrantCombustion && Module.Arena.Bounds == V025Enenra.StartingBounds)
-            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 2.9f));
+        if ((AID)spell.Action.ID == AID.FlagrantCombustion && Arena.Bounds == V025Enenra.StartingBounds)
+            _aoe = new(donut, Arena.Center, default, Module.CastFinishAt(spell, 2.9f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x28)
         {
-            Module.Arena.Bounds = V025Enenra.DefaultBounds;
+            Arena.Bounds = V025Enenra.DefaultBounds;
             _aoe = null;
         }
     }

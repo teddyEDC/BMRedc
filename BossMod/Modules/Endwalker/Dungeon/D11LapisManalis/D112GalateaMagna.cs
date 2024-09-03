@@ -3,7 +3,7 @@ namespace BossMod.Endwalker.Dungeon.D11LapisManalis.D112GalateaMagna;
 public enum OID : uint
 {
     Boss = 0x3971, //R=5.0
-    Helper = 0x233C,
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -24,7 +24,7 @@ public enum AID : uint
     Tenebrism = 31382, // Boss->self, 4.0s cast, range 40 circle, small raidwide, spawns 4 towers, applies glass-eyed on tower resolve
     Burst = 31383, // Helper->self, no cast, range 5 circle, tower success
     BigBurst = 31384, // Helper->self, no cast, range 60 circle, tower fail
-    StonyGaze = 31385, // Helper->self, no cast, gaze
+    StonyGaze = 31385 // Helper->self, no cast, gaze
 }
 
 public enum IconID : uint
@@ -33,7 +33,7 @@ public enum IconID : uint
     Icon2 = 337, // 3D06
     Icon3 = 338, // 3D06
     Icon4 = 339, // 3D06
-    PlayerGaze = 73, // player
+    PlayerGaze = 73 // player
 }
 
 public enum SID : uint
@@ -190,7 +190,7 @@ public class TenebrismTowers(BossModule module) : Components.GenericTowers(modul
                     position = new(340, -394);
                     break;
             }
-            Towers.Add(new(position, 5, activation: Module.WorldState.FutureTime(6)));
+            Towers.Add(new(position, 5, activation: WorldState.FutureTime(6)));
         }
     }
 

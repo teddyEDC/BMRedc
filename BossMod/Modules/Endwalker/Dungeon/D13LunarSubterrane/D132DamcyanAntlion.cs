@@ -83,7 +83,7 @@ class Landslip(BossModule module) : Components.Knockback(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var length = Module.Bounds.Radius * 2; // casters are at the border, orthogonal to borders
+        var length = Arena.Bounds.Radius * 2; // casters are at the border, orthogonal to borders
         foreach (var c in _casters)
             hints.AddForbiddenZone(ShapeDistance.Rect(c.Position, c.Rotation, length, 20 - length, 5), Activation);
     }
@@ -133,14 +133,14 @@ class Towerfall(BossModule module) : Components.GenericAOEs(module)
     private static readonly Angle _rot1 = 89.999f.Degrees();
     private static readonly Angle _rot2 = -90.004f.Degrees();
     private static readonly Dictionary<byte, (WPos position, Angle direction)> _towerPositions = new()
-        {{ 0x01, (new WPos(-20, 45), _rot1) },
-        { 0x02, (new WPos(-20, 55), _rot1) },
-        { 0x03, (new WPos(-20, 65), _rot1) },
-        { 0x04, (new WPos(-20, 75), _rot1) },
-        { 0x05, (new WPos(20, 45), _rot2) },
-        { 0x06, (new WPos(20, 55), _rot2) },
-        { 0x07, (new WPos(20, 65), _rot2) },
-        { 0x08, (new WPos(20, 75), _rot2) }};
+        {{ 0x01, (new(-20, 45), _rot1) },
+        { 0x02, (new(-20, 55), _rot1) },
+        { 0x03, (new(-20, 65), _rot1) },
+        { 0x04, (new(-20, 75), _rot1) },
+        { 0x05, (new(20, 45), _rot2) },
+        { 0x06, (new(20, 55), _rot2) },
+        { 0x07, (new(20, 65), _rot2) },
+        { 0x08, (new(20, 75), _rot2) }};
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {

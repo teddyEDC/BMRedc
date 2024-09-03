@@ -123,7 +123,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
 
     public override void Update()
     {
-        if (Data.Count > 0 && Module.WorldState.CurrentTime > Activation)
+        if (Data.Count > 0 && WorldState.CurrentTime > Activation)
         {
             _sources.Clear();
             Data.Clear();
@@ -154,7 +154,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var component = Module.FindComponent<ExtrasensoryExpulsion>()!;
-        var componentActive = component.Sources(slot, actor).Any() || component.Activation > Module.WorldState.CurrentTime;
+        var componentActive = component.Sources(slot, actor).Any() || component.Activation > WorldState.CurrentTime;
         if (_aoe != default)
         {
             yield return _aoe with { Risky = !componentActive };
@@ -183,7 +183,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var component = Module.FindComponent<ExtrasensoryExpulsion>()!.Sources(slot, actor).Any() || Module.FindComponent<ExtrasensoryExpulsion>()!.Activation > Module.WorldState.CurrentTime;
+        var component = Module.FindComponent<ExtrasensoryExpulsion>()!.Sources(slot, actor).Any() || Module.FindComponent<ExtrasensoryExpulsion>()!.Activation > WorldState.CurrentTime;
         var aoe = ActiveAOEs(slot, actor).FirstOrDefault();
         if (component && ActiveAOEs(slot, actor).Any())
             hints.AddForbiddenZone(aoe.Shape, aoe.Origin, aoe.Rotation + 180.Degrees(), aoe.Activation);

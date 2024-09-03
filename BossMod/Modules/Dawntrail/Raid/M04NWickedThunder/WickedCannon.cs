@@ -43,7 +43,7 @@ public class WickedCannon(BossModule module) : Components.GenericAOEs(module)
             0x2D4 => default,
             _ => default
         };
-        _aoes.Add(new(rect, Module.PrimaryActor.Position, rotation, Module.WorldState.FutureTime(currentDelays[_aoes.Count])));
+        _aoes.Add(new(rect, Module.PrimaryActor.Position, rotation, WorldState.FutureTime(currentDelays[_aoes.Count])));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

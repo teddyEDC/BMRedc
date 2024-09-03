@@ -29,7 +29,7 @@ class ClearingSmoke(BossModule module) : Components.KnockbackFromCastTarget(modu
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<Smoldering>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component?.Count == 0 && (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime)) // 0.4s delay to wait for action effect
+        if (component?.Count == 0 && (Sources(slot, actor).Any() || activation > WorldState.CurrentTime)) // 0.4s delay to wait for action effect
             hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 4), activation.AddSeconds(-0.4f));
     }
 }

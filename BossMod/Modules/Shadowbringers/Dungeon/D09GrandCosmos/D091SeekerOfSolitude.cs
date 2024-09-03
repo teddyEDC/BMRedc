@@ -26,7 +26,7 @@ public enum AID : uint
     DarkPulse = 18282, // Boss->players, 5.0s cast, range 6 circle, stack
     DarkWellVisual = 18284, // Boss->self, no cast, single-target
     DarkWell = 18285, // Helper->player, 5.0s cast, range 5 circle, spread
-    MovementMagick = 18713, // Boss->self, 3.0s cast, single-target
+    MovementMagick = 18713 // Boss->self, 3.0s cast, single-target
 }
 
 class ImmortalAnathema(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ImmortalAnathema));

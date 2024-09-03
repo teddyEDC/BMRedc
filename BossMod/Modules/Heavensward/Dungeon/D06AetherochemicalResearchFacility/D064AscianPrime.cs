@@ -18,8 +18,8 @@ public enum AID : uint
     AncientCircle = 31901, // Helper->self, no cast, range 10-20 donut, player targeted donut AOE, kind of a stack
     AncientDarkness = 31903, // Helper->self, no cast, range 6 circle
 
-    AncientEruption = 31908, // Boss->self, 5.0s cast, single-target
-    AncientEruptionAOE = 31909, // Helper->location, 5.0s cast, range 5 circle
+    AncientEruptionVisual = 31908, // Boss->self, 5.0s cast, single-target
+    AncientEruption = 31909, // Helper->location, 5.0s cast, range 5 circle
 
     AncientFrost = 31904, // Helper->players, no cast, range 6 circle
 
@@ -32,23 +32,26 @@ public enum AID : uint
     ArcaneRevelation2 = 31913, // Boss->self, 3.0s cast, single-target
     BurningChains = 31905, // Helper->player, no cast, single-target
 
-    ChillingCross = 31922, // IgeyorhmsShade->self, 6.0s cast, single-target
-    ChillingCrossAOE1 = 31923, // Helper->self, 6.0s cast, range 40 width 5 cross
-    ChillingCrossAOE2 = 31924, // Helper->self, 6.0s cast, range 40 width 5 cross
+    ChillingCrossVisual = 31922, // IgeyorhmsShade->self, 6.0s cast, single-target
+    ChillingCross1 = 31923, // Helper->self, 6.0s cast, range 40 width 5 cross
+    ChillingCross2 = 31924, // Helper->self, 6.0s cast, range 40 width 5 cross
 
-    CircleOfIcePrime1 = 31898, // FrozenStar->self, no cast, single-target
-    CircleOfIcePrime2 = 31899, // FrozenStar->self, no cast, single-target
-    CircleOfIcePrimeAOE = 33021, // Helper->self, 2.0s cast, range 5-40 donut
+    CircleOfIcePrimeVisual1 = 31898, // FrozenStar->self, no cast, single-target
+    CircleOfIcePrimeVisual2 = 31899, // FrozenStar->self, no cast, single-target
+    CircleOfIcePrime = 33021, // Helper->self, 2.0s cast, range 5-40 donut
+    FireSpherePrimeVisual1 = 31896, // BurningStar->self, no cast, single-target
+    FireSpherePrimeVisual2 = 31897, // BurningStar->self, no cast, single-target
+    FireSpherePrime = 33022, // Helper->self, 2.0s cast, range 16 circle
 
-    DarkBlizzardIII = 31914, // IgeyorhmsShade->self, 6.0s cast, single-target
-    DarkBlizzardIIIAOE1 = 31915, // Helper->self, 6.0s cast, range 41 20-degree cone
-    DarkBlizzardIIIAOE2 = 31916, // Helper->self, 6.0s cast, range 41 20-degree cone
-    DarkBlizzardIIIAOE3 = 31917, // Helper->self, 6.0s cast, range 41 20-degree cone
-    DarkBlizzardIIIAOE4 = 31918, // Helper->self, 6.0s cast, range 41 20-degree cone
-    DarkBlizzardIIIAOE5 = 31919, // Helper->self, 6.0s cast, range 41 20-degree cone
+    DarkBlizzardIIIVisual = 31914, // IgeyorhmsShade->self, 6.0s cast, single-target
+    DarkBlizzardIII1 = 31915, // Helper->self, 6.0s cast, range 41 20-degree cone
+    DarkBlizzardIII2 = 31916, // Helper->self, 6.0s cast, range 41 20-degree cone
+    DarkBlizzardIII3 = 31917, // Helper->self, 6.0s cast, range 41 20-degree cone
+    DarkBlizzardIII4 = 31918, // Helper->self, 6.0s cast, range 41 20-degree cone
+    DarkBlizzardIII5 = 31919, // Helper->self, 6.0s cast, range 41 20-degree cone
 
-    DarkFireII = 31920, // LahabreasShade->self, 6.0s cast, single-target
-    DarkFireIIAOE = 31921, // Helper->players, 6.0s cast, range 6 circle
+    DarkFireIIVisual = 31920, // LahabreasShade->self, 6.0s cast, single-target
+    DarkFireII = 31921, // Helper->players, 6.0s cast, range 6 circle
 
     Dualstar = 31894, // Boss->self, 4.0s cast, single-target
 
@@ -56,10 +59,6 @@ public enum AID : uint
     EntropicFlame1 = 32126, // Boss->self, no cast, single-target
     EntropicFlame2 = 31906, // Boss->self, 5.0s cast, single-target
     EntropicFlame3 = 32555, // Helper->self, no cast, range 50 width 8 rect, line stack
-
-    FireSpherePrime1 = 31896, // BurningStar->self, no cast, single-target
-    FireSpherePrime2 = 31897, // BurningStar->self, no cast, single-target
-    FireSpherePrimeAOE = 33022, // Helper->self, 2.0s cast, range 16 circle
 
     FusionPrime = 31895, // Boss->self, 3.0s cast, single-target
 
@@ -110,7 +109,7 @@ class DarkWhispers(BossModule module) : Components.UniformStackSpread(module, 0,
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         if (iconID == (uint)IconID.DarkWhispers)
-            AddSpread(actor, Module.WorldState.FutureTime(5));
+            AddSpread(actor, WorldState.FutureTime(5));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -135,16 +134,20 @@ class HeightOfChaos(BossModule module) : Components.BaitAwayCast(module, ActionI
     }
 }
 
-class HeightOfChaosSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HeightOfChaos), 5);
-class AncientEruptionAOE(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.AncientEruptionAOE), 5);
-class ChillingCrossAOE1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ChillingCrossAOE1), new AOEShapeCross(40, 2.5f));
-class ChillingCrossAOE2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ChillingCrossAOE2), new AOEShapeCross(40, 2.5f));
-class DarkBlizzardIIIAOE1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkBlizzardIIIAOE1), new AOEShapeCone(41, 10.Degrees()));
-class DarkBlizzardIIIAOE2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkBlizzardIIIAOE2), new AOEShapeCone(41, 10.Degrees()));
-class DarkBlizzardIIIAOE3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkBlizzardIIIAOE3), new AOEShapeCone(41, 10.Degrees()));
-class DarkBlizzardIIIAOE4(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkBlizzardIIIAOE4), new AOEShapeCone(41, 10.Degrees()));
-class DarkBlizzardIIIAOE5(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkBlizzardIIIAOE5), new AOEShapeCone(41, 10.Degrees()));
-class DarkFireIIAOE(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.DarkFireIIAOE), 6);
+class AncientEruption(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.AncientEruption), 5);
+
+class ChillingCross(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCross(40, 2.5f));
+class ChillingCross1(BossModule module) : ChillingCross(module, AID.ChillingCross1);
+class ChillingCross2(BossModule module) : ChillingCross(module, AID.ChillingCross2);
+
+class DarkBlizzard(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(41, 10.Degrees()));
+class DarkBlizzardIIIAOE1(BossModule module) : DarkBlizzard(module, AID.DarkBlizzardIII1);
+class DarkBlizzardIIIAOE2(BossModule module) : DarkBlizzard(module, AID.DarkBlizzardIII2);
+class DarkBlizzardIIIAOE3(BossModule module) : DarkBlizzard(module, AID.DarkBlizzardIII3);
+class DarkBlizzardIIIAOE4(BossModule module) : DarkBlizzard(module, AID.DarkBlizzardIII4);
+class DarkBlizzardIIIAOE5(BossModule module) : DarkBlizzard(module, AID.DarkBlizzardIII5);
+
+class DarkFireII(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.DarkFireII), 6);
 class BurningChains(BossModule module) : Components.Chains(module, (uint)TetherID.BurningChains, ActionID.MakeSpell(AID.BurningChains));
 class EntropicFlame(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.EntropicFlame), ActionID.MakeSpell(AID.EntropicFlame3), 5.2f);
 
@@ -170,8 +173,8 @@ class Stars(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorCreated(Actor actor)
     {
-        var activation1 = Module.WorldState.FutureTime(11.8f);
-        var activation2 = Module.WorldState.FutureTime(14.8f);
+        var activation1 = WorldState.FutureTime(11.8f);
+        var activation2 = WorldState.FutureTime(14.8f);
         if ((OID)actor.OID == OID.FrozenStar)
         {
             if (actor.Position == _frozenStarLongTether)
@@ -191,7 +194,7 @@ class Stars(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.CircleOfIcePrimeAOE or AID.FireSpherePrimeAOE)
+        if ((AID)spell.Action.ID is AID.CircleOfIcePrime or AID.FireSpherePrime)
         {
             NumCasts++;
             if (_aoesShortTether.Count != 0)
@@ -219,11 +222,11 @@ class D064AscianPrimeStates : StateMachineBuilder
             .ActivateOnEnter<DarkBlizzardIIIAOE3>()
             .ActivateOnEnter<DarkBlizzardIIIAOE4>()
             .ActivateOnEnter<DarkBlizzardIIIAOE5>()
-            .ActivateOnEnter<AncientEruptionAOE>()
-            .ActivateOnEnter<ChillingCrossAOE1>()
-            .ActivateOnEnter<ChillingCrossAOE2>()
+            .ActivateOnEnter<AncientEruption>()
+            .ActivateOnEnter<ChillingCross1>()
+            .ActivateOnEnter<ChillingCross2>()
             .ActivateOnEnter<Stars>()
-            .ActivateOnEnter<DarkFireIIAOE>()
+            .ActivateOnEnter<DarkFireII>()
             .ActivateOnEnter<UniversalManipulation>()
             .ActivateOnEnter<EntropicFlame>()
             .ActivateOnEnter<BurningChains>();

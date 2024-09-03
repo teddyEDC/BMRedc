@@ -169,8 +169,11 @@ class PendulumFlare(BossModule module) : Components.BaitAwayIcon(module, new AOE
 }
 
 class PendulumAOE(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.PendulumAOE3), 15);
-class LeftKnout(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LeftKnout), new AOEShapeCone(24, 105.Degrees()));
-class RightKnout(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RightKnout), new AOEShapeCone(24, 105.Degrees()));
+
+class Knout(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(24, 105.Degrees()));
+class LeftKnout(BossModule module) : Knout(module, AID.LeftKnout);
+class RightKnout(BossModule module) : Knout(module, AID.RightKnout);
+
 class Taphephobia(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.Taphephobia2), 6);
 
 class IntoTheLight(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.IntoTheLight), ActionID.MakeSpell(AID.IntoTheLight2), 5.3f);

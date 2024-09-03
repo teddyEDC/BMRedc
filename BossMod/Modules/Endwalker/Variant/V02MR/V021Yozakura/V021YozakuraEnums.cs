@@ -17,8 +17,8 @@ public enum OID : uint
     Water = 0x1EB88D, // R0.5
     Fire = 0x1EB88B, // R0.5
     LivingGaol = 0x3EE2, // R3.7
-    Helper = 0x233C,
-    Helper2 = 0x3F53
+    Helper2 = 0x3F53,
+    Helper = 0x233C
 }
 
 public enum AID : uint
@@ -114,5 +114,5 @@ public enum IconID : uint
     Gaze = 374, // Shibamaru/Shiromaru/Kuromaru
     RotateCW = 167, // Boss
     RotateCCW = 168, // Boss
-    ChasingAOE = 197, // player
+    ChasingAOE = 197 // player
 }

@@ -20,7 +20,7 @@ public enum AID : uint
     BullishSwipe = 32795, // Boss->self, 5.0s cast, range 40 90-degree cone
     Thundercall = 31873, // Boss->self, 5.0s cast, range 60 circle
     Shock = 31874, // BallOfLevin->self, 2.5s cast, range 5 circle
-    BullishSwing = 31875, // Boss->self, 5.0s cast, range 13 circle
+    BullishSwing = 31875 // Boss->self, 5.0s cast, range 13 circle
 }
 
 class OctupleSwipe(BossModule module) : Components.GenericAOEs(module)
@@ -53,6 +53,7 @@ class OctupleSwipe(BossModule module) : Components.GenericAOEs(module)
 
 class BullishSwing(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BullishSwing), new AOEShapeCircle(13));
 class BullishSwipe(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BullishSwipe), new AOEShapeCone(40, 45.Degrees()));
+
 class DisorientingGroan(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.DisorientingGroan), 15)
 {
     private DateTime activation;
@@ -66,8 +67,8 @@ class DisorientingGroan(BossModule module) : Components.KnockbackFromCastTarget(
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center, 5), activation.AddSeconds(-1));
+        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5), activation.AddSeconds(-1));
     }
 }
 
@@ -81,7 +82,7 @@ class Shock(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorCreated(Actor actor)
     {
         if ((OID)actor.OID == OID.BallOfLevin)
-            _aoes.Add(new(circle, actor.Position, default, Module.WorldState.FutureTime(13)));
+            _aoes.Add(new(circle, actor.Position, default, WorldState.FutureTime(13)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

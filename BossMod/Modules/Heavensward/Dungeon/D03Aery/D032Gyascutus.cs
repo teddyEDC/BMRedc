@@ -65,7 +65,7 @@ class BodySlam(BossModule module) : Components.KnockbackFromCastTarget(module, A
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
-        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
             hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 9), activation.AddSeconds(-1));
     }
 }

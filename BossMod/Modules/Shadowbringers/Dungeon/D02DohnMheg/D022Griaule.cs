@@ -29,9 +29,7 @@ class FeedingTime(BossModule module) : Components.InterceptTether(module, Action
     public override void OnActorCreated(Actor actor)
     {
         if ((OID)actor.OID == OID.PaintedSapling)
-        {
-            _activation = Module.WorldState.FutureTime(10.9f);
-        }
+            _activation = WorldState.FutureTime(10.9f);
     }
 
     //TODO: consider moving this logic to the component

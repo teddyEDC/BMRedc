@@ -48,8 +48,11 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 
 class Sunbeam(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.SunbeamAOE), new AOEShapeCircle(6), true);
 class DestructiveBolt(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.DestructiveBoltAOE), 6, 8);
-class HandOfTheDestroyerWrath(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HandOfTheDestroyerWrathAOE), new AOEShapeRect(90, 20));
-class HandOfTheDestroyerJudgment(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HandOfTheDestroyerJudgmentAOE), new AOEShapeRect(90, 20));
+
+class HoD(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(90, 20));
+class HandOfTheDestroyerWrath(BossModule module) : HoD(module, AID.HandOfTheDestroyerWrathAOE);
+class HandOfTheDestroyerJudgment(BossModule module) : HoD(module, AID.HandOfTheDestroyerJudgmentAOE);
+
 class SoaringMinuet(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SoaringMinuet), new AOEShapeCone(40, 135.Degrees()));
 class EudaimonEorzea(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.EudaimonEorzeaAOE));
 
