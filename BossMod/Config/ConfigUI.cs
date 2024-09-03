@@ -38,6 +38,7 @@ public sealed class ConfigUI : IDisposable
         _tabs.Add("Settings", DrawSettings);
         _tabs.Add("Supported bosses", () => _mv.Draw(_tree, _ws));
         _tabs.Add("Autorotation presets", () => _presets?.Draw());
+        _tabs.Add("Slash commands", DrawAvailableCommands);
         _tabs.Add("About", _about.Draw);
 
         Dictionary<Type, UINode> nodes = [];
@@ -70,16 +71,6 @@ public sealed class ConfigUI : IDisposable
     public void Draw()
     {
         _tabs.Draw();
-        using var tabs = ImRaii.TabBar("Tabs");
-        if (tabs)
-        {
-            using (var tab = ImRaii.TabItem("Slash commands"))
-                if (tab)
-                    DrawAvailableCommands();
-            using (var tab = ImRaii.TabItem("Read me!"))
-                if (tab)
-                    DrawReadMe();
-        }
     }
 
     private static readonly Dictionary<string, string> _availableAICommands = new()
@@ -154,37 +145,6 @@ public sealed class ConfigUI : IDisposable
         }
         ImGui.Separator();
         ImGui.Text("/vbm can be used instead of /bmr and /vbmai can be used instead of /bmrai");
-    }
-
-    private static void DrawReadMe()
-    {
-        ImGui.Text("Important information");
-        ImGui.Separator();
-        ImGui.Text("This is a FORK of veyn's BossMod (VBM).");
-        ImGui.Spacing();
-        ImGui.Text("Please do not ask him for any support for problems you encounter while using this fork.");
-        ImGui.Spacing();
-        ImGui.Text("Instead visit the Combat Reborn Discord and ask for support there:");
-        if (ImGui.Button("Combat Reborn Discord"))
-            Process.Start("explorer.exe", "https://discord.gg/p54TZMPnC9");
-
-        ImGui.NewLine();
-        ImGui.Text("Please also make sure to not load VBM and this fork at the same time.");
-        ImGui.Spacing();
-        ImGui.Text("The consequences of doing that are unexplored and unsupported.");
-        ImGui.NewLine();
-        if (ImGui.Button("BossMod Reborn GitHub"))
-            Process.Start("explorer.exe", "https://github.com/FFXIV-CombatReborn/BossmodReborn");
-        ImGui.SameLine();
-        if (ImGui.Button("BossMod Wiki"))
-            Process.Start("explorer.exe", "https://github.com/awgil/ffxiv_bossmod/wiki");
-    }
-
-    private void DrawSettings()
-    {
-        using var child = ImRaii.Child("SettingsWindow", new Vector2(0, 0), true);
-        if (child)
-            DrawNodes(_roots);
     }
 
     private void DrawSettings()

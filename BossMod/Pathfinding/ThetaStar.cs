@@ -39,7 +39,7 @@ public class ThetaStar
 
         var startFrac = map.WorldToGridFrac(startPos);
         var start = map.ClampToGrid(map.FracToGrid(startFrac));
-        int startIndex = CellIndex(start.x, start.y);
+        var startIndex = CellIndex(start.x, start.y);
         startFrac.X -= start.x + 0.5f;
         startFrac.Y -= start.y + 0.5f;
         _nodes[startIndex] = new()
@@ -57,17 +57,6 @@ public class ThetaStar
     public void Start(Map map, int goalPriority, WPos startPos, float gMultiplier) => Start(map, map.Goals().Where(g => g.priority >= goalPriority).Select(g => (g.x, g.y)), startPos, gMultiplier);
 
     // returns whether search is to be terminated; on success, first node of the open list would contain found goal
-    private bool IsInBounds(int x, int y) => x >= 0 && y >= 0 && x < _map.Width && y < _map.Height;
-
-    private void AddNeighbor(int parentX, int parentY, int parentIndex, int nodeX, int nodeY, float deltaG)
-    {
-        if (IsInBounds(nodeX, nodeY))
-        {
-            var nodeIndex = CellIndex(nodeX, nodeY);
-            VisitNeighbour(parentX, parentY, parentIndex, nodeX, nodeY, nodeIndex, deltaG);
-        }
-    }
-
     public bool ExecuteStep()
     {
         if (_goals.Count == 0 || _openList.Count == 0 || _nodes[_openList[0]].HScore <= 0)
@@ -76,12 +65,10 @@ public class ThetaStar
         var nextNodeIndex = PopMinOpen();
         var nextNodeX = nextNodeIndex % _map.Width;
         var nextNodeY = nextNodeIndex / _map.Width;
-
         var haveN = nextNodeY > 0;
         var haveS = nextNodeY < _map.Height - 1;
         var haveW = nextNodeX > 0;
         var haveE = nextNodeX < _map.Width - 1;
-
         var startOff = _nodes[nextNodeIndex].EnterOffset;
         if (haveN)
         {
@@ -103,7 +90,6 @@ public class ThetaStar
             if (haveE)
                 VisitNeighbour(nextNodeX, nextNodeY, nextNodeIndex, nextNodeX + 1, nextNodeY + 1, nextNodeIndex + _map.Width + 1, new(-0.5f, -0.5f), Length(0.5f - startOff.X, 0.5f - startOff.Y));
         }
-
         return true;
     }
 
@@ -154,11 +140,11 @@ public class ThetaStar
 
     private float LineOfSight(int x1, int y1, Vector2 off1, int x2, int y2, Vector2 off2, float maxG, out float length)
     {
-        float minLeeway = float.MaxValue;
-        int dx = x2 - x1;
-        int dy = y2 - y1;
-        int sx = dx > 0 ? 1 : -1;
-        int sy = dy > 0 ? 1 : -1;
+        var minLeeway = float.MaxValue;
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var sx = dx > 0 ? 1 : -1;
+        var sy = dy > 0 ? 1 : -1;
         var hsx = 0.5f * sx;
         var hsy = 0.5f * sy;
 
@@ -208,7 +194,7 @@ public class ThetaStar
         // distance is from (x+0.5+ox) to gx+0.5; precalculate x+ox
         var tx = x + offset.X;
         var ty = y + offset.Y;
-        float bestSq = float.MaxValue;
+        var bestSq = float.MaxValue;
         foreach (var g in _goals)
         {
             if (g.x == x && g.y == y)
