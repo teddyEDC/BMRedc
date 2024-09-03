@@ -39,13 +39,13 @@ public enum AID : uint
 
 class OldMagicArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeDonut donut = new(20, 22.5f);
+    private static readonly AOEShapeDonut donut = new(20, 23);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.OldMagic && Module.Arena.Bounds == D133Durante.StartingBounds)
+        if ((AID)spell.Action.ID == AID.OldMagic && Arena.Bounds == D133Durante.StartingBounds)
             _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell));
     }
 
@@ -53,7 +53,7 @@ class OldMagicArenaChange(BossModule module) : Components.GenericAOEs(module)
     {
         if (state == 0x00020001 && index == 0x0A)
         {
-            Module.Arena.Bounds = D133Durante.DefaultBounds;
+            Arena.Bounds = D133Durante.DefaultBounds;
             _aoe = null;
         }
     }
@@ -97,7 +97,7 @@ class DuplicitousBattery(BossModule module) : Components.GenericAOEs(module)
 class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Explosion), new AOEShapeCircle(11));
 class Explosion2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Explosion2), new AOEShapeCircle(9));
 class FallenGrace(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.FallenGrace), 6);
-class AntipodalAssault(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.AntipodalAssaultMarker), ActionID.MakeSpell(AID.AntipodalAssault2), 5.4f);
+class AntipodalAssault(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.AntipodalAssaultMarker), ActionID.MakeSpell(AID.AntipodalAssault2), 5.4f, markerIsFinalTarget: false);
 class HardSlash(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HardSlash), new AOEShapeCone(50, 45.Degrees()));
 class TwilightPhase(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TwilightPhase2), new AOEShapeRect(30, 10, 30));
 class DarkImpact(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DarkImpact2), new AOEShapeCircle(25));
