@@ -26,7 +26,7 @@ public enum AID : uint
 
     LastDrop = 36726, // Boss->player, 5.0s cast, single-target, tankbuster
 
-    SordidSteam = 36725, // Boss->self, 5.0s cast, range 40 circle, raidwide
+    SordidSteam = 36725 // Boss->self, 5.0s cast, range 40 circle, raidwide
 }
 
 public enum TetherID : uint
@@ -88,7 +88,7 @@ class TeaAwhirl(BossModule module) : Components.GenericAOEs(module)
     {
         if (state == 0x02000100)
         {
-            var activation = Module.WorldState.FutureTime(11.5f);
+            var activation = WorldState.FutureTime(11.5f);
             if (CheckPositions(new(17, -163), new(17, -177)))
                 AddAOEs(activation, new(3.5f, -161.5f), new(30.5f, -178.5f));
             else if (CheckPositions(new(17, -153), new(10, -170)))
@@ -100,7 +100,7 @@ class TeaAwhirl(BossModule module) : Components.GenericAOEs(module)
         }
         else if (state == 0x10000800)
         {
-            var activation = Module.WorldState.FutureTime(14.5f);
+            var activation = WorldState.FutureTime(14.5f);
             if (CheckPositions(new(0, -170), new(34, -170)))
                 AddAOEs(activation, new(8.5f, -156.5f), new(25.5f, -183.5f));
             else if (CheckPositions(new(0, -170), new(17, -187)))
@@ -109,10 +109,10 @@ class TeaAwhirl(BossModule module) : Components.GenericAOEs(module)
                 AddAOEs(activation, new(30.5f, -161.5f), new(3.5f, -178.5f));
         }
         else if (state == 0x00100001)
-            AddAOEs(Module.WorldState.FutureTime(16), _cups[0].Position, _cups[1].Position);
+            AddAOEs(WorldState.FutureTime(16), _cups[0].Position, _cups[1].Position);
         else if (state == 0x00400020)
         {
-            var activation = Module.WorldState.FutureTime(19);
+            var activation = WorldState.FutureTime(19);
             if (CheckPositions(new(0, -170), new(17, -163)))
                 AddAOEs(activation, new(5, -165), new(22, -182));
             else if (CheckPositions(new(17, -177), new(17, -153)))
@@ -156,7 +156,5 @@ class D082JackInThePotStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 981, NameID = 12760)]
 public class D082JackInThePot(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly List<Shape> union = [new Circle(new(17, -170), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(17, -150.15f), 20, 1.25f), new Rectangle(new(17, -189.5f), 20, 1.25f)];
-    private static readonly ArenaBounds arena = new ArenaBoundsComplex(union, difference);
+    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(17, -170), 19.5f)], [new Rectangle(new(17, -150.15f), 20, 1.25f), new Rectangle(new(17, -189.5f), 20, 1.25f)]);
 }

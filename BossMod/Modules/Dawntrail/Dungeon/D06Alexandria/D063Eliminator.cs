@@ -93,9 +93,12 @@ class DisruptionArenaChange(BossModule module) : Components.GenericAOEs(module)
 }
 
 class Disruption(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Disruption));
-class Partition1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Partition1), new AOEShapeCone(40, 90.Degrees()));
-class Partition2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Partition2), new AOEShapeCone(40, 90.Degrees()));
-class Partition3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Partition3), new AOEShapeCone(40, 90.Degrees()));
+
+class Partition(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(40, 90.Degrees()));
+class Partition1(BossModule module) : Partition(module, AID.Partition1);
+class Partition2(BossModule module) : Partition(module, AID.Partition2);
+class Partition3(BossModule module) : Partition(module, AID.Partition3);
+
 class Terminate(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Terminate), new AOEShapeRect(40, 5));
 class HaloOfDestruction(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HaloOfDestruction), new AOEShapeDonut(6, 40));
 

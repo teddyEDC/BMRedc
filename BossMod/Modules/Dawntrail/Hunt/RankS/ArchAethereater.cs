@@ -156,12 +156,17 @@ class Aethermodynamics1(BossModule module) : Components.RaidwideCast(module, Act
 class Aethermodynamics2(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Aethermodynamics2));
 class Aethermodynamics3(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Aethermodynamics3));
 class Aethermodynamics4(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Aethermodynamics4));
+
 class Obliterate(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Obliterate), 6, 8);
 class Meltdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Meltdown), new AOEShapeRect(40, 5));
-class BlizzardIV1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardIV1), new AOEShapeDonut(6, 40));
-class FireIV1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FireIV1), new AOEShapeCircle(15));
-class BlizzardIV5(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardIV5), new AOEShapeDonut(6, 40));
-class FireIV5(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FireIV5), new AOEShapeCircle(15));
+
+class Blizzard(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeDonut(6, 40));
+class BlizzardIV1(BossModule module) : Blizzard(module, AID.BlizzardIV1);
+class BlizzardIV5(BossModule module) : Blizzard(module, AID.BlizzardIV5);
+
+class Fire(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(15));
+class FireIV1(BossModule module) : Fire(module, AID.FireIV1);
+class FireIV5(BossModule module) : Fire(module, AID.FireIV5);
 
 class SoullessStreamFireBlizzardCombo(BossModule module) : Components.GenericAOEs(module)
 {

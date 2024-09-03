@@ -53,15 +53,15 @@ class MaliciousMistArenaChange(BossModule module) : Components.GenericAOEs(modul
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.MaliciousMist && Module.Arena.Bounds == D081HisRoyalHeadnessLeonoggI.StartingBounds)
-            _aoe = new(donut, Module.Center, default, Module.CastFinishAt(spell, 0.9f));
+        if ((AID)spell.Action.ID == AID.MaliciousMist && Arena.Bounds == D081HisRoyalHeadnessLeonoggI.StartingBounds)
+            _aoe = new(donut, Arena.Center, default, Module.CastFinishAt(spell, 0.9f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x00)
         {
-            Module.Arena.Bounds = D081HisRoyalHeadnessLeonoggI.DefaultBounds;
+            Arena.Bounds = D081HisRoyalHeadnessLeonoggI.DefaultBounds;
             _aoe = null;
         }
     }
@@ -86,7 +86,7 @@ class LoomingNightmare(BossModule module) : Components.StandardChasingAOEs(modul
     {
         base.AddAIHints(slot, actor, assignment, hints);
         if (Actors.Contains(actor))
-            hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center, 13.5f), Activation);
+            hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center, 13.5f), Activation);
     }
 }
 
@@ -100,7 +100,7 @@ class FallingNightmare(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
         if ((OID)actor.OID == OID.NobleNoggin && id == 0x11D1)
-            _aoes.Add(new(circle, actor.Position, default, Module.WorldState.FutureTime(3))); // can be 3 or 4 seconds depending on mechanic
+            _aoes.Add(new(circle, actor.Position, default, WorldState.FutureTime(3))); // can be 3 or 4 seconds depending on mechanic
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

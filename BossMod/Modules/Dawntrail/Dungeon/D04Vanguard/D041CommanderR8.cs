@@ -155,10 +155,11 @@ class RapidRotary(BossModule module) : Components.GenericAOEs(module)
 
 class Electrowave(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Electrowave));
 
-class EnhancedMobility1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.EnhancedMobility1), new AOEShapeRect(14, 3));
-class EnhancedMobility2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.EnhancedMobility2), new AOEShapeRect(14, 3));
-class EnhancedMobility3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.EnhancedMobility3), new AOEShapeRect(14, 3));
-class EnhancedMobility4(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.EnhancedMobility4), new AOEShapeRect(14, 3));
+class EnhancedMobility(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(14, 3));
+class EnhancedMobility1(BossModule module) : EnhancedMobility(module, AID.EnhancedMobility1);
+class EnhancedMobility2(BossModule module) : EnhancedMobility(module, AID.EnhancedMobility2);
+class EnhancedMobility3(BossModule module) : EnhancedMobility(module, AID.EnhancedMobility3);
+class EnhancedMobility4(BossModule module) : EnhancedMobility(module, AID.EnhancedMobility4);
 
 class Rush(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.Rush), 2.5f);
 class AerialOffensive(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.AerialOffensive), 14, maxCasts: 4);
