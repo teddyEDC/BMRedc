@@ -1,33 +1,53 @@
 namespace BossMod.Dawntrail.Raid.M02NHoneyBLovely;
 
-class Sweethearts(BossModule module) : Components.GenericAOEs(module)
+class Sweethearts(BossModule module, uint oid, uint aid) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCircle circle = new(1);
     private readonly HashSet<Actor> _hearts = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _hearts.Select(a => new AOEInstance(circle, a.Position, a.Rotation));
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        return _hearts.Select(a =>
+        {
+            var position = a.Position;
+            var directionOffset = 3 * a.Rotation.ToDirection();
+            var shapes = new Shape[]
+            {
+                new Circle(a.Position, 1),
+                new Circle(a.Position + directionOffset, 1),
+                new RectangleSE(a.Position, a.Position + directionOffset, 1)
+            };
+            return new AOEInstance(new AOEShapeCustom(shapes), Arena.Center);
+        });
+    }
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
-        if ((OID)actor.OID == OID.Sweetheart && id == 0x11D3)
+        if (actor.OID == oid && id == 0x11D3)
             _hearts.Add(actor);
     }
 
     public override void OnActorDestroyed(Actor actor)
     {
-        if ((OID)actor.OID == OID.Sweetheart)
+        if (actor.OID == oid)
             _hearts.Remove(actor);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.SweetheartTouch)
+        if (spell.Action.ID == aid)
             _hearts.Remove(caster);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var w in _hearts)
-            hints.AddForbiddenZone(ShapeDistance.Capsule(w.Position, w.Rotation, 2.5f, 1));
+        if (_hearts.Count == 0)
+            return;
+        var forbidden = new List<Func<WPos, float>>();
+        foreach (var o in _hearts)
+            forbidden.Add(ShapeDistance.Capsule(o.Position, o.Rotation, 3, 1));
+        forbidden.Add(ShapeDistance.Circle(Arena.Center, Module.PrimaryActor.HitboxRadius));
+        hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min());
     }
 }
+
+class SweetheartsN(BossModule module) : Sweethearts(module, (uint)OID.Sweetheart, (uint)AID.SweetheartTouch);
