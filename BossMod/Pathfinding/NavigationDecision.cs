@@ -71,16 +71,13 @@ public struct NavigationDecision
             numImminentZones = hints.ForbiddenZones.Count;
 
         // check whether player is inside each forbidden zone
-        // to avoid the situation where player is in safe cell, but inside aoe, or vice versa, instead of player's actual position we check the center of the cell containing the player
-        hints.Bounds.PathfindMap(ctx.Map, hints.Center);
-        var playerCell = ctx.Map.WorldToGrid(player.Position);
-        var quantizedPlayerPos = ctx.Map.GridToWorld(playerCell.x, playerCell.y, 0.5f, 0.5f);
-        var inZone = hints.ForbiddenZones.Select(f => f.shapeDistance(quantizedPlayerPos) <= forbiddenZoneCushion + 0.1f).ToList();
+        var inZone = hints.ForbiddenZones.Select(f => f.shapeDistance(player.Position) <= forbiddenZoneCushion - 0.1f).ToList(); // we might have a situation where player's cell center is outside, but player is not, yet player is too close to center for navigation to work...
         if (inZone.Any(inside => inside))
         {
             // we're in forbidden zone => find path to safety (and ideally to uptime zone)
             // if such a path can't be found (that's always the case if we're inside imminent forbidden zone, but can also happen in other cases), try instead to find a path to safety that doesn't enter any other zones that we're not inside
             // first build a map with zones that we're outside of as blockers
+            hints.Bounds.PathfindMap(ctx.Map, hints.Center);
             foreach (var (zf, inside) in hints.ForbiddenZones.Zip(inZone))
                 if (!inside)
                     AddBlockerZone(ctx.Map, imminent, zf.activation, zf.shapeDistance, forbiddenZoneCushion);
@@ -119,6 +116,7 @@ public struct NavigationDecision
             if (!player.Position.InCircle(targetPos.Value, targetRadius))
             {
                 // we're not in uptime zone, just run to it, avoiding any aoes
+                hints.Bounds.PathfindMap(ctx.Map, hints.Center);
                 foreach (var (shape, activation) in hints.ForbiddenZones)
                     AddBlockerZone(ctx.Map, imminent, activation, shape, forbiddenZoneCushion);
                 var maxGoal = AddTargetGoal(ctx.Map, targetPos.Value, targetRadius, targetRot, Positional.Any, 0);
@@ -162,6 +160,7 @@ public struct NavigationDecision
             if (!inPositional)
             {
                 // we're in uptime zone, but not in correct quadrant - move there, avoiding all aoes and staying within uptime zone
+                hints.Bounds.PathfindMap(ctx.Map, hints.Center);
                 ctx.Map.BlockPixelsInside(ShapeDistance.InvertedCircle(targetPos.Value, targetRadius), 0, 0);
                 foreach (var (shape, activation) in hints.ForbiddenZones)
                     AddBlockerZone(ctx.Map, imminent, activation, shape, forbiddenZoneCushion);
@@ -320,7 +319,7 @@ public struct NavigationDecision
 
         // just run to closest safe spot, if no good path can be found
         WPos? closest = null;
-        float closestDistance = float.MaxValue;
+        var closestDistance = float.MaxValue;
         foreach (var p in map.EnumeratePixels())
         {
             var px = map[p.x, p.y];
