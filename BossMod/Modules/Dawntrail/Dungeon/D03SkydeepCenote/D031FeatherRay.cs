@@ -81,9 +81,8 @@ class AiryBubble(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(new AOEShapeCircle(Radius), w.Origin + Radius * w.Rotation.ToDirection());
+            hints.AddForbiddenZone(ShapeDistance.Capsule(w.Origin, w.Rotation, 2.5f, Radius));
     }
 }
 

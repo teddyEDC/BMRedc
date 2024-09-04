@@ -5,7 +5,7 @@ class Sweethearts(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(1);
     private readonly HashSet<Actor> _hearts = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _hearts.Select(a => new AOEInstance(circle, a.Position));
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _hearts.Select(a => new AOEInstance(circle, a.Position, a.Rotation));
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
@@ -27,8 +27,7 @@ class Sweethearts(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in _hearts)
-            hints.AddForbiddenZone(new AOEShapeCircle(1), w.Position + w.Rotation.ToDirection());
+            hints.AddForbiddenZone(ShapeDistance.Capsule(w.Position, w.Rotation, 2.5f, 1));
     }
 }
