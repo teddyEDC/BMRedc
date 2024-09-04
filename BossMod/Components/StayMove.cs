@@ -5,8 +5,8 @@ public class StayMove(BossModule module) : BossComponent(module)
 {
     public enum Requirement { None, Stay, Move }
 
-    public Requirement[] Requirements = new Requirement[PartyState.MaxPartySize];
-    private readonly (Vector3 prev, Vector3 curr)[] _lastPositions = new (Vector3, Vector3)[PartyState.MaxPartySize];
+    public Requirement[] Requirements = new Requirement[PartyState.MaxAllianceSize];
+    private readonly (Vector3 prev, Vector3 curr)[] _lastPositions = new (Vector3, Vector3)[PartyState.MaxAllianceSize];
 
     public override void Update()
     {

@@ -42,7 +42,7 @@ public enum SID : uint
 
 class Heatstroke(BossModule module) : Components.StayMove(module)
 {
-    private readonly DateTime[] _expire = new DateTime[400];
+    private readonly DateTime[] _expire = new DateTime[PartyState.MaxAllianceSize];
     private BitMask _pyretic;
     private BitMask _heatstroke;
 
