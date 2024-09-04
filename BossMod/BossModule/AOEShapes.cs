@@ -170,6 +170,7 @@ public enum OperandType
 public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerable<Shape>? DifferenceShapes = null, IEnumerable<Shape>? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union) : AOEShape
 {
     private static readonly Dictionary<string, RelSimplifiedComplexPolygon> _polygonCache = [];
+    private static readonly Queue<string> _polygonCacheQueue = new();
     private readonly Dictionary<(string, WPos, WPos, Angle), bool> _checkCache = [];
     private static readonly Dictionary<(string, WPos, Angle, bool), Func<WPos, float>> _distanceFuncCache = [];
     private readonly string sha512key = CreateCacheKey(Shapes1, Shapes2 ?? [], DifferenceShapes ?? [], Operand);
@@ -197,7 +198,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
             ? clipper.Difference(new PolygonClipper.Operand(combinedShapes), differenceOperands)
             : clipper.Difference(shapes1, differenceOperands);
 
-        _polygonCache[sha512key] = finalResult;
+        AddToPolygonCache(sha512key, finalResult);
         return finalResult;
     }
 
@@ -219,7 +220,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
         var combinedPolygon = GetCombinedPolygon(origin);
         var relativePosition = position - origin;
         var result = combinedPolygon.Contains(new WDir(relativePosition.X, relativePosition.Z));
-        _checkCache[cacheKey] = result;
+        AddToCheckCache(cacheKey, result);
         return result;
     }
 
@@ -276,5 +277,20 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
         var result = InvertForbiddenZone ? RelPolygonWithHoles.InvertedPolygonWithHoles(origin, GetCombinedPolygon(origin)) : RelPolygonWithHoles.PolygonWithHoles(origin, GetCombinedPolygon(origin));
         _distanceFuncCache[cacheKey] = result;
         return result;
+    }
+
+    private void AddToPolygonCache(string key, RelSimplifiedComplexPolygon polygon)
+    {
+        _polygonCache[key] = polygon;
+        _polygonCacheQueue.Enqueue(key);
+        if (_polygonCache.Count > 250)
+            _polygonCache.Remove(_polygonCacheQueue.Dequeue());
+    }
+
+    private void AddToCheckCache((string, WPos, WPos, Angle) key, bool result)
+    {
+        if (_checkCache.Count > 2500)
+            _checkCache.Clear();
+        _checkCache[key] = result;
     }
 }
