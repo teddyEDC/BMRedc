@@ -180,7 +180,6 @@ class BatteryCircuit(BossModule module) : Components.GenericRotatingAOE(module)
 {
     private static readonly Angle _increment = -11.Degrees();
     private static readonly AOEShapeCone _shape = new(30, 15.Degrees());
-    private static readonly TimeSpan _reducedLeeway = TimeSpan.FromSeconds(1.5f); // aoes can appear mid mechanic and fuck up our careful plan
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
