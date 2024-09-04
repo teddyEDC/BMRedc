@@ -75,7 +75,7 @@ public struct NavigationDecision
         hints.Bounds.PathfindMap(ctx.Map, hints.Center);
         var playerCell = ctx.Map.WorldToGrid(player.Position);
         var quantizedPlayerPos = ctx.Map.GridToWorld(playerCell.x, playerCell.y, 0.5f, 0.5f);
-        var inZone = hints.ForbiddenZones.Select(f => f.shapeDistance(quantizedPlayerPos) <= forbiddenZoneCushion).ToList();
+        var inZone = hints.ForbiddenZones.Select(f => f.shapeDistance(quantizedPlayerPos) <= forbiddenZoneCushion + 0.1f).ToList();
         if (inZone.Any(inside => inside))
         {
             // we're in forbidden zone => find path to safety (and ideally to uptime zone)
