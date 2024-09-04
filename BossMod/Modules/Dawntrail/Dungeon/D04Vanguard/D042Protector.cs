@@ -248,6 +248,16 @@ class AccelerationBomb(BossModule module) : Components.StayMove(module)
         if ((SID)status.ID is SID.AccelerationBomb or SID.AccelerationBombNPCs && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
             _expire[slot] = default;
     }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        base.AddHints(slot, actor, hints);
+        if (_expire[slot] != default && actor.IsDead)
+        {
+            _expire[slot] = default;
+            Requirements[slot] = Requirement.None;
+        }
+    }
 }
 
 class D042ProtectorStates : StateMachineBuilder

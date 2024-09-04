@@ -36,7 +36,7 @@ public enum SID : uint
 
 class Boiling(BossModule module) : Components.StayMove(module)
 {
-    private readonly DateTime[] _expire = new DateTime[4];
+    private readonly DateTime[] _expire = new DateTime[400];
     private BitMask _pyretic;
     private BitMask _boiling;
 
@@ -59,10 +59,7 @@ class Boiling(BossModule module) : Components.StayMove(module)
         if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
         {
             if ((SID)status.ID == SID.Boiling)
-            {
                 _boiling.Clear(Raid.FindSlot(actor.InstanceID));
-                _expire[slot] = default;
-            }
             else if ((SID)status.ID == SID.Pyretic)
             {
                 _expire[slot] = default;
@@ -77,6 +74,11 @@ class Boiling(BossModule module) : Components.StayMove(module)
             hints.Add($"Boiling on you in {(actor.FindStatus(SID.Boiling)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
         else if (_pyretic[slot])
             hints.Add("Pyretic on you! STOP everything!");
+        if (_expire[slot] != default && actor.IsDead)
+        {
+            _expire[slot] = default;
+            Requirements[slot] = Requirement.None;
+        }
     }
 
     public override void Update()
