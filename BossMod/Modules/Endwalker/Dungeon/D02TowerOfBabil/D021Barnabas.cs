@@ -137,7 +137,7 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
         }
     }
 
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
+    public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if ((AID)spell.Action.ID is AID.DynamicPoundKB or AID.DynamicPoundPull or AID.DynamicScraplinePull or AID.DynamicScraplinePull)
         {

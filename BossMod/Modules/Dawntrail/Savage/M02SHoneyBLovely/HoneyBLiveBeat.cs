@@ -131,9 +131,8 @@ class Sweethearts(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in _hearts)
-            hints.AddForbiddenZone(new AOEShapeCircle(1), w.Position + w.Rotation.ToDirection());
+            hints.AddForbiddenZone(ShapeDistance.Capsule(w.Position, w.Rotation, 2.5f, 1));
     }
 }
 
