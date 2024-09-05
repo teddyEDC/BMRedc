@@ -126,7 +126,7 @@ class BodySlamKB(BossModule module) : Components.KnockbackFromCastTarget(module,
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime && Module.FindComponent<Antediluvian>()!.NumCasts >= 4)
+        if ((Sources(slot, actor).Any() || activation > WorldState.CurrentTime) && Module.FindComponent<Antediluvian>()!.NumCasts >= 4)
             hints.AddForbiddenZone(ShapeDistance.InvertedCircle(data, 10), activation.AddSeconds(-0.6f));
     }
 }
