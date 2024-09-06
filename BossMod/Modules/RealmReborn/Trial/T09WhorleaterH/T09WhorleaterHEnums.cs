@@ -45,12 +45,12 @@ public enum AID : uint
     Dreadstorm = 1865, // WavetoothSahagin-> location, 3.0s cast, range 50, 6 circle
     Ruin = 2214, // WavespineSahagin->player, 1.0s cast
     Bilgestorm = 1863, // WavespineSahagin->self, no cast, range 8+R ?-degree cone
-    Darkness = 1875, // WavetoothSahagin->self, 1.0s cast, range 6+R ?-degree cone
+    Darkness = 1875 // WavetoothSahagin->self, 1.0s cast, range 6+R ?-degree cone
 }
 
 public enum SID : uint
 {
     VeilOfTheWhorl = 478, // Boss->A88/Boss/A87, extra=0x64
     MantleOfTheWhorl = 477, // Tail->Tail, extra=0x64
-    Invincibility = 775, // none->A88/Boss/Tail/A87, extra=0x0
+    Invincibility = 775 // none->A88/Boss/Tail/A87, extra=0x0
 }
