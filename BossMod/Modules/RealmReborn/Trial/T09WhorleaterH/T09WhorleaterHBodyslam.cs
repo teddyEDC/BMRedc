@@ -31,7 +31,7 @@ class BodySlamAOE(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
     private float LeviathanZ;
-    private static readonly AOEShapeRect rect = new(30, 5);
+    private static readonly AOEShapeRect rect = new(34.5f, 5);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 

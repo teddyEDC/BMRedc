@@ -119,7 +119,7 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), actorStack.Activation);
             }
         }
-        else if (!IsSpreadTarget(actor))
+        else if (!IsSpreadTarget(actor) && !IsStackTarget(actor))
         {
             // TODO: handle multi stacks better...
             var closestStack = ActiveStacks.Where(s => s.InsufficientAmountInside(Module) && !s.ForbiddenPlayers[slot]).MinBy(s => (s.Target.Position - actor.Position).LengthSq());
@@ -163,30 +163,33 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
     {
         if (!AlwaysShowSpreads && Spreads.FindIndex(s => s.Target == pc) is var iSpread && iSpread >= 0)
         {
-            // draw only own circle - no one should be inside, this automatically resolves mechanic for us
+            // Draw only own circle if spreading; no one should be inside.
             Arena.AddCircle(pc.Position, Spreads[iSpread].Radius, Colors.Danger);
         }
         else
         {
-            // draw spread and stack circles
-            foreach (var s in ActiveStacks.Where(x => !x.ForbiddenPlayers[pcSlot] && (x.IsInside(pc) && (x.CorrectAmountInside(Module) || x.InsufficientAmountInside(Module)) || !x.IsInside(pc) && x.InsufficientAmountInside(Module))))
+            // Define a helper method to draw circles with optional shadows
+            void DrawCircle(WPos position, float radius, uint color)
             {
                 if (Arena.Config.ShowOutlinesAndShadows)
-                    Arena.AddCircle(s.Target.Position, s.Radius, Colors.Shadows, 2);
-                Arena.AddCircle(s.Target.Position, s.Radius, Colors.Safe);
+                    Arena.AddCircle(position, radius, Colors.Shadows, 2);
+                Arena.AddCircle(position, radius, color);
             }
-            foreach (var s in ActiveStacks.Where(x => x.ForbiddenPlayers[pcSlot] || !x.IsInside(pc) && x.CorrectAmountInside(Module) || x.TooManyInside(Module)))
-            {
-                if (Arena.Config.ShowOutlinesAndShadows)
-                    Arena.AddCircle(s.Target.Position, s.Radius, Colors.Shadows, 2);
-                Arena.AddCircle(s.Target.Position, s.Radius, Colors.Danger);
-            }
+            // Handle safe stack circles
+            foreach (var s in ActiveStacks.Where(x => x.Target == pc || !x.ForbiddenPlayers[pcSlot]
+                    && !IsSpreadTarget(pc) && !IsStackTarget(pc) && (x.IsInside(pc)
+                    && !x.TooManyInside(Module) || !x.IsInside(pc) && x.InsufficientAmountInside(Module))))
+                DrawCircle(s.Target.Position, s.Radius, Colors.Safe);
+
+            // Handle dangerous stack circles
+            foreach (var s in ActiveStacks.Where(x => x.Target != pc && (x.ForbiddenPlayers[pcSlot] || IsSpreadTarget(pc) ||
+                !x.IsInside(pc) && (x.CorrectAmountInside(Module) || x.TooManyInside(Module)) ||
+                x.IsInside(pc) && x.TooManyInside(Module))))
+                DrawCircle(s.Target.Position, s.Radius, Colors.Danger);
+
+            // Handle spread circles
             foreach (var s in ActiveSpreads)
-            {
-                if (Arena.Config.ShowOutlinesAndShadows)
-                    Arena.AddCircle(s.Target.Position, s.Radius, Colors.Shadows, 2);
-                Arena.AddCircle(s.Target.Position, s.Radius, Colors.Danger);
-            }
+                DrawCircle(s.Target.Position, s.Radius, Colors.Danger);
         }
     }
 }

@@ -42,7 +42,7 @@ class CloudToCloud(BossModule module) : Components.GenericAOEs(module)
         }
     }
 
-    private AOEShapeRect? ShapeForAction(ActionID action) => (AID)action.ID switch
+    private static AOEShapeRect? ShapeForAction(ActionID action) => (AID)action.ID switch
     {
         AID.NCloudToCloud1 or AID.SCloudToCloud1 => _shape1,
         AID.NCloudToCloud2 or AID.SCloudToCloud2 => _shape2,
