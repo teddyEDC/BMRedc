@@ -31,7 +31,7 @@ class FlameBreath(BossModule module) : Components.GenericAOEs(module)
     {
         if (_aoes.Count > 0)
             foreach (var aoe in _aoes)
-                if (Math.Abs((aoe.Activation - _aoes[0].Activation).TotalSeconds) <= 1)
+                if ((aoe.Activation - _aoes[0].Activation).TotalSeconds <= 1)
                     yield return aoe;
     }
 

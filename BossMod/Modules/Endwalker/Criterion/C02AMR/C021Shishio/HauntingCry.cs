@@ -5,6 +5,7 @@ class HauntingCrySwipes(BossModule module) : Components.GenericAOEs(module)
     private readonly List<Actor> _casters = [];
 
     private static readonly AOEShapeCone _shape = new(40, 90.Degrees());
+    private static readonly HashSet<AID> casts = [AID.NRightSwipe, AID.NLeftSwipe, AID.SRightSwipe, AID.SLeftSwipe];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -13,13 +14,13 @@ class HauntingCrySwipes(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.NRightSwipe or AID.NLeftSwipe or AID.SRightSwipe or AID.SLeftSwipe)
+        if (casts.Contains((AID)spell.Action.ID))
             _casters.Add(caster);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.NRightSwipe or AID.NLeftSwipe or AID.SRightSwipe or AID.SLeftSwipe)
+        if (casts.Contains((AID)spell.Action.ID))
         {
             _casters.Remove(caster);
             ++NumCasts;
