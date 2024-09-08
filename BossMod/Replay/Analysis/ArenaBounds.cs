@@ -91,20 +91,38 @@ class ArenaBounds
 
     private static WPos CalculateCentroid(List<WPos> points)
     {
-        if (points == null || points.Count == 0)
-            return default; // Return zero vector if no points
+        if (points == null || points.Count < 3)
+            return default; // At least 3 points are required to form a polygon
 
         float sumX = 0, sumZ = 0;
-        foreach (var point in points)
+        float area = 0;
+
+        for (int i = 0; i < points.Count; i++)
         {
-            sumX += point.X;
-            sumZ += point.Z;
+            // Get the current and next vertex (wrapping back to the first vertex)
+            var current = points[i];
+            var next = points[(i + 1) % points.Count];
+
+            // Calculate the partial area (shoelace formula)
+            float crossProduct = current.X * next.Z - next.X * current.Z;
+
+            // Add to the total area
+            area += crossProduct;
+
+            // Calculate the centroid contributions
+            sumX += (current.X + next.X) * crossProduct;
+            sumZ += (current.Z + next.Z) * crossProduct;
         }
 
-        var centerX = sumX / points.Count;
-        var centerZ = sumZ / points.Count;
+        // Finalize the calculations
+        area *= 0.5f;
+        if (area == 0)
+            return default; // Prevent division by zero if the polygon is degenerate
 
-        return new WPos(centerX, centerZ);
+        float centroidX = sumX / (6 * area);
+        float centroidZ = sumZ / (6 * area);
+
+        return new WPos(centroidX, centroidZ);
     }
 }
 
