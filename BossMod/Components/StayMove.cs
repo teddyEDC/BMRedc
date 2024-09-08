@@ -15,13 +15,15 @@ public class StayMove(BossModule module, float maxTimeToShowHint = float.Positiv
         {
             case Requirement.Stay:
                 if (float.IsInfinity(MaxTimeToShowHint) || PlayerStates[slot].Activation <= WorldState.FutureTime(MaxTimeToShowHint))
-                    hints.Add("Stay!", actor.PrevPosition != actor.PrevPosition || actor.CastInfo != null || actor.TargetID != 0); // note: assume if target is selected, we might autoattack...
+                    hints.Add("Stop everything!", actor.PrevPosition != actor.PrevPosition || actor.CastInfo != null || actor.TargetID != 0); // note: assume if target is selected, we might autoattack...
                 break;
             case Requirement.Move:
                 if (float.IsInfinity(MaxTimeToShowHint) || PlayerStates[slot].Activation <= WorldState.FutureTime(MaxTimeToShowHint))
                     hints.Add("Move!", actor.PrevPosition == actor.PrevPosition);
                 break;
         }
+        if (PlayerStates[slot] != default && actor.IsDead)
+            PlayerStates[slot] = default;
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

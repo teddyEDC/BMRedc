@@ -36,63 +36,33 @@ public enum SID : uint
 
 class Boiling(BossModule module) : Components.StayMove(module)
 {
-    private readonly DateTime[] _expire = new DateTime[PartyState.MaxAllianceSize];
-    private BitMask _pyretic;
     private BitMask _boiling;
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if ((SID)status.ID == SID.Boiling && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
-            if ((SID)status.ID == SID.Boiling)
-            {
-                _boiling.Set(Raid.FindSlot(actor.InstanceID));
-                _expire[slot] = status.ExpireAt;
-            }
-            else if ((SID)status.ID == SID.Pyretic)
-                _pyretic.Set(Raid.FindSlot(actor.InstanceID));
+            _boiling.Set(Raid.FindSlot(actor.InstanceID));
+            PlayerStates[slot] = new(Requirement.Stay, status.ExpireAt);
         }
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
             if ((SID)status.ID == SID.Boiling)
                 _boiling.Clear(Raid.FindSlot(actor.InstanceID));
             else if ((SID)status.ID == SID.Pyretic)
-            {
-                _expire[slot] = default;
-                _pyretic.Clear(Raid.FindSlot(actor.InstanceID));
-            }
+                PlayerStates[slot] = default;
         }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        base.AddHints(slot, actor, hints);
         if (_boiling[slot])
             hints.Add($"Boiling on you in {(actor.FindStatus(SID.Boiling)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
-        else if (_pyretic[slot])
-            hints.Add("Pyretic on you! STOP everything!");
-        if (_expire[slot] != default && actor.IsDead)
-        {
-            _expire[slot] = default;
-            Requirements[slot] = Requirement.None;
-        }
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        var deadline = WorldState.FutureTime(3);
-        for (var i = 0; i < _expire.Length; ++i)
-            Requirements[i] = _expire[i] != default && _expire[i] < deadline ? Requirement.Stay : Requirement.None;
-    }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Requirements[slot] == Requirement.Stay && _expire[slot] != default && _expire[slot] < WorldState.FutureTime(0.3f))
-            hints.ForcedMovement = new();
     }
 }
 
