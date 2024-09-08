@@ -40,31 +40,16 @@ public enum SID : uint
     DeepFreeze = 3519 // none->player, extra=0x0
 }
 
-class Heatstroke(BossModule module) : Components.StayMove(module)
+class Heatstroke(BossModule module) : Components.StayMove(module, 3)
 {
-    private readonly DateTime[] _expire = new DateTime[PartyState.MaxAllianceSize];
-    private BitMask _pyretic;
     private BitMask _heatstroke;
-
-    public override void Update()
-    {
-        base.Update();
-        var deadline = WorldState.FutureTime(3);
-        for (var i = 0; i < _expire.Length; ++i)
-            Requirements[i] = _expire[i] != default && _expire[i] < deadline ? Requirement.Stay : Requirement.None;
-    }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
+        if ((SID)status.ID == SID.Heatstroke && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
-            if ((SID)status.ID == SID.Heatstroke)
-            {
-                _heatstroke.Set(Raid.FindSlot(actor.InstanceID));
-                _expire[slot] = status.ExpireAt;
-            }
-            else if ((SID)status.ID == SID.Pyretic)
-                _pyretic.Set(Raid.FindSlot(actor.InstanceID));
+            _heatstroke.Set(Raid.FindSlot(actor.InstanceID));
+            PlayerStates[slot] = new(Requirement.Stay, status.ExpireAt);
         }
     }
 
@@ -75,82 +60,47 @@ class Heatstroke(BossModule module) : Components.StayMove(module)
             if ((SID)status.ID == SID.Heatstroke)
                 _heatstroke.Clear(Raid.FindSlot(actor.InstanceID));
             else if ((SID)status.ID == SID.Pyretic)
-            {
-                _expire[slot] = default;
-                _pyretic.Clear(Raid.FindSlot(actor.InstanceID));
-            }
+                PlayerStates[slot] = default;
         }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        base.AddHints(slot, actor, hints);
         if (_heatstroke[slot])
             hints.Add($"Heatstroke on you in {(actor.FindStatus(SID.Heatstroke)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
-        else if (_pyretic[slot])
-            hints.Add("Pyretic on you! STOP everything!");
-        if (_expire[slot] != default && actor.IsDead)
-        {
-            _expire[slot] = default;
-            Requirements[slot] = Requirement.None;
-        }
-    }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Requirements[slot] == Requirement.Stay && _expire[slot] != default && _expire[slot] < WorldState.FutureTime(0.3f))
-            hints.ForcedMovement = new();
     }
 }
 
-class ColdSweats(BossModule module) : Components.StayMove(module)
+class ColdSweats(BossModule module) : Components.StayMove(module, 3)
 {
-    public DateTime ExpiresAt;
-    private BitMask _freezing;
     private BitMask _coldsweats;
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if ((SID)status.ID == SID.ColdSweats && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
-            if ((SID)status.ID == SID.ColdSweats)
-            {
-                Requirements[slot] = Requirement.Move;
-                _coldsweats.Set(Raid.FindSlot(actor.InstanceID));
-                if (actor == Module.Raid.Player()!)
-                    ExpiresAt = status.ExpireAt;
-            }
-            else if ((SID)status.ID == SID.FreezingUp)
-            {
-                Requirements[slot] = Requirement.Move;
-                _freezing.Set(Raid.FindSlot(actor.InstanceID));
-            }
+            PlayerStates[slot] = new(Requirement.Move, status.ExpireAt);
+            _coldsweats.Set(Raid.FindSlot(actor.InstanceID));
         }
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
             if ((SID)status.ID == SID.ColdSweats)
-            {
-                Requirements[slot] = Requirement.None;
                 _coldsweats.Clear(Raid.FindSlot(actor.InstanceID));
-            }
             else if ((SID)status.ID == SID.FreezingUp)
-            {
-                Requirements[slot] = Requirement.None;
-                ExpiresAt = default;
-                _freezing.Clear(Raid.FindSlot(actor.InstanceID));
-            }
+                PlayerStates[slot] = default;
         }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        base.AddHints(slot, actor, hints);
         if (_coldsweats[slot])
             hints.Add($"Cold Sweats on you in {(actor.FindStatus(SID.ColdSweats)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Freezing!)");
-        else if (_freezing[slot])
-            hints.Add("Freezing on you! MOVE!");
     }
 }
 
@@ -238,11 +188,4 @@ class ArchAethereaterStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.Hunt, GroupID = (uint)BossModuleInfo.HuntRank.SS, NameID = 13406)]
-public class ArchAethereater(WorldState ws, Actor primary) : SimpleBossModule(ws, primary)
-{
-    public override bool NeedToJump(WPos from, WDir dir)
-    {
-        var component = FindComponent<ColdSweats>()!;
-        return component.ExpiresAt != default && component.ExpiresAt.AddSeconds(-0.1f) <= WorldState.CurrentTime;
-    }
-}
+public class ArchAethereater(WorldState ws, Actor primary) : SimpleBossModule(ws, primary);

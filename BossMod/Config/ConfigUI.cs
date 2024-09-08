@@ -167,6 +167,11 @@ public sealed class ConfigUI : IDisposable
             {
                 node.Modified.Fire();
             }
+
+            if (props.Separator)
+            {
+                ImGui.Separator();
+            }
         }
 
         // draw custom stuff

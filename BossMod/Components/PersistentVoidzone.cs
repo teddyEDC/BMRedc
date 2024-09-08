@@ -9,15 +9,34 @@ public class PersistentVoidzone(BossModule module, float radius, Func<BossModule
     public AOEShapeCircle Shape { get; init; } = new(radius);
     public Func<BossModule, IEnumerable<Actor>> Sources { get; init; } = sources;
     public float MoveHintLength = moveHintLength;
+    public float Radius = radius;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Sources(Module).Select(s => new AOEInstance(Shape, s.Position, s.Rotation));
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        return MoveHintLength == 0
+            ? Sources(Module).Select(s => new AOEInstance(Shape, s.Position, s.Rotation))
+            : Sources(Module).Select(a =>
+            {
+                var position = a.Position;
+                var directionOffset = MoveHintLength * a.Rotation.ToDirection();
+                var shapes = new Shape[]
+                {
+                    new Circle(a.Position, Radius),
+                    new Circle(a.Position + directionOffset, Radius),
+                    new RectangleSE(a.Position, a.Position + directionOffset, Radius)
+                };
+                return new AOEInstance(new AOEShapeCustom(shapes), Arena.Center);
+            });
+    }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
+        if (!Sources(Module).Any())
+            return;
+        var forbidden = new List<Func<WPos, float>>();
         foreach (var s in Sources(Module))
-        {
-            hints.AddForbiddenZone(MoveHintLength > 0 ? ShapeDistance.Capsule(s.Position, s.Rotation, MoveHintLength, Shape.Radius) : Shape.Distance(s.Position, s.Rotation));
-        }
+            forbidden.Add(MoveHintLength > 0 ? ShapeDistance.Capsule(s.Position, s.Rotation, MoveHintLength, Shape.Radius) : Shape.Distance(s.Position, s.Rotation));
+        hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min());
     }
 }
 

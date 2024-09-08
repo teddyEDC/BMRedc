@@ -116,15 +116,18 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
                 var forbidden = new List<Func<WPos, float>>();
                 foreach (var stackWith in ActiveStacks.Where(s => s.Target == actor))
                     forbidden.Add(ShapeDistance.InvertedCircle(Raid.WithoutSlot().FirstOrDefault(x => !x.IsDead && !IsSpreadTarget(x) && !IsStackTarget(x))!.Position, actorStack.Radius / 3));
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), actorStack.Activation);
+                if (forbidden.Count > 0)
+                    hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), actorStack.Activation);
             }
         }
         else if (!IsSpreadTarget(actor) && !IsStackTarget(actor))
         {
-            // TODO: handle multi stacks better...
-            var closestStack = ActiveStacks.Where(s => s.InsufficientAmountInside(Module) && !s.ForbiddenPlayers[slot]).MinBy(s => (s.Target.Position - actor.Position).LengthSq());
-            if (closestStack.Target != null)
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(closestStack.Target.Position, closestStack.Radius - 0.25f), closestStack.Activation);
+            var forbidden = new List<Func<WPos, float>>();
+            foreach (var s in ActiveStacks.Where(x => !x.ForbiddenPlayers[slot] && (x.IsInside(actor) && !x.TooManyInside(Module)
+            || !x.IsInside(actor) && x.InsufficientAmountInside(Module))))
+                forbidden.Add(ShapeDistance.InvertedCircle(s.Target.Position, s.Radius - 0.25f));
+            if (forbidden.Count > 0)
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), ActiveStacks.FirstOrDefault().Activation);
         }
 
         if (RaidwideOnResolve)
@@ -182,7 +185,7 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
                 DrawCircle(s.Target.Position, s.Radius, Colors.Safe);
 
             // Handle dangerous stack circles
-            foreach (var s in ActiveStacks.Where(x => x.Target != pc && (x.ForbiddenPlayers[pcSlot] || IsSpreadTarget(pc) ||
+            foreach (var s in ActiveStacks.Where(x => x.Target != pc && (IsStackTarget(pc) || x.ForbiddenPlayers[pcSlot] || IsSpreadTarget(pc) ||
                 !x.IsInside(pc) && (x.CorrectAmountInside(Module) || x.TooManyInside(Module)) ||
                 x.IsInside(pc) && x.TooManyInside(Module))))
                 DrawCircle(s.Target.Position, s.Radius, Colors.Danger);
