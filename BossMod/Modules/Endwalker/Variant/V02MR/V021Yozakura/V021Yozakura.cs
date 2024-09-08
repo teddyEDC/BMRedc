@@ -60,15 +60,7 @@ class RootArrangement(BossModule module) : Components.StandardChasingAOEs(module
     }
 }
 
-class Witherwind(BossModule module) : Components.PersistentVoidzone(module, 3, m => m.Enemies(OID.AutumnalTempest))
-{
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        base.AddAIHints(slot, actor, assignment, hints);
-        foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(new AOEShapeRect(20, 3), w.Origin, w.Rotation);
-    }
-}
+class Witherwind(BossModule module) : Components.PersistentVoidzone(module, 3, m => m.Enemies(OID.AutumnalTempest), 20);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 945, NameID = 12325, SortOrder = 1)]
 public class V021Yozakura(WorldState ws, Actor primary) : BossModule(ws, primary, primary.Position.X < -700 ? ArenaCenter1 : primary.Position.X > 700 ? ArenaCenter2 : ArenaCenter3, primary.Position.X < -700 ? StartingBounds : primary.Position.X > 700 ? DefaultBounds2 : StartingBounds)
