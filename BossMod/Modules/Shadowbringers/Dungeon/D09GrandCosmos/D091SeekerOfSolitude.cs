@@ -35,16 +35,7 @@ class Tribulation(BossModule module) : Components.PersistentVoidzoneAtCastTarget
 class DarkPulse(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.DarkPulse), 6, 4, 4);
 class DarkWell(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.DarkWell), 5);
 class DarkShock(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.DarkShock), 6);
-class MagickedBroom(BossModule module) : Components.PersistentVoidzone(module, 3.125f, m => m.Enemies(OID.MagickedBroom).Where(x => x.ModelState.AnimState1 == 1))
-{
-    private static readonly AOEShapeRect rect = new(10, 3.125f);
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        base.AddAIHints(slot, actor, assignment, hints);
-        foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(rect, w.Origin + w.Rotation.ToDirection(), w.Rotation);
-    }
-}
+class MagickedBroom(BossModule module) : Components.PersistentVoidzone(module, 3.125f, m => m.Enemies(OID.MagickedBroom).Where(x => x.ModelState.AnimState1 == 1), 10);
 
 class D091SeekerOfSolitudeStates : StateMachineBuilder
 {

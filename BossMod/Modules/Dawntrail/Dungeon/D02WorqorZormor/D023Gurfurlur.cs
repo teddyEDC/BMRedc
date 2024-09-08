@@ -65,17 +65,6 @@ class HeavingHaymakerArenaChange(BossModule module) : Components.GenericAOEs(mod
     }
 }
 
-class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 5, m => m.Enemies(OID.BitingWind))
-{
-    private static readonly AOEShapeCircle circle = new(5);
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        base.AddAIHints(slot, actor, assignment, hints);
-        foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(circle, w.Origin + 3 * w.Rotation.ToDirection());
-    }
-}
-
 class AuraSphere(BossModule module) : BossComponent(module)
 {
     private readonly IReadOnlyList<Actor> _orbs = module.Enemies(OID.AuraSphere);
@@ -112,6 +101,7 @@ class AuraSphere(BossModule module) : BossComponent(module)
 class SledgeHammer(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.SledgeHammerMarker), ActionID.MakeSpell(AID.Sledgehammer3), 4.9f);
 class HeavingHaymaker(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.HeavingHaymaker));
 class LithicImpact(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LithicImpact), new AOEShapeRect(4, 2));
+class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 5, m => m.Enemies(OID.BitingWind), 6);
 
 class GreatFlood(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GreatFlood), 25, kind: Kind.DirForward)
 {

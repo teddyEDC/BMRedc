@@ -48,33 +48,7 @@ class AltarPyre(BossModule module) : Components.RaidwideCast(module, ActionID.Ma
 
 class HeavensflameAOE(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HeavensflameAOE), 5);
 class HolyChain(BossModule module) : Components.Chains(module, (uint)TetherID.HolyChain, ActionID.MakeSpell(AID.HolyChainPlayerTether));
-
-class TurretTour(BossModule module) : Components.GenericAOEs(module)
-{
-    private readonly List<Actor> _knights = [];
-    private static readonly AOEShapeCircle circle = new(2);
-    private static readonly AOEShapeRect rect = new(10, 2, 2);
-
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        foreach (var c in _knights)
-        {
-            yield return new(rect, c.Position + 2 * c.Rotation.ToDirection(), c.Rotation);
-            yield return new(circle, c.Position, c.Rotation, Color: Colors.Danger);
-        }
-    }
-
-    public override void OnActorCreated(Actor actor)
-    {
-        if ((OID)actor.OID is OID.DawnKnight or OID.DuskKnight && !actor.Position.AlmostEqual(Module.Center, 10))
-            _knights.Add(actor);
-    }
-    public override void OnActorDestroyed(Actor actor)
-    {
-        if ((OID)actor.OID is OID.DawnKnight or OID.DuskKnight)
-            _knights.Remove(actor);
-    }
-}
+class TurretTour(BossModule module) : Components.PersistentVoidzone(module, 2, m => m.Enemies(OID.DawnKnight).Concat(m.Enemies(OID.DuskKnight)).Where(x => x.ModelState.ModelState == 8), 10);
 
 class D043SerCharibertStates : StateMachineBuilder
 {

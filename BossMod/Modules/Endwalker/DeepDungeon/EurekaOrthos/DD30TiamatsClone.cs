@@ -33,33 +33,7 @@ class DarkMegaflare(BossModule module) : Components.LocationTargetedAOEs(module,
 class DarkWyrm(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40, 8));
 class DarkWyrmwing(BossModule module) : DarkWyrm(module, AID.DarkWyrmwing);
 class DarkWyrmtail(BossModule module) : DarkWyrm(module, AID.DarkWyrmtail);
-
-class CreatureOfDarkness(BossModule module) : Components.GenericAOEs(module)
-{
-    private readonly List<Actor> _heads = [];
-    private static readonly AOEShapeCircle circle = new(2);
-    private static readonly AOEShapeRect rect = new(6, 2, 2);
-
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        foreach (var c in _heads)
-        {
-            yield return new(rect, c.Position + 2 * c.Rotation.ToDirection(), c.Rotation);
-            yield return new(circle, c.Position, c.Rotation, Color: Colors.Danger);
-        }
-    }
-
-    public override void OnActorModelStateChange(Actor actor, byte modelState, byte animState1, byte animState2)
-    {
-        if ((OID)actor.OID == OID.DarkWanderer)
-        {
-            if (animState1 == 1)
-                _heads.Add(actor);
-            else if (animState1 == 0)
-                _heads.Remove(actor);
-        }
-    }
-}
+class CreatureOfDarkness(BossModule module) : Components.PersistentVoidzone(module, 2, m => m.Enemies(OID.DarkWanderer).Where(x => x.ModelState.AnimState1 == 1), 6);
 
 class DD30TiamatsCloneStates : StateMachineBuilder
 {
