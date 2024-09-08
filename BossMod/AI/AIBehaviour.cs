@@ -17,9 +17,8 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
     private NavigationDecision _naviDecision;
     private bool _afkMode;
     private bool _followMaster; // if true, our navigation target is master rather than primary target - this happens e.g. in outdoor or in dungeons during gathering trash
-    private float _maxCastTime;
-    private WPos _masterMovementStart;
     private WPos _masterPrevPos;
+    private WPos _masterMovementStart;
     private DateTime _masterLastMoved;
 
     public void Dispose()
@@ -37,7 +36,9 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             FocusMaster(master);
 
         _afkMode = !master.InCombat && (WorldState.CurrentTime - _masterLastMoved).TotalSeconds > 10;
-        var forbidActions = _config.ForbidActions || _afkMode || autorot.Preset != null && autorot.Preset != AIPreset;
+        var gazeImminent = autorot.Hints.ForbiddenDirections.Count > 0 && autorot.Hints.ForbiddenDirections[0].activation <= WorldState.FutureTime(0.5f);
+        var pyreticImminent = autorot.Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Pyretic && autorot.Hints.ImminentSpecialMode.activation <= WorldState.FutureTime(1);
+        var forbidActions = _config.ForbidActions || _afkMode || gazeImminent || pyreticImminent || autorot.Preset != null && autorot.Preset != AIPreset;
 
         Targeting target = new();
         if (!forbidActions && autorot.ActiveModules != null && autorot.ActiveModules.Count > 0)
@@ -50,8 +51,13 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
         var followTarget = _config.FollowTarget;
         _followMaster = (_config.FollowDuringCombat || !master.InCombat || (_masterPrevPos - _masterMovementStart).LengthSq() > 100) && (_config.FollowDuringActiveBossModule || autorot.Bossmods.ActiveModule?.StateMachine.ActiveState == null) && (_config.FollowOutOfCombat || master.InCombat);
-
+        // note: if there are pending knockbacks, don't update navigation decision to avoid fucking up positioning
+        if (!WorldState.PendingEffects.PendingKnockbacks(player.InstanceID))
+        {
         _naviDecision = followTarget && autorot.WorldState.Actors.Find(player.TargetID) != null ? BuildNavigationDecision(player, autorot.WorldState.Actors.Find(player.TargetID)!, ref target) : BuildNavigationDecision(player, master, ref target);
+            // there is a difference between having a small positive leeway and having a negative one for pathfinding, prefer to keep positive
+            _naviDecision.LeewaySeconds = Math.Max(0, _naviDecision.LeewaySeconds - 0.1f);
+        }        
         var masterIsMoving = TrackMasterMovement(master);
         var moveWithMaster = masterIsMoving && (master == player || _followMaster);
         _maxCastTime = moveWithMaster || ctrl.ForceFacing ? 0 : _naviDecision.LeewaySeconds;
@@ -59,10 +65,9 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         if (!forbidActions)
         {
             autorot.Preset = target.Target != null ? AIPreset : null;
-            ForceMovementIn = _maxCastTime;
         }
 
-        UpdateMovement(player, master, target, !forbidActions ? autorot.Hints.ActionsToExecute : null);
+        UpdateMovement(player, master, target, gazeImminent || pyreticImminent, !forbidActions ? autorot.Hints.ActionsToExecute : null);
     }
 
     // returns null if we're to be idle, otherwise target to attack
@@ -176,28 +181,23 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         return masterIsMoving;
     }
 
-    private void UpdateMovement(Actor player, Actor master, Targeting target, ActionQueue? queueForSprint)
+    private void UpdateMovement(Actor player, Actor master, Targeting target, bool gazeOrPyreticImminent, ActionQueue? queueForSprint)
     {
-        var destRot = AvoidGaze.Update(player, target.Target?.Actor.Position, autorot.Hints, WorldState.CurrentTime.AddSeconds(0.5));
-        if (destRot != null)
+        if (gazeOrPyreticImminent)
         {
-            // rotation check imminent, drop any movement - we should have moved to safe zone already...
+            // gaze or pyretic imminent, drop any movement - we should have moved to safe zone already...
             ctrl.NaviTargetPos = null;
-            ctrl.NaviTargetRot = destRot;
             ctrl.NaviTargetVertical = null;
             ctrl.ForceCancelCast = true;
-            ctrl.ForceFacing = true;
         }
         else
         {
             var toDest = _naviDecision.Destination != null ? _naviDecision.Destination.Value - player.Position : new();
             var distSq = toDest.LengthSq();
             ctrl.NaviTargetPos = _naviDecision.Destination;
-            ctrl.NaviTargetRot = null;
             ctrl.NaviTargetVertical = master != player ? master.PosRot.Y : null;
             ctrl.AllowInterruptingCastByMovement = player.CastInfo != null && _naviDecision.LeewaySeconds <= player.CastInfo.RemainingTime - 0.5;
             ctrl.ForceCancelCast = false;
-            ctrl.ForceFacing = false;
             ctrl.WantJump = distSq >= 0.01f && autorot.Bossmods.ActiveModule?.StateMachine.ActiveState != null && autorot.Bossmods.ActiveModule.NeedToJump(player.Position, toDest.Normalized());
 
             //var cameraFacing = _ctrl.CameraFacing;
