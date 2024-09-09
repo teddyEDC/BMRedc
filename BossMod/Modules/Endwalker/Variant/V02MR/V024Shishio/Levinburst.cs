@@ -9,7 +9,7 @@ class Levinburst(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorCreated(Actor actor)
     {
         if ((OID)actor.OID == OID.Rairin)
-            _aoes.Add(new(rect, actor.Position, actor.Rotation, Module.WorldState.FutureTime(6.9f)));
+            _aoes.Add(new(rect, actor.Position, actor.Rotation, WorldState.FutureTime(6.9f)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

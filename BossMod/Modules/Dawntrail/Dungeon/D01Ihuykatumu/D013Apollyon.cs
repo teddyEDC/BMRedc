@@ -51,17 +51,7 @@ public enum AID : uint
     BitingWind = 36761 // Helper->player, no cast, single-target
 }
 
-class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 4, m => m.Enemies(OID.Whirlwind))
-{
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        base.AddAIHints(slot, actor, assignment, hints);
-        var y = ActiveAOEs(slot, actor).FirstOrDefault();
-        if (y != default)
-            hints.AddForbiddenZone(new AOEShapeCircle(4), y.Origin + 2 * y.Rotation.ToDirection());
-    }
-}
-
+class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 4, m => m.Enemies(OID.Whirlwind), 5);
 class RazorZephyr(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RazorZephyr), new AOEShapeRect(50, 6));
 class Blade(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Blade));
 class HighWind(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.HighWind));
@@ -102,7 +92,7 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
     private void AddAOEs(WPos pos, float delay)
     {
         foreach (var angle in angles)
-            _aoes.Add(new(rect, pos, angle, Module.WorldState.FutureTime(delay)));
+            _aoes.Add(new(rect, pos, angle, WorldState.FutureTime(delay)));
     }
 
     public override void OnActorCreated(Actor actor)

@@ -91,20 +91,27 @@ class ArenaBounds
 
     private static WPos CalculateCentroid(List<WPos> points)
     {
-        if (points == null || points.Count == 0)
-            return default; // Return zero vector if no points
+        if (points == null || points.Count < 3)
+            return default;
 
         float sumX = 0, sumZ = 0;
-        foreach (var point in points)
+        float area = 0;
+
+        for (var i = 0; i < points.Count; i++)
         {
-            sumX += point.X;
-            sumZ += point.Z;
+            var current = points[i];
+            var next = points[(i + 1) % points.Count];
+            var crossProduct = current.X * next.Z - next.X * current.Z;
+            area += crossProduct;
+            sumX += (current.X + next.X) * crossProduct;
+            sumZ += (current.Z + next.Z) * crossProduct;
         }
+        area *= 0.5f;
 
-        var centerX = sumX / points.Count;
-        var centerZ = sumZ / points.Count;
+        var centroidX = sumX / (6 * area);
+        var centroidZ = sumZ / (6 * area);
 
-        return new WPos(centerX, centerZ);
+        return new(centroidX, centroidZ);
     }
 }
 

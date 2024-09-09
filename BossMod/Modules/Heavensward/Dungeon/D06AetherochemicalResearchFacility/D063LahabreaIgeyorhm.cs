@@ -77,9 +77,9 @@ class Stars(BossModule module) : Components.GenericAOEs(module)
         if (_shape != null && _active)
         {
             foreach (var star in _stars)
-                yield return new AOEInstance(_shape, star.Position, default, _activation);
+                yield return new(_shape, star.Position, default, _activation);
             foreach (var aoe in _aoes)
-                yield return new AOEInstance(aoe.Shape, aoe.Origin, default, aoe.Activation);
+                yield return new(aoe.Shape, aoe.Origin, default, aoe.Activation);
         }
     }
 
@@ -108,7 +108,7 @@ class Stars(BossModule module) : Components.GenericAOEs(module)
         _active = true;
         _stars.Remove(source);
         _stars.Remove(target);
-        _activation = Module.WorldState.FutureTime(10.6f);
+        _activation = WorldState.FutureTime(10.6f);
         _aoes.Add(new AOEInstance(bigShape, midpoint, default, _activation));
     }
 
@@ -118,14 +118,13 @@ class Stars(BossModule module) : Components.GenericAOEs(module)
             _stars.Add(actor);
         if ((OID)actor.OID == OID.FrozenStar && !_tutorialIce)
             Tutorial(donutSmall, ref _tutorialIce);
-
-        if ((OID)actor.OID == OID.BurningStar && !_tutorialFire)
+        else if ((OID)actor.OID == OID.BurningStar && !_tutorialFire)
             Tutorial(circleSmall, ref _tutorialFire);
     }
 
     private void Tutorial(AOEShape shape, ref bool tutorialFlag)
     {
-        _activation = Module.WorldState.FutureTime(7.8f);
+        _activation = WorldState.FutureTime(7.8f);
         tutorialFlag = true;
         _shape = shape;
         _active = true;
@@ -160,9 +159,7 @@ class D063LahabreaIgeyorhmStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 2143)]
 public class D063LahabreaIgeyorhm(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly List<Shape> union = [new Circle(new(230, -181), 20.25f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(230, -161), 20, 0.75f)];
-    public static readonly ArenaBounds arena = new ArenaBoundsComplex(union, difference);
+    public static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(230, -181), 20.25f)], [new Rectangle(new(230, -161), 20, 0.75f)]);
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

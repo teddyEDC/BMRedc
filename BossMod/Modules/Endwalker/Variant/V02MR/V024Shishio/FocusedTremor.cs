@@ -64,7 +64,7 @@ class FocusedTremor(BossModule module) : Components.GenericAOEs(module)
         base.AddAIHints(slot, actor, assignment, hints);
         var sixFulmsUnderStatus = actor.FindStatus(SID.SixFulmsUnder);
         var expireAt = sixFulmsUnderStatus?.ExpireAt ?? DateTime.MaxValue;
-        if (circle != null && (expireAt - Module.WorldState.CurrentTime).TotalSeconds <= 8)
+        if (circle != null && (expireAt - WorldState.CurrentTime).TotalSeconds <= 8)
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
     }
 

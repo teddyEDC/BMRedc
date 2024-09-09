@@ -54,7 +54,7 @@ class BallisticMissile(BossModule module) : Components.UniformStackSpread(module
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
         if ((SID)status.ID == SID.Bind)
-            AddStack(actor, Module.WorldState.FutureTime(6.2f));
+            AddStack(actor, WorldState.FutureTime(6.2f));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -105,7 +105,5 @@ class D062HarmachisStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 3821)]
 public class D062Harmachis(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly List<Shape> union = [new Circle(new(248, 272), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(228, 272), 20, 1.8f, 90.Degrees()), new Rectangle(new(268.25f, 272), 20, 2, 90.Degrees())];
-    public static readonly ArenaBounds arena = new ArenaBoundsComplex(union, difference);
+    public static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(248, 272), 19.5f)], [new Rectangle(new(228, 272), 20, 1.8f, 90.Degrees()), new Rectangle(new(268.25f, 272), 20, 2, 90.Degrees())]);
 }

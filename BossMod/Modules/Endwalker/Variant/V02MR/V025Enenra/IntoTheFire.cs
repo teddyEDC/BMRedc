@@ -11,7 +11,7 @@ class IntoTheFire(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorEAnim(Actor actor, uint state)
     {
         if (state == 0x00010002)
-            HandleSmokeVisuals(actor, Module.WorldState.FutureTime(16.6f));
+            HandleSmokeVisuals(actor, WorldState.FutureTime(16.6f));
     }
 
     private void HandleSmokeVisuals(Actor actor, DateTime activation)

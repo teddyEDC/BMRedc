@@ -55,7 +55,7 @@ public sealed class Plugin : IDalamudPlugin
         dalamud.Create<Service>();
         Service.LogHandler = (string msg) => Service.Logger.Debug(msg);
         Service.LuminaGameData = dataManager.GameData;
-        Service.WindowSystem = new("vbm");
+        Service.WindowSystem = new("bmr");
         //Service.Device = pluginInterface.UiBuilder.Device;
         Service.Condition.ConditionChange += OnConditionChanged;
         MultiboxUnlock.Exec();
@@ -86,15 +86,14 @@ public sealed class Plugin : IDalamudPlugin
         _broadcast = new();
         _ipc = new(_rotation, _amex, _movementOverride, _ai);
         _dtr = new(_rotation, _ai);
-
-        _configUI = new(Service.Config, _ws, _rotationDB);
         _wndBossmod = new(_bossmod);
         _wndBossmodHints = new(_bossmod);
         var config = Service.Config.Get<ReplayManagementConfig>();
-        var replayFolder = string.IsNullOrEmpty(config.ReplayFolder) ? dalamud.ConfigDirectory.FullName + "/replays" : config.ReplayFolder;
-        _wndReplay = new ReplayManagementWindow(_ws, _rotationDB, new DirectoryInfo(replayFolder));
+        var replayDir = string.IsNullOrEmpty(config.ReplayFolder) ? dalamud.ConfigDirectory.FullName + "/replays" : config.ReplayFolder;
+        _wndReplay = new ReplayManagementWindow(_ws, _rotationDB, new DirectoryInfo(replayDir));
+        _configUI = new(Service.Config, _ws, new DirectoryInfo(replayDir), _rotationDB);
         config.Modified.ExecuteAndSubscribe(() => _wndReplay.UpdateLogDirectory());
-        _wndRotation = new(_rotation, _amex, () => OpenConfigUI("Presets"));
+        _wndRotation = new(_rotation, _amex, () => OpenConfigUI("Autorotatiion presets"));
         _wndDebug = new(_ws, _rotation, _amex);
 
         dalamud.UiBuilder.DisableAutomaticUiHide = true;
@@ -256,7 +255,7 @@ public sealed class Plugin : IDalamudPlugin
     private void OpenConfigUI(string showTab = "")
     {
         _configUI.ShowTab(showTab);
-        _ = new UISimpleWindow("Boss Mod Settings", _configUI.Draw, true, new(300, 300));
+        _ = new UISimpleWindow("BossModReborn", _configUI.Draw, true, new(300, 300));
     }
 
     private void DrawUI()

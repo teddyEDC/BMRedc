@@ -98,11 +98,11 @@ class RoaringBoltKB(BossModule module) : Components.KnockbackFromCastTarget(modu
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<RoaringBolt>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (Sources(slot, actor).Any() || Activation > Module.WorldState.CurrentTime) // 1.2s delay to wait for action effect
+        if (Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 1.2s delay to wait for action effect
         {
             if (component != null && component.Count != 0)
                 foreach (var c in component)
-                    forbidden.Add(ShapeDistance.Cone(Module.Center, 19.5f, Angle.FromDirection(c.Origin - Module.Center), 25.Degrees()));
+                    forbidden.Add(ShapeDistance.Cone(Arena.Center, 19.5f, Angle.FromDirection(c.Origin - Arena.Center), 25.Degrees()));
             if (forbidden.Count > 0)
                 hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Activation);
         }
@@ -117,16 +117,18 @@ class RollingThunder(BossModule module) : Components.SelfTargetedAOEs(module, Ac
 class RoaringBolt(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.RoaringBolt), 6);
 class UntamedCurrentSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.UntamedCurrentSpread), 5);
 class UntamedCurrentStack(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.UntamedCurrentStack), 6);
-class UntamedCurrentAOE1(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE1), 5);
-class UntamedCurrentAOE2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE2), 5);
-class UntamedCurrentAOE3(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE3), 5);
-class UntamedCurrentAOE4(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE4), 5);
-class UntamedCurrentAOE5(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE5), 5);
-class UntamedCurrentAOE6(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE6), 5);
-class UntamedCurrentAOE7(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE7), 5);
-class UntamedCurrentAOE8(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE8), 5);
-class UntamedCurrentAOE9(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE9), 5);
-class UntamedCurrentAOE10(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.UntamedCurrentAOE10), 5);
+
+class UntamedCurrents(BossModule module, AID aid) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(aid), 5);
+class UntamedCurrentAOE1(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE1);
+class UntamedCurrentAOE2(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE2);
+class UntamedCurrentAOE3(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE3);
+class UntamedCurrentAOE4(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE4);
+class UntamedCurrentAOE5(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE5);
+class UntamedCurrentAOE6(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE6);
+class UntamedCurrentAOE7(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE7);
+class UntamedCurrentAOE8(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE8);
+class UntamedCurrentAOE9(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE9);
+class UntamedCurrentAOE10(BossModule module) : UntamedCurrents(module, AID.UntamedCurrentAOE10);
 
 class GwyddrudStates : StateMachineBuilder
 {

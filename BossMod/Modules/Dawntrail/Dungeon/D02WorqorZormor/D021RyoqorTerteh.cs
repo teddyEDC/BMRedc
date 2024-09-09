@@ -81,8 +81,8 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
     {
         if (tether.ID == (uint)TetherID.Freeze)
         {
-            var activation1 = Module.WorldState.FutureTime(9.9f);
-            var activation2 = Module.WorldState.FutureTime(14.9f);
+            var activation1 = WorldState.FutureTime(9.9f);
+            var activation2 = WorldState.FutureTime(14.9f);
             if (circleAOE.Contains(source))
             {
                 _aoesCircle.Add(new(circle, source.Position, default, activation2));

@@ -65,17 +65,6 @@ class HeavingHaymakerArenaChange(BossModule module) : Components.GenericAOEs(mod
     }
 }
 
-class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 5, m => m.Enemies(OID.BitingWind))
-{
-    private static readonly AOEShapeCircle circle = new(5);
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        base.AddAIHints(slot, actor, assignment, hints);
-        foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(circle, w.Origin + 3 * w.Rotation.ToDirection());
-    }
-}
-
 class AuraSphere(BossModule module) : BossComponent(module)
 {
     private readonly IReadOnlyList<Actor> _orbs = module.Enemies(OID.AuraSphere);
@@ -112,6 +101,7 @@ class AuraSphere(BossModule module) : BossComponent(module)
 class SledgeHammer(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.SledgeHammerMarker), ActionID.MakeSpell(AID.Sledgehammer3), 4.9f);
 class HeavingHaymaker(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.HeavingHaymaker));
 class LithicImpact(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LithicImpact), new AOEShapeRect(4, 2));
+class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 5, m => m.Enemies(OID.BitingWind), 6);
 
 class GreatFlood(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GreatFlood), 25, kind: Kind.DirForward)
 {
@@ -221,27 +211,29 @@ class Windswrath1Raidwide(BossModule module) : Components.RaidwideCast(module, A
 class Windswrath2Raidwide(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Windswrath2));
 class GreatFloodRaidwide(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.GreatFlood));
 
-class Windswrath1(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Windswrath1), 15)
+class Windswrath(BossModule module, AID aid) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(aid), 15)
 {
-    private DateTime activation;
+    public DateTime Activation;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-            activation = Module.CastFinishAt(spell, 1);
-    }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5), activation.AddSeconds(-1));
+            Activation = Module.CastFinishAt(spell, 1);
     }
 }
 
-class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Windswrath2), 15)
+class Windswrath1(BossModule module) : Windswrath(module, AID.Windswrath1)
 {
-    private DateTime activation;
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 1s delay to wait for action effect
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5), Activation.AddSeconds(-1));
+    }
+}
+
+class Windswrath2(BossModule module) : Windswrath(module, AID.Windswrath2)
+{
     private enum Pattern { None, EWEW, WEWE }
     private Pattern CurrentPattern;
     private static readonly Angle a15 = 15.Degrees();
@@ -262,21 +254,14 @@ class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Whirlwind>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
 
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            activation = Module.CastFinishAt(spell, 1);
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<Whirlwind>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 1s delay to wait for action effect
         {
             base.AddAIHints(slot, actor, assignment, hints);
-            var timespan = (float)(activation - WorldState.CurrentTime).TotalSeconds;
+            var timespan = (float)(Activation - WorldState.CurrentTime).TotalSeconds;
             if (timespan <= 3)
             {
                 var patternWEWE = CurrentPattern == Pattern.WEWE;
@@ -288,7 +273,7 @@ class Windswrath2(BossModule module) : Components.KnockbackFromCastTarget(module
             else
                 forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 8));
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation.AddSeconds(-1));
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), Activation.AddSeconds(-1));
         }
     }
 }

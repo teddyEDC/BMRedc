@@ -23,7 +23,7 @@ class SealOfRiotousBloom(BossModule module) : Components.GenericAOEs(module)
 
                 case 0x00400080: // seal activates
                     if (elements.Contains(element))
-                        ActivateAOE(element, Module.WorldState.FutureTime(8.1f));
+                        ActivateAOE(element, WorldState.FutureTime(8.1f));
                     break;
             }
         }
@@ -58,7 +58,7 @@ class SealOfRiotousBloom(BossModule module) : Components.GenericAOEs(module)
         elements.Remove(element);
         if (_aoes.Count == 5 && elements.Count > 0)
             foreach (var e in elements)
-                ActivateAOE(e, Module.WorldState.FutureTime(16.3f));
+                ActivateAOE(e, WorldState.FutureTime(16.3f));
     }
 
     private void AddConeAOEs(Angle[] angles, DateTime activationTime)

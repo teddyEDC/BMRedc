@@ -94,7 +94,7 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
         if ((OID)actor.OID is OID.InterferonR or OID.InterferonC)
         {
             AOEShape shape = actor.OID == (int)OID.InterferonR ? donut : cross;
-            var activationTime = _aoes.Count == 0 ? Module.WorldState.FutureTime(9.9f) : _aoes[0].Activation.AddSeconds(2.5f * _aoes.Count);
+            var activationTime = _aoes.Count == 0 ? WorldState.FutureTime(9.9f) : _aoes[0].Activation.AddSeconds(2.5f * _aoes.Count);
             AddAOE(new(shape, actor.Position, actor.Rotation, activationTime));
         }
     }
@@ -151,7 +151,7 @@ class Disinfection(BossModule module) : Components.BaitAwayIcon(module, new AOES
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!CurrentBaits.Any(x => x.Target == actor) && Module.FindComponent<Quarantine>()!.ActiveStacks.Any(x => x.Activation.AddSeconds(-2) >= Module.WorldState.CurrentTime))
+        if (!CurrentBaits.Any(x => x.Target == actor) && Module.FindComponent<Quarantine>()!.ActiveStacks.Any(x => x.Activation.AddSeconds(-2) >= WorldState.CurrentTime))
         { }
         else
             base.AddAIHints(slot, actor, assignment, hints);

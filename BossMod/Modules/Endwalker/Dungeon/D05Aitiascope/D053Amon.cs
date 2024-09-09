@@ -34,7 +34,7 @@ public enum AID : uint
     ThundagaForte2 = 25691, // Helper->self, 5.0s cast, range 20 45-degree cone
     ThundagaForte3 = 25692, // Helper->self, 11.0s cast, range 20 45-degree cone
 
-    Visual = 25703, // YsaylesSpirit->self, no cast, single-target
+    Visual = 25703 // YsaylesSpirit->self, no cast, single-target
 }
 
 class CurtainCallArenaChange(BossModule module) : BossComponent(module)

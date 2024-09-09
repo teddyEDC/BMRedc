@@ -45,7 +45,7 @@ class ReplayDetailsWindow : UIWindow
         _curTime = _first = data.Ops[0].Timestamp;
         _last = data.Ops[^1].Timestamp;
         _player.AdvanceTo(_first, _mgr.Update);
-        _config = new(Service.Config, _player.WorldState, null);
+        _config = new(Service.Config, _player.WorldState, null, null);
         _events = new(data, MoveTo, rotationDB.Plans, this);
         _analysis = new([data]);
     }
@@ -75,9 +75,9 @@ class ReplayDetailsWindow : UIWindow
         ImGui.DragFloat("Camera azimuth", ref _azimuth, 1, -180, 180);
         ImGui.SameLine();
         ImGui.Checkbox("Override", ref _azimuthOverride);
+        _hintsBuilder.Update(_hints, _povSlot);
         if (_mgr.ActiveModule != null)
         {
-            _hintsBuilder.Update(_hints, _povSlot);
             _rmm.Update(0, float.MaxValue, false);
 
             var drawTimerPre = DateTime.Now;
@@ -412,9 +412,7 @@ class ReplayDetailsWindow : UIWindow
     {
         if (!ImGui.CollapsingHeader("AI hints"))
             return;
-        if (_mgr.ActiveModule == null)
-            return;
-        var player = _mgr.ActiveModule.Raid[_povSlot];
+        var player = _player.WorldState.Party[_povSlot];
         if (player == null)
             return;
 

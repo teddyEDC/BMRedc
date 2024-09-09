@@ -25,8 +25,10 @@ public enum AID : uint
 class Twister(BossModule module) : Components.CastTwister(module, 1, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
 class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5, ActionID.MakeSpell(AID.BitingWind), m => m.Enemies(OID.BitingWind).Where(z => z.EventState != 7), 0.9f);
 class MeracydianSquall(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.MeracydianSquall), 5);
-class TwisterHint1(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.TwisterVisual), "Twisters soon, get moving!");
-class TwisterHint2(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.TwistingDive), "Twisters soon, get moving!");
+
+class TwistersHint(BossModule module, AID aid) : Components.CastHint(module, ActionID.MakeSpell(aid), "Twisters soon, get moving!");
+class Twisters1(BossModule module) : TwistersHint(module, AID.TwisterVisual);
+class Twisters2(BossModule module) : TwistersHint(module, AID.TwistingDive);
 
 class TwistingDive(BossModule module) : Components.GenericAOEs(module)
 {
@@ -92,8 +94,8 @@ class DD40TwintaniasCloneStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<Twister>()
-            .ActivateOnEnter<TwisterHint1>()
-            .ActivateOnEnter<TwisterHint2>()
+            .ActivateOnEnter<Twisters1>()
+            .ActivateOnEnter<Twisters2>()
             .ActivateOnEnter<BitingWind>()
             .ActivateOnEnter<MeracydianSquall>()
             .ActivateOnEnter<Turbine>()

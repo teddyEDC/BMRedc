@@ -212,38 +212,25 @@ class BlastCannon(BossModule module) : Components.SelfTargetedAOEs(module, Actio
 class Shock(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Shock), 3);
 class HomingCannon(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HomingCannon), new AOEShapeRect(50, 1));
 class Bombardment(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Bombardment), 5);
-class Electrowhirl1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Electrowhirl1), new AOEShapeCircle(6));
-class Electrowhirl2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Electrowhirl2), new AOEShapeCircle(6));
+
+class Electrowhirl(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(6));
+class Electrowhirl1(BossModule module) : Electrowhirl(module, AID.Electrowhirl1);
+class Electrowhirl2(BossModule module) : Electrowhirl(module, AID.Electrowhirl2);
+
 class TrackingBolt2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.TrackingBolt2), 8);
 
-class AccelerationBomb(BossModule module) : Components.StayMove(module)
+class AccelerationBomb(BossModule module) : Components.StayMove(module, 3)
 {
-    private readonly DateTime[] _expire = new DateTime[4];
-
-    public override void Update()
-    {
-        base.Update();
-        var deadline = WorldState.FutureTime(3);
-        for (var i = 0; i < _expire.Length; ++i)
-            Requirements[i] = _expire[i] != default && _expire[i] < deadline ? Requirement.Stay : Requirement.None;
-    }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Requirements[slot] == Requirement.Stay && _expire[slot] != default && _expire[slot] < WorldState.FutureTime(0.3f))
-            hints.ForcedMovement = new();
-    }
-
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
         if ((SID)status.ID is SID.AccelerationBomb or SID.AccelerationBombNPCs && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
-            _expire[slot] = status.ExpireAt;
+            PlayerStates[slot] = new(Requirement.Stay, status.ExpireAt);
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
         if ((SID)status.ID is SID.AccelerationBomb or SID.AccelerationBombNPCs && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
-            _expire[slot] = default;
+            PlayerStates[slot] = default;
     }
 }
 

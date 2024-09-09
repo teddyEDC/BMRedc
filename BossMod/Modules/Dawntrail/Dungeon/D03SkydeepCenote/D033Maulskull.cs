@@ -77,8 +77,8 @@ class StayInBounds(BossModule module) : BossComponent(module)
 class Stonecarver(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = [];
-
     private static readonly AOEShapeRect rect = new(40, 10);
+    private static readonly HashSet<AID> aids = [AID.Stonecarver1, AID.Stonecarver2, AID.Stonecarver3, AID.Stonecarver4];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -90,7 +90,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.Stonecarver1 or AID.Stonecarver2 or AID.Stonecarver3 or AID.Stonecarver4)
+        if (aids.Contains((AID)spell.Action.ID))
         {
             _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
             _aoes.SortBy(x => x.Activation);
@@ -99,7 +99,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count > 0 && (AID)spell.Action.ID is AID.Stonecarver1 or AID.Stonecarver2 or AID.Stonecarver3 or AID.Stonecarver4)
+        if (_aoes.Count > 0 && aids.Contains((AID)spell.Action.ID))
             _aoes.RemoveAt(0);
     }
 }
@@ -114,7 +114,7 @@ class Shatter(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         foreach (var c in _aoes)
-            yield return new(c.Shape, c.Origin, c.Rotation, c.Activation, Risky: c.Activation.AddSeconds(-6) <= Module.WorldState.CurrentTime);
+            yield return new(c.Shape, c.Origin, c.Rotation, c.Activation, Risky: c.Activation.AddSeconds(-6) <= WorldState.CurrentTime);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -140,7 +140,7 @@ class Shatter(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact1), 18, stopAfterWall: true)
+class Impact(BossModule module, AID aid, int distance) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(aid), distance, stopAfterWall: true)
 {
     public (WPos, DateTime) Data;
 
@@ -150,7 +150,10 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
         if (spell.Action == WatchedAction)
             Data = (caster.Position, Module.CastFinishAt(spell, 0.7f));
     }
+}
 
+class Impact1(BossModule module) : Impact(module, AID.Impact1, 18)
+{
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.7s delay to wait for action effect
@@ -158,38 +161,21 @@ class Impact1(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     }
 }
 
-class Impact2(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact2), 18, stopAfterWall: true)
+class Impact2(BossModule module) : Impact(module, AID.Impact2, 18)
 {
-    public (WPos, DateTime) Data;
-
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Stonecarver>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation) && z.Risky) ?? false) || !Module.InBounds(pos);
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            Data = (caster.Position, Module.CastFinishAt(spell, 0.7f));
-    }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.5s delay to wait for action effect
+        if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.7s delay to wait for action effect
             hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 10, 12, default, 20.Degrees()), Data.Item2.AddSeconds(-0.7f));
     }
 }
 
-class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact3), 20, stopAfterWall: true)
+class Impact3(BossModule module) : Impact(module, AID.Impact3, 20)
 {
-    public (WPos, DateTime) Data;
     private static readonly Angle halfAngle = 10.Degrees();
     private static readonly Angle direction = 135.Degrees();
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            Data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
-    }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
@@ -204,9 +190,11 @@ class Impact3(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     }
 }
 
-class ColossalImpact(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ColossalImpact), new AOEShapeCircle(10));
-class Skullcrush1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Skullcrush1), new AOEShapeCircle(10));
-class Skullcrush2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Skullcrush2), new AOEShapeCircle(10));
+class Crush(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(10));
+class ColossalImpact(BossModule module) : Crush(module, AID.ColossalImpact);
+class Skullcrush1(BossModule module) : Crush(module, AID.Skullcrush1);
+class Skullcrush2(BossModule module) : Crush(module, AID.Skullcrush2);
+
 class DestructiveHeat(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.DestructiveHeat), 6)
 {
     private WPos origin;
@@ -238,8 +226,9 @@ class DestructiveHeat(BossModule module) : Components.SpreadFromCastTargets(modu
 
 class Landing(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Landing), 8);
 
-class DeepThunder1(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.DeepThunderTower1), 6, 4, 4);
-class DeepThunder2(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.DeepThunderTower2), 6, 4, 4);
+class DeepThunder(BossModule module, AID aid) : Components.CastTowers(module, ActionID.MakeSpell(aid), 6, 4, 4);
+class DeepThunder1(BossModule module) : DeepThunder(module, AID.DeepThunderTower1);
+class DeepThunder2(BossModule module) : DeepThunder(module, AID.DeepThunderTower2);
 
 class WroughtFire(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.WroughtFire), new AOEShapeCircle(6), true)
 {

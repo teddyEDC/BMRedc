@@ -85,6 +85,6 @@ public class BlackCatCrossing(BossModule module) : Components.GenericAOEs(module
     private void AddAOEs(Actor actor, Angle[] angles, int futureTime)
     {
         foreach (var angle in angles)
-            _aoes.Add(new(cone, actor.Position, angle, Module.WorldState.FutureTime(futureTime)));
+            _aoes.Add(new(cone, actor.Position, angle, WorldState.FutureTime(futureTime)));
     }
 }

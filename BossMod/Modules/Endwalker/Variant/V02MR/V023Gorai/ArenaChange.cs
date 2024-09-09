@@ -18,14 +18,14 @@ class ArenaChange(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Unenlightenment && Arena.Bounds == StartingBounds)
-            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.5f));
+            _aoe = new(square, Arena.Center, default, Module.CastFinishAt(spell, 0.5f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x16)
         {
-            Module.Arena.Bounds = DefaultBounds;
+            Arena.Bounds = DefaultBounds;
             _aoe = null;
         }
         else if (state == 0x00020001 && index == 0x3D)

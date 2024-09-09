@@ -40,115 +40,67 @@ public enum SID : uint
     DeepFreeze = 3519 // none->player, extra=0x0
 }
 
-class Heatstroke(BossModule module) : Components.StayMove(module)
+class Heatstroke(BossModule module) : Components.StayMove(module, 3)
 {
-    private readonly DateTime[] _expire = new DateTime[4];
-    private BitMask _pyretic;
     private BitMask _heatstroke;
-
-    public override void Update()
-    {
-        base.Update();
-        var deadline = WorldState.FutureTime(3);
-        for (var i = 0; i < _expire.Length; ++i)
-            Requirements[i] = _expire[i] != default && _expire[i] < deadline ? Requirement.Stay : Requirement.None;
-    }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if ((SID)status.ID == SID.Heatstroke && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
-            if ((SID)status.ID == SID.Heatstroke)
-            {
-                _heatstroke.Set(Raid.FindSlot(actor.InstanceID));
-                _expire[slot] = status.ExpireAt;
-            }
-            else if ((SID)status.ID == SID.Pyretic)
-                _pyretic.Set(Raid.FindSlot(actor.InstanceID));
+            _heatstroke.Set(Raid.FindSlot(actor.InstanceID));
+            PlayerStates[slot] = new(Requirement.Stay, status.ExpireAt);
         }
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
             if ((SID)status.ID == SID.Heatstroke)
-            {
                 _heatstroke.Clear(Raid.FindSlot(actor.InstanceID));
-                _expire[slot] = default;
-            }
             else if ((SID)status.ID == SID.Pyretic)
-            {
-                _expire[slot] = default;
-                _pyretic.Clear(Raid.FindSlot(actor.InstanceID));
-            }
+                PlayerStates[slot] = default;
         }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        base.AddHints(slot, actor, hints);
         if (_heatstroke[slot])
-            hints.Add($"Heatstroke on you in {(actor.FindStatus(SID.Heatstroke)!.Value.ExpireAt - Module.WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
-        else if (_pyretic[slot])
-            hints.Add("Pyretic on you! STOP everything!");
-    }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Requirements[slot] == Requirement.Stay && _expire[slot] != default && _expire[slot] < WorldState.FutureTime(0.3f))
-            hints.ForcedMovement = new();
+            hints.Add($"Heatstroke on you in {(actor.FindStatus(SID.Heatstroke)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
     }
 }
 
-class ColdSweats(BossModule module) : Components.StayMove(module)
+class ColdSweats(BossModule module) : Components.StayMove(module, 3)
 {
-    public DateTime ExpiresAt;
-    private BitMask _freezing;
     private BitMask _coldsweats;
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if ((SID)status.ID == SID.ColdSweats && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
-            if ((SID)status.ID == SID.ColdSweats)
-            {
-                Requirements[slot] = Requirement.Move;
-                _coldsweats.Set(Raid.FindSlot(actor.InstanceID));
-                if (actor == Module.Raid.Player()!)
-                    ExpiresAt = status.ExpireAt;
-            }
-            else if ((SID)status.ID == SID.FreezingUp)
-            {
-                Requirements[slot] = Requirement.Move;
-                _freezing.Set(Raid.FindSlot(actor.InstanceID));
-            }
+            PlayerStates[slot] = new(Requirement.Move, status.ExpireAt);
+            _coldsweats.Set(Raid.FindSlot(actor.InstanceID));
         }
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
-        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0 && slot < Requirements.Length)
+        if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
             if ((SID)status.ID == SID.ColdSweats)
-            {
-                Requirements[slot] = Requirement.None;
                 _coldsweats.Clear(Raid.FindSlot(actor.InstanceID));
-            }
             else if ((SID)status.ID == SID.FreezingUp)
-            {
-                Requirements[slot] = Requirement.None;
-                ExpiresAt = default;
-                _freezing.Clear(Raid.FindSlot(actor.InstanceID));
-            }
+                PlayerStates[slot] = default;
         }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        base.AddHints(slot, actor, hints);
         if (_coldsweats[slot])
-            hints.Add($"Cold Sweats on you in {(actor.FindStatus(SID.ColdSweats)!.Value.ExpireAt - Module.WorldState.CurrentTime).TotalSeconds:f1}s. (Freezing!)");
-        else if (_freezing[slot])
-            hints.Add("Freezing on you! MOVE!");
+            hints.Add($"Cold Sweats on you in {(actor.FindStatus(SID.ColdSweats)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Freezing!)");
     }
 }
 
@@ -156,12 +108,17 @@ class Aethermodynamics1(BossModule module) : Components.RaidwideCast(module, Act
 class Aethermodynamics2(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Aethermodynamics2));
 class Aethermodynamics3(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Aethermodynamics3));
 class Aethermodynamics4(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Aethermodynamics4));
+
 class Obliterate(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Obliterate), 6, 8);
 class Meltdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Meltdown), new AOEShapeRect(40, 5));
-class BlizzardIV1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardIV1), new AOEShapeDonut(6, 40));
-class FireIV1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FireIV1), new AOEShapeCircle(15));
-class BlizzardIV5(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardIV5), new AOEShapeDonut(6, 40));
-class FireIV5(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FireIV5), new AOEShapeCircle(15));
+
+class Blizzard(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeDonut(6, 40));
+class BlizzardIV1(BossModule module) : Blizzard(module, AID.BlizzardIV1);
+class BlizzardIV5(BossModule module) : Blizzard(module, AID.BlizzardIV5);
+
+class Fire(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(15));
+class FireIV1(BossModule module) : Fire(module, AID.FireIV1);
+class FireIV5(BossModule module) : Fire(module, AID.FireIV5);
 
 class SoullessStreamFireBlizzardCombo(BossModule module) : Components.GenericAOEs(module)
 {
@@ -231,11 +188,4 @@ class ArchAethereaterStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.Hunt, GroupID = (uint)BossModuleInfo.HuntRank.SS, NameID = 13406)]
-public class ArchAethereater(WorldState ws, Actor primary) : SimpleBossModule(ws, primary)
-{
-    public override bool NeedToJump(WPos from, WDir dir)
-    {
-        var component = FindComponent<ColdSweats>()!;
-        return component.ExpiresAt != default && component.ExpiresAt.AddSeconds(-0.1f) <= WorldState.CurrentTime;
-    }
-}
+public class ArchAethereater(WorldState ws, Actor primary) : SimpleBossModule(ws, primary);

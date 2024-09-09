@@ -16,7 +16,7 @@ class YamaKagura(BossModule module) : Components.KnockbackFromCastTarget(module,
 
     public override void Update()
     {
-        if (data.Count > 0 && Module.WorldState.CurrentTime > activation)
+        if (data.Count > 0 && WorldState.CurrentTime > activation)
         {
             data.Clear();
             ++NumCasts;
@@ -25,9 +25,9 @@ class YamaKagura(BossModule module) : Components.KnockbackFromCastTarget(module,
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || activation > Module.WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
         {
-            var length = Module.Bounds.Radius * 2;
+            var length = Arena.Bounds.Radius * 2;
             var forbidden = new List<Func<WPos, float>>();
             foreach (var d in data)
                 forbidden.Add(ShapeDistance.Rect(d.Item1, d.Item2, length, Distance - length, 2.5f));

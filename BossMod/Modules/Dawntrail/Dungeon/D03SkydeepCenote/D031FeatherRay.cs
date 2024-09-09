@@ -62,13 +62,22 @@ class AiryBubble(BossModule module) : Components.GenericAOEs(module)
     private const float Radius = 1.1f;
     private readonly IReadOnlyList<Actor> _orbs = module.Enemies(OID.AiryBubble);
     private IEnumerable<Actor> Orbs => _orbs.Where(x => x.HitboxRadius == Radius);
-    private static readonly AOEShapeCircle circle = new(Radius);
     private readonly List<Actor> _aoes = [];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        foreach (var o in _aoes)
-            yield return new(circle, o.Position, o.Rotation);
+        return _aoes.Select(a =>
+        {
+            var position = a.Position;
+            var directionOffset = 3 * a.Rotation.ToDirection();
+            var shapes = new Shape[]
+            {
+                new Circle(a.Position, Radius),
+                new Circle(a.Position + directionOffset, Radius),
+                new RectangleSE(a.Position, a.Position + directionOffset, Radius)
+            };
+            return new AOEInstance(new AOEShapeCustom(shapes), Arena.Center);
+        });
     }
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
@@ -81,9 +90,13 @@ class AiryBubble(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        base.AddAIHints(slot, actor, assignment, hints);
-        foreach (var w in ActiveAOEs(slot, actor))
-            hints.AddForbiddenZone(new AOEShapeCircle(Radius), w.Origin + Radius * w.Rotation.ToDirection());
+        if (_aoes.Count == 0)
+            return;
+        var forbidden = new List<Func<WPos, float>>();
+        foreach (var o in _aoes)
+            forbidden.Add(ShapeDistance.Capsule(o.Position, o.Rotation, 2.5f, Radius));
+        forbidden.Add(ShapeDistance.Circle(Arena.Center, Module.PrimaryActor.HitboxRadius));
+        hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min());
     }
 }
 

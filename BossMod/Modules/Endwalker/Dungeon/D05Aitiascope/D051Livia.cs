@@ -50,7 +50,7 @@ class AglaeaShot(BossModule module) : Components.GenericAOEs(module)
         if (_aoes.Count > 0)
             foreach (var a in _aoes)
                 yield return new(rect, a.Origin, a.Rotation, a.Activation);
-        else if ((activation - Module.WorldState.CurrentTime).TotalSeconds < 5)
+        else if ((activation - WorldState.CurrentTime).TotalSeconds < 5)
             foreach (var c in casters)
                 yield return new(rect, c.Position, c.Rotation, activation);
     }
@@ -65,7 +65,7 @@ class AglaeaShot(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.AglaeaShot1)
         {
-            activation = Module.WorldState.FutureTime(10);
+            activation = WorldState.FutureTime(10);
             if (_aoes.Count > 0)
             {
                 _aoes.RemoveAt(0);

@@ -319,7 +319,7 @@ public struct NavigationDecision
 
         // just run to closest safe spot, if no good path can be found
         WPos? closest = null;
-        float closestDistance = float.MaxValue;
+        var closestDistance = float.MaxValue;
         foreach (var p in map.EnumeratePixels())
         {
             var px = map[p.x, p.y];
