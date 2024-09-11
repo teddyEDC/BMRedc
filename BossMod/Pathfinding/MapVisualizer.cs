@@ -64,25 +64,25 @@ public class MapVisualizer
                 {
                     var alpha = 1 - (pixMaxG > 0 ? pixMaxG / Map.MaxG : 0);
                     uint c = 128 + (uint)(alpha * 127);
-                    c = c | (c << 8) | 0xff000000;
+                    c = c | (c << 8) | Colors.Shadows;
                     dl.AddRectFilled(corner, cornerEnd, c);
                 }
                 else if (pixPriority > 0)
                 {
                     var alpha = Map.MaxPriority > 0 ? pixPriority / Map.MaxPriority : 1;
                     uint c = 128 + (uint)(alpha * 127);
-                    c = (c << 8) | 0xff000000;
+                    c = (c << 8) | Colors.Shadows;
                     dl.AddRectFilled(corner, cornerEnd, c);
                 }
                 else if (pixPriority < 0)
                 {
-                    dl.AddRectFilled(corner, cornerEnd, 0xff808080);
+                    dl.AddRectFilled(corner, cornerEnd, Colors.PlayerGeneric);
                 }
 
                 ref var pfNode = ref _pathfind.NodeByIndex(nodeIndex);
                 if (pfNode.OpenHeapIndex != 0)
                 {
-                    dl.AddCircle((corner + cornerEnd) / 2, ScreenPixelSize * 0.5f - 2, pfNode.OpenHeapIndex < 0 ? 0xff0000ff : 0xffff0080, 0, pfNode.OpenHeapIndex == 1 ? 2 : 1);
+                    dl.AddCircle((corner + cornerEnd) / 2, ScreenPixelSize * 0.5f - 2, pfNode.OpenHeapIndex < 0 ? Colors.TextColor3 : Colors.Other1, 0, pfNode.OpenHeapIndex == 1 ? 2 : 1);
                 }
 
                 if (ImGui.IsMouseHoveringRect(corner, cornerEnd))
@@ -93,21 +93,21 @@ public class MapVisualizer
         }
 
         // border
-        dl.AddLine(tl, tr, 0xffffffff, 2);
-        dl.AddLine(tr, br, 0xffffffff, 2);
-        dl.AddLine(br, bl, 0xffffffff, 2);
-        dl.AddLine(bl, tl, 0xffffffff, 2);
+        dl.AddLine(tl, tr, Colors.Border, 2);
+        dl.AddLine(tr, br, Colors.Border, 2);
+        dl.AddLine(br, bl, Colors.Border, 2);
+        dl.AddLine(bl, tl, Colors.Border, 2);
 
         // grid
         for (int x = 1; x < Map.Width; ++x)
         {
             var off = new Vector2(x * ScreenPixelSize, 0);
-            dl.AddLine(tl + off, bl + off, 0xffffffff, 1);
+            dl.AddLine(tl + off, bl + off, Colors.Border, 1);
         }
         for (int y = 1; y < Map.Height; ++y)
         {
             var off = new Vector2(0, y * ScreenPixelSize);
-            dl.AddLine(tl + off, tr + off, 0xffffffff, 1);
+            dl.AddLine(tl + off, tr + off, Colors.Border, 1);
         }
 
         DrawPath(dl, tl, hoverNode >= 0 ? hoverNode : _pathfind.BestIndex());
@@ -123,11 +123,11 @@ public class MapVisualizer
             var side = r.halfWidth * direction.OrthoR();
             var front = r.origin + r.lenF * direction;
             var back = r.origin - r.lenB * direction;
-            dl.AddQuad(tl + Map.WorldToGridFrac(front + side) * ScreenPixelSize, tl + Map.WorldToGridFrac(front - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back + side) * ScreenPixelSize, 0xff0000ff);
+            dl.AddQuad(tl + Map.WorldToGridFrac(front + side) * ScreenPixelSize, tl + Map.WorldToGridFrac(front - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back + side) * ScreenPixelSize, Colors.TextColor3);
         }
         foreach (var l in Lines)
         {
-            dl.AddLine(tl + Map.WorldToGridFrac(l.origin) * ScreenPixelSize, tl + Map.WorldToGridFrac(l.dest) * ScreenPixelSize, 0xff0000ff);
+            dl.AddLine(tl + Map.WorldToGridFrac(l.origin) * ScreenPixelSize, tl + Map.WorldToGridFrac(l.dest) * ScreenPixelSize, Colors.TextColor3);
         }
 
         ImGui.TableNextColumn();
@@ -233,16 +233,16 @@ public class MapVisualizer
         var sCenter = tl + Map.WorldToGridFrac(center) * ScreenPixelSize;
         if (halfWidth.Rad >= MathF.PI)
         {
-            dl.AddCircle(sCenter, or / Map.Resolution * ScreenPixelSize, 0xff0000ff);
+            dl.AddCircle(sCenter, or / Map.Resolution * ScreenPixelSize, Colors.TextColor3);
             if (ir > 0)
-                dl.AddCircle(sCenter, ir / Map.Resolution * ScreenPixelSize, 0xff0000ff);
+                dl.AddCircle(sCenter, ir / Map.Resolution * ScreenPixelSize, Colors.TextColor3);
         }
         else
         {
             float sDir = MathF.PI / 2 - dir.Rad;
             dl.PathArcTo(sCenter, ir / Map.Resolution * ScreenPixelSize, sDir + halfWidth.Rad, sDir - halfWidth.Rad);
             dl.PathArcTo(sCenter, or / Map.Resolution * ScreenPixelSize, sDir - halfWidth.Rad, sDir + halfWidth.Rad);
-            dl.PathStroke(0xff0000ff, ImDrawFlags.Closed, 1);
+            dl.PathStroke(Colors.TextColor3, ImDrawFlags.Closed, 1);
         }
     }
 
@@ -255,7 +255,7 @@ public class MapVisualizer
         if (startingNode.OpenHeapIndex == 0)
             return;
 
-        var color = 0xffffff00;
+        var color = Colors.TextColor11;
         var nextIndex = startingNode.ParentIndex;
         var (x1, y1) = Map.IndexToGrid(startingIndex);
         var (x2, y2) = Map.IndexToGrid(startingNode.ParentIndex);
@@ -264,7 +264,7 @@ public class MapVisualizer
             var off1 = _pathfind.NodeByIndex(startingIndex).EnterOffset;
             var off2 = _pathfind.NodeByIndex(nextIndex).EnterOffset;
             dl.AddLine(tl + new Vector2(x1 + 0.5f + off1.X, y1 + 0.5f + off1.Y) * ScreenPixelSize, tl + new Vector2(x2 + 0.5f + off2.X, y2 + 0.5f + off2.Y) * ScreenPixelSize, color, 2);
-            color = 0xffff00ff;
+            color = Colors.TextColor6;
             startingIndex = nextIndex;
             nextIndex = _pathfind.NodeByIndex(startingIndex).ParentIndex;
             (x1, y1) = (x2, y2);

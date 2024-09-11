@@ -9,7 +9,6 @@ public abstract class BossModule : IDisposable
     public readonly WorldState WorldState;
     public readonly Actor PrimaryActor;
     public readonly BossModuleConfig WindowConfig = Service.Config.Get<BossModuleConfig>();
-    public readonly ColorConfig ColorConfig = Service.Config.Get<ColorConfig>();
     public readonly MiniArena Arena;
     public readonly ModuleRegistry.Info? Info;
     public readonly StateMachine StateMachine;
@@ -326,22 +325,22 @@ public abstract class BossModule : IDisposable
                     _ => Colors.PlayerGeneric
                 };
 
-                if (color == ArenaColor.PlayerGeneric)
+                if (color == Colors.PlayerGeneric)
                 {
                     // optional focus/role-based overrides
                     if (isFocus)
                     {
-                        color = ColorConfig.PlayerColorsFocus.ABGR;
+                        color = Colors.Focus;
                     }
                     else if (WindowConfig.ColorPlayersBasedOnRole)
                     {
                         color = player.ClassCategory switch
                         {
-                            ClassCategory.Tank => ColorConfig.PlayerColorsTank.ABGR,
-                            ClassCategory.Healer => ColorConfig.PlayerColorsHealer.ABGR,
-                            ClassCategory.Melee => ColorConfig.PlayerColorsMelee.ABGR,
-                            ClassCategory.Caster => ColorConfig.PlayerColorsCaster.ABGR,
-                            ClassCategory.PhysRanged => ColorConfig.PlayerColorsPhysRanged.ABGR,
+                            ClassCategory.Tank => Colors.Tank,
+                            ClassCategory.Healer => Colors.Healer,
+                            ClassCategory.Melee => Colors.Healer,
+                            ClassCategory.Caster => Colors.Caster,
+                            ClassCategory.PhysRanged => Colors.PhysRanged,
                             _ => color
                         };
                     }
