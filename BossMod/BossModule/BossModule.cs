@@ -313,9 +313,6 @@ public abstract class BossModule : IDisposable
 
             bool isFocus = WorldState.Client.FocusTargetId == player.InstanceID;
             if (prio == BossComponent.PlayerPriority.Irrelevant && !WindowConfig.ShowIrrelevantPlayers && !(isFocus && WindowConfig.ShowFocusTargetPlayer))
-
-            bool isFocus = WorldState.Client.FocusTargetId == player.InstanceID;
-            if (prio == BossComponent.PlayerPriority.Irrelevant && !WindowConfig.ShowIrrelevantPlayers && !(isFocus && WindowConfig.ShowFocusTargetPlayer))
                 continue;
 
             if (color == 0)
