@@ -16,21 +16,12 @@ class FlagrantCombustion(BossModule module) : Components.RaidwideCast(module, Ac
 class SmokeRings(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SmokeRings), new AOEShapeCircle(16));
 class ClearingSmoke(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.ClearingSmoke), 16, stopAfterWall: true)
 {
-    private DateTime activation;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if ((AID)spell.Action.ID == AID.ClearingSmoke)
-            activation = Module.CastFinishAt(spell, 0.4f);
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var forbidden = new List<Func<WPos, float>>();
+        var source = Sources(slot, actor).FirstOrDefault();
         var component = Module.FindComponent<Smoldering>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component?.Count == 0 && (Sources(slot, actor).Any() || activation > WorldState.CurrentTime)) // 0.4s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 4), activation.AddSeconds(-0.4f));
+        if (component != null && source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 4), source.Activation);
     }
 }
 

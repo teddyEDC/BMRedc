@@ -89,19 +89,12 @@ class ScreesOfFury(BossModule module) : Components.BaitAwayIcon(module, new AOES
 class GreatestFlood(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GreatestFlood), 15)
 {
     private static readonly Angle a45 = 45.Degrees();
-    private (WPos, DateTime, Angle) data;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            data = (caster.Position, Module.CastFinishAt(spell, 0.8f), spell.Rotation);
-    }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || data.Item2 > WorldState.CurrentTime) // 0.8s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCone(data.Item1, 4, data.Item3, a45), data.Item2.AddSeconds(-0.8f));
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCone(source.Origin, 4, source.Direction, a45), source.Activation);
     }
 }
 

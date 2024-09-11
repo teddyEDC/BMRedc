@@ -76,8 +76,12 @@ public static class Colors
     public static uint Waymark2 => _config.Waymark2.ABGR;
     public static uint Waymark3 => _config.Waymark3.ABGR;
     public static uint Waymark4 => _config.Waymark4.ABGR;
-    public static uint ButtonPushColor1 => _config.ButtonPushColor1.ABGR;
-    public static uint ButtonPushColor2 => _config.ButtonPushColor2.ABGR;
+    public static uint ButtonPushColor1 => _config.ButtonPushColor[0].ABGR;
+    public static uint ButtonPushColor2 => _config.ButtonPushColor[1].ABGR;
+    public static uint ButtonPushColor3 => _config.ButtonPushColor[2].ABGR;
+    public static uint ButtonPushColor4 => _config.ButtonPushColor[3].ABGR;
+    public static uint ButtonPushColor5 => _config.ButtonPushColor[4].ABGR;
+    public static uint ButtonPushColor6 => _config.ButtonPushColor[5].ABGR;
     public static uint TextColor1 => _config.TextColors[0].ABGR;
     public static uint TextColor2 => _config.TextColors[1].ABGR;
     public static uint TextColor3 => _config.TextColors[2].ABGR;
@@ -100,4 +104,10 @@ public static class Colors
     public static uint PositionalColor2 => _config.PositionalColors[1].ABGR;
     public static uint PositionalColor3 => _config.PositionalColors[2].ABGR;
     public static uint PositionalColor4 => _config.PositionalColors[3].ABGR;
+    public static uint Tank => _config.PlayerColorsTank.ABGR;
+    public static uint Healer => _config.PlayerColorsHealer.ABGR;
+    public static uint Melee => _config.PlayerColorsMelee.ABGR;
+    public static uint Caster => _config.PlayerColorsCaster.ABGR;
+    public static uint PhysRanged => _config.PlayerColorsPhysRanged.ABGR;
+    public static uint Focus => _config.PlayerColorsFocus.ABGR;
 }

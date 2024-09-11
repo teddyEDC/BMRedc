@@ -23,7 +23,6 @@ public sealed class SmartRotationTweak(WorldState ws, AIHints hints)
     private readonly SmartRotationConfig _config = Service.Config.Get<SmartRotationConfig>();
     private readonly DisjointSegmentList _forbidden = new();
     private readonly Angle _minWindow = 5.Degrees();
-
     public bool Enabled => _config.Enabled;
 
     // return 'ideal orientation' for a spell, or null if spell is not oriented (self-targeted or does not require facing)
@@ -41,14 +40,15 @@ public sealed class SmartRotationTweak(WorldState ws, AIHints hints)
 
     public Angle? GetSafeRotation(Angle currentDirection, Angle? preferredDirection, Angle preferredHalfWidth)
     {
-        if (!_config.Enabled)
+        var aiEnabled = AI.AIManager.Instance?.Beh != null;
+        if (!_config.Enabled && !aiEnabled)
             return null;
 
         var midpoint = preferredDirection ?? default; // center angles in forbidden list around this midpoint, to simplify preferred check later
         var currentOffset = (currentDirection - midpoint).Normalized();
 
         _forbidden.Clear();
-        if (_config.AvoidGazes)
+        if (_config.AvoidGazes || aiEnabled)
         {
             var deadline = ws.FutureTime(_config.MinTimeToAvoid);
             foreach (var d in hints.ForbiddenDirections.Where(d => d.activation <= deadline))

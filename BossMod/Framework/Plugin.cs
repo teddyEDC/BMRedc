@@ -226,10 +226,15 @@ public sealed class Plugin : IDalamudPlugin
         currentConfig.Waymark2 = defaultConfig.Waymark2;
         currentConfig.Waymark3 = defaultConfig.Waymark3;
         currentConfig.Waymark4 = defaultConfig.Waymark4;
-        currentConfig.ButtonPushColor1 = defaultConfig.ButtonPushColor1;
-        currentConfig.ButtonPushColor2 = defaultConfig.ButtonPushColor2;
+        currentConfig.ButtonPushColor = defaultConfig.ButtonPushColor;
         currentConfig.TextColors = defaultConfig.TextColors;
         currentConfig.PositionalColors = defaultConfig.PositionalColors;
+        currentConfig.PlayerColorsTank = defaultConfig.PlayerColorsTank;
+        currentConfig.PlayerColorsHealer = defaultConfig.PlayerColorsHealer;
+        currentConfig.PlayerColorsPhysRanged = defaultConfig.PlayerColorsPhysRanged;
+        currentConfig.PlayerColorsCaster = defaultConfig.PlayerColorsCaster;
+        currentConfig.PlayerColorsMelee = defaultConfig.PlayerColorsMelee;
+        currentConfig.PlayerColorsFocus = defaultConfig.PlayerColorsFocus;
         currentConfig.Modified.Fire();
         Service.Log("Colors have been reset to default values.");
     }
