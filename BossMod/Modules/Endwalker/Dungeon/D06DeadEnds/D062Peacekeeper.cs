@@ -75,30 +75,22 @@ class EclipsingExhaust(BossModule module) : Components.RaidwideCast(module, Acti
 
 class EclipsingExhaustKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.EclipsingExhaust), 11)
 {
-    public DateTime Activation;
-
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Peacefire>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            Activation = Module.CastFinishAt(spell, 0.5f);
-    }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<Peacefire>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (component != null && component.Count != 0 && Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 0.5s delay to wait for action effect
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (component != null && source != default)
         {
-            foreach (var c in component!)
+            foreach (var c in component)
             {
                 forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 5));
                 forbidden.Add(ShapeDistance.Cone(Arena.Center, 16, Angle.FromDirection(c.Origin - Module.Center), 36.Degrees()));
             }
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Activation.AddSeconds(-0.5f));
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), source.Activation);
         }
     }
 }

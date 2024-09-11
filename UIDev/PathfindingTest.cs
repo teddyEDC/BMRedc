@@ -92,7 +92,7 @@ class PathfindingTest : TestWindow
         if (_blockRect)
             zones.Add((ShapeDistance.Rect(new(_blockRectCenter), _blockRectRotationDeg.Degrees(), _blockRectLen.X, _blockRectLen.Y, _blockRectHalfWidth), now.AddSeconds(_blockRectG)));
         zones.SortBy(z => z.activation);
-        NavigationDecision.RasterizeForbiddenZones(map, zones, now, ref scratch);
+        // NavigationDecision.RasterizeForbiddenZones(map, zones, now, ref scratch);
         NavigationDecision.RasterizeGoalZones(map, new(_targetPos), _targetRadius, _targetFacingDeg.Degrees(), Positional.Rear);
 
         var visu = new MapVisualizer(map, new(_startingPos), new(_targetPos), _targetRadius);

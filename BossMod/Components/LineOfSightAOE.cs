@@ -55,7 +55,7 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
             if (!Rect)
             {
                 foreach (var v in Visibility)
-                    UnionShapes.Add(new DonutSegmentHA(Origin.Value, v.Distance + 0.1f, MaxRange, v.Dir, v.HalfWidth));
+                    UnionShapes.Add(new DonutSegmentHA(Origin.Value, v.Distance + 0.2f, MaxRange, v.Dir, v.HalfWidth));
                 if (BlockersImpassable)
                     foreach (var b in Blockers)
                         DifferenceShapes.Add(new Circle(b.Center, b.Radius + PCHitBoxRadius));

@@ -70,11 +70,12 @@ public class GenericChasingAOEs(BossModule module, float moveDistance, ActionID 
     private void AddForbiddenZones(Actor actor, AIHints hints, bool isTarget)
     {
         // sort of a hack to prevent the AI from getting "stuck" inside the AOE because all paths to safety have equal distance
-        foreach (var chaser in Chasers.Where(c => c.Target == actor == isTarget))
+        foreach (var c in Chasers.Where(c => c.Target == actor == isTarget))
         {
-            var circle = (AOEShapeCircle)chaser.Shape;
-            var radius = isTarget ? MoveDistance + circle.Radius : circle.Radius;
-            hints.AddForbiddenZone(ShapeDistance.Circle(chaser.PredictedPosition(), radius), chaser.NextActivation);
+            var circle = (AOEShapeCircle)c.Shape;
+            var radius = isTarget ? MoveDistance + circle.Radius : circle.Radius + 1;
+            var position = isTarget ? c.PredictedPosition() - circle.Radius * actor.Rotation.ToDirection() : c.PredictedPosition();
+            hints.AddForbiddenZone(ShapeDistance.Circle(position, radius), c.NextActivation);
         }
     }
 }

@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Configuration;
-using FFXIVClientStructs.FFXIV.Common.Configuration;
 using System.Runtime.InteropServices;
 using CSActionType = FFXIVClientStructs.FFXIV.Client.Game.ActionType;
 
@@ -339,7 +338,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
             if (status == 0)
             {
                 // disable in-game auto rotation, to prevent fucking up with our logic
-                autoRotateConfig->Value.UInt = _smartRotationTweak.Enabled ? 0 : autoRotateOriginal;
+                autoRotateConfig->Value.UInt = _smartRotationTweak.Enabled || AI.AIManager.Instance?.Beh != null ? 0 : autoRotateOriginal;
                 var res = ExecuteAction(actionAdj, targetID, AutoQueue.TargetPos);
                 //Service.Log($"[AMEx] Auto-execute {AutoQueue.Source} action {AutoQueue.Action} (=> {actionAdj}) @ {targetID:X} {Utils.Vec3String(AutoQueue.TargetPos)} => {res}");
             }

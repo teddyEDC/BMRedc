@@ -135,19 +135,9 @@ class BoundlessPain(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Gravitons(BossModule module) : Components.GenericAOEs(module)
-{
-    private static readonly AOEShapeCircle circle = new(1);
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        foreach (var g in Module.Enemies(OID.MegaGraviton).Where(x => !x.IsDead))
-            yield return new(circle, g.Position);
-    }
-}
-
+class Gravitons(BossModule module) : Components.PersistentVoidzone(module, 1, m => m.Enemies(OID.MegaGraviton).Where(x => !x.IsDead));
 class AetherialPull(BossModule module) : Components.StretchTetherDuo(module, 33, 7.9f, tetherIDGood: (uint)TetherID.AetherialPullGood, knockbackImmunity: true);
-
-class CoffinScratch(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(3), ActionID.MakeSpell(AID.CoffinScratchFirst), ActionID.MakeSpell(AID.CoffinScratchRest), 6, 2, 5, true, (uint)IconID.ChasingAOE)
+class CoffinScratch(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(3), ActionID.MakeSpell(AID.CoffinScratchFirst), ActionID.MakeSpell(AID.CoffinScratchRest), 6, 1, 5, true, (uint)IconID.ChasingAOE)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

@@ -56,19 +56,11 @@ class BullishSwipe(BossModule module) : Components.SelfTargetedAOEs(module, Acti
 
 class DisorientingGroan(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.DisorientingGroan), 15)
 {
-    private DateTime activation;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            activation = Module.CastFinishAt(spell, 1);
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5), activation.AddSeconds(-1));
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5), source.Activation);
     }
 }
 

@@ -75,8 +75,6 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
     private const int CircleDistance = 5;
     private readonly Angle offset = 90.Degrees();
     private static readonly AOEShapeCone _shape = new(30, 90.Degrees());
-    private bool done;
-    private DateTime activation2;
 
     private bool IsKnockback(Actor actor, Shape shape, MagneticPole pole)
         => CurrentShape == shape && CurrentPole == pole && iconOnActor.Contains((actor, (uint)(pole == MagneticPole.Plus ? IconID.Plus : IconID.Minus)));
@@ -141,20 +139,9 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
     {
         if ((AID)spell.Action.ID is AID.DynamicPoundKB or AID.DynamicPoundPull or AID.DynamicScraplinePull or AID.DynamicScraplinePull)
         {
-            done = true;
-            activation2 = WorldState.FutureTime(1);
-        }
-    }
-
-    public override void Update()
-    {
-        if (activation2 != default && done && WorldState.CurrentTime > activation2) // delay clearing knockbacks/pulls to wait for action effects
-        {
             CurrentPole = MagneticPole.None;
             CurrentShape = Shape.None;
             iconOnActor.Clear();
-            activation2 = default;
-            done = false;
         }
     }
 

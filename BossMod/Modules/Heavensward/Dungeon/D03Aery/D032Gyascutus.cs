@@ -53,20 +53,11 @@ class DeafeningBellow(BossModule module) : Components.RaidwideCast(module, Actio
 class AshenOuroboros(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AshenOuroboros), new AOEShapeDonut(11, 20));
 class BodySlam(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BodySlam), 10)
 {
-    private DateTime activation;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if ((AID)spell.Action.ID == AID.BodySlam)
-            activation = Module.CastFinishAt(spell, 1);
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var forbidden = new List<Func<WPos, float>>();
-        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 9), activation.AddSeconds(-1));
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 9), source.Activation);
     }
 }
 

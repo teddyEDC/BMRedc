@@ -24,10 +24,29 @@ public struct NavigationDecision
     public float GoalRadius;
 
     public const float ForbiddenZoneCushion = 0; // increase to fatten forbidden zones
-    public const float ActivationTimeCushion = 1; // reduce time between now and activation by this value in seconds; increase for more conservativeness
+    public const float ActivationTimeCushion = 0.5f; // reduce time between now and activation by this value in seconds; increase for more conservativeness
 
     public static NavigationDecision Build(Context ctx, WorldState ws, AIHints hints, Actor player, WPos? targetPos, float targetRadius, Angle targetRot, Positional positional, float playerSpeed = 6)
     {
+        if (targetRadius < 1)
+            targetRadius = 1; // ensure targetRadius is at least 1 to prevent game from freezing
+
+        hints.WaypointManager.UpdateCurrentWaypoint(player.Position);
+
+        if (hints.WaypointManager.HasWaypoints)
+        {
+            var currentWaypoint = hints.WaypointManager.CurrentWaypoint;
+            if (currentWaypoint.HasValue)
+            {
+                return new NavigationDecision
+                {
+                    Destination = currentWaypoint.Value,
+                    LeewaySeconds = float.MaxValue,
+                    TimeToGoal = (currentWaypoint.Value - player.Position).Length() / playerSpeed,
+                };
+            }
+        }
+
         // build a pathfinding map: rasterize all forbidden zones and goals
         hints.Bounds.PathfindMap(ctx.Map, hints.Center);
         if (hints.ForbiddenZones.Count > 0)

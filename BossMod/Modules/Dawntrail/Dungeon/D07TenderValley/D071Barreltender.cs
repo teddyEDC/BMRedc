@@ -132,15 +132,12 @@ class BarrelBreaker(BossModule module) : Components.KnockbackFromCastTarget(modu
     private static readonly Angle a135 = 135.Degrees();
     private static readonly Angle a45 = 45.Degrees();
     public DateTime Activation;
-    private WPos origin;
+
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         base.OnCastStarted(caster, spell);
         if (spell.Action == WatchedAction)
-        {
             Activation = Module.CastFinishAt(spell, 1);
-            origin = spell.LocXZ;
-        }
     }
 
     public override void Update()
@@ -151,15 +148,16 @@ class BarrelBreaker(BossModule module) : Components.KnockbackFromCastTarget(modu
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
+        var source = Sources(slot, actor).FirstOrDefault();
         var forbidden = new List<Func<WPos, float>>();
-        if (Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 1s delay to wait for action effect
+        if (source != default)
         {
             var cactusSmall = Module.Enemies(OID.CactusSmall).FirstOrDefault(x => x.Position == new WPos(-55, 455));
-            forbidden.Add(ShapeDistance.InvertedDonutSector(origin, 4, 5, cactusSmall != default ? a135 : -a135, a5));
-            forbidden.Add(ShapeDistance.InvertedDonutSector(origin, 4, 5, cactusSmall != default ? -a45 : a45, a5));
+            forbidden.Add(ShapeDistance.InvertedDonutSector(source.Origin, 4, 5, cactusSmall != default ? a135 : -a135, a5));
+            forbidden.Add(ShapeDistance.InvertedDonutSector(source.Origin, 4, 5, cactusSmall != default ? -a45 : a45, a5));
         }
         if (forbidden.Count > 0)
-            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), Activation.AddSeconds(-1));
+            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), source.Activation);
     }
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<NeedleStormSuperstormHeavyWeightNeedles>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);

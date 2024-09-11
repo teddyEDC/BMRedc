@@ -104,13 +104,13 @@ public class ReplayManagementWindow : UIWindow
         }
 
         ImGui.SameLine();
-        if (ImGui.Button("Open Replay Folder") && _logDir != null)
+        if (ImGui.Button("Open replay folder") && _logDir != null)
             _lastErrorMessage = OpenDirectory(_logDir);
 
         if (_lastErrorMessage.Length > 0)
         {
             ImGui.SameLine();
-            using var color = ImRaii.PushColor(ImGuiCol.Text, 0xff0000ff);
+            using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor3);
             ImGui.TextUnformatted(_lastErrorMessage);
         }
 

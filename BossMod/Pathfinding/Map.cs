@@ -112,14 +112,19 @@ public class Map
     public void BlockPixelsInside(Func<WPos, float> shape, float maxG, float threshold)
     {
         MaxG = MathF.Max(MaxG, maxG);
-        foreach (var (x, y, center) in EnumeratePixels())
+
+        Parallel.For(MinY, MaxY + 1, y =>
         {
-            if (shape(center) < threshold)
+            for (var x = MinX; x <= MaxX; ++x)
             {
-                ref var pixel = ref PixelMaxG[y * Width + x];
-                pixel = MathF.Min(pixel, maxG);
+                var center = GridToWorld(x, y, 0.5f, 0.5f);
+                if (shape(center) < threshold)
+                {
+                    ref var pixel = ref PixelMaxG[y * Width + x];
+                    pixel = MathF.Min(pixel, maxG);
+                }
             }
-        }
+        });
     }
 
     public IEnumerable<(int x, int y, WPos center)> EnumeratePixels()
@@ -143,10 +148,10 @@ public class Map
     // enumerate pixels along line starting from (x1, y1) to (x2, y2); first is not returned, last is returned
     public IEnumerable<(int x, int y)> EnumeratePixelsInLine(int x1, int y1, int x2, int y2)
     {
-        int dx = x2 - x1;
-        int dy = y2 - y1;
-        int sx = dx > 0 ? 1 : -1;
-        int sy = dy > 0 ? 1 : -1;
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var sx = dx > 0 ? 1 : -1;
+        var sy = dy > 0 ? 1 : -1;
         dx = Math.Abs(dx);
         dy = Math.Abs(dy);
         if (dx >= dy)

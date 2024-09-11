@@ -2,7 +2,7 @@
 using BossMod.AI;
 using BossMod.Autorotation;
 
-namespace BossMod.Dawntrail.Savage.RM02SHoneyBLovely.AI;
+namespace BossMod.Dawntrail.Savage.M02SHoneyBLovely.AI;
 
 sealed class AIExperiment(RotationModuleManager manager, Actor player) : AIRotationModule(manager, player)
 {
@@ -15,7 +15,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : AIRotat
 
     public static RotationModuleDefinition Definition()
     {
-        var res = new RotationModuleDefinition("AI Experiment", "Experimental encounter-specific rotation", "veyn", RotationModuleQuality.WIP, new(~1ul), 100, 1, typeof(RM02SHoneyBLovely));
+        var res = new RotationModuleDefinition("AI Experiment", "Experimental encounter-specific rotation", "veyn", RotationModuleQuality.WIP, new(~1ul), 100, 1, typeof(M02SHoneyBLovely));
         res.Define(Track.DragBoss).As<DragBossStrategy>("DragBoss", "Drag")
             .AddOption(DragBossStrategy.None, "None", "Do nothing")
             .AddOption(DragBossStrategy.SCenterFaceN, "SCenterFaceN", "Position boss in center or slightly to the south, then face north")
@@ -38,7 +38,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : AIRotat
 
     public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, float forceMovementIn, bool isMoving)
     {
-        if (Manager.Bossmods.ActiveModule is not RM02SHoneyBLovely module)
+        if (Manager.Bossmods.ActiveModule is not M02SHoneyBLovely module)
             return;
 
         var drag = strategy.Option(Track.DragBoss).As<DragBossStrategy>();
@@ -76,14 +76,14 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : AIRotat
         }
     }
 
-    private WPos? GetDragBossPosition(RM02SHoneyBLovely module, DragBossStrategy strategy) => strategy switch
+    private WPos? GetDragBossPosition(M02SHoneyBLovely module, DragBossStrategy strategy) => strategy switch
     {
         DragBossStrategy.SCenterFaceN => module.PrimaryActor.Position.Z < module.Center.Z ? MoveTarget(module.PrimaryActor, module.Center, GCD) : module.PrimaryActor.Position + new WDir(0, -5),
         DragBossStrategy.NorthFaceS => module.PrimaryActor.Position.Z > module.Center.Z - 10 ? MoveTarget(module.PrimaryActor, module.Center - new WDir(0, 10), GCD) : module.Center,
         _ => null
     };
 
-    private WPos? GetDropSplashPosition(RM02SHoneyBLovely module, DropSplashStrategy strategy)
+    private WPos? GetDropSplashPosition(M02SHoneyBLovely module, DropSplashStrategy strategy)
     {
         var aoes = module.FindComponent<PoisonCloudSplinter>()?.Casters ?? module.FindComponent<SweetheartSplinter>()?.Casters;
         var dropSplash = module.FindComponent<DropSplashOfVenom>();
@@ -109,7 +109,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : AIRotat
         }
     }
 
-    private WPos? GetStageComboPosition(RM02SHoneyBLovely module, StageComboStrategy strategy)
+    private WPos? GetStageComboPosition(M02SHoneyBLovely module, StageComboStrategy strategy)
     {
         var comp = module.FindComponent<StageCombo>();
         if (comp == null)
@@ -138,7 +138,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : AIRotat
         return ClosestInMelee(Player.Position, module.PrimaryActor);
     }
 
-    private WPos? GetPheromones2Position(RM02SHoneyBLovely module, Pheromones2Strategy strategy, out bool wantSprint)
+    private WPos? GetPheromones2Position(M02SHoneyBLovely module, Pheromones2Strategy strategy, out bool wantSprint)
     {
         wantSprint = false;
         var bait = module.FindComponent<PoisonStingBait>();
@@ -180,7 +180,7 @@ sealed class AIExperiment(RotationModuleManager manager, Actor player) : AIRotat
         return null;// ClosestInRange(Player.Position, module.Center, 4); // no baits on player - but we don't want to go in too early, not to clip aoes...
     }
 
-    private WPos? GetDefamationsTowersPosition(RM02SHoneyBLovely module, DefamationsTowersStrategy strategy, out bool wantSprint)
+    private WPos? GetDefamationsTowersPosition(M02SHoneyBLovely module, DefamationsTowersStrategy strategy, out bool wantSprint)
     {
         wantSprint = false;
         var defams = module.FindComponent<HoneyBLiveBeat3BigBurst>();
