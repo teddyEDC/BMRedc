@@ -14,7 +14,7 @@ public sealed class ConfigDisplayAttribute : Attribute
 
 // attribute that specifies how config node field or enumeration value is shown in the UI
 [AttributeUsage(AttributeTargets.Field)]
-public sealed class PropertyDisplayAttribute(string label, uint color = 0, string tooltip = "", bool separator = false) : Attribute
+public sealed class PropertyDisplayAttribute(string label, uint color = 0, string tooltip = "", bool separator = false, bool separator = false) : Attribute
 {
     public string Label { get; } = label;
     public uint Color { get; } = color == 0 ? Colors.TextColor1 : color;

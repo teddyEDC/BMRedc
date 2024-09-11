@@ -347,9 +347,11 @@ public sealed class ConfigUI : IDisposable
         if (group == null)
             return false;
 
+        DrawHelp(tooltip);
         var modified = false;
         foreach (var tn in tree.Node(label, false, v.Validate() ? Colors.TextColor1 : Colors.TextColor2, () => DrawPropertyContextMenu(node, member, v)))
         {
+            using var indent = ImRaii.PushIndent();
             using var table = ImRaii.Table("table", group.Names.Length + 2, ImGuiTableFlags.SizingFixedFit);
             if (!table)
                 continue;
