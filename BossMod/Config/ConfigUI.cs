@@ -1,5 +1,6 @@
 using BossMod.Autorotation;
 using ImGuiNET;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Dalamud.Interface.Utility.Raii;
@@ -269,6 +270,7 @@ public sealed class ConfigUI : IDisposable
             var flags = ImGuiSliderFlags.None;
             if (slider.Logarithmic)
                 flags |= ImGuiSliderFlags.Logarithmic;
+            ImGui.SetNextItemWidth(MathF.Min(ImGui.GetWindowWidth() * 0.30f, 175));
             if (ImGui.DragFloat(label, ref v, slider.Speed, slider.Min, slider.Max, "%.3f", flags))
             {
                 member.SetValue(node, v);
@@ -295,6 +297,7 @@ public sealed class ConfigUI : IDisposable
             var flags = ImGuiSliderFlags.None;
             if (slider.Logarithmic)
                 flags |= ImGuiSliderFlags.Logarithmic;
+            ImGui.SetNextItemWidth(MathF.Min(ImGui.GetWindowWidth() * 0.30f, 175));
             if (ImGui.DragInt(label, ref v, slider.Speed, (int)slider.Min, (int)slider.Max, "%d", flags))
             {
                 member.SetValue(node, v);

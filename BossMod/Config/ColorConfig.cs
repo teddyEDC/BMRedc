@@ -109,4 +109,22 @@ public sealed class ColorConfig : ConfigNode
      new(0xffff0000), new(0xff000000), new(0x80008080), new(0x8080ff80), new(0xffc0c0c0)];
 
     public static ColorConfig DefaultConfig => new();
+
+    [PropertyDisplay("Player colors: tank")]
+    public Color PlayerColorsTank = Color.FromComponents(30, 50, 110);
+
+    [PropertyDisplay("Player colors: healer")]
+    public Color PlayerColorsHealer = Color.FromComponents(30, 110, 50);
+
+    [PropertyDisplay("Player colors: melee")]
+    public Color PlayerColorsMelee = Color.FromComponents(110, 30, 30);
+
+    [PropertyDisplay("Player colors: caster")]
+    public Color PlayerColorsCaster = Color.FromComponents(70, 30, 110);
+
+    [PropertyDisplay("Player colors: phys. ranged")]
+    public Color PlayerColorsPhysRanged = Color.FromComponents(110, 90, 30);
+
+    [PropertyDisplay("Player colors: focus")]
+    public Color PlayerColorsFocus = Color.FromComponents(0, 255, 255);
 }
