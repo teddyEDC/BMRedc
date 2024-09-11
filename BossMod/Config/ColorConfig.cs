@@ -96,7 +96,7 @@ public sealed class ColorConfig : ConfigNode
     [PropertyDisplay("Planner: window")]
     public Color[] PlannerWindow = [new(0x800089b5), new(0x80164bcb), new(0x802f32dc), new(0x808236d3), new(0x80c4716c), new(0x80d28b26), new(0x8098a12a), new(0x80009985)];
 
-    [PropertyDisplay("Planner: window")]
+    [PropertyDisplay("Button push colors")]
     public Color[] ButtonPushColor = [new(0xff000080), new(0xff008080), new(0xff000050), new(0xff000060), new(0xff005050), new(0xff006060)];
 
     [PropertyDisplay("Text colors")]

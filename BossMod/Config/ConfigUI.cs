@@ -200,8 +200,7 @@ public sealed class ConfigUI : IDisposable
     private static void DrawHelp(string tooltip)
     {
         // draw tooltip marker with proper alignment
-        var cursor = ImGui.GetCursorPosY();
-        ImGui.SetCursorPosY(cursor + ImGui.GetStyle().FramePadding.Y);
+        ImGui.AlignTextToFramePadding();
         if (tooltip.Length > 0)
         {
             UIMisc.HelpMarker(tooltip);
@@ -212,7 +211,6 @@ public sealed class ConfigUI : IDisposable
             UIMisc.IconText(Dalamud.Interface.FontAwesomeIcon.InfoCircle, "(?)");
         }
         ImGui.SameLine();
-        ImGui.SetCursorPosY(cursor);
     }
 
     private static bool DrawProperty(string label, string tooltip, ConfigNode node, FieldInfo member, object? value, ConfigRoot root, UITree tree, WorldState ws) => value switch
