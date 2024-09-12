@@ -8,31 +8,19 @@ class OkaRanman(BossModule module) : Components.RaidwideCast(module, ActionID.Ma
 class LevinblossomStrike(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.LevinblossomStrike), 3);
 class DriftingPetals(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.DriftingPetals), 15, ignoreImmunes: true)
 {
-    private WPos data;
-    private DateTime activation;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if ((AID)spell.Action.ID == AID.DriftingPetals)
-        {
-            activation = Module.CastFinishAt(spell, 1.5f);
-            data = caster.Position;
-        }
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<Mudrain>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
         {
-            forbidden.Add(ShapeDistance.InvertedCircle(data, 5));
+            forbidden.Add(ShapeDistance.InvertedCircle(source.Origin, 5));
             if (component != null && component.Count != 0)
                 foreach (var c in component)
-                    forbidden.Add(ShapeDistance.Cone(data, 20, Angle.FromDirection(c.Origin - Arena.Center), 20.Degrees()));
+                    forbidden.Add(ShapeDistance.Cone(source.Origin, 20, Angle.FromDirection(c.Origin - Arena.Center), 20.Degrees()));
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), activation.AddSeconds(-1.5f));
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), source.Activation);
         }
     }
 

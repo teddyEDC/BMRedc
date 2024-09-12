@@ -134,25 +134,17 @@ class Explosion(BossModule module) : Components.SelfTargetedAOEs(module, ActionI
 
 class Impact(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact), 15)
 {
-    public (WPos, DateTime) Data;
     private static readonly Angle halfAngle = 45.Degrees();
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            Data = (caster.Position, Module.CastFinishAt(spell, 0.4f));
-    }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.4s delay to wait for action effect
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
         {
-            var activation = Data.Item2.AddSeconds(-0.4f);
-            if (Data.Item1.Z == -640)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 6, 8, 180.Degrees(), halfAngle), activation);
-            else if (Data.Item1.Z == -656)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 6, 8, default, halfAngle), activation);
+            if (source.Origin.Z == -640)
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, 6, 8, 180.Degrees(), halfAngle), source.Activation);
+            else if (source.Origin.Z == -656)
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, 6, 8, default, halfAngle), source.Activation);
         }
     }
 }
@@ -194,7 +186,8 @@ class LightOfSalvation(BossModule module) : Components.GenericBaitAway(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_kb.Sources(slot, actor).Any() || _kb.Data.Item2 > WorldState.CurrentTime) // 0.4s delay to wait for action effect
+        var source = _kb.Sources(slot, actor).FirstOrDefault();
+        if (source != default)
         { }
         else
             base.AddAIHints(slot, actor, assignment, hints);

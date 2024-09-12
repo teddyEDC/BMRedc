@@ -83,28 +83,19 @@ class VioletVoltage(BossModule module) : Components.GenericAOEs(module)
 
 class RoaringBoltKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.RoaringBoltKB), 12, stopAtWall: true)
 {
-    public DateTime Activation;
-
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => Module.FindComponent<RoaringBolt>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            Activation = Module.CastFinishAt(spell, 1.2f);
-    }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<RoaringBolt>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (Sources(slot, actor).Any() || Activation > WorldState.CurrentTime) // 1.2s delay to wait for action effect
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default && component != null)
         {
-            if (component != null && component.Count != 0)
-                foreach (var c in component)
-                    forbidden.Add(ShapeDistance.Cone(Arena.Center, 19.5f, Angle.FromDirection(c.Origin - Arena.Center), 25.Degrees()));
+            foreach (var c in component)
+                forbidden.Add(ShapeDistance.Cone(Arena.Center, 19.5f, Angle.FromDirection(c.Origin - Arena.Center), 25.Degrees()));
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), Activation);
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), source.Activation);
         }
     }
 }

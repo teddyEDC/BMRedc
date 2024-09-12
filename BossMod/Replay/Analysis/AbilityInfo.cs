@@ -42,7 +42,7 @@ class AbilityInfo : CommonEnumInfo
         {
             _plot.Begin();
             foreach (var i in _points)
-                _plot.Point(i.SourcePos, 0xff808080, i.Inst.TimestampString);
+                _plot.Point(i.SourcePos, Colors.PlayerGeneric, i.Inst.TimestampString);
             _plot.End();
         }
     }
@@ -89,7 +89,7 @@ class AbilityInfo : CommonEnumInfo
         {
             _plot.Begin();
             foreach (var i in _points)
-                _plot.Point(new(i.Angle, i.Range), i.Hit ? 0xff00ffff : 0xff808080, () => $"{(i.Hit ? "hit" : "miss")} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
+                _plot.Point(new(i.Angle, i.Range), i.Hit ? Colors.TextColor2 : Colors.PlayerGeneric, () => $"{(i.Hit ? "hit" : "miss")} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
             _plot.End();
         }
     }
@@ -125,7 +125,7 @@ class AbilityInfo : CommonEnumInfo
         {
             _plot.Begin();
             foreach (var i in _points)
-                _plot.Point(new(i.Normal, i.Length), i.Hit ? 0xff00ffff : 0xff808080, () => $"{(i.Hit ? "hit" : "miss")} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
+                _plot.Point(new(i.Normal, i.Length), i.Hit ? Colors.TextColor2 : Colors.PlayerGeneric, () => $"{(i.Hit ? "hit" : "miss")} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
             _plot.End();
         }
     }
@@ -156,7 +156,7 @@ class AbilityInfo : CommonEnumInfo
         {
             _plot.Begin();
             foreach (var i in _points)
-                _plot.Point(new(i.Range, i.Damage), i.Damage > 0 ? 0xff00ffff : 0xff808080, () => $"{i.Damage} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
+                _plot.Point(new(i.Range, i.Damage), i.Damage > 0 ? Colors.TextColor2 : Colors.PlayerGeneric, () => $"{i.Damage} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
             _plot.End();
         }
     }
@@ -193,7 +193,7 @@ class AbilityInfo : CommonEnumInfo
         {
             _plot.Begin();
             foreach (var i in _points)
-                _plot.Point(new(i.Angle.Deg, 1), i.Hit ? 0xff00ffff : 0xff808080, () => $"{(i.Hit ? "hit" : "miss")} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
+                _plot.Point(new(i.Angle.Deg, 1), i.Hit ? Colors.TextColor2 : Colors.PlayerGeneric, () => $"{(i.Hit ? "hit" : "miss")} {i.Target.NameAt(i.Inst.Action.Timestamp)} {i.Target.InstanceID:X} {i.Inst.TimestampString()}");
             _plot.End();
         }
     }

@@ -61,27 +61,18 @@ class TwistingDive(BossModule module) : Components.GenericAOEs(module)
 
 class Turbine(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Turbine), 15)
 {
-    private DateTime activation;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            activation = Module.CastFinishAt(spell, 1);
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var forbidden = new List<Func<WPos, float>>();
         var component = Module.FindComponent<BitingWind>()?.ActiveAOEs(slot, actor)?.ToList();
-        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 1s delay to wait for action effect
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default && component != null)
         {
             forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 5));
-            if (component != null && component.Count != 0)
-                foreach (var c in component)
-                    forbidden.Add(ShapeDistance.Cone(Arena.Center, 20, Angle.FromDirection(c.Origin - Module.Center), 20.Degrees()));
+            foreach (var c in component)
+                forbidden.Add(ShapeDistance.Cone(Arena.Center, 20, Angle.FromDirection(c.Origin - Arena.Center), 20.Degrees()));
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), activation.AddSeconds(-1));
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min(), source.Activation);
         }
     }
 

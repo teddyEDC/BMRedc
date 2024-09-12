@@ -112,7 +112,6 @@ class Electray(BossModule module) : Components.SpreadFromCastTargets(module, Act
 
 class Surge(BossModule module) : Components.Knockback(module)
 {
-    private DateTime activation;
     private readonly List<Source> _sources = [];
     private static readonly List<SafeWall> walls2A1B = [new(new(-187.5f, -142), new(-187.5f, -152)), new(new(-187.5f, -122), new(-187.5f, -132)),
     new(new(-156.5f, -152), new(-156.5f, -162)), new(new(-156.5f, -132), new(-156.5f, -142))];
@@ -130,7 +129,7 @@ class Surge(BossModule module) : Components.Knockback(module)
     {
         if ((AID)spell.Action.ID == AID.Surge)
         {
-            activation = Module.CastFinishAt(spell, 0.8f);
+            var activation = Module.CastFinishAt(spell, 0.8f);
             _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + 90.Degrees(), Kind.DirForward, default, ActiveSafeWalls));
             _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation - 90.Degrees(), Kind.DirForward, default, ActiveSafeWalls));
         }
@@ -169,12 +168,13 @@ class Surge(BossModule module) : Components.Knockback(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || activation > WorldState.CurrentTime) // 0.8s delay to wait for action effect
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
         {
             var forbidden = new List<Func<WPos, float>>();
             foreach (var w in ActiveSafeWalls)
                 forbidden.Add(ShapeDistance.InvertedRect(new(Arena.Center.X, w.Vertex1.Z - 5), w.Vertex1.X == -187.5f ? new WDir(-4, 0) : new(4, 0), 10, 0, 20));
-            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), activation.AddSeconds(-0.8f));
+            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), source.Activation);
         }
     }
 }

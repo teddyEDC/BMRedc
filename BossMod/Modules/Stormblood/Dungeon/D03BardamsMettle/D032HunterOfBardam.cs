@@ -50,16 +50,7 @@ public enum IconID : uint
     ChasingAOE = 197, // player
 }
 
-class Comet(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(4), ActionID.MakeSpell(AID.CometFirst), ActionID.MakeSpell(AID.CometRest), 10, 1.5f, 9, true, (uint)IconID.ChasingAOE)
-{
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        base.AddAIHints(slot, actor, assignment, hints);
-        if (Actors.Contains(actor))
-            hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center, 18), Activation);
-    }
-}
-
+class Comet(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(4), ActionID.MakeSpell(AID.CometFirst), ActionID.MakeSpell(AID.CometRest), 10, 1.5f, 9, true, (uint)IconID.ChasingAOE);
 class CometFirst(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CometFirst), 4);
 class CometRest(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CometRest), 4);
 
@@ -124,6 +115,16 @@ class Tremblor(BossModule module) : Components.ConcentricAOEs(module, _shapes)
     }
 }
 
+class TremblorFinal(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Tremblor2), new AOEShapeDonut(10, 20))
+{
+    private readonly Tremblor _aoe = module.FindComponent<Tremblor>()!;
+
+    public override void Update()
+    {
+        MaxCasts = _aoe.Sequences.Count != 0 ? 0 : 1;
+    }
+}
+
 class HeavyStrike(BossModule module) : Components.ConcentricAOEs(module, _shapes)
 {
     private static readonly AOEShape[] _shapes = [new AOEShapeCone(6.5f, 135.Degrees()), new AOEShapeDonutSector(6.5f, 12.5f, 135.Degrees()), new AOEShapeDonutSector(12.5f, 18.5f, 135.Degrees())];
@@ -159,6 +160,7 @@ class D032HunterOfBardamStates : StateMachineBuilder
             .ActivateOnEnter<CometFirst>()
             .ActivateOnEnter<CometRest>()
             .ActivateOnEnter<Tremblor>()
+            .ActivateOnEnter<TremblorFinal>()
             .ActivateOnEnter<HeavyStrike>()
             .ActivateOnEnter<Charge>()
             .ActivateOnEnter<EmptyGaze>()

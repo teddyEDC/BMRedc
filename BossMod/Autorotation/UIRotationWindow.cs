@@ -90,6 +90,8 @@ public sealed class UIRotationWindow : UIWindow
         ImGui.SameLine();
 
         using (ImRaii.PushColor(ImGuiCol.Button, Colors.ButtonPushColor1, mgr.Preset == RotationModuleManager.ForceDisable))
+        using (ImRaii.PushColor(ImGuiCol.ButtonHovered, Colors.ButtonPushColor3, mgr.Preset == RotationModuleManager.ForceDisable))
+        using (ImRaii.PushColor(ImGuiCol.ButtonActive, Colors.ButtonPushColor4, mgr.Preset == RotationModuleManager.ForceDisable))
         {
             if (ImGui.Button("Disabled"))
             {
@@ -102,6 +104,8 @@ public sealed class UIRotationWindow : UIWindow
         {
             ImGui.SameLine();
             using var col = ImRaii.PushColor(ImGuiCol.Button, Colors.ButtonPushColor2, mgr.Preset == p);
+            using var colHovered = ImRaii.PushColor(ImGuiCol.ButtonHovered, Colors.ButtonPushColor5, mgr.Preset == p);
+            using var colActive = ImRaii.PushColor(ImGuiCol.ButtonActive, Colors.ButtonPushColor6, mgr.Preset == p);
             if (ImGui.Button(p.Name))
             {
                 mgr.Preset = mgr.Preset == p ? null : p;
@@ -131,7 +135,7 @@ public sealed class UIRotationWindow : UIWindow
         }
     }
 
-    private uint PositionalColor(bool imminent, bool correct) => imminent
+    private static uint PositionalColor(bool imminent, bool correct) => imminent
         ? (correct ? Colors.PositionalColor1 : Colors.PositionalColor2)
         : (correct ? Colors.PositionalColor3 : Colors.PositionalColor4);
 }

@@ -117,6 +117,7 @@ class Cytolysis(BossModule module) : Components.RaidwideCast(module, ActionID.Ma
 class Quarantine(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.Quarantine), 6, 5.1f, 3, 3)
 {
     private readonly Disinfection _tb = module.FindComponent<Disinfection>()!;
+
     public override void Update()
     {
         if (!ActiveStacks.Any())

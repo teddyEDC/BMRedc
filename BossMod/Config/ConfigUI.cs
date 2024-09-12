@@ -1,5 +1,6 @@
 using BossMod.Autorotation;
 using ImGuiNET;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Dalamud.Interface.Utility.Raii;
@@ -199,8 +200,7 @@ public sealed class ConfigUI : IDisposable
     private static void DrawHelp(string tooltip)
     {
         // draw tooltip marker with proper alignment
-        var cursor = ImGui.GetCursorPosY();
-        ImGui.SetCursorPosY(cursor + ImGui.GetStyle().FramePadding.Y);
+        ImGui.AlignTextToFramePadding();
         if (tooltip.Length > 0)
         {
             UIMisc.HelpMarker(tooltip);
@@ -211,7 +211,6 @@ public sealed class ConfigUI : IDisposable
             UIMisc.IconText(Dalamud.Interface.FontAwesomeIcon.InfoCircle, "(?)");
         }
         ImGui.SameLine();
-        ImGui.SetCursorPosY(cursor);
     }
 
     private static bool DrawProperty(string label, string tooltip, ConfigNode node, FieldInfo member, object? value, ConfigRoot root, UITree tree, WorldState ws) => value switch
@@ -269,6 +268,7 @@ public sealed class ConfigUI : IDisposable
             var flags = ImGuiSliderFlags.None;
             if (slider.Logarithmic)
                 flags |= ImGuiSliderFlags.Logarithmic;
+            ImGui.SetNextItemWidth(MathF.Min(ImGui.GetWindowWidth() * 0.30f, 175));
             if (ImGui.DragFloat(label, ref v, slider.Speed, slider.Min, slider.Max, "%.3f", flags))
             {
                 member.SetValue(node, v);
@@ -295,6 +295,7 @@ public sealed class ConfigUI : IDisposable
             var flags = ImGuiSliderFlags.None;
             if (slider.Logarithmic)
                 flags |= ImGuiSliderFlags.Logarithmic;
+            ImGui.SetNextItemWidth(MathF.Min(ImGui.GetWindowWidth() * 0.30f, 175));
             if (ImGui.DragInt(label, ref v, slider.Speed, (int)slider.Min, (int)slider.Max, "%d", flags))
             {
                 member.SetValue(node, v);
@@ -347,9 +348,11 @@ public sealed class ConfigUI : IDisposable
         if (group == null)
             return false;
 
+        DrawHelp(tooltip);
         var modified = false;
         foreach (var tn in tree.Node(label, false, v.Validate() ? Colors.TextColor1 : Colors.TextColor2, () => DrawPropertyContextMenu(node, member, v)))
         {
+            using var indent = ImRaii.PushIndent();
             using var table = ImRaii.Table("table", group.Names.Length + 2, ImGuiTableFlags.SizingFixedFit);
             if (!table)
                 continue;

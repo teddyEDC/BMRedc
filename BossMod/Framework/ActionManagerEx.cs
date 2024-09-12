@@ -1,12 +1,12 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.FFXIV.Common.Configuration;
 using System.Runtime.InteropServices;
 using CSActionType = FFXIVClientStructs.FFXIV.Client.Game.ActionType;
 
@@ -167,12 +167,14 @@ public sealed unsafe class ActionManagerEx : IDisposable
         return gcd->Total - gcd->Elapsed;
     }
 
-    public ActionID GetDutyAction(ushort slot)
+    public ClientState.DutyAction GetDutyAction(ushort slot)
     {
-        var id = ActionManager.GetDutyActionId(slot);
-        return id != 0 ? new(ActionType.Spell, id) : default;
+        var cd = EventFramework.Instance()->GetContentDirector();
+        return cd == null || !cd->DutyActionManager.ActionsPresent || slot >= cd->DutyActionManager.NumValidSlots
+            ? default
+            : new(new(ActionType.Spell, cd->DutyActionManager.ActionId[slot]), cd->DutyActionManager.CurCharges[slot], cd->DutyActionManager.MaxCharges[slot]);
     }
-    public (ActionID, ActionID) GetDutyActions() => (GetDutyAction(0), GetDutyAction(1));
+    public (ClientState.DutyAction, ClientState.DutyAction) GetDutyActions() => (GetDutyAction(0), GetDutyAction(1));
 
     public uint GetAdjustedActionID(uint actionID) => _inst->GetAdjustedActionId(actionID);
 
@@ -315,7 +317,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
         // check whether movement is safe; block movement if not and if desired
         MoveMightInterruptCast &= CastTimeRemaining > 0; // previous cast could have ended without action effect
         MoveMightInterruptCast |= imminentActionAdj && CastTimeRemaining <= 0 && _inst->AnimationLock < 0.1f && GetAdjustedCastTime(imminentActionAdj) > 0 && GCD() < 0.1f; // if we're not casting, but will start soon, moving might interrupt future cast
-        var blockMovement = Config.PreventMovingWhileCasting && MoveMightInterruptCast && _ws.Party.Player()?.MountId == 0;
+        bool blockMovement = Config.PreventMovingWhileCasting && MoveMightInterruptCast && _ws.Party.Player()?.MountId == 0;
 
         // note: if we cancel movement and start casting immediately, it will be canceled some time later - instead prefer to delay for one frame
         bool actionImminent = EffectiveAnimationLock <= 0 && AutoQueue.Action && !IsRecastTimerActive(AutoQueue.Action) && !(blockMovement && _movement.IsMoving());
@@ -338,7 +340,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
             if (status == 0)
             {
                 // disable in-game auto rotation, to prevent fucking up with our logic
-                autoRotateConfig->Value.UInt = _smartRotationTweak.Enabled ? 0 : autoRotateOriginal;
+                autoRotateConfig->Value.UInt = _smartRotationTweak.Enabled || AI.AIManager.Instance?.Beh != null ? 0 : autoRotateOriginal;
                 var res = ExecuteAction(actionAdj, targetID, AutoQueue.TargetPos);
                 //Service.Log($"[AMEx] Auto-execute {AutoQueue.Source} action {AutoQueue.Action} (=> {actionAdj}) @ {targetID:X} {Utils.Vec3String(AutoQueue.TargetPos)} => {res}");
             }

@@ -140,24 +140,15 @@ class Shatter(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Impact(BossModule module, AID aid, int distance) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(aid), distance, stopAfterWall: true)
-{
-    public (WPos, DateTime) Data;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            Data = (caster.Position, Module.CastFinishAt(spell, 0.7f));
-    }
-}
+class Impact(BossModule module, AID aid, int distance) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(aid), distance, stopAfterWall: true);
 
 class Impact1(BossModule module) : Impact(module, AID.Impact1, 18)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.7s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 10, 12, default, 30.Degrees()), Data.Item2.AddSeconds(-0.7f));
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, 10, 12, default, 30.Degrees()), source.Activation);
     }
 }
 
@@ -167,8 +158,9 @@ class Impact2(BossModule module) : Impact(module, AID.Impact2, 18)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.7s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 10, 12, default, 20.Degrees()), Data.Item2.AddSeconds(-0.7f));
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, 10, 12, default, 20.Degrees()), source.Activation);
     }
 }
 
@@ -179,13 +171,13 @@ class Impact3(BossModule module) : Impact(module, AID.Impact3, 20)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || Data.Item2 > WorldState.CurrentTime) // 0.7s delay to wait for action effect
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
         {
-            var activation = Data.Item2.AddSeconds(-0.7f);
-            if (Data.Item1.X == 90)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 10, 15, direction, halfAngle), activation);
-            else if (Data.Item1.X == 110)
-                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(Data.Item1, 10, 15, -direction, halfAngle), activation);
+            if (source.Origin.X == 90)
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, 10, 15, direction, halfAngle), source.Activation);
+            else if (source.Origin.X == 110)
+                hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, 10, 15, -direction, halfAngle), source.Activation);
         }
     }
 }
@@ -206,13 +198,16 @@ class DestructiveHeat(BossModule module) : Components.SpreadFromCastTargets(modu
     {
         if (ActiveSpreads.Any())
         {
-            var knockback = _kb1.Sources(slot, actor).Any() || _kb1.Data.Item2 > WorldState.CurrentTime || _kb2.Sources(slot, actor).Any() || _kb2.Data.Item2 > WorldState.CurrentTime || _kb3.Sources(slot, actor).Any() || _kb2.Data.Item2 > WorldState.CurrentTime;
-            if (_kb1.Sources(slot, actor).Any())
-                origin = actor.Role is Role.Melee or Role.Ranged ? new(100, -400) : _kb1.Data.Item1;
-            else if (_kb2.Sources(slot, actor).Any())
-                origin = _kb2.Data.Item1;
-            else if (_kb3.Sources(slot, actor).Any())
-                origin = _kb3.Data.Item1;
+            var source1 = _kb1.Sources(slot, actor).FirstOrDefault();
+            var source2 = _kb2.Sources(slot, actor).FirstOrDefault();
+            var source3 = _kb3.Sources(slot, actor).FirstOrDefault();
+            var knockback = source1 != default || source2 != default || source3 != default;
+            if (source1 != default)
+                origin = actor.Role is Role.Melee or Role.Ranged ? new(100, -400) : source1.Origin;
+            else if (source2 != default)
+                origin = source2.Origin;
+            else if (source3 != default)
+                origin = source3.Origin;
             if (!knockback)
             {
                 base.AddAIHints(slot, actor, assignment, hints);

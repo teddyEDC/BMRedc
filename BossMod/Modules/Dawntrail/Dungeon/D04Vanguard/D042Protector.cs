@@ -116,7 +116,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Electrowave && Arena.Bounds == StartingBounds)
-            _aoe = new(rectArenaChange, Module.Center, default, Module.CastFinishAt(spell, 0.4f));
+            _aoe = new(rectArenaChange, Arena.Center, default, Module.CastFinishAt(spell, 0.4f));
     }
 
     public override void Update()
