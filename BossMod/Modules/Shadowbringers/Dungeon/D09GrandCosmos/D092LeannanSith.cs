@@ -106,9 +106,8 @@ class GreenTiles(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!ShouldActivateAOEs())
+        if (!ShouldActivateAOEs() || AI.AIManager.Instance?.Beh == null)
             return;
-
         base.AddAIHints(slot, actor, assignment, hints);
 
         var shape = ActiveAOEs(slot, actor).FirstOrDefault();

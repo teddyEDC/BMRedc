@@ -44,8 +44,10 @@ public sealed class ColorConfig : ConfigNode
 
     [PropertyDisplay("Arena: future vulnerable")]
     public Color ArenaFutureVulnerable = new(0x80ff00ff);
+
     [PropertyDisplay("Arena: melee range indicator")]
     public Color ArenaMeleeRangeIndicator = new(0xffff0000);
+
     [PropertyDisplay("Arena: other")]
     public Color[] ArenaOther = [new(0xffff0080), new(0xff8080ff), new(0xff80ff80), new(0xffff8040), new(0xff40c0c0)];
 
@@ -75,6 +77,7 @@ public sealed class ColorConfig : ConfigNode
 
     [PropertyDisplay("Waymark: 4")]
     public Color Waymark4 = new(0xffbc567a);
+
     [PropertyDisplay("Positional colors")]
     public Color[] PositionalColors = [new(0xff00ff00), new(0xff0000ff), new(0xffffffff), new(0xff00ffff)];
 
@@ -105,8 +108,6 @@ public sealed class ColorConfig : ConfigNode
      new(0x80ffffff), new(0x8000ff00), new(0xffffff00), new(0x800000ff), new(0xff404040),
      new(0xffff0000), new(0xff000000), new(0x80008080), new(0x8080ff80), new(0xffc0c0c0)];
 
-    public static ColorConfig DefaultConfig => new();
-
     [PropertyDisplay("Player colors: tank")]
     public Color PlayerColorsTank = Color.FromComponents(30, 50, 110);
 
@@ -124,4 +125,6 @@ public sealed class ColorConfig : ConfigNode
 
     [PropertyDisplay("Player colors: focus")]
     public Color PlayerColorsFocus = Color.FromComponents(0, 255, 255);
+
+    public static ColorConfig DefaultConfig => new();
 }
