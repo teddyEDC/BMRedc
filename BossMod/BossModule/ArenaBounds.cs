@@ -287,15 +287,14 @@ public record class ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon 
         var (halfWidth, halfHeight) = CalculatePolygonProperties(polygon);
         var map = new Pathfinding.Map(MapResolution, Center, halfWidth, halfHeight);
 
-        // due to being an embarrassingly parallel problem, this is faster than using a proper ShapeDistance function
+        // due to being an embarassingly parallel problem this is faster than using a proper ShapeDistance func
         Parallel.ForEach(map.EnumeratePixels(), (pixel) =>
         {
             var (x, y, pos) = pixel;
             var relativeCenter = new WDir(pos.X - Center.X, pos.Z - Center.Z);
             var samplePoints = GenerateSamplePoints(relativeCenter, MapResolution);
             var allPointsInside = samplePoints.All(polygon.Contains);
-            var pixelIndex = map.GridToIndex(x, y);
-            map.PixelMaxG[pixelIndex] = allPointsInside ? float.MaxValue : 0;
+            map.Pixels[y * map.Width + x].MaxG = allPointsInside ? float.MaxValue : 0;
         });
 
         return map;

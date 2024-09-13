@@ -11,22 +11,38 @@ public struct NavigationDecision
     // context that allows reusing large memory allocations
     public class Context
     {
-        public float[] Scratch = [];
         public Map Map = new();
+        public Map Map2 = new();
         public ThetaStar ThetaStar = new();
+    }
+
+    public enum Decision
+    {
+        None,
+        ImminentToSafe,
+        ImminentToClosest,
+        UnsafeToPositional,
+        UnsafeToUptime,
+        UnsafeToSafe,
+        SafeToUptime,
+        SafeToCloser,
+        SafeBlocked,
+        UptimeToPositional,
+        UptimeBlocked,
+        Optimal,
+        CustomWaypoints
     }
 
     public WPos? Destination;
     public float LeewaySeconds; // can be used for finishing casts / slidecasting etc.
     public float TimeToGoal;
     public Map? Map;
-    public WPos GoalPos;
-    public float GoalRadius;
+    public int MapGoal;
+    public Decision DecisionType;
 
-    public const float ForbiddenZoneCushion = 0; // increase to fatten forbidden zones
-    public const float ActivationTimeCushion = 0.5f; // reduce time between now and activation by this value in seconds; increase for more conservativeness
+    public const float DefaultForbiddenZoneCushion = 0.15f;
 
-    public static NavigationDecision Build(Context ctx, WorldState ws, AIHints hints, Actor player, WPos? targetPos, float targetRadius, Angle targetRot, Positional positional, float playerSpeed = 6)
+    public static NavigationDecision Build(Context ctx, WorldState ws, AIHints hints, Actor player, WPos? targetPos, float targetRadius, Angle targetRot, Positional positional, float playerSpeed = 6, float forbiddenZoneCushion = DefaultForbiddenZoneCushion)
     {
         if (targetRadius < 1)
             targetRadius = 1; // ensure targetRadius is at least 1 to prevent game from freezing
@@ -43,194 +59,304 @@ public struct NavigationDecision
                     Destination = currentWaypoint.Value,
                     LeewaySeconds = float.MaxValue,
                     TimeToGoal = (currentWaypoint.Value - player.Position).Length() / playerSpeed,
+                    DecisionType = Decision.CustomWaypoints
                 };
             }
         }
 
-        // build a pathfinding map: rasterize all forbidden zones and goals
-        hints.Bounds.PathfindMap(ctx.Map, hints.Center);
-        if (hints.ForbiddenZones.Count > 0)
-            RasterizeForbiddenZones(ctx.Map, hints.ForbiddenZones, ws.CurrentTime, ref ctx.Scratch);
-        if (targetPos != null)
-            RasterizeGoalZones(ctx.Map, targetPos.Value, targetRadius, targetRot, positional);
+        // TODO: skip pathfinding if there are no forbidden zones, just find closest point in circle/cone...
 
-        // execute pathfinding
-        var goalPos = hints.PathfindingHintDestination ?? targetPos ?? hints.Center;
-        var goalRadius = hints.PathfindingHintRadius ?? targetRadius;
-        ctx.ThetaStar.Start(ctx.Map, player.Position, goalPos, goalRadius, 1.0f / playerSpeed);
-        var bestNodeIndex = ctx.ThetaStar.Execute();
-        ref var bestNode = ref ctx.ThetaStar.NodeByIndex(bestNodeIndex);
-        return new() { Destination = GetFirstWaypoint(ctx.ThetaStar, ctx.Map, bestNodeIndex), LeewaySeconds = bestNode.PathLeeway, TimeToGoal = bestNode.GScore, Map = ctx.Map, GoalPos = goalPos, GoalRadius = goalRadius };
-    }
+        var imminent = ImminentExplosionTime(ws.CurrentTime);
+        var numImminentZones = hints.ForbiddenZones.FindIndex(z => z.activation > imminent);
+        if (numImminentZones < 0)
+            numImminentZones = hints.ForbiddenZones.Count;
 
-    public static void RasterizeForbiddenZones(Map map, List<(Func<WPos, float> shapeDistance, DateTime activation)> zones, DateTime current, ref float[] scratch)
-    {
-        // very slight difference in activation times cause issues for pathfinding - cluster them together
-        (Func<WPos, float> shapeDistance, DateTime activation)[] zonesFixed = [.. zones];
-        DateTime clusterStart = default, clusterEnd = default, globalStart = current, globalEnd = current.AddSeconds(120);
-        foreach (ref var z in zonesFixed.AsSpan())
+        // check whether player is inside each forbidden zone
+        var inZone = hints.ForbiddenZones.Select(f => f.shapeDistance(player.Position) <= forbiddenZoneCushion - 0.1f).ToList(); // we might have a situation where player's cell center is outside, but player is not, yet player is too close to center for navigation to work...
+        if (inZone.Any(inside => inside))
         {
-            if (z.activation < globalStart)
-                z.activation = globalStart;
-            else if (z.activation > globalEnd)
-                z.activation = globalEnd;
+            // we're in forbidden zone => find path to safety (and ideally to uptime zone)
+            // if such a path can't be found (that's always the case if we're inside imminent forbidden zone, but can also happen in other cases), try instead to find a path to safety that doesn't enter any other zones that we're not inside
+            // first build a map with zones that we're outside of as blockers
+            hints.Bounds.PathfindMap(ctx.Map, hints.Center);
+            foreach (var (zf, inside) in hints.ForbiddenZones.Zip(inZone))
+                if (!inside)
+                    AddBlockerZone(ctx.Map, imminent, zf.activation, zf.shapeDistance, forbiddenZoneCushion);
 
-            if (z.activation < clusterEnd)
+            var inImminentForbiddenZone = inZone.Take(numImminentZones).Any(inside => inside);
+            if (!inImminentForbiddenZone)
             {
-                z.activation = clusterStart;
+                ctx.Map2.Init(ctx.Map, ctx.Map.Center);
+                foreach (var (zf, inside) in hints.ForbiddenZones.Zip(inZone))
+                    if (inside)
+                        AddBlockerZone(ctx.Map2, imminent, zf.activation, zf.shapeDistance, forbiddenZoneCushion);
+                var maxGoal = targetPos != null ? AddTargetGoal(ctx.Map2, targetPos.Value, targetRadius, targetRot, positional, 0) : 0;
+                var res = FindPathFromUnsafe(ctx.ThetaStar, ctx.Map2, player.Position, 0, maxGoal, targetPos, targetRot, positional, playerSpeed);
+                if (res != null)
+                    return res.Value;
+
+                // pathfind to any spot outside aoes we're in that doesn't enter new aoes
+                foreach (var (zf, inside) in hints.ForbiddenZones.Zip(inZone))
+                    if (inside)
+                        ctx.Map.AddGoal(zf.shapeDistance, forbiddenZoneCushion, 0, -1);
+                return FindPathFromImminent(ctx.ThetaStar, ctx.Map, player.Position, playerSpeed);
             }
             else
             {
-                clusterStart = z.activation;
-                clusterEnd = z.activation.AddSeconds(0.5f);
+                // try to find a path out of imminent aoes that we're in, while remaining in non-imminent aoes that we're already in - it might be worth it...
+                foreach (var (zf, inside) in hints.ForbiddenZones.Zip(inZone).Take(numImminentZones))
+                    if (inside)
+                        ctx.Map.AddGoal(zf.shapeDistance, forbiddenZoneCushion, 0, -1);
+                return FindPathFromImminent(ctx.ThetaStar, ctx.Map, player.Position, playerSpeed);
             }
         }
 
-        // note that a zone can partially intersect a pixel; so what we do is check each corner and set the maxg value of a pixel equal to the minimum of 4 corners
-        // to avoid 4x calculations, we do a slightly tricky loop:
-        // - outer loop fills row i to with g values corresponding to the 'upper edge' of cell i
-        // - inner loop calculates the g value at the left border, then iterates over all right corners and fills minimums of two g values to the cells
-        // - second outer loop calculates values at 'bottom' edge and then updates the values of all cells to correspond to the cells rather than edges
-        map.MaxG = zonesFixed.Length > 0 ? ActivationToG(zonesFixed[^1].activation, current) : 0;
-        if (scratch.Length < map.PixelMaxG.Length)
-            scratch = new float[map.PixelMaxG.Length];
-
-        // see Map.EnumeratePixels, note that we care about corners rather than centers
-        var dy = map.LocalZDivRes * map.Resolution * map.Resolution;
-        var dx = dy.OrthoL();
-        var cy = map.Center - map.Width / 2 * dx - map.Height / 2 * dy;
-
-        int iCell = 0;
-        for (int y = 0; y < map.Height; ++y)
+        // we're safe, see if we can improve our position
+        if (targetPos != null)
         {
-            var cx = cy;
-            var leftG = CalculateMaxG(zonesFixed, map, cx, current);
-            for (int x = 0; x < map.Width; ++x)
+            if (!player.Position.InCircle(targetPos.Value, targetRadius))
             {
-                cx += dx;
-                var rightG = CalculateMaxG(zonesFixed, map, cx, current);
-                scratch[iCell++] = Math.Min(leftG, rightG);
-                leftG = rightG;
-            }
-            cy += dy;
-        }
-        var bleftG = CalculateMaxG(zonesFixed, map, cy, current);
-        iCell -= map.Width;
-        for (int x = 0; x < map.Width; ++x, ++iCell)
-        {
-            cy += dx;
-            var brightG = CalculateMaxG(zonesFixed, map, cy, current);
-            var bottomG = Math.Min(bleftG, brightG);
-            var jCell = iCell;
-            for (int y = map.Height; y > 0; --y, jCell -= map.Width)
-            {
-                var topG = scratch[jCell];
-                var cellG = map.PixelMaxG[jCell] = Math.Min(Math.Min(topG, bottomG), map.PixelMaxG[jCell]);
-                if (cellG != float.MaxValue)
-                    map.PixelPriority[jCell] = sbyte.MinValue;
-                bottomG = topG;
-            }
-            bleftG = brightG;
-        }
-    }
-
-    public static void RasterizeGoalZones(Map map, WPos targetPos, float targetRadius, Angle targetRot, Positional positional)
-    {
-        var (xc, yc) = map.WorldToGrid(targetPos);
-        var halfSize = (int)(targetRadius / map.Resolution) + 2;
-        var (x0, y0) = map.ClampToGrid((xc - halfSize, yc - halfSize));
-        var (x1, y1) = map.ClampToGrid((xc + halfSize, yc + halfSize));
-
-        // see Map.EnumeratePixels, note that we care about corners rather than centers
-        var dy = map.LocalZDivRes * map.Resolution * map.Resolution;
-        var dx = dy.OrthoL();
-        var cy = map.Center + (x0 - map.Width / 2) * dx + (y0 - map.Height / 2) * dy;
-
-        var targetDir = targetRot.ToDirection();
-        for (int y = y0; y <= y1; ++y)
-        {
-            var cx = cy;
-            var leftP = CalculateGoalPriority(targetPos, targetRadius, targetDir, positional, map, cx);
-            var iCell = map.GridToIndex(x0, y);
-            for (int x = x0; x <= x1; ++x)
-            {
-                cx += dx;
-                var rightP = CalculateGoalPriority(targetPos, targetRadius, targetDir, positional, map, cx);
-                map.PixelPriority[iCell++] = Math.Min(leftP, rightP);
-                leftP = rightP;
-            }
-            cy += dy;
-        }
-        var bleftP = CalculateGoalPriority(targetPos, targetRadius, targetDir, positional, map, cy);
-        var bCell = map.GridToIndex(x0, y1);
-        for (int x = x0; x <= x1; ++x, ++bCell)
-        {
-            cy += dx;
-            var brightP = CalculateGoalPriority(targetPos, targetRadius, targetDir, positional, map, cy);
-            var bottomP = Math.Min(bleftP, brightP);
-            var iCell = bCell;
-            for (int y = y1; y >= y0; --y, iCell -= map.Width)
-            {
-                var topP = map.PixelPriority[iCell];
-                if (map.PixelMaxG[iCell] == float.MaxValue)
+                // we're not in uptime zone, just run to it, avoiding any aoes
+                hints.Bounds.PathfindMap(ctx.Map, hints.Center);
+                foreach (var (shape, activation) in hints.ForbiddenZones)
+                    AddBlockerZone(ctx.Map, imminent, activation, shape, forbiddenZoneCushion);
+                var maxGoal = AddTargetGoal(ctx.Map, targetPos.Value, targetRadius, targetRot, Positional.Any, 0);
+                if (maxGoal != 0)
                 {
-                    var cellP = map.PixelPriority[iCell] = Math.Min(topP, bottomP);
-                    map.MaxPriority = Math.Max(map.MaxPriority, cellP);
+                    // try to find a path to target
+                    ctx.ThetaStar.Start(ctx.Map, maxGoal, player.Position, 1.0f / playerSpeed);
+                    var res = ctx.ThetaStar.Execute();
+                    if (res >= 0)
+                        return new() { Destination = GetFirstWaypoint(ctx.ThetaStar, res), LeewaySeconds = float.MaxValue, TimeToGoal = ctx.ThetaStar.NodeByIndex(res).GScore, Map = ctx.Map, MapGoal = maxGoal, DecisionType = Decision.SafeToUptime };
                 }
-                else
+
+                // goal is not reachable, but we can try getting as close to the target as we can until first aoe
+                var start = ctx.Map.ClampToGrid(ctx.Map.WorldToGrid(player.Position));
+                var end = ctx.Map.ClampToGrid(ctx.Map.WorldToGrid(targetPos.Value));
+                var best = start;
+                foreach (var (x, y) in ctx.Map.EnumeratePixelsInLine(start.x, start.y, end.x, end.y))
                 {
-                    map.PixelPriority[iCell] = sbyte.MinValue;
+                    if (ctx.Map[x, y].MaxG != float.MaxValue)
+                        break;
+                    best = (x, y);
                 }
-                bottomP = topP;
+                if (best != start)
+                {
+                    var dest = ctx.Map.GridToWorld(best.x, best.y, 0.5f, 0.5f);
+                    return new() { Destination = dest, LeewaySeconds = float.MaxValue, TimeToGoal = (dest - player.Position).Length() / playerSpeed, Map = ctx.Map, MapGoal = maxGoal, DecisionType = Decision.SafeToCloser };
+                }
+
+                return new() { Destination = null, LeewaySeconds = float.MaxValue, TimeToGoal = 0, Map = ctx.Map, MapGoal = maxGoal, DecisionType = Decision.SafeBlocked };
             }
-            bleftP = brightP;
+
+            var playerOrientationToTarget = (player.Position - targetPos.Value).Normalized().Dot(targetRot.ToDirection());
+
+            var inPositional = positional switch
+            {
+                Positional.Rear => playerOrientationToTarget < -0.7071068f,
+                Positional.Flank => MathF.Abs(playerOrientationToTarget) < 0.7071068f,
+                Positional.Front => playerOrientationToTarget > 0.999f, // ~2.5 degrees - assuming max position error of 0.1, this requires us to stay at least at R=~2.25
+                _ => true
+            };
+            if (!inPositional)
+            {
+                // we're in uptime zone, but not in correct quadrant - move there, avoiding all aoes and staying within uptime zone
+                hints.Bounds.PathfindMap(ctx.Map, hints.Center);
+                ctx.Map.BlockPixelsInside(ShapeDistance.InvertedCircle(targetPos.Value, targetRadius), 0, 0);
+                foreach (var (shape, activation) in hints.ForbiddenZones)
+                    AddBlockerZone(ctx.Map, imminent, activation, shape, forbiddenZoneCushion);
+                var maxGoal = AddPositionalGoal(ctx.Map, targetPos.Value, targetRadius, targetRot, positional, 0);
+                if (maxGoal > 0)
+                {
+                    // try to find a path to quadrant
+                    ctx.ThetaStar.Start(ctx.Map, maxGoal, player.Position, 1.0f / playerSpeed);
+                    var res = ctx.ThetaStar.Execute();
+                    if (res >= 0)
+                    {
+                        var dest = IncreaseDestinationPrecision(GetFirstWaypoint(ctx.ThetaStar, res), targetPos, targetRot, positional);
+                        return new() { Destination = dest, LeewaySeconds = float.MaxValue, TimeToGoal = ctx.ThetaStar.NodeByIndex(res).GScore, Map = ctx.Map, MapGoal = maxGoal, DecisionType = Decision.UptimeToPositional };
+                    }
+                }
+
+                // fail
+                return new() { Destination = null, LeewaySeconds = float.MaxValue, TimeToGoal = 0, Map = ctx.Map, MapGoal = maxGoal, DecisionType = Decision.UptimeBlocked };
+            }
         }
+
+        return new() { Destination = null, LeewaySeconds = float.MaxValue, TimeToGoal = 0, DecisionType = Decision.Optimal };
     }
 
-    private static float ActivationToG(DateTime activation, DateTime current) => MathF.Max(0, (float)(activation - current).TotalSeconds - ActivationTimeCushion);
+    public static DateTime ImminentExplosionTime(DateTime currentTime) => currentTime.AddSeconds(1);
 
-    private static float CalculateMaxG(Span<(Func<WPos, float> shapeDistance, DateTime activation)> zones, Map map, WPos p, DateTime current)
+    public static void AddBlockerZone(Map map, DateTime imminent, DateTime activation, Func<WPos, float> shape, float threshold) => map.BlockPixelsInside(shape, MathF.Max(0, (float)(activation - imminent).TotalSeconds), threshold);
+
+    public static int AddTargetGoal(Map map, WPos targetPos, float targetRadius, Angle targetRot, Positional positional, int minPriority)
     {
-        foreach (ref var z in zones)
-            if (z.shapeDistance(p) < ForbiddenZoneCushion)
-                return ActivationToG(z.activation, current);
-        return float.MaxValue;
+        var adjPrio = map.AddGoal(ShapeDistance.Circle(targetPos, targetRadius), 0, minPriority, 1);
+        if (adjPrio == minPriority)
+            return minPriority;
+        return AddPositionalGoal(map, targetPos, targetRadius, targetRot, positional, minPriority + 1);
     }
 
-    private static sbyte CalculateGoalPriority(WPos targetPos, float targetRadius, WDir targetDir, Positional positional, Map map, WPos p)
+    public static Func<WPos, float> ShapeDistanceFlank(WPos targetPos, Angle targetRot)
     {
-        var offset = p - targetPos;
-        var lsq = offset.LengthSq();
-        if (lsq > targetRadius * targetRadius)
-            return 0;
-        if (positional == Positional.Any)
-            return 1;
-
-        var front = targetDir.Dot(offset);
-        var side = Math.Abs(targetDir.Dot(offset.OrthoL()));
-        var inPositional = positional switch
+        var n1 = (targetRot + 45.Degrees()).ToDirection();
+        var n2 = n1.OrthoL();
+        return p =>
         {
-            Positional.Flank => side > Math.Abs(front),
-            Positional.Rear => -front > side,
-            Positional.Front => front > side, // TODO: reconsider this...
-            _ => false
+            var off = p - targetPos;
+            var d1 = n1.Dot(off);
+            var d2 = n2.Dot(off);
+            var dr = Math.Max(d1, d2);
+            var dl = Math.Max(-d1, -d2);
+            return Math.Min(dr, dl);
         };
-        return (sbyte)(inPositional ? 2 : 1);
     }
 
-    private static WPos? GetFirstWaypoint(ThetaStar pf, Map map, int cell)
+    public static Func<WPos, float> ShapeDistanceRear(WPos targetPos, Angle targetRot)
     {
-        ref var startingNode = ref pf.NodeByIndex(cell);
-        if (startingNode.GScore == 0 && startingNode.PathMinG == float.MaxValue)
-            return null; // we're already in safe zone
+        var n1 = (targetRot - 45.Degrees()).ToDirection();
+        var n2 = n1.OrthoL();
+        return p =>
+        {
+            var off = p - targetPos;
+            var d1 = n1.Dot(off);
+            var d2 = n2.Dot(off);
+            return Math.Max(d1, d2);
+        };
+    }
 
+    public static int AddPositionalGoal(Map map, WPos targetPos, float targetRadius, Angle targetRot, Positional positional, int minPriority)
+    {
+        var adjPrio = minPriority;
+        switch (positional)
+        {
+            case Positional.Flank:
+                adjPrio = map.AddGoal(ShapeDistanceFlank(targetPos, targetRot), 0, minPriority, 1);
+                break;
+            case Positional.Rear:
+                adjPrio = map.AddGoal(ShapeDistanceRear(targetPos, targetRot), 0, minPriority, 1);
+                break;
+            case Positional.Front:
+                Func<int, int, bool> suitable = (x, y) =>
+                {
+                    if (!map.InBounds(x, y))
+                        return false;
+                    var pixel = map[x, y];
+                    return pixel.Priority >= minPriority && pixel.MaxG == float.MaxValue;
+                };
+
+                var dir = targetRot.ToDirection();
+                var maxRange = map.WorldToGrid(targetPos + dir * targetRadius);
+                if (suitable(maxRange.x, maxRange.y))
+                {
+                    adjPrio = map.AddGoal(maxRange.x, maxRange.y, 1);
+                }
+                else if (targetRadius > 3)
+                {
+                    var minRange = map.WorldToGrid(targetPos + dir * 3);
+                    if (minRange != maxRange)
+                    {
+                        foreach (var p in map.EnumeratePixelsInLine(maxRange.x, maxRange.y, minRange.x, minRange.y))
+                        {
+                            if (suitable(p.x, p.y))
+                            {
+                                adjPrio = map.AddGoal(p.x, p.y, 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+        return adjPrio;
+    }
+
+    public static NavigationDecision? FindPathFromUnsafe(ThetaStar pathfind, Map map, WPos startPos, int safeGoal, int maxGoal, WPos? targetPos, Angle targetRot, Positional positional, float speed = 6)
+    {
+        if (maxGoal - safeGoal == 2)
+        {
+            // try finding path to flanking position
+            pathfind.Start(map, maxGoal, startPos, 1.0f / speed);
+            var res = pathfind.Execute();
+            if (res >= 0)
+            {
+                var dest = IncreaseDestinationPrecision(GetFirstWaypoint(pathfind, res), targetPos, targetRot, positional);
+                return new() { Destination = dest, LeewaySeconds = pathfind.NodeByIndex(res).PathLeeway, TimeToGoal = pathfind.NodeByIndex(res).GScore, Map = map, MapGoal = maxGoal, DecisionType = Decision.UnsafeToPositional };
+            }
+            --maxGoal;
+        }
+
+        if (maxGoal - safeGoal == 1)
+        {
+            // try finding path to uptime position
+            pathfind.Start(map, maxGoal, startPos, 1.0f / speed);
+            var res = pathfind.Execute();
+            if (res >= 0)
+                return new() { Destination = GetFirstWaypoint(pathfind, res), LeewaySeconds = pathfind.NodeByIndex(res).PathLeeway, TimeToGoal = pathfind.NodeByIndex(res).GScore, Map = map, MapGoal = maxGoal, DecisionType = Decision.UnsafeToUptime };
+            --maxGoal;
+        }
+
+        if (maxGoal - safeGoal == 0)
+        {
+            // try finding path to any safe spot
+            pathfind.Start(map, maxGoal, startPos, 1.0f / speed);
+            var res = pathfind.Execute();
+            if (res >= 0)
+                return new() { Destination = GetFirstWaypoint(pathfind, res), LeewaySeconds = pathfind.NodeByIndex(res).PathLeeway, TimeToGoal = pathfind.NodeByIndex(res).GScore, Map = map, MapGoal = maxGoal, DecisionType = Decision.UnsafeToSafe };
+        }
+
+        return null;
+    }
+
+    public static NavigationDecision FindPathFromImminent(ThetaStar pathfind, Map map, WPos startPos, float speed = 6)
+    {
+        pathfind.Start(map, 0, startPos, 1.0f / speed);
+        var res = pathfind.Execute();
+        if (res >= 0)
+        {
+            return new() { Destination = GetFirstWaypoint(pathfind, res), LeewaySeconds = 0, TimeToGoal = pathfind.NodeByIndex(res).GScore, Map = map, MapGoal = 0, DecisionType = Decision.ImminentToSafe };
+        }
+
+        // just run to closest safe spot, if no good path can be found
+        WPos? closest = null;
+        var closestDistance = float.MaxValue;
+        foreach (var p in map.EnumeratePixels())
+        {
+            var px = map[p.x, p.y];
+            if (px.Priority == 0 && px.MaxG == float.MaxValue)
+            {
+                // safe pixel, candidate
+                var distance = (p.center - startPos).LengthSq();
+                if (distance < closestDistance)
+                {
+                    closest = p.center;
+                    closestDistance = distance;
+                }
+            }
+        }
+        return new() { Destination = closest, LeewaySeconds = 0, TimeToGoal = MathF.Sqrt(closestDistance) / speed, Map = map, DecisionType = Decision.ImminentToClosest };
+    }
+
+    public static WPos? GetFirstWaypoint(ThetaStar pf, int cell)
+    {
         do
         {
             ref var node = ref pf.NodeByIndex(cell);
-            if (pf.NodeByIndex(node.ParentIndex).GScore == 0)
+            var parent = pf.CellIndex(node.ParentX, node.ParentY);
+            if (pf.NodeByIndex(parent).GScore == 0)
                 return pf.CellCenter(cell);
-            cell = node.ParentIndex;
+            cell = parent;
         }
         while (true);
+    }
+
+    public static WPos? IncreaseDestinationPrecision(WPos? dest, WPos? targetPos, Angle targetRot, Positional positional)
+    {
+        if (dest == null || targetPos == null || positional != Positional.Front)
+            return dest;
+        var dir = targetRot.ToDirection();
+        var adjDest = targetPos.Value + dir * dir.Dot(dest.Value - targetPos.Value);
+        return (dest.Value - adjDest).LengthSq() < 1 ? adjDest : dest;
     }
 }
