@@ -464,7 +464,7 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
             return;
         var forbidden = new List<Func<WPos, float>>();
         foreach (var c in Raid.WithoutSlot().Exclude(actor))
-            forbidden.Add(ShapeDistance.InvertedCircle(c.Position, Donut.InnerRadius / 3));
+            forbidden.Add(ShapeDistance.InvertedCircle(c.Position, Donut.InnerRadius / 4));
         if (forbidden.Count > 0)
             hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), ActiveStacks.FirstOrDefault().Activation);
     }

@@ -112,7 +112,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
 
     private void AddSource(WDir direction, AOEShapeRect shape, Angle angle)
     {
-        _sources.Add(new(Module.Center + direction, 20, Activation, shape, angle, Kind.DirForward));
+        _sources.Add(new(Arena.Center + direction, 20, Activation, shape, angle, Kind.DirForward));
     }
 
     private void AddSourceAndData(WDir direction, AOEShapeRect shape, Angle angle)

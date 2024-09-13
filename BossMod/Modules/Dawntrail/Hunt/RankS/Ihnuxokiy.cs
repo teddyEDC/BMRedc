@@ -87,7 +87,7 @@ class AetherstockAbyssalSmog(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class ChaoticStormForcedMarch(BossModule module) : Components.StatusDrivenForcedMarch(module, 2, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace);
+class ChaoticStormForcedMarch(BossModule module) : Components.StatusDrivenForcedMarch(module, 3, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace);
 class ChaoticStorm(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.ChaoticStorm), "Raidwide + forced march debuffs");
 class RazorZephyr(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RazorZephyr), new AOEShapeRect(50, 6));
 class Blade(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Blade));

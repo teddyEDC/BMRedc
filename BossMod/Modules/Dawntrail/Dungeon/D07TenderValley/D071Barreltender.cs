@@ -38,15 +38,15 @@ class HeavyweightNeedlesArenaChange(BossModule module) : Components.GenericAOEs(
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.HeavyweightNeedlesVisual && Module.Arena.Bounds == D071Barreltender.StartingBounds)
-            _aoe = new(square, Module.Center, default, Module.CastFinishAt(spell, 0.7f));
+        if ((AID)spell.Action.ID == AID.HeavyweightNeedlesVisual && Arena.Bounds == D071Barreltender.StartingBounds)
+            _aoe = new(square, Arena.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (state == 0x00020001 && index == 0x03)
         {
-            Module.Arena.Bounds = D071Barreltender.DefaultBounds;
+            Arena.Bounds = D071Barreltender.DefaultBounds;
             _aoe = null;
         }
     }
@@ -94,10 +94,7 @@ class NeedleStormSuperstormHeavyWeightNeedles(BossModule module) : Components.Ge
             cactiActive = true;
             var updatedAOEs = new List<AOEInstance>();
             foreach (var a in _aoesCircles)
-            {
-                var updatedAOE = new AOEInstance(a.Shape, a.Origin, default, Module.CastFinishAt(spell, 13.7f));
-                updatedAOEs.Add(updatedAOE);
-            }
+                updatedAOEs.Add(a with { Activation = Module.CastFinishAt(spell, 13.7f) });
             _aoesCircles = updatedAOEs;
         }
         else if ((AID)spell.Action.ID == AID.HeavyweightNeedles)

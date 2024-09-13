@@ -129,11 +129,11 @@ class Cacophony(BossModule module) : Components.GenericAOEs(module)
     {
         base.AddAIHints(slot, actor, assignment, hints);
         foreach (var w in _orbs)
-            hints.AddForbiddenZone(new AOEShapeCircle(6), w.Position + 2 * w.Rotation.ToDirection());
+            hints.AddForbiddenZone(circle, w.Position + 2 * w.Rotation.ToDirection());
     }
 }
 
-class CacophonyTether(BossModule module) : Components.StretchTetherSingle(module, (uint)TetherID.OrbTether, 15);
+class CacophonyTether(BossModule module) : Components.StretchTetherSingle(module, (uint)TetherID.OrbTether, 15, needToKite: true);
 
 class DD50ServomechanicalChimera14XStates : StateMachineBuilder
 {

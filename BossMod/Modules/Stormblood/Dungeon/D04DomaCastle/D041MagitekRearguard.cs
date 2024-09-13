@@ -10,7 +10,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    Attack = 872, // Boss->player, no cast, single-target
+    AutoAttack = 872, // Boss->player, no cast, single-target
     CermetPile = 8349, // Boss->self, no cast, range 40+R width 6 rect
     GarleanFireVisual = 8350, // Boss->self, 3.0s cast, single-target
     GarleanFire = 8351, // Helper->self, 3.0s cast, range 6 circle
