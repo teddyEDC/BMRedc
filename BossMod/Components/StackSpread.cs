@@ -171,13 +171,7 @@ public class GenericStackSpread(BossModule module, bool alwaysShowSpreads = fals
         }
         else
         {
-            // Define a helper method to draw circles with optional shadows
-            void DrawCircle(WPos position, float radius, uint color)
-            {
-                if (Arena.Config.ShowOutlinesAndShadows)
-                    Arena.AddCircle(position, radius, Colors.Shadows, 2);
-                Arena.AddCircle(position, radius, color);
-            }
+            void DrawCircle(WPos position, float radius, uint color) => Arena.AddCircle(position, radius, color);
             // Handle safe stack circles
             foreach (var s in ActiveStacks.Where(x => x.Target == pc || !x.ForbiddenPlayers[pcSlot]
                     && !IsSpreadTarget(pc) && !IsStackTarget(pc) && (x.IsInside(pc)
