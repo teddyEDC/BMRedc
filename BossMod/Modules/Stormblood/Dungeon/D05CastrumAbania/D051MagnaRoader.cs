@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace BossMod.Stormblood.Dungeon.D05CastrumAbania.D051MagnaRoader;
 
 public enum OID : uint
@@ -34,7 +32,6 @@ public enum AID : uint
 public enum SID : uint
 {
     Fetters = 1399 // Helper->player/Helper/Boss, extra=0x0
-
 }
 
 class MagitekPulsePlayer(BossModule module) : BossComponent(module)
