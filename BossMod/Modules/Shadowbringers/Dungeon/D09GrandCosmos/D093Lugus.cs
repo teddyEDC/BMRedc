@@ -270,7 +270,7 @@ class FiresIreBait(BossModule module) : Components.GenericBaitAway(module)
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         foreach (var b in ActiveBaitsNotOn(actor))
-            hints.AddForbiddenZone(b.Shape, b.Target.Position + (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - b.Target.Position).Normalized(), b.Rotation);
+            hints.AddForbiddenZone(b.Shape, b.Target.Position - (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * Module.PrimaryActor.DirectionTo(b.Target), b.Rotation);
 
         if (CurrentBaits.Any(x => x.Target == actor))
         {
@@ -288,13 +288,13 @@ class FiresIreBait(BossModule module) : Components.GenericBaitAway(module)
         foreach (var a in _furniture)
             Arena.AddCircle(a.Position, a.HitboxRadius, Colors.Danger);
         foreach (var b in ActiveBaitsOn(pc))
-            b.Shape.Outline(Arena, b.Target.Position + (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - b.Target.Position).Normalized(), b.Rotation);
+            b.Shape.Outline(Arena, b.Target.Position - (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * Module.PrimaryActor.DirectionTo(b.Target), b.Rotation);
     }
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
         foreach (var b in ActiveBaitsNotOn(pc))
-            b.Shape.Draw(Arena, b.Target.Position + (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - b.Target.Position).Normalized(), b.Rotation);
+            b.Shape.Draw(Arena, b.Target.Position - (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * Module.PrimaryActor.DirectionTo(b.Target), b.Rotation);
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)

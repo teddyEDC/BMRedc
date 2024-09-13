@@ -62,9 +62,7 @@ class Buffet(BossModule module) : Components.KnockbackFromCastTarget(module, Act
     {
         base.AddHints(slot, actor, hints);
         if (target == actor && targeted)
-        {
             hints.Add("Bait away!");
-        }
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -75,24 +73,24 @@ class Buffet(BossModule module) : Components.KnockbackFromCastTarget(module, Act
     }
 }
 
-class Buffet2(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Buffet), new AOEShapeCone(30, 60.Degrees()), true) //Boss jumps on player and does a cone attack, this is supposed to predict the position of the cone attack
+class Buffet2(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Buffet), new AOEShapeCone(30, 60.Degrees()), true)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         foreach (var b in ActiveBaitsNotOn(actor))
-            hints.AddForbiddenZone(b.Shape, b.Target.Position + (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - b.Target.Position).Normalized(), b.Rotation);
+            hints.AddForbiddenZone(b.Shape, b.Target.Position - (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * Module.PrimaryActor.DirectionTo(b.Target), b.Rotation);
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        foreach (var bait in ActiveBaitsOn(pc))
-            bait.Shape.Outline(Arena, bait.Target.Position + (bait.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - bait.Target.Position).Normalized(), bait.Rotation);
+        foreach (var b in ActiveBaitsOn(pc))
+            b.Shape.Outline(Arena, b.Target.Position - (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * Module.PrimaryActor.DirectionTo(b.Target), b.Rotation);
     }
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        foreach (var bait in ActiveBaitsNotOn(pc))
-            bait.Shape.Draw(Arena, bait.Target.Position + (bait.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * (Module.PrimaryActor.Position - bait.Target.Position).Normalized(), bait.Rotation);
+        foreach (var b in ActiveBaitsNotOn(pc))
+            b.Shape.Draw(Arena, b.Target.Position - (b.Target.HitboxRadius + Module.PrimaryActor.HitboxRadius) * Module.PrimaryActor.DirectionTo(b.Target), b.Rotation);
     }
 }
 
@@ -114,7 +112,7 @@ class AiravataStates : StateMachineBuilder
             .ActivateOnEnter<Hurl>()
             .ActivateOnEnter<RaucousScritch>()
             .ActivateOnEnter<Spin>()
-            .Raw.Update = () => module.Enemies(OID.Boss).All(e => e.IsDead) && module.Enemies(OID.BonusAddGoldWhisker).All(e => e.IsDead) && module.Enemies(OID.BonusAddAltarMatanga).All(e => e.IsDead);
+            .Raw.Update = () => module.Enemies(OID.Boss).Concat(module.Enemies(OID.BonusAddGoldWhisker)).Concat(module.Enemies(OID.BonusAddAltarMatanga)).All(e => e.IsDead);
     }
 }
 

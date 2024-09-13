@@ -47,12 +47,16 @@ class MagitekPulsePlayer(BossModule module) : BossComponent(module)
         foreach (var t in turrets)
             forbidden.Add(ShapeDistance.InvertedCircle(t.Position, 3));
         var closestTurret = turrets.Closest(actor.Position);
-        if (forbidden.Count > 0 && closestTurret != null && (actor.Position - closestTurret.Position).LengthSq() > 9)
-            hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max());
-        else if (closestTurret != null && (actor.Position - closestTurret.Position).LengthSq() < 9)
+        if (closestTurret != null)
         {
-            hints.InteractWithTarget = closestTurret;
-            hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.MagitekPulse), null, ActionQueue.Priority.High, targetPos: Module.PrimaryActor.PosRot.XYZ());
+            var distance = (actor.Position - closestTurret.Position).LengthSq();
+            if (forbidden.Count > 0 && distance > 9)
+                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max());
+            else if (distance < 9)
+            {
+                hints.InteractWithTarget = closestTurret;
+                hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.MagitekPulse), null, ActionQueue.Priority.High, targetPos: Module.PrimaryActor.PosRot.XYZ());
+            }
         }
     }
 
