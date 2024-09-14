@@ -11,6 +11,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 33357, // Boss->player, no cast, single-target
+
     Breathstroke = 34551, // Boss->self, 16.5s cast, range 35 180-degree cone
     Clearout = 33348, // MammothTentacle->self, 9.0s cast, range 16 120-degree cone
     Octostroke = 33347, // Boss->self, 16.0s cast, single-target

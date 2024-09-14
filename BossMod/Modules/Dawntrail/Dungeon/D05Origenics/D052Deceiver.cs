@@ -231,7 +231,6 @@ public class D052Deceiver(WorldState ws, Actor primary) : BossModule(ws, primary
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.OrigenicsSentryG92));
-        Arena.Actors(Enemies(OID.OrigenicsSentryG91));
+        Arena.Actors(Enemies(OID.OrigenicsSentryG92).Concat(Enemies(OID.OrigenicsSentryG91)));
     }
 }

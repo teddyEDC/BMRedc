@@ -11,6 +11,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
+
     CosmicKiss = 25891, // Meteor->self, 5.0s cast, range 40 circle
     Double = 25892, // Boss->self, 3.0s cast, single-target
 

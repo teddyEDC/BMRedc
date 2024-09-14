@@ -10,6 +10,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
+
     BefoulmentVisual = 25923, // Boss->self, 5.0s cast, single-target
     Befoulment = 25924, // Helper->player, 5.2s cast, range 6 circle, spread
     BlightedWaterVisual = 25921, // Boss->self, 5.0s cast, single-target
@@ -41,7 +42,7 @@ class CertainSolitude(BossModule module) : Components.GenericStackSpread(module)
 
     public override void Update()
     {
-        if (Stacks.Count != 0 && Module.Raid.WithoutSlot().All(x => x.FindStatus(SID.CravenCompanionship) == null))
+        if (Stacks.Count != 0 && Raid.WithoutSlot().All(x => x.FindStatus(SID.CravenCompanionship) == null))
             Stacks.Clear();
     }
 }
@@ -121,8 +122,8 @@ class NecroticFluidMist(BossModule module) : Components.Exaflare(module, 6)
     {
         return CurrentWind switch
         {
-            Pattern.Southward => GetSouthwardExplosions(caster.Position, Module.Center),
-            Pattern.Northward => GetNorthwardExplosions(caster.Position, Module.Center),
+            Pattern.Southward => GetSouthwardExplosions(caster.Position, Arena.Center),
+            Pattern.Northward => GetNorthwardExplosions(caster.Position, Arena.Center),
             _ => 0
         };
     }

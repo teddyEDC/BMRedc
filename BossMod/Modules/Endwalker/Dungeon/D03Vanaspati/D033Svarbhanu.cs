@@ -9,6 +9,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
+
     AetherialDisruption = 25160, // Boss->self, 7.0s cast, single-target
     ChaoticPulse = 27489, // Boss->self, no cast, single-target
     ChaoticUndercurrentRedVisual = 25164, // Helper->self, no cast, single-target

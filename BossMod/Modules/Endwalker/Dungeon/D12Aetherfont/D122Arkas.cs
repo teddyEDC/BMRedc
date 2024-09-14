@@ -9,21 +9,26 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
+
     BattleCry1 = 34605, // Boss->self, 5.0s cast, range 40 circle
     BattleCry2 = 33364, // Boss->self, 5.0s cast, range 40 circle
     ElectricEruption = 33615, // Boss->self, 5.0s cast, range 40 circle
+
     Electrify = 33367, // Helper->location, 5.5s cast, range 10 circle
+
     LightningClaw1 = 33366, // Boss->location, no cast, range 6 circle
     LightningClaw2 = 34712, // Boss->player, 5.0s cast, single-target 
     LightningLeapA = 33358, // Boss->location, 4.0s cast, single-target
     LightningLeapB = 33359, // Boss->location, 5.0s cast, single-target
     LightningLeap1 = 33360, // Helper->location, 6.0s cast, range 10 circle
     LightningLeap2 = 34713, // Helper->location, 5.0s cast, range 10 circle
+
     LightningRampageA = 34318, // Boss->location, 4.0s cast, single-target
     LightningRampageB = 34319, // Boss->location, 2.0s cast, single-target
     LightningRampageC = 34320, // Boss->location, 2.0s cast, single-target
     LightningRampage1 = 34321, // Helper->location, 5.0s cast, range 10 circle
     LightningRampage2 = 34714, // Helper->location, 5.0s cast, range 10 circle
+
     RipperClaw = 33368, // Boss->player, 5.0s cast, single-target
     Shock = 33365, // Helper->location, 3.5s cast, range 6 circle
     SpinningClaw = 33362, // Boss->self, 3.5s cast, range 10 circle
@@ -155,11 +160,14 @@ class ForkedFissures(BossModule module) : Components.GenericAOEs(module)
 }
 
 class ElectricEruption(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ElectricEruption));
-class Electrify(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Electrify), 10);
-class LightningLeap1(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.LightningLeap1), 10);
-class LightningLeap2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.LightningLeap2), 10);
-class LightningRampage1(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.LightningRampage1), 10);
-class LightningRampage2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.LightningRampage2), 10);
+
+class Leaps(BossModule module, AID aid) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(aid), 10);
+class Electrify(BossModule module) : Leaps(module, AID.Electrify);
+class LightningLeap1(BossModule module) : Leaps(module, AID.LightningLeap1);
+class LightningLeap2(BossModule module) : Leaps(module, AID.LightningLeap2);
+class LightningRampage1(BossModule module) : Leaps(module, AID.LightningRampage1);
+class LightningRampage2(BossModule module) : Leaps(module, AID.LightningRampage2);
+
 class RipperClaw(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.RipperClaw));
 class Shock(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Shock), 6);
 class SpinningClaw(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SpinningClaw), new AOEShapeCircle(10));

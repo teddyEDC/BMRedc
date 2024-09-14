@@ -124,7 +124,7 @@ class LyssaChrysineStates : StateMachineBuilder
             .ActivateOnEnter<FrigidStone>()
             .ActivateOnEnter<HeavySmash2>()
             .ActivateOnEnter<PillarPierce>()
-            .Raw.Update = () => module.Enemies(OID.Boss).Concat(module.Enemies(OID.GymnasiouLampas)).Concat(module.Enemies(OID.GymnasiouLyssa)).All(e => e.IsDeadOrDestroyed);
+            .Raw.Update = () => module.Enemies(OID.GymnasiouLampas).Concat([module.PrimaryActor]).Concat(module.Enemies(OID.GymnasiouLyssa)).All(e => e.IsDeadOrDestroyed);
     }
 }
 

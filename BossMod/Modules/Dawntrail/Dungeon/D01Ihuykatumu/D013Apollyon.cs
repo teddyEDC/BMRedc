@@ -14,7 +14,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 870, // Boss->player, no cast, single-target
+    AutoAttack1 = 870, // Boss->player, no cast, single-target
     AutoAttack2 = 872, // IhuykatumuOcelot/IhuykatumuPuma/IhuykatumuSandworm2/IhuykatumuSandworm1->Boss, no cast, single-target
 
     RazorZephyr = 36340, // Boss->self, 4.0s cast, range 50 width 12 rect
@@ -138,7 +138,5 @@ class D013ApollyonStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 826, NameID = 12711)]
 public class D013Apollyon(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
 {
-    private static readonly List<Shape> union = [new Circle(new(-107, 265), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(-107, 285.75f), 20, 2)];
-    public static readonly ArenaBoundsComplex DefaultBounds = new(union, difference);
+    public static readonly ArenaBoundsComplex DefaultBounds = new([new Circle(new(-107, 265), 19.5f)], [new Rectangle(new(-107, 285.75f), 20, 2)]);
 }

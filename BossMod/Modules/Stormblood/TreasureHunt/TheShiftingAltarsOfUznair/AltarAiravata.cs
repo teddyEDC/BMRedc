@@ -3,26 +3,27 @@ namespace BossMod.Stormblood.TreasureHunt.ShiftingAltarsOfUznair.AltarAiravata;
 public enum OID : uint
 {
     Boss = 0x2543, //R=4.75
-    BonusAddAltarMatanga = 0x2545, // R3.42
-    BonusAddGoldWhisker = 0x2544, // R0.54
+    AltarMatanga = 0x2545, // R3.42
+    GoldWhisker = 0x2544, // R0.54
     Helper = 0x233C
 }
 
 public enum AID : uint
 {
-    AutoAttack = 870, // 2544->player, no cast, single-target
-    AutoAttack2 = 872, // Boss,Matanaga->player, no cast, single-target
+    AutoAttack1 = 870, // GoldWhisker->player, no cast, single-target
+    AutoAttack2 = 872, // Boss/AltarMatanga->player, no cast, single-target
+
     Huff = 13371, // Boss->player, 3.0s cast, single-target
     HurlBoss = 13372, // Boss->location, 3.0s cast, range 6 circle
     Buffet = 13374, // Boss->player, 3.0s cast, single-target, knockback 20 forward
     SpinBoss = 13373, // Boss->self, 4.0s cast, range 30 120-degree cone
     BarbarousScream = 13375, // Boss->self, 3.5s cast, range 14 circle
 
-    unknown = 9636, // BonusAddAltarMatanga->self, no cast, single-target
-    Spin = 8599, // BonusAddAltarMatanga->self, no cast, range 6+R 120-degree cone
-    RaucousScritch = 8598, // BonusAddAltarMatanga->self, 2.5s cast, range 5+R 120-degree cone
-    Hurl = 5352, // BonusAddAltarMatanga->location, 3.0s cast, range 6 circle
-    Telega = 9630 // BonusAdds->self, no cast, single-target, bonus adds disappear
+    MatangaActivate = 9636, // AltarMatanga->self, no cast, single-target
+    Spin = 8599, // AltarMatanga->self, no cast, range 6+R 120-degree cone
+    RaucousScritch = 8598, // AltarMatanga->self, 2.5s cast, range 5+R 120-degree cone
+    Hurl = 5352, // AltarMatanga->location, 3.0s cast, range 6 circle
+    Telega = 9630 // AltarMatanga/GoldWhisker->self, no cast, single-target, bonus adds disappear
 }
 
 public enum IconID : uint
@@ -96,11 +97,11 @@ class Buffet2(BossModule module) : Components.BaitAwayCast(module, ActionID.Make
 
 class RaucousScritch(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RaucousScritch), new AOEShapeCone(8.42f, 30.Degrees()));
 class Hurl(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Hurl), 6);
-class Spin(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.Spin), new AOEShapeCone(9.42f, 60.Degrees()), (uint)OID.BonusAddAltarMatanga);
+class Spin(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.Spin), new AOEShapeCone(9.42f, 60.Degrees()), (uint)OID.AltarMatanga);
 
-class AiravataStates : StateMachineBuilder
+class AltarAiravataStates : StateMachineBuilder
 {
-    public AiravataStates(BossModule module) : base(module)
+    public AltarAiravataStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<HurlBoss>()
@@ -112,18 +113,17 @@ class AiravataStates : StateMachineBuilder
             .ActivateOnEnter<Hurl>()
             .ActivateOnEnter<RaucousScritch>()
             .ActivateOnEnter<Spin>()
-            .Raw.Update = () => module.Enemies(OID.Boss).Concat(module.Enemies(OID.BonusAddGoldWhisker)).Concat(module.Enemies(OID.BonusAddAltarMatanga)).All(e => e.IsDead);
+            .Raw.Update = () => module.Enemies(OID.Boss).Concat(module.Enemies(OID.GoldWhisker)).Concat(module.Enemies(OID.AltarMatanga)).All(e => e.IsDeadOrDestroyed);
     }
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 586, NameID = 7601)]
-public class Airavata(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class AltarAiravata(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.BonusAddGoldWhisker), Colors.Object);
-        Arena.Actors(Enemies(OID.BonusAddAltarMatanga), Colors.Vulnerable);
+        Arena.Actors(Enemies(OID.GoldWhisker).Concat(Enemies(OID.AltarMatanga)), Colors.Vulnerable);
     }
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -132,8 +132,8 @@ public class Airavata(WorldState ws, Actor primary) : BossModule(ws, primary, ne
         {
             e.Priority = (OID)e.Actor.OID switch
             {
-                OID.BonusAddGoldWhisker => 3,
-                OID.BonusAddAltarMatanga => 2,
+                OID.GoldWhisker => 3,
+                OID.AltarMatanga => 2,
                 OID.Boss => 1,
                 _ => 0
             };

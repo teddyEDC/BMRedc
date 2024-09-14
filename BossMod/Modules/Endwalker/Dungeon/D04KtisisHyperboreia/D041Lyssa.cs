@@ -10,6 +10,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 6497, // Boss->player, no cast, single-target
+
     FrigidStomp = 25181, // Boss->self, 5.0s cast, range 50 circle, raidwide
     FrostbiteAndSeek1 = 28304, // Helper->self, no cast, single-target
     FrostbiteAndSeek2 = 25175, // Boss->self, 3.0s cast, single-target
@@ -20,7 +21,6 @@ public enum AID : uint
     PunishingSliceVisual = 25176, // Boss->self, no cast, single-target
     PunishingSliceAOE = 25177, // Helper->self, 2.0s cast, range 50 width 50 rect
     SkullDasher = 25182, // Boss->player, 5.0s cast, single-target, tankbuster
-
 }
 
 class PillarPierceAOE(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PillarPierceAOE), new AOEShapeRect(40, 2));

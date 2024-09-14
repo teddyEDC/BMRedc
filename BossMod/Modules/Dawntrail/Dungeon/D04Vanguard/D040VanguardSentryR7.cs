@@ -9,6 +9,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 36403, // SentryR7/Boss->player, no cast, single-target
+
     Swoop = 38051, // SentryR7/Boss->location, 4.0s cast, width 5 rect charge
     FloaterTurn = 38451, // SentryR7/Boss->self, 4.0s cast, range 4-10 donut
     SpinningAxle = 39018, // Boss->self, 4.0s cast, range 6 circle
@@ -26,7 +27,7 @@ class D040VanguardSentryR7States : StateMachineBuilder
             .ActivateOnEnter<Swoop>()
             .ActivateOnEnter<FloaterTurn>()
             .ActivateOnEnter<SpinningAxle>()
-            .Raw.Update = () => module.Enemies(OID.SentryR7).All(e => e.IsDeadOrDestroyed) && module.PrimaryActor.IsDeadOrDestroyed;
+            .Raw.Update = () => module.Enemies(OID.SentryR7).Concat([module.PrimaryActor]).All(e => e.IsDeadOrDestroyed);
     }
 }
 
