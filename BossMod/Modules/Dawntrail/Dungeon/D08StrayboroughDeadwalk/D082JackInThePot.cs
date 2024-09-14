@@ -93,6 +93,8 @@ class TeaAwhirl(BossModule module) : Components.GenericAOEs(module)
                 AddAOEs(activation, new(3.5f, -161.5f), new(30.5f, -178.5f));
             else if (CheckPositions(new(17, -153), new(10, -170)))
                 AddAOEs(activation, new(25.5f, -156.5f), new(20.5f, -178.5f));
+            else if (CheckPositions(new(17, -153), new(17, -177)))
+                AddAOEs(activation, new(20.5f, -178.5f), new(3.5f, -161.5f));
             else if (CheckPositions(new(34, -170), null))
                 AddAOEs(activation, [new(8.5f, -173.5f)]);
             else if (CheckPositions(new(0, -170), null))
