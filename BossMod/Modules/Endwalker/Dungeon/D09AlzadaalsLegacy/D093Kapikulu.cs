@@ -9,6 +9,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
+
     BastingBlade = 28520, // Boss->self, 5.5s cast, range 60 width 15 rect
     BillowingBolts = 28528, // Boss->self, 5.0s cast, range 80 circle, raidwide
     CrewelSlice = 28530, // Boss->player, 5.0s cast, single-target, tankbuster
@@ -51,8 +52,8 @@ class ManaExplosion(BossModule module) : Components.GenericAOEs(module)
     private Pattern currentPattern;
     private readonly List<AOEInstance> _aoes = [];
     private static readonly AOEShapeCircle circle = new(15);
-    private static readonly HashSet<WPos> aoePositionsSet1 = [new(119, -68), new(101, -86), new(101, -50)]; // yellow P2, green P1
-    private static readonly HashSet<WPos> aoePositionsSet2 = [new(119, -50), new(101, -68), new(119, -86)]; // yellow P1, green P2
+    private static readonly WPos[] aoePositionsSet1 = [new(119, -68), new(101, -86), new(101, -50)]; // yellow P2, green P1
+    private static readonly WPos[] aoePositionsSet2 = [new(119, -50), new(101, -68), new(119, -86)]; // yellow P1, green P2
     private Actor? _target;
     private DateTime _activation;
 

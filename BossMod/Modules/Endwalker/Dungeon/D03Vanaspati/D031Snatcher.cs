@@ -9,6 +9,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
+
     LastGasp = 25141, // Boss->player, 5.0s cast, single-target
     LostHope = 25143, // Boss->self, 4.0s cast, range 20 circle, applies temporary misdirection
     MouthOff = 25137, // Boss->self, 3.0s cast, single-target

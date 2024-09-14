@@ -12,8 +12,8 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 24712, // Boss->player, no cast, single-target
-    Antistrophe = 25694, // Boss->self, 3.0s cast, single-target
 
+    Antistrophe = 25694, // Boss->self, 3.0s cast, single-target
     DarkForte = 25700, // Boss->player, 5.0s cast, single-targe, tankbuster
     Entracte = 25701, // Boss->self, 5.0s cast, range 40 circle, raidwide
 

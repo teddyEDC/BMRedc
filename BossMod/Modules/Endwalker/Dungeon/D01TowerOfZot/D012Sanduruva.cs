@@ -10,6 +10,7 @@ public enum AID : uint
 {
     AutoAttack = 871, // Boss->player, no cast, single-target
     Teleport = 25254,  // Boss->location, no cast, single-target
+
     ExplosiveForce = 25250, //Boss->self, 3.0s cast, single-target
     IsitvaSiddhi = 25257, // Boss->player, 4.0s cast, single-target
     ManusyaBerserk = 25249, // Boss->self, 3.0s cast, single-target

@@ -10,6 +10,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
+
     AetherSiphonFire = 25145, // Boss->self, 3.0s cast, single-target
     AetherSiphonWater = 25146, // Boss->self, 3.0s cast, single-target
     AetherSprayFire = 25147, // Boss->location, 7.0s cast, range 30, raidwide, be in bubble

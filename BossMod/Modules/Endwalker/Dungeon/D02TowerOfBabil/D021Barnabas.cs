@@ -10,6 +10,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
+
     DynamicPoundMinus = 25157, // Boss->self, 7.0s cast, range 40 width 6 rect
     DynamicPoundPlus = 25326, // Boss->self, 7.0s cast, range 40 width 6 rect
     DynamicPoundPull = 24693, // Helper->self, no cast, range 50 width 50 rect, pull 9, between centers

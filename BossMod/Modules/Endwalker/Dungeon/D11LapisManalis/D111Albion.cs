@@ -16,13 +16,17 @@ public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
     Teleport = 32812, // Boss->location, no cast, single-target, boss teleports mid
+
     CallOfTheMountain = 31356, // Boss->self, 3.0s cast, single-target, boss calls wild beasts
     WildlifeCrossing = 31357, // WildBeasts->self, no cast, range 7 width 10 rect
     AlbionsEmbrace = 31365, // Boss->player, 5.0s cast, single-target
+
     RightSlam = 32813, // Boss->self, 5.0s cast, range 80 width 20 rect
     LeftSlam = 32814, // Boss->self, 5.0s cast, range 80 width 20 rect
-    KnockOnIce = 31358, // Boss->self, 4.0s cast, single-target
-    KnockOnIce2 = 31359, // Helper->self, 6.0s cast, range 5 circle
+
+    KnockOnIceVisual = 31358, // Boss->self, 4.0s cast, single-target
+    KnockOnIce = 31359, // Helper->self, 6.0s cast, range 5 circle
+
     Icebreaker = 31361, // Boss->IcyCrystal, 5.0s cast, range 17 circle
     IcyThroesVisual = 31362, // Boss->self, no cast, single-target
     IcyThroes1 = 32783, // Helper->self, 5.0s cast, range 6 circle
@@ -190,7 +194,7 @@ class IcyThroes1(BossModule module) : IcyThroes(module, AID.IcyThroes1);
 class IcyThroes2(BossModule module) : IcyThroes(module, AID.IcyThroes2);
 
 class IcyThroesSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.IcyThroesSpread), 6);
-class KnockOnIce(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.KnockOnIce2), new AOEShapeCircle(5));
+class KnockOnIce(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.KnockOnIce), new AOEShapeCircle(5));
 class RightSlam(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.RightSlam), new AOEShapeRect(20, 80, 0, -90.Degrees())); // full width = half width in this case + angle is detected incorrectly, length and width are also switched
 class LeftSlam(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LeftSlam), new AOEShapeRect(20, 80, 0, 90.Degrees())); // full width = half width in this case + angle is detected incorrectly, length and width are also switched
 class AlbionsEmbrace(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.AlbionsEmbrace));

@@ -10,6 +10,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // 3FE2->player, no cast, single-target
+
     HexingStaves = 34777, // 3FE2->self, 3.0s cast, single-target
     RuinousHex = 34783, // 3FE3->self, 5.0s cast, single-target
     RuinousHex2 = 35254, // 3FE3->self, 5.0s cast, range 40 width 8 cross

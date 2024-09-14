@@ -11,6 +11,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 25977, // Boss->player, no cast, single-target
+
     Decimation = 25936, // Boss->self, 5.0s cast, range 40 circle
     DisengageHatch = 28356, // Boss->self, no cast, single-target
     EclipsingExhaust = 25931, // Boss->self, 5.0s cast, range 40 circle, knockback 11, away from source

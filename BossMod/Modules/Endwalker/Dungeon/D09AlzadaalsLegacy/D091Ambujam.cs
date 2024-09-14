@@ -11,6 +11,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
+
     BigWave = 28512, // Boss->self, 5.0s cast, range 40 circle
 
     CorrosiveFountain = 29556, // Helper->self, 7.0s cast, range 8 circle, knockback 10, away from source

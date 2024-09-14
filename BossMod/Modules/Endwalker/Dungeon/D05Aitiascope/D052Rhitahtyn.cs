@@ -62,7 +62,7 @@ class ArenaChanges(BossModule module) : BossComponent(module)
             {
                 case 0x00:
                     union.Clear();
-                    Module.Arena.Bounds = DefaultBounds;
+                    Arena.Bounds = DefaultBounds;
                     break;
                 case 0x01:
                 case 0x02:
@@ -75,7 +75,7 @@ class ArenaChanges(BossModule module) : BossComponent(module)
     private void UpdateArena()
     {
         arena = new ArenaBoundsComplex(rect.Concat(union));
-        Module.Arena.Bounds = arena;
+        Arena.Bounds = arena;
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

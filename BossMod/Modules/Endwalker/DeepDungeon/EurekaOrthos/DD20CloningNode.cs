@@ -30,9 +30,9 @@ class FlameBreath(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count > 0)
-            foreach (var aoe in _aoes)
-                if ((aoe.Activation - _aoes[0].Activation).TotalSeconds <= 1)
-                    yield return aoe;
+            foreach (var a in _aoes)
+                if ((a.Activation - _aoes[0].Activation).TotalSeconds <= 1)
+                    yield return a;
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
