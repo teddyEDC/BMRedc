@@ -18,7 +18,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 23185, // Boss/Mandragoras->player, no cast, single-target
+    AutoAttack1 = 23185, // Boss/Mandragoras->player, no cast, single-target
     AutoAttack2 = 872, // KeeperOfKeys/SecretMorpho->player, no cast, single-target
 
     WindRune = 21686, // Boss->self, 3.0s cast, range 40 width 8 rect

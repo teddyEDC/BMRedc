@@ -11,10 +11,10 @@ public enum AID : uint
 {
     AutoAttack = 21733, // Boss->player, no cast, single-target
 
-    FrigidNeedle = 21739, // Boss->self, 3.0s cast, single-target
-    FrigidNeedle2 = 21740, // Helper->self, 3.0s cast, range 40 width 5 cross
-    Spittle = 21735, // Boss->self, no cast, single-target
-    Spittle2 = 21736, // Helper->location, 4.0s cast, range 8 circle
+    FrigidNeedleVisual = 21739, // Boss->self, 3.0s cast, single-target
+    FrigidNeedle = 21740, // Helper->self, 3.0s cast, range 40 width 5 cross
+    SpittleVisual = 21735, // Boss->self, no cast, single-target
+    Spittle = 21736, // Helper->location, 4.0s cast, range 8 circle
     CroakingChorus = 21738, // Boss->self, 3.0s cast, single-target, calls adds
     ToyHammer = 21734, // Boss->player, 4.0s cast, single-target
     Hydrocannon = 21737, // Boss->players, 5.0s cast, range 6 circle
@@ -23,8 +23,8 @@ public enum AID : uint
 }
 
 class CroakingChorus(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.CroakingChorus), "Calls adds");
-class FrigidNeedle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FrigidNeedle2), new AOEShapeCross(40, 2.5f));
-class Spittle(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Spittle2), 8);
+class FrigidNeedle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FrigidNeedle), new AOEShapeCross(40, 2.5f));
+class Spittle(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Spittle), 8);
 class ToyHammer(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.ToyHammer));
 class Hydrocannon(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Hydrocannon), 6, 8, 8);
 

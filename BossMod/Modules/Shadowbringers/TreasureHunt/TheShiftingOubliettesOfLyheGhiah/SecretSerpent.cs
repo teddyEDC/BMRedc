@@ -15,7 +15,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 870, // Boss/SerpentHatchling->player, no cast, single-target
+    AutoAttack1 = 870, // Boss/SerpentHatchling->player, no cast, single-target
     AutoAttack2 = 872, // Mandragoras->player, no cast, single-target
 
     Douse = 21701, // Boss->location, 3.0s cast, range 8 circle
@@ -45,9 +45,9 @@ class HeirloomScream(BossModule module) : Mandragoras(module, AID.HeirloomScream
 class PungentPirouette(BossModule module) : Mandragoras(module, AID.PungentPirouette);
 class Pollen(BossModule module) : Mandragoras(module, AID.Pollen);
 
-class SerpentStates : StateMachineBuilder
+class SecretSerpentStates : StateMachineBuilder
 {
-    public SerpentStates(BossModule module) : base(module)
+    public SecretSerpentStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Douse>()
@@ -66,7 +66,7 @@ class SerpentStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9776)]
-public class Serpent(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretSerpent(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

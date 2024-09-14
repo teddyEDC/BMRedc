@@ -12,11 +12,14 @@ public enum AID : uint
 {
     AutoAttack = 870, // SecretShark->player, no cast, single-target
     AutoAttack2 = 872, // Boss->player, no cast, single-target
-    PelagicCleaver = 21705, // Boss->self, 3.5s cast, range 40 60-degree cone
+
     TidalGuillotine = 21704, // Boss->self, 4.0s cast, range 13 circle
     ProtolithicPuncture = 21703, // Boss->player, 4.0s cast, single-target
-    PelagicCleaverRotationStart = 21706, // Boss->self, 5.0s cast, range 40 60-degree cone
-    PelagicCleaverDuringRotation = 21707, // Boss->self, no cast, range 40 60-degree cone
+
+    PelagicCleaver = 21705, // Boss->self, 3.5s cast, range 40 60-degree cone
+    PelagicCleaverFirst = 21706, // Boss->self, 5.0s cast, range 40 60-degree cone
+    PelagicCleaverRest = 21707, // Boss->self, no cast, range 40 60-degree cone
+
     BiteAndRun = 21709, // SecretShark->player, 5.0s cast, width 5 rect charge
     AquaticLance = 21708, // Boss->player, 5.0s cast, range 8 circle
 
@@ -58,7 +61,7 @@ class PelagicCleaverRotation(BossModule module) : Components.GenericRotatingAOE(
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.PelagicCleaverRotationStart)
+        if ((AID)spell.Action.ID == AID.PelagicCleaverFirst)
         {
             _rotation = spell.Rotation;
             _activation = Module.CastFinishAt(spell);
@@ -69,7 +72,7 @@ class PelagicCleaverRotation(BossModule module) : Components.GenericRotatingAOE(
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (Sequences.Count > 0 && (AID)spell.Action.ID is AID.PelagicCleaverRotationStart or AID.PelagicCleaverDuringRotation)
+        if (Sequences.Count > 0 && (AID)spell.Action.ID is AID.PelagicCleaverFirst or AID.PelagicCleaverRest)
             AdvanceSequence(0, WorldState.CurrentTime);
     }
 
@@ -93,9 +96,9 @@ class Spin(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.Mak
 class Mash(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Mash), new AOEShapeRect(13, 2));
 class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scoop), new AOEShapeCone(15, 60.Degrees()));
 
-class CladoselacheStates : StateMachineBuilder
+class SecretCladoselacheStates : StateMachineBuilder
 {
-    public CladoselacheStates(BossModule module) : base(module)
+    public SecretCladoselacheStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<PelagicCleaver>()
@@ -112,7 +115,7 @@ class CladoselacheStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9778)]
-public class Cladoselache(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretCladoselache(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

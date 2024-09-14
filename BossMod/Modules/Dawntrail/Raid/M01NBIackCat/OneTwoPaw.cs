@@ -6,7 +6,7 @@ class OneTwoPaw(BossModule module) : Components.GenericAOEs(module)
     private enum Pattern { None, WestEast, EastWest }
     private Pattern _currentPattern;
     private static readonly AOEShapeCone cone = new(60, 90.Degrees());
-    private static readonly List<Angle> angles = [89.999f.Degrees(), -90.004f.Degrees()];
+    private static readonly Angle[] angles = [89.999f.Degrees(), -90.004f.Degrees()];
     private Actor? helper;
     private static readonly HashSet<AID> oneTwoPaw = [AID.OneTwoPaw1, AID.OneTwoPaw2, AID.OneTwoPaw3, AID.OneTwoPaw4];
     private static readonly HashSet<AID> leapingVisuals = [AID.LeapingBlackCatCrossingVisual1, AID.LeapingBlackCatCrossingVisual2,
@@ -68,7 +68,7 @@ class OneTwoPaw(BossModule module) : Components.GenericAOEs(module)
     {
         if (helper != null && _currentPattern != Pattern.None)
         {
-            var angle = _currentPattern == Pattern.EastWest ? angles : angles.AsEnumerable().Reverse().ToList();
+            var angle = _currentPattern == Pattern.EastWest ? angles : angles.AsEnumerable().Reverse().ToArray();
             _aoes.Add(new(cone, helper.Position, angle[0], WorldState.FutureTime(8.7f)));
             _aoes.Add(new(cone, helper.Position, angle[1], WorldState.FutureTime(10.7f)));
             _currentPattern = Pattern.None;

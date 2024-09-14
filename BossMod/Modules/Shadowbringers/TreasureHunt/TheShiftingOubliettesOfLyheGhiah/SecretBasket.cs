@@ -79,9 +79,9 @@ class HeirloomScream(BossModule module) : Mandragoras(module, AID.HeirloomScream
 class PungentPirouette(BossModule module) : Mandragoras(module, AID.PungentPirouette);
 class Pollen(BossModule module) : Mandragoras(module, AID.Pollen);
 
-class BasketStates : StateMachineBuilder
+class SecretBasketStates : StateMachineBuilder
 {
-    public BasketStates(BossModule module) : base(module)
+    public SecretBasketStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Earthquake>()
@@ -103,7 +103,7 @@ class BasketStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9784)]
-public class Basket(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretBasket(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

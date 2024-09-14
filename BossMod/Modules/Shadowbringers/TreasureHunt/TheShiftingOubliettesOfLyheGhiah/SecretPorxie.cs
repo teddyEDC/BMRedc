@@ -79,9 +79,9 @@ class HeirloomScream(BossModule module) : Mandragoras(module, AID.HeirloomScream
 class PungentPirouette(BossModule module) : Mandragoras(module, AID.PungentPirouette);
 class Pollen(BossModule module) : Mandragoras(module, AID.Pollen);
 
-class PorxieStates : StateMachineBuilder
+class SecretPorxieStates : StateMachineBuilder
 {
-    public PorxieStates(BossModule module) : base(module)
+    public SecretPorxieStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<BrewingStorm>()
@@ -102,7 +102,7 @@ class PorxieStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9795)]
-public class Porxie(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretPorxie(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

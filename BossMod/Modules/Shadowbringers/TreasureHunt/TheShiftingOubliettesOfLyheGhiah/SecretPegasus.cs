@@ -33,9 +33,9 @@ class Spin(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.Mak
 class Mash(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Mash), new AOEShapeRect(13, 2));
 class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scoop), new AOEShapeCone(15, 60.Degrees()));
 
-class PegasusStates : StateMachineBuilder
+class SecretPegasusStates : StateMachineBuilder
 {
-    public PegasusStates(BossModule module) : base(module)
+    public SecretPegasusStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<BurningBright>()
@@ -50,7 +50,7 @@ class PegasusStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9793)]
-public class Pegasus(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretPegasus(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

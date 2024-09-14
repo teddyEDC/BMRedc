@@ -10,6 +10,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss/SwallowHatchling->player, no cast, single-target
+
     ElectricWhorl = 21720, // Boss->self, 4.5s cast, range 8-60 donut
     Hydrocannon = 21712, // Boss->self, no cast, single-target
     Hydrocannon2 = 21766, // Helper->location, 3.0s cast, range 8 circle
@@ -31,9 +32,9 @@ class BodySlamKB(BossModule module) : Components.KnockbackFromCastTarget(module,
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => Module.FindComponent<PrevailingCurrent>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false;
 }
 
-class SwallowStates : StateMachineBuilder
+class SecretSwallowStates : StateMachineBuilder
 {
-    public SwallowStates(BossModule module) : base(module)
+    public SecretSwallowStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<ElectricWhorl>()
@@ -48,7 +49,7 @@ class SwallowStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9782)]
-public class Swallow(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretSwallow(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

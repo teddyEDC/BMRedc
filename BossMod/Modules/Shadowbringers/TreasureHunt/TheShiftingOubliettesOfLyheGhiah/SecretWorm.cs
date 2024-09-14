@@ -14,7 +14,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 870, // Boss->player, no cast, single-target
+    AutoAttack1 = 870, // Boss->player, no cast, single-target
     AutoAttack2 = 872, // Mandragoras->player, no cast, single-target
 
     Hydroburst = 21714, // Bubble->self, 1.0s cast, range 8 circle
@@ -80,9 +80,9 @@ class HeirloomScream(BossModule module) : Mandragoras(module, AID.HeirloomScream
 class PungentPirouette(BossModule module) : Mandragoras(module, AID.PungentPirouette);
 class Pollen(BossModule module) : Mandragoras(module, AID.Pollen);
 
-class WormStates : StateMachineBuilder
+class SecretWormStates : StateMachineBuilder
 {
-    public WormStates(BossModule module) : base(module)
+    public SecretWormStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<FreshwaterCannon>()
@@ -102,7 +102,7 @@ class WormStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9780)]
-public class Worm(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretWorm(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

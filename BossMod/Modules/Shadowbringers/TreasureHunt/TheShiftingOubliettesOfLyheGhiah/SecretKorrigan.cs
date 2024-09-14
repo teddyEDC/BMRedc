@@ -41,9 +41,9 @@ class HeirloomScream(BossModule module) : Mandragoras(module, AID.HeirloomScream
 class PungentPirouette(BossModule module) : Mandragoras(module, AID.PungentPirouette);
 class Pollen(BossModule module) : Mandragoras(module, AID.Pollen);
 
-class KorriganStates : StateMachineBuilder
+class SecretKorriganStates : StateMachineBuilder
 {
-    public KorriganStates(BossModule module) : base(module)
+    public SecretKorriganStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Hypnotize>()
@@ -61,7 +61,7 @@ class KorriganStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9806)]
-public class Korrigan(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretKorrigan(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

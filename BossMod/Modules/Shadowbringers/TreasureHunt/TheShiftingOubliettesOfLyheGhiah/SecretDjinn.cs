@@ -10,8 +10,9 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 23185, // Boss->player, no cast, single-target
+    AutoAttack1 = 23185, // Boss->player, no cast, single-target
     AutoAttack2 = 872, // SecretRabbitsTail/KeeperOfKeys->player, no cast, single-target
+
     Gust = 21655, // Boss->location, 3.0s cast, range 6 circle
     ChangelessWinds = 21657, // Boss->self, 3.0s cast, range 40 width 8 rect, knockback 10, source forward
     WhirlingGaol = 21654, // Boss->self, 4.0s cast, range 40 circle, knockback 25 away from source
@@ -37,9 +38,9 @@ class Spin(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.Mak
 class Mash(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Mash), new AOEShapeRect(13, 2));
 class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scoop), new AOEShapeCone(15, 60.Degrees()));
 
-class DjinnStates : StateMachineBuilder
+class SecretDjinnStates : StateMachineBuilder
 {
-    public DjinnStates(BossModule module) : base(module)
+    public SecretDjinnStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Gust>()
@@ -58,7 +59,7 @@ class DjinnStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9788)]
-public class Djinn(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretDjinn(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

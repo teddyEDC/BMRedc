@@ -12,6 +12,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss/KeeperOfKeys->player, no cast, single-target
+
     Buffet = 21680, // Boss->self, 3.0s cast, range 11 120-degree cone
     HeavyScrapline = 21681, // Boss->self, 4.0s cast, range 11 circle
     MoldyPhlegm = 21679, // Boss->location, 3.0s cast, range 6 circle
@@ -35,9 +36,9 @@ class Spin(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.Mak
 class Mash(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Mash), new AOEShapeRect(13, 2));
 class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scoop), new AOEShapeCone(15, 60.Degrees()));
 
-class KeeperStates : StateMachineBuilder
+class SecretKeeperStates : StateMachineBuilder
 {
-    public KeeperStates(BossModule module) : base(module)
+    public SecretKeeperStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Buffet>()
@@ -54,7 +55,7 @@ class KeeperStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9807)]
-public class Keeper(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretKeeper(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

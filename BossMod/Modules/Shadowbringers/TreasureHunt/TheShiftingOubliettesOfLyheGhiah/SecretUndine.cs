@@ -11,8 +11,9 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 23186, // Boss/AqueousAether->player, no cast, single-target
+    AutoAttack1 = 23186, // Boss/AqueousAether->player, no cast, single-target
     AutoAttack2 = 872, // KeeperOfKeys->player, no cast, single-target
+
     Hydrowhirl = 21658, // Boss->self, 3.0s cast, range 8 circle
     Hypnowave = 21659, // Boss->self, 3.0s cast, range 30 120-degree cone, causes sleep
     HydrotaphVisual = 21661, // Boss->self, 4.0s cast, single-target
@@ -38,9 +39,9 @@ class Spin(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.Mak
 class Mash(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Mash), new AOEShapeRect(13, 2));
 class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scoop), new AOEShapeCone(15, 60.Degrees()));
 
-class UndineStates : StateMachineBuilder
+class SecretUndineStates : StateMachineBuilder
 {
-    public UndineStates(BossModule module) : base(module)
+    public SecretUndineStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Hydrofan>()
@@ -57,7 +58,7 @@ class UndineStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 745, NameID = 9790)]
-public class Undine(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
+public class SecretUndine(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsCircle(19))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
