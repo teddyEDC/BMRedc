@@ -434,22 +434,17 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
     public float ActivationDelay { get; init; } = activationDelay;
     public uint Icon { get; init; } = icon;
     public ActionID Aid { get; init; } = aid;
-    private DateTime activation;
-    private readonly List<Actor> actors = [];
 
     public override void OnEventIcon(Actor actor, uint iconID)
     {
         if (iconID == Icon)
-        {
-            activation = WorldState.FutureTime(ActivationDelay);
-            actors.Add(actor);
-        }
+            AddStack(actor, WorldState.FutureTime(ActivationDelay));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (spell.Action == Aid)
-            actors.Clear();
+            Stacks.RemoveAll(x => x.Target == caster || x.Target == WorldState.Actors.Find(spell.MainTargetID));
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -457,7 +452,7 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
         if (!ActiveStacks.Any())
             return;
         var forbidden = new List<Func<WPos, float>>();
-        foreach (var c in Raid.WithoutSlot().Exclude(actor))
+        foreach (var c in Raid.WithoutSlot().Where(x => ActiveStacks.Any(y => y.Target == x)).Exclude(actor))
             forbidden.Add(ShapeDistance.InvertedCircle(c.Position, Donut.InnerRadius / 4));
         if (forbidden.Count > 0)
             hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), ActiveStacks.FirstOrDefault().Activation);
@@ -465,15 +460,8 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        Stacks.Clear();
-        if (actors.Count > 0)
-        {
-            var closestTarget = actors.Exclude(pc).Closest(pc.Position);
-            if (closestTarget != null)
-                AddStack(closestTarget, activation);
-        }
-        foreach (var c in actors)
-            Donut.Draw(Arena, c.Position, default, Colors.AOE);
+        foreach (var c in ActiveStacks)
+            Donut.Draw(Arena, c.Target.Position, default, Colors.AOE);
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc) { }

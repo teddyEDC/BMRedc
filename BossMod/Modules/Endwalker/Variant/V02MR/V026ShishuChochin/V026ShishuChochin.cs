@@ -53,15 +53,13 @@ class Lanterns(BossModule module) : Components.GenericAOEs(module)
         var lanternPriorityCount = 0;
         foreach (var e in hints.PotentialTargets)
             if (e.Actor.OID == (uint)OID.Boss)
-            {
-                if (lanternPriorityCount == 0 && ActiveAOEs(slot, actor).Any(c => c.Check(actor.Position)) && count)
+                if (lanternPriorityCount == 0 && ActiveAOEs(slot, actor).Any(c => c.Check(actor.Position)) && count && Module.Enemies(OID.Boss).Closest(actor.Position) == e.Actor)
                 {
                     e.Priority = 1;
                     lanternPriorityCount++;
                 }
                 else
                     e.Priority = -1;
-            }
     }
 
     public override void AddGlobalHints(GlobalHints hints)
