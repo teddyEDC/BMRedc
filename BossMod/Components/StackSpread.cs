@@ -444,7 +444,7 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (spell.Action == Aid)
-            Stacks.RemoveAll(x => x.Target == caster || x.Target == WorldState.Actors.Find(spell.MainTargetID));
+            Stacks.Clear();
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
