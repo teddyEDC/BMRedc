@@ -5,25 +5,20 @@ public abstract record class AOEShape
     public abstract bool Check(WPos position, WPos origin, Angle rotation);
     public abstract void Draw(MiniArena arena, WPos origin, Angle rotation, uint color = 0);
     public abstract void Outline(MiniArena arena, WPos origin, Angle rotation, uint color = 0);
-    public abstract void Draw(MiniArena arena, WPos origin, Angle rotation, uint color = 0);
-    public abstract void Outline(MiniArena arena, WPos origin, Angle rotation, uint color = 0);
     public abstract Func<WPos, float> Distance(WPos origin, Angle rotation);
 
-    public bool Check(WPos position, Actor? origin)
-    {
-        return origin != null && Check(position, origin.Position, origin.Rotation);
-    }
+    public bool Check(WPos position, Actor? origin) => origin != null && Check(position, origin.Position, origin.Rotation);
 
     public void Draw(MiniArena arena, Actor? origin, uint color = 0)
     {
         if (origin != null)
-            Draw(arena, origin.Position, origin.Rotation, color == 0 ? Colors.AOE : color);
+            Draw(arena, origin.Position, origin.Rotation, color);
     }
 
     public void Outline(MiniArena arena, Actor? origin, uint color = 0)
     {
         if (origin != null)
-            Outline(arena, origin.Position, origin.Rotation, color == 0 ? Colors.Danger : color);
+            Outline(arena, origin.Position, origin.Rotation, color);
     }
 }
 
@@ -59,11 +54,11 @@ public sealed record class AOEShapeDonut(float InnerRadius, float OuterRadius, b
 {
     public override string ToString() => $"Donut: r={InnerRadius:f3}-{OuterRadius:f3}, ifz={InvertForbiddenZone}";
     public override bool Check(WPos position, WPos origin, Angle rotation = new()) => position.InDonut(origin, InnerRadius, OuterRadius);
-    public override void Draw(MiniArena arena, WPos origin, Angle rotation = new(), uint color = 0) => arena.ZoneDonut(origin, InnerRadius, OuterRadius, color == 0 ? Colors.AOE : color);
+    public override void Draw(MiniArena arena, WPos origin, Angle rotation = new(), uint color = 0) => arena.ZoneDonut(origin, InnerRadius, OuterRadius, color);
     public override void Outline(MiniArena arena, WPos origin, Angle rotation = new(), uint color = 0)
     {
-        arena.AddCircle(origin, InnerRadius, colors);
-        arena.AddCircle(origin, OuterRadius, colors);
+        arena.AddCircle(origin, InnerRadius, color);
+        arena.AddCircle(origin, OuterRadius, color);
     }
     public override Func<WPos, float> Distance(WPos origin, Angle rotation)
     {
@@ -110,7 +105,7 @@ public sealed record class AOEShapeCross(float Length, float HalfWidth, Angle Di
     {
         foreach (var p in ContourPoints(origin, rotation))
             arena.PathLineTo(p);
-        MiniArena.PathStroke(true, color == 0 ? Colors.Danger : color);
+        MiniArena.PathStroke(true, color);
     }
 
     private IEnumerable<WPos> ContourPoints(WPos origin, Angle rotation, float offset = 0)
@@ -252,7 +247,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
                 if (i != exteriorEdges.Count - 1)
                     arena.PathLineTo(origin + end);
             }
-            MiniArena.PathStroke(true, color == 0 ? Colors.Danger : color);
+            MiniArena.PathStroke(true, color);
 
             foreach (var holeIndex in part.Holes)
             {
@@ -264,7 +259,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
                     if (i != interiorEdges.Count - 1)
                         arena.PathLineTo(origin + end);
                 }
-                MiniArena.PathStroke(true, color == 0 ? Colors.Danger : color);
+                MiniArena.PathStroke(true, color);
             }
         }
     }

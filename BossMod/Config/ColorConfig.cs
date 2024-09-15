@@ -30,12 +30,23 @@ public sealed class ColorConfig : ConfigNode
 
     [PropertyDisplay("Arena: player character")]
     public Color ArenaPC = new(0xff00ff00);
+    [PropertyDisplay("Arena: trap")]
+    public Color ArenaTrap = new(0x80000080);
+
+    [PropertyDisplay("Arena: vulnerable, needs special attention")]
+    public Color ArenaVulnerable = new(0xffff00ff);
+
+    [PropertyDisplay("Arena: future vulnerable")]
+    public Color ArenaFutureVulnerable = new(0x80ff00ff);
+
+    [PropertyDisplay("Arena: melee range indicator")]
+    public Color ArenaMeleeRangeIndicator = new(0xffff0000);
+
+    [PropertyDisplay("Arena: other")]
+    public Color[] ArenaOther = [new(0xffff0080), new(0xff8080ff), new(0xff80ff80), new(0xffff8040), new(0xff40c0c0)];
 
     [PropertyDisplay("Arena: interesting player, important for a mechanic")]
     public Color ArenaPlayerInteresting = new(0xffc0c0c0);
-
-    [PropertyDisplay("Arena: vulnerable player, needs special attention")]
-    public Color ArenaPlayerVulnerable = new(0xffff00ff);
 
     [PropertyDisplay("Arena: generic/irrelevant player (can be overridden by role-specific colors, depending on settings)")]
     public Color ArenaPlayerGeneric = new(0xff808080);
@@ -57,54 +68,6 @@ public sealed class ColorConfig : ConfigNode
 
     [PropertyDisplay("Arena: generic/irrelevant focus target")]
     public Color ArenaPlayerGenericFocus = Color.FromComponents(0, 255, 255);
-
-    [PropertyDisplay("Arena: background")]
-    public Color ArenaBackground = new(0xc00f0f0f);
-
-    [PropertyDisplay("Arena: border")]
-    public Color ArenaBorder = new(0xffffffff);
-
-    [PropertyDisplay("Arena: AOE")]
-    public Color ArenaAOE = new(0x80008080);
-
-    [PropertyDisplay("Arena: safe from AOE")]
-    public Color ArenaSafeFromAOE = new(0x80008000);
-
-    [PropertyDisplay("Arena: danger")]
-    public Color ArenaDanger = new(0xff00ffff);
-
-    [PropertyDisplay("Arena: safe")]
-    public Color ArenaSafe = new(0xff00ff00);
-
-    [PropertyDisplay("Arena: trap")]
-    public Color ArenaTrap = new(0x80000080);
-
-    [PropertyDisplay("Arena: player character")]
-    public Color ArenaPC = new(0xff00ff00);
-
-    [PropertyDisplay("Arena: enemy")]
-    public Color ArenaEnemy = new(0xff0000ff);
-
-    [PropertyDisplay("Arena: object")]
-    public Color ArenaObject = new(0xff0080ff);
-
-    [PropertyDisplay("Arena: player interesting")]
-    public Color ArenaPlayerInteresting = new(0xffc0c0c0);
-
-    [PropertyDisplay("Arena: player generic")]
-    public Color ArenaPlayerGeneric = new(0xff808080);
-
-    [PropertyDisplay("Arena: vulnerable")]
-    public Color ArenaVulnerable = new(0xffff00ff);
-
-    [PropertyDisplay("Arena: future vulnerable")]
-    public Color ArenaFutureVulnerable = new(0x80ff00ff);
-
-    [PropertyDisplay("Arena: melee range indicator")]
-    public Color ArenaMeleeRangeIndicator = new(0xffff0000);
-
-    [PropertyDisplay("Arena: other")]
-    public Color[] ArenaOther = [new(0xffff0080), new(0xff8080ff), new(0xff80ff80), new(0xffff8040), new(0xff40c0c0)];
 
     [PropertyDisplay("Outlines and shadows")]
     public Color Shadows = new(0xFF000000);

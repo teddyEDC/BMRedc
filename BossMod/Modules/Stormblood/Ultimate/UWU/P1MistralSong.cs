@@ -45,12 +45,12 @@ class P1MistralSongAdds(BossModule module) : Components.CastCounter(module, Acti
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
         foreach (var aoe in ActiveAOEs())
-            _shape.Draw(Arena, aoe.origin, aoe.rotation, ArenaColor.SafeFromAOE);
+            _shape.Draw(Arena, aoe.origin, aoe.rotation, Colors.SafeFromAOE);
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actors(_sisters, ArenaColor.Object, true);
+        Arena.Actors(_sisters, Colors.Object, true);
     }
 
     public override void OnEventIcon(Actor actor, uint iconID)
