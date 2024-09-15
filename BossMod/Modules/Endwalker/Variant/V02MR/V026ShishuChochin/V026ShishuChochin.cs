@@ -50,7 +50,6 @@ class Lanterns(BossModule module) : Components.GenericAOEs(module)
         base.AddAIHints(slot, actor, assignment, hints);
         var lanternPriorityCount = 0;
         foreach (var e in hints.PotentialTargets)
-        {
             if (e.Actor.OID == (uint)OID.Boss)
             {
                 if (lanternPriorityCount == 0 && ActiveAOEs(slot, actor).Any(c => c.Check(actor.Position)) && (3 - NumCasts) == lanterns.Count)
@@ -61,12 +60,11 @@ class Lanterns(BossModule module) : Components.GenericAOEs(module)
                 else
                     e.Priority = -1;
             }
-        }
     }
 
     public override void AddGlobalHints(GlobalHints hints)
     {
-        hints.Add("To unlock path 12, pull the lanterns to the marked spots\nand kill them one at a time.");
+        hints.Add("To unlock path 12, pull the lanterns to the marked spots\nand kill them one at a time while they face a lantern.");
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints) { }
