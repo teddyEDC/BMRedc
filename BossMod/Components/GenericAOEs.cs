@@ -4,6 +4,7 @@
 public abstract class GenericAOEs(BossModule module, ActionID aid = default, string warningText = "GTFO from aoe!") : CastCounter(module, aid)
 {
     public record struct AOEInstance(AOEShape Shape, WPos Origin, Angle Rotation = default, DateTime Activation = default, uint Color = 0, bool Risky = true)
+    public record struct AOEInstance(AOEShape Shape, WPos Origin, Angle Rotation = default, DateTime Activation = default, uint Color = 0, bool Risky = true)
     {
         public readonly bool Check(WPos pos) => Shape.Check(pos, Origin, Rotation);
     }
@@ -88,6 +89,7 @@ public class LocationTargetedAOEs(BossModule module, ActionID aid, float radius,
     public AOEShapeCircle Shape { get; init; } = new(radius);
     public int MaxCasts = maxCasts; // used for staggered aoes, when showing all active would be pointless
     public uint Color = Colors.AOE; // can be customized if needed
+    public uint Color; // can be customized if needed
     public bool Risky = true; // can be customized if needed
     public readonly List<Actor> Casters = [];
 
