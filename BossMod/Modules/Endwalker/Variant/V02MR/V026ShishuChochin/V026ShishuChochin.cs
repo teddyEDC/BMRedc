@@ -47,12 +47,14 @@ class Lanterns(BossModule module) : Components.GenericAOEs(module)
     {
         if (!Service.Config.Get<V026ShishuChochinConfig>().P12LanternAI)
             return;
-        base.AddAIHints(slot, actor, assignment, hints);
+        var count = (3 - NumCasts) == lanterns.Count;
+        if (count)
+            base.AddAIHints(slot, actor, assignment, hints);
         var lanternPriorityCount = 0;
         foreach (var e in hints.PotentialTargets)
             if (e.Actor.OID == (uint)OID.Boss)
             {
-                if (lanternPriorityCount == 0 && ActiveAOEs(slot, actor).Any(c => c.Check(actor.Position)) && (3 - NumCasts) == lanterns.Count)
+                if (lanternPriorityCount == 0 && ActiveAOEs(slot, actor).Any(c => c.Check(actor.Position)) && count)
                 {
                     e.Priority = 1;
                     lanternPriorityCount++;
@@ -64,7 +66,7 @@ class Lanterns(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddGlobalHints(GlobalHints hints)
     {
-        hints.Add("To unlock path 12, pull the lanterns to the marked spots\nand kill them one at a time while they face a lantern.");
+        hints.Add("To unlock path 12, pull the ghosts to the marked spots\nand kill them one at a time while they face a lantern.");
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints) { }
