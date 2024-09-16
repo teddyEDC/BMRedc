@@ -31,7 +31,7 @@ class SHellsNebula(BossModule module) : HellsNebula(module, AID.SHellsNebula);
 
 abstract class C010ArmorStates : StateMachineBuilder
 {
-    public C010ArmorStates(BossModule module, bool savage) : base(module)
+    protected C010ArmorStates(BossModule module, bool savage) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<NDominionSlash>(!savage)

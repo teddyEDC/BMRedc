@@ -31,7 +31,7 @@ class SInfernalPain(BossModule module) : InfernalPain(module, AID.SInfernalPain)
 
 abstract class C010DullahanStates : StateMachineBuilder
 {
-    public C010DullahanStates(BossModule module, bool savage) : base(module)
+    protected C010DullahanStates(BossModule module, bool savage) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<NBlightedGloom>(!savage)

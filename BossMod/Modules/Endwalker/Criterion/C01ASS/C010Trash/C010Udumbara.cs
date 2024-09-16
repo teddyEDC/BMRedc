@@ -37,7 +37,7 @@ class SBloodyCaress(BossModule module) : BloodyCaress(module, AID.SBloodyCaress)
 
 abstract class C010UdumbaraStates : StateMachineBuilder
 {
-    public C010UdumbaraStates(BossModule module, bool savage) : base(module)
+    protected C010UdumbaraStates(BossModule module, bool savage) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<NHoneyedLeft>(!savage)

@@ -24,7 +24,7 @@ abstract class C020RaikoStates : StateMachineBuilder
 {
     private readonly bool _savage;
 
-    public C020RaikoStates(BossModule module, bool savage) : base(module)
+    protected C020RaikoStates(BossModule module, bool savage) : base(module)
     {
         _savage = savage;
         DeathPhase(0, SinglePhase)

@@ -153,8 +153,21 @@ class DreamsOfANewDayStates : StateMachineBuilder
 class DreamsOfANewDayP2States(BossModule module) : DreamsOfANewDayStates(module) { }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.Quest, GroupID = 70359, NameID = 13046, SortOrder = 1)]
-public class DreamsOfANewDay(WorldState ws, Actor primary) : BossModule(ws, primary, new(-757, -719), new ArenaBoundsCircle(19.5f))
+public class DreamsOfANewDay(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
+    private static readonly List<WPos> vertices = [new(-750.98f, -737.63f), new(-745.64f, -734.93f), new(-745.13f, -734.49f), new(-741.41f, -730.76f), new(-741.07f, -730.35f),
+    new(-738.46f, -725.23f), new(-738.31f, -724.68f), new(-737.53f, -719.68f), new(-737.43f, -719.13f), new(-737.48f, -718.55f),
+    new(-738.21f, -714.04f), new(-738.37f, -713.48f), new(-738.46f, -712.93f), new(-738.65f, -712.39f), new(-741.08f, -707.64f),
+    new(-741.82f, -706.81f), new(-745.44f, -703.19f), new(-745.94f, -702.91f), new(-746.48f, -702.66f), new(-748.5f, -701.64f),
+    new(-749.44f, -701.14f), new(-749.91f, -700.95f), new(-750.43f, -700.64f), new(-751, -700.4f), new(-751.6f, -700.26f),
+    new(-755.01f, -699.72f), new(-755.71f, -699.64f), new(-756.77f, -699.47f), new(-757.28f, -699.46f), new(-762.7f, -700.32f),
+    new(-763.26f, -700.47f), new(-766.48f, -702.11f), new(-766.95f, -702.4f), new(-767.43f, -702.6f), new(-768.41f, -703.09f),
+    new(-769.2f, -703.83f), new(-769.6f, -704.25f), new(-770.12f, -704.86f), new(-770.58f, -705.25f), new(-771.04f, -705.67f),
+    new(-772.85f, -707.48f), new(-775.54f, -712.77f), new(-775.7f, -713.36f), new(-776.58f, -718.95f), new(-776.51f, -719.53f),
+    new(-775.7f, -724.57f), new(-775.54f, -725.14f), new(-775.3f, -725.68f), new(-774.02f, -728.23f), new(-773.01f, -730.18f),
+    new(-772.67f, -730.7f), new(-768.51f, -734.83f), new(-763.15f, -737.58f), new(-762.58f, -737.7f), new(-757.48f, -738.5f)];
+    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new PolygonCustom(vertices)]);
+
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actors(Enemies(OID.BossP2).Concat([PrimaryActor]));
