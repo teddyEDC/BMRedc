@@ -4,7 +4,7 @@ abstract class C012GladiatorStates : StateMachineBuilder
 {
     private readonly bool _savage;
 
-    public C012GladiatorStates(BossModule module, bool savage) : base(module)
+    protected C012GladiatorStates(BossModule module, bool savage) : base(module)
     {
         _savage = savage;
         DeathPhase(0, SinglePhase);

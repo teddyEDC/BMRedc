@@ -16,7 +16,7 @@ abstract class C030RayStates : StateMachineBuilder
 {
     private readonly bool _savage;
 
-    public C030RayStates(BossModule module, bool savage) : base(module)
+    protected C030RayStates(BossModule module, bool savage) : base(module)
     {
         _savage = savage;
         DeathPhase(0, SinglePhase)

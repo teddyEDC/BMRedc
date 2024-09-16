@@ -20,7 +20,7 @@ abstract class C020FukoStates : StateMachineBuilder
 {
     private readonly bool _savage;
 
-    public C020FukoStates(BossModule module, bool savage) : base(module)
+    protected C020FukoStates(BossModule module, bool savage) : base(module)
     {
         _savage = savage;
         DeathPhase(0, SinglePhase)

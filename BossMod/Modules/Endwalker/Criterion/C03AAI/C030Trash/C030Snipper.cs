@@ -36,7 +36,7 @@ abstract class C030SnipperStates : StateMachineBuilder
 {
     private readonly bool _savage;
 
-    public C030SnipperStates(BossModule module, bool savage) : base(module)
+    protected C030SnipperStates(BossModule module, bool savage) : base(module)
     {
         _savage = savage;
         DeathPhase(0, SinglePhase)

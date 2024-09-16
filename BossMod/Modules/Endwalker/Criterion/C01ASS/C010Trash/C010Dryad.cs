@@ -39,7 +39,7 @@ class SUproot(BossModule module) : Uproot(module, AID.SUproot);
 
 abstract class C010DryadStates : StateMachineBuilder
 {
-    public C010DryadStates(BossModule module, bool savage) : base(module)
+    protected C010DryadStates(BossModule module, bool savage) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<NArborealStorm>(!savage)

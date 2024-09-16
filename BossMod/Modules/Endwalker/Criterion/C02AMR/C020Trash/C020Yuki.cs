@@ -10,7 +10,7 @@ class SLeftSwipe(BossModule module) : LeftSwipe(module, AID.SLeftSwipe);
 
 abstract class C020YukiStates : StateMachineBuilder
 {
-    public C020YukiStates(BossModule module, bool savage) : base(module)
+    protected C020YukiStates(BossModule module, bool savage) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<NRightSwipe>(!savage)
