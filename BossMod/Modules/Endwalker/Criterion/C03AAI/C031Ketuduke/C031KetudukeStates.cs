@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C031Ketuduke;
 
-class C031KetudukeStates : StateMachineBuilder
+abstract class C031KetudukeStates : StateMachineBuilder
 {
     private readonly bool _savage;
 

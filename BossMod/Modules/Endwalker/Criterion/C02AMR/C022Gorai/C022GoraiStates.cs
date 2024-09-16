@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C02AMR.C022Gorai;
 
-class C022GoraiStates : StateMachineBuilder
+abstract class C022GoraiStates : StateMachineBuilder
 {
     private readonly bool _savage;
 

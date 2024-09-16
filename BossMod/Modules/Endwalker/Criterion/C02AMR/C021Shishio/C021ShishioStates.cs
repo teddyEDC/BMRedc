@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C02AMR.C021Shishio;
 
-class C021ShishioStates : StateMachineBuilder
+abstract class C021ShishioStates : StateMachineBuilder
 {
     private readonly bool _savage;
 

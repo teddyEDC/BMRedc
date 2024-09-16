@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C032Lala;
 
-class C032LalaStates : StateMachineBuilder
+abstract class C032LalaStates : StateMachineBuilder
 {
     private readonly bool _savage;
 

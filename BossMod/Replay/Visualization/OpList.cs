@@ -10,7 +10,7 @@ class OpList(Replay replay, Replay.Encounter? enc, ModuleRegistry.Info? moduleIn
     private DateTime _relativeTS;
     private readonly List<(int Index, DateTime Timestamp, string Text, Action<UITree>? Children, Action? ContextMenu)> _nodes = [];
     private readonly HashSet<uint> _filteredOIDs = [];
-    public static readonly HashSet<uint> BoringOIDs = [0x3E1A, 0x3E1B, 0x3E1C];
+    public static readonly HashSet<uint> BoringOIDs = [0x3E1A, 0x3E1B, 0x3E1C, 0x447E, 0x447D, 0x4480, 0x4583, 0x447F, 0x4584, 0x4570];
     private readonly HashSet<ActionID> _filteredActions = [];
     private readonly HashSet<uint> _filteredStatuses = [];
     private readonly HashSet<uint> _filteredDirectorUpdateTypes = [];

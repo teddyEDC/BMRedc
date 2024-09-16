@@ -52,14 +52,11 @@ sealed class AIManagementWindow : UIWindow
             if (leaderCombo)
             {
                 if (ImGui.Selectable("<idle>", _manager.Beh == null))
-                {
                     _manager.SwitchToIdle();
-                }
                 foreach (var (i, p) in _manager.WorldState.Party.WithSlot(true))
                 {
                     if (ImGui.Selectable(p.Name, _manager.MasterSlot == i))
                     {
-                        _config.Enabled = true;
                         _manager.SwitchToFollow(i);
                         _config.FollowSlot = i;
                         _config.Modified.Fire();

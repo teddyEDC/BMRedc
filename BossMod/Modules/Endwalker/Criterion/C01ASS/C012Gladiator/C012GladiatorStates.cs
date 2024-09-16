@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C01ASS.C012Gladiator;
 
-class C012GladiatorStates : StateMachineBuilder
+abstract class C012GladiatorStates : StateMachineBuilder
 {
     private readonly bool _savage;
 

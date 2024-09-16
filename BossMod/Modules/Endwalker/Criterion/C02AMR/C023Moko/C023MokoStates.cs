@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C02AMR.C023Moko;
 
-class C023MokoStates : StateMachineBuilder
+abstract class C023MokoStates : StateMachineBuilder
 {
     private readonly bool _savage;
 
