@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C033Statice;
 
-class C033StaticeStates : StateMachineBuilder
+abstract class C033StaticeStates : StateMachineBuilder
 {
     private readonly bool _savage;
 
