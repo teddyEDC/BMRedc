@@ -11,7 +11,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 872, // Boss->player, no cast, single-target
+    AutoAttack1 = 872, // Boss->player, no cast, single-target
     AutoAttack2 = 870, // TwelfthLegionOptio->player, no cast, single-target
 
     MagitekFireII = 7957, // Boss->location, 3.0s cast, range 5 circle
