@@ -90,12 +90,8 @@ public class D292MagitekGunship(WorldState ws, Actor primary) : BossModule(ws, p
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.SixthCohortEques));
-        Arena.Actors(Enemies(OID.SixthCohortLaquearius));
-        Arena.Actors(Enemies(OID.SixthCohortSecutor));
-        Arena.Actors(Enemies(OID.SixthCohortSignifer));
-        Arena.Actors(Enemies(OID.SixthCohortVanguard));
+        Arena.Actors(Enemies(OID.SixthCohortEques).Concat([PrimaryActor]).Concat(Enemies(OID.SixthCohortLaquearius)).Concat(Enemies(OID.SixthCohortSecutor))
+        .Concat(Enemies(OID.SixthCohortSignifer)).Concat(Enemies(OID.SixthCohortVanguard)));
     }
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
