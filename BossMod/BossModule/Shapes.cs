@@ -24,7 +24,7 @@ public record class Circle(WPos Center, float Radius) : Shape
 }
 
 // for custom polygons, automatically checking if convex or concave
-public record class PolygonCustom(WPos[] Vertices) : Shape
+public record class PolygonCustom(IEnumerable<WPos> Vertices) : Shape
 {
     public override List<WDir> Contour(WPos center) => Vertices.Select(v => v - center).ToList();
     public override string ComputeHash() => ComputeSHA512($"{nameof(PolygonCustom)}:{string.Join(",", Vertices.Select(v => $"{v.X},{v.Z}"))}");
