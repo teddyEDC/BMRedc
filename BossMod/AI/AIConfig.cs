@@ -45,6 +45,4 @@ sealed class AIConfig : ConfigNode
 
     [PropertyDisplay("Max distance to target")]
     public float MaxDistanceToTarget = 2.6f;
-
-    public bool Enabled = true; // dummy bool so autoduty stops complaining
 }
