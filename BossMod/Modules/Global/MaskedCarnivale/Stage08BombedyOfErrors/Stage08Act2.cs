@@ -64,7 +64,7 @@ class Stage08Act2States : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.MaskedCarnivale, GroupID = 618, NameID = 8098, SortOrder = 2)]
 public class Stage08Act2 : BossModule
 {
-    public Stage08Act2(WorldState ws, Actor primary) : base(ws, primary, new(100, 100), Layout2Corners.arena)
+    public Stage08Act2(WorldState ws, Actor primary) : base(ws, primary, new(100, 100), Layouts.Layout2Corners)
     {
         ActivateComponent<Hints>();
         ActivateComponent<Selfdetonations>();

@@ -93,7 +93,7 @@ class V026ShishuChochinStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 945, NameID = 12396, SortOrder = 6)]
 public class V026ShishuChochin(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly List<WPos> vertices = [new(701.34f, -29.85f), new(701.24f, -19.5f), new(701.24f, 6.28f), new(701.24f, 6.79f), new(700.88f, 7.17f),
+    private static readonly WPos[] vertices = [new(701.34f, -29.85f), new(701.24f, -19.5f), new(701.24f, 6.28f), new(701.24f, 6.79f), new(700.88f, 7.17f),
     new(686.24f, 17.56f), new(685.38f, 17.77f), new(685.07f, 18.25f), new(685.05f, 18.76f), new(685.12f, 19.34f),
     new(684.91f, 19.86f), new(684.9f, 31.92f), new(684.92f, 32.74f), new(685.45f, 33), new(717.76f, 33),
     new(717.89f, 38.42f), new(717.69f, 38.92f), new(717.07f, 39.1f), new(716.79f, 39.54f), new(716.79f, 40.25f),

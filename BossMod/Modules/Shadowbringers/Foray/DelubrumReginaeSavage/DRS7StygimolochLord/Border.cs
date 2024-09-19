@@ -10,14 +10,14 @@ class Border(BossModule module) : Components.GenericAOEs(module)
     private const float _alcoveDepth = 1;
     private const float _alcoveWidth = 2;
     private bool Active;
-    private static readonly List<Shape> labyrinth = [new PolygonCustom(InDanger()), new PolygonCustom(MidDanger()), new PolygonCustom(OutDanger())];
-    public static readonly AOEShapeCustom customShape = new(labyrinth);
-    public static readonly ArenaBounds labPhase = new ArenaBoundsComplex([new Circle(BoundsCenter, 34.5f)], labyrinth);
+    private static readonly Shape[] labyrinth = [new PolygonCustom(InDanger()), new PolygonCustom(MidDanger()), new PolygonCustom(OutDanger())];
+    private static readonly AOEShapeCustom customShape = new(labyrinth);
+    private static readonly ArenaBounds labPhase = new ArenaBoundsComplex([new Circle(BoundsCenter, 34.5f)], labyrinth);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (!Active)
-            yield return new(customShape, Module.Arena.Center);
+            yield return new(customShape, Arena.Center);
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -25,7 +25,7 @@ class Border(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID == AID.MemoryOfTheLabyrinth)
         {
             Active = true;
-            Module.Arena.Bounds = labPhase;
+            Arena.Bounds = labPhase;
         }
     }
 
@@ -55,19 +55,19 @@ class Border(BossModule module) : Components.GenericAOEs(module)
             yield return first.Value;
     }
 
-    private static IEnumerable<WPos> InDanger() => RingBorder(22.5f.Degrees(), _innerRingRadius, true);
+    private static WPos[] InDanger() => RingBorder(22.5f.Degrees(), _innerRingRadius, true).ToArray();
 
-    private static IEnumerable<WPos> MidDanger()
+    private static WPos[] MidDanger()
     {
         var outerRing = RepeatFirst(RingBorder(0.Degrees(), _outerRingRadius, true));
         var innerRing = RepeatFirst(RingBorder(22.5f.Degrees(), _innerRingRadius, false)).Reverse();
-        return outerRing.Concat(innerRing);
+        return outerRing.Concat(innerRing).ToArray();
     }
 
-    private static IEnumerable<WPos> OutDanger()
+    private static WPos[] OutDanger()
     {
         var outerBoundary = RepeatFirst(CurveApprox.Circle(BoundsCenter, 34.6f, Shape.MaxApproxError));
         var innerRing = RepeatFirst(RingBorder(0.Degrees(), _outerRingRadius, false)).Reverse();
-        return outerBoundary.Concat(innerRing);
+        return outerBoundary.Concat(innerRing).ToArray();
     }
 }
