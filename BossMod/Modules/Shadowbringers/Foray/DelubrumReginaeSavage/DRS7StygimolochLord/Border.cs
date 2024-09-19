@@ -55,19 +55,19 @@ class Border(BossModule module) : Components.GenericAOEs(module)
             yield return first.Value;
     }
 
-    private static WPos[] InDanger() => RingBorder(22.5f.Degrees(), _innerRingRadius, true).ToArray();
+    private static IEnumerable<WPos> InDanger() => RingBorder(22.5f.Degrees(), _innerRingRadius, true);
 
-    private static WPos[] MidDanger()
+    private static IEnumerable<WPos> MidDanger()
     {
         var outerRing = RepeatFirst(RingBorder(0.Degrees(), _outerRingRadius, true));
         var innerRing = RepeatFirst(RingBorder(22.5f.Degrees(), _innerRingRadius, false)).Reverse();
-        return outerRing.Concat(innerRing).ToArray();
+        return outerRing.Concat(innerRing);
     }
 
-    private static WPos[] OutDanger()
+    private static IEnumerable<WPos> OutDanger()
     {
         var outerBoundary = RepeatFirst(CurveApprox.Circle(BoundsCenter, 34.6f, Shape.MaxApproxError));
         var innerRing = RepeatFirst(RingBorder(0.Degrees(), _outerRingRadius, false)).Reverse();
-        return outerBoundary.Concat(innerRing).ToArray();
+        return outerBoundary.Concat(innerRing);
     }
 }
