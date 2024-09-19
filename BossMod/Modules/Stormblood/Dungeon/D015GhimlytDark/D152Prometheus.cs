@@ -34,6 +34,7 @@ class NitrospinArenaChange(BossModule module) : Components.GenericAOEs(module)
         {
             Arena.Bounds = D152Prometheus.DefaultArena;
             Arena.Center = D152Prometheus.ArenaCenter;
+            _aoe = null;
         }
     }
 
