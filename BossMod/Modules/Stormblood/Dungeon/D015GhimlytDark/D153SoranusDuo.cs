@@ -183,7 +183,7 @@ class Crosshatch(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class ImperialAuthority(BossModule module, AID aid) : Components.CastHint(module, ActionID.MakeSpell(aid), "Enrage!", true);
+abstract class ImperialAuthority(BossModule module, AID aid) : Components.CastHint(module, ActionID.MakeSpell(aid), "Enrage!", true);
 class ImperialAuthorityAnnia(BossModule module) : ImperialAuthority(module, AID.ImperialAuthorityAnnia);
 class ImperialAuthorityJulia(BossModule module) : ImperialAuthority(module, AID.ImperialAuthorityJulia);
 
