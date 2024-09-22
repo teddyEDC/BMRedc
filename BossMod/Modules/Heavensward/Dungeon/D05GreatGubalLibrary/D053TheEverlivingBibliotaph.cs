@@ -145,8 +145,7 @@ public class D053EverlivingBibliotaph(WorldState ws, Actor primary) : BossModule
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.Bibliophile).Concat(Enemies(OID.Biblioklept)).Concat(Enemies(OID.Bibliomancer)));
+        Arena.Actors(Enemies(OID.Bibliophile).Concat([PrimaryActor]).Concat(Enemies(OID.Biblioklept)).Concat(Enemies(OID.Bibliomancer)));
     }
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

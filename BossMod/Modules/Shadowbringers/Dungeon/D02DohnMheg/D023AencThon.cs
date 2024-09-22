@@ -63,9 +63,9 @@ class FunambulistsFantasia(BossModule module) : BossComponent(module)
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.FunambulistsFantasia)
-            Module.Arena.Bounds = D033AencThon.chasmArena;
+            Arena.Bounds = D033AencThon.chasmArena;
         else if ((AID)spell.Action.ID == AID.Finale)
-            Module.Arena.Bounds = D033AencThon.arena;
+            Arena.Bounds = D033AencThon.arena;
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
@@ -78,7 +78,7 @@ class FunambulistsFantasia(BossModule module) : BossComponent(module)
     {
         var lyre = Module.Enemies(OID.LiarsLyre).FirstOrDefault();
         hints.WaypointManager.module = Module;
-        if (Module.Arena.Bounds == D033AencThon.chasmArena && lyre != null)
+        if (Arena.Bounds == D033AencThon.chasmArena && lyre != null)
         {
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
             hints.AddForbiddenZone(ShapeDistance.InvertedCircle(lyre.Position, 3));
@@ -90,7 +90,7 @@ class FunambulistsFantasia(BossModule module) : BossComponent(module)
                 hints.WaypointManager.AddWaypointsWithRandomization(waypoints, 0.1f, 10);
             }
         }
-        else if (Module.Arena.Bounds == D033AencThon.arena)
+        else if (Arena.Bounds == D033AencThon.arena)
             hints.WaypointManager.ClearWaypoints();
     }
 }
