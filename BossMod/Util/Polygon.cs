@@ -505,14 +505,12 @@ public class SpatialIndex
         });
     }
 
-    public IEnumerable<int> Query(float x, float y)
+    public List<int> Query(float x, float y)
     {
         var cellX = (int)Math.Floor(x / _cellSize);
         var cellY = (int)Math.Floor(y / _cellSize);
         var key = (cellX, cellY);
 
-        if (_gridDictionary.TryGetValue(key, out var list))
-            return list;
-        return [];
+        return _gridDictionary.TryGetValue(key, out var list) ? list : [];
     }
 }
