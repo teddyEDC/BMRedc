@@ -3,10 +3,10 @@ namespace BossMod.Stormblood.Dungeon.D13TheBurn.D132DefectiveDrone;
 public enum OID : uint
 {
     Boss = 0x23AA, // R3.2
-    SludgeVoidzone = 0x1EA9EF, // R0.5
     MiningDrone = 0x23AB, // R1.92
-    RockBiter = 0x23AC, // R3.000, x0 (spawn during fight)
-    RepurposedDreadnaught = 0x23AD // R2.400, x0 (spawn during fight)
+    RockBiter = 0x23AC, // R3.0
+    RepurposedDreadnaught = 0x23AD, // R2.4
+    SludgeVoidzone = 0x1EA9EF
 }
 
 public enum AID : uint
