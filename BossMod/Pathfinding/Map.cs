@@ -114,11 +114,11 @@ public class Map
         });
     }
 
-    // for testing 9 points per pixel for increase accuracy
+    // for testing 9 points per pixel for increased accuracy
     public void BlockPixelsInsideArenaBounds(Func<WPos, float> shape, float maxG, float threshold)
     {
         MaxG = MathF.Max(MaxG, maxG);
-        float[] offsets = [0 + 1e-5f, 0.5f, 1 - 1e-5f];
+        float[] offsets = [1e-5f, 0.5f, 1 - 1e-5f];
         Parallel.ForEach(Partitioner.Create(0, Pixels.Length), range =>
         {
             for (var i = range.Item1; i < range.Item2; i++)

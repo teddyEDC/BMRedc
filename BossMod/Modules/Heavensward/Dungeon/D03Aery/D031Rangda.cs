@@ -44,7 +44,7 @@ class Electrocution(BossModule module) : Components.GenericBaitAway(module)
         if ((AID)spell.Action.ID == AID.Electrocution)
         {
             ++NumCasts;
-            if (NumCasts == 3 || NumCasts == CurrentBaits.Count) // hits upto random players
+            if (NumCasts == 3 || NumCasts == CurrentBaits.Count) // hits upto 3 random players
                 CurrentBaits.Clear();
         }
     }

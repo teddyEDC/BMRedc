@@ -111,8 +111,7 @@ public class D053Inferno(WorldState ws, Actor primary) : BossModule(ws, primary,
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.TwelfthLegionPacker).Concat(Enemies(OID.TwelfthLegionDeathClaw)));
+        Arena.Actors(Enemies(OID.TwelfthLegionPacker).Concat(Enemies(OID.TwelfthLegionDeathClaw)).Concat([PrimaryActor]));
     }
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
