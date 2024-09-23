@@ -36,7 +36,6 @@ public enum IconID : uint
 public enum SID : uint
 {
     Fetters = 3421 // none->3DBA, extra=0xEC4
-
 }
 
 class RestraintCollar(BossModule module) : BossComponent(module)
@@ -119,10 +118,7 @@ class Corrosion(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(9);
     private readonly List<AOEInstance> _aoes = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        return Module.Enemies(OID.BladeOfTheGriffin).Count(x => !x.IsDead) < 9 ? _aoes : [];
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Module.Enemies(OID.BladeOfTheGriffin).Count(x => !x.IsDead) < 9 ? _aoes : [];
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
