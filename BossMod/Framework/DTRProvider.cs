@@ -4,9 +4,6 @@ using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Plugin.Services;
-using FFXIVClientStructs.FFXIV.Client.Game.Control;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using ImGuiNET;
 
 namespace BossMod;
@@ -20,12 +17,11 @@ internal sealed class DTRProvider : IDisposable
     private readonly AIConfig _aiConfig = Service.Config.Get<AIConfig>();
     private bool _wantOpenPopup;
 
-    public unsafe DTRProvider(RotationModuleManager manager, AIManager ai)
+    public DTRProvider(RotationModuleManager manager, AIManager ai)
     {
         _mgr = manager;
         _ai = ai;
         _autorotationEntry.OnClick = () => _wantOpenPopup = true;
-        _aiEntry.Tooltip = "Left Click => Toggle Enabled, Right Click => Toggle DrawUI";
         _aiEntry.OnClick = () =>
         {
             if (_ai.Beh == null)

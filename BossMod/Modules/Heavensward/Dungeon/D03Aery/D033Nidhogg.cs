@@ -117,7 +117,6 @@ class D033NidhoggStates : StateMachineBuilder
             .ActivateOnEnter<Cauterize>()
             .ActivateOnEnter<HorridRoarSpread>()
             .ActivateOnEnter<HorridRoar>()
-            .ActivateOnEnter<HorridRoar2>()
             .ActivateOnEnter<HorridBlaze>()
             .ActivateOnEnter<DeafeningBellow>()
             .ActivateOnEnter<Massacre>()

@@ -193,13 +193,6 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
                 hints.Add(StayHint, false);
         }
     }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        var shapes = Sources(Module).Select(s => ShapeDistance.InvertedCircle(s.Position + Shape.Radius * s.Rotation.ToDirection(), Shape.Radius)).ToList();
-        if (shapes.Count > 0)
-            hints.AddForbiddenZone(ShapeDistance.Intersection(shapes));
-    }
 }
 
 class VolcanicDrop(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.VolcanicDrop), 6);
