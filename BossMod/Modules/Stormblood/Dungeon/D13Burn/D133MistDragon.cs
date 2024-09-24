@@ -87,7 +87,7 @@ class ColdFogGrowth(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-abstract class GenericBaitAwayModule(BossModule module) : Components.GenericBaitAway(module)
+abstract class BaitAway(BossModule module) : Components.GenericBaitAway(module)
 {
     protected static readonly AOEShapeCircle circle = new(6);
     protected static readonly AOEShapeCone cone = new(20, 45.Degrees());
@@ -100,31 +100,28 @@ abstract class GenericBaitAwayModule(BossModule module) : Components.GenericBait
                 circle.Outline(Arena, position);
     }
 
-    protected WPos[] GenerateStandardPositions(Actor boss, Actor target, float baseDistance, int count = 5, float increment = 9)
+    protected static WPos[] CalculatePositions(Actor boss, Actor target, int count = 5)
     {
         var positions = new WPos[count];
         for (var i = 0; i < count; i++)
-            positions[i] = CalculatePosition(boss.Position, target, baseDistance + i * increment);
+            positions[i] = CalculatePosition(boss, target, boss.HitboxRadius + i * 9);
         return positions;
     }
 
-    protected WPos CalculatePosition(WPos bossPos, Actor target, float distance) => bossPos + distance * Module.PrimaryActor.DirectionTo(target);
+    protected static WPos CalculatePosition(Actor boss, Actor target, float distance) => boss.Position + distance * boss.DirectionTo(target);
 
-    protected WPos[] GenerateRotatedPositions(Actor boss, Actor target, float[] angles)
+    protected static WPos[] CalculateRotatedPositions(Actor boss, Actor target)
     {
         return
         [
-            CalculatePosition(boss.Position, target, 7),
-            CalculatePosition(boss.Position, target, 15),
-            CalculateRotatedPosition(boss.Position, target, 15, angles[0]),
-            CalculateRotatedPosition(boss.Position, target, 15, angles[1])
+            CalculatePosition(boss, target, 7),
+            CalculatePosition(boss, target, 15),
+            CalculateRotatedPosition(boss, target, 15, 30),
+            CalculateRotatedPosition(boss, target, 15, -30)
         ];
     }
 
-    private WPos CalculateRotatedPosition(WPos bossPos, Actor target, float distance, float angleDegrees)
-    {
-        return bossPos + (distance * Module.PrimaryActor.DirectionTo(target)).Rotate(angleDegrees.Degrees());
-    }
+    private static WPos CalculateRotatedPosition(Actor boss, Actor target, float distance, float angle) => boss.Position + (distance * boss.DirectionTo(target)).Rotate(angle.Degrees());
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
@@ -152,7 +149,7 @@ abstract class GenericBaitAwayModule(BossModule module) : Components.GenericBait
     }
 }
 
-class ChillingAspiration(BossModule module) : GenericBaitAwayModule(module)
+class ChillingAspiration(BossModule module) : BaitAway(module)
 {
     public override void OnEventIcon(Actor actor, uint iconID)
     {
@@ -171,8 +168,7 @@ class ChillingAspiration(BossModule module) : GenericBaitAwayModule(module)
         DrawBaitsOnActor(pcSlot, pc, target =>
         {
             var boss = Module.PrimaryActor;
-            circle.Outline(Arena, boss.Position + boss.HitboxRadius * boss.DirectionTo(target));
-            DrawPositionsInBounds(GenerateStandardPositions(boss, target, boss.HitboxRadius));
+            DrawPositionsInBounds(CalculatePositions(boss, target));
         });
     }
 
@@ -181,13 +177,12 @@ class ChillingAspiration(BossModule module) : GenericBaitAwayModule(module)
         DrawBaitsOnOther(pcSlot, pc, target =>
         {
             var boss = Module.PrimaryActor;
-            circle.Draw(Arena, boss.Position + boss.HitboxRadius * boss.DirectionTo(target));
-            DrawPositionsInBounds(GenerateStandardPositions(boss, target, boss.HitboxRadius));
+            DrawPositionsInBounds(CalculatePositions(boss, target));
         });
     }
 }
 
-class FrostBreath(BossModule module) : GenericBaitAwayModule(module)
+class FrostBreath(BossModule module) : BaitAway(module)
 {
     public override void OnEventIcon(Actor actor, uint iconID)
     {
@@ -205,7 +200,7 @@ class FrostBreath(BossModule module) : GenericBaitAwayModule(module)
     {
         DrawBaitsOnActor(pcSlot, pc, target =>
         {
-            var positions = GenerateRotatedPositions(Module.PrimaryActor, target, [30, -30]);
+            var positions = CalculateRotatedPositions(Module.PrimaryActor, target);
             DrawPositionsInBounds(positions);
         });
     }
@@ -214,7 +209,7 @@ class FrostBreath(BossModule module) : GenericBaitAwayModule(module)
     {
         DrawBaitsOnOther(pcSlot, pc, target =>
         {
-            var positions = GenerateRotatedPositions(Module.PrimaryActor, target, [30, -30]);
+            var positions = CalculateRotatedPositions(Module.PrimaryActor, target);
             DrawPositionsInBounds(positions);
         });
     }
