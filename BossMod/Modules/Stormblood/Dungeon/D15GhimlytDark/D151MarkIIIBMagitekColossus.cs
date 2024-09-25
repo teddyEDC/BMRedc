@@ -1,43 +1,39 @@
-﻿namespace BossMod.Stormblood.Dungeon.D15GhimlytDark.D151MarkIIIBMagitekColossus;
+namespace BossMod.Stormblood.Dungeon.D15TheGhimlytDark.D151MarkIIIBMagitekColossus;
 
 public enum OID : uint
 {
-    Boss = 0x25DA, // R3.500, x1
-    Helper = 0x233C, // R0.500, x10, Helper type
-    FireslashVoidzone = 0x1EA1A1, // R2.000, x10, EventObj type
+    Boss = 0x25DA, // R3.5
+    FireVoidzone = 0x1EA1A1, // R2.0
+    Helper = 0x233C
 }
 
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
-    CeruleumVent = 14195, // Boss->self, 4.0s cast, range 40 circle
-    Exhaust = 14192, // Boss->self, 3.0s cast, range 40+R width 10 rect
+
     JarringBlow = 14190, // Boss->player, 4.0s cast, single-target
-    MagitekRay = 14191, // Boss->players, 5.0s cast, range 6 circle
+    WildFireBeamVisual = 14193, // Boss->self, no cast, single-target
+    WildFireBeam = 14194, // Helper->player, 5.0s cast, range 6 circle, spread
+    MagitekRay = 14191, // Boss->player, 5.0s cast, range 6 circle, stack
 
-    MagitekSlashFirst = 14196, // Boss->self, 5.0s cast, range 20+R 60-degree cone // happened 1st
-    MagitekSlashFollowUps = 14671, // Helper->self, no cast, range 20+R ?-degree cone
-    MagitekSlashCCWVisual = 14197, // Boss->self, no cast, range 20+R ?-degree cone
-    MagitekSlashCWVisual = 14670, // Boss->self, no cast, range 20+R ?-degree cone
+    MagitekSlashVisual1 = 14197, // Boss->self, no cast, range 20+R 60-degree cone
+    MagitekSlashVisual2 = 14670, // Boss->self, no cast, range 20+R 60-degree cone
+    MagitekSlashFirst = 14196, // Boss->self, 5.0s cast, range 20+R 60-degree cone
+    MagitekSlashRest = 14671, // Helper->self, no cast, range 20+R 60-degree cone
 
-    WildFireBeamBoss = 14193, // Boss->self, no cast, single-target
-    WildFireBeamHelper = 14194, // Helper->player, 5.0s cast, range 6 circle
+    Exhaust = 14192, // Boss->self, 3.0s cast, range 40+R width 10 rect
+    CeruleumVent = 14195, // Boss->self, 4.0s cast, range 40 circle
 }
 
 public enum IconID : uint
 {
-    RotateCCW = 168, // Boss
-    RotateCW = 167, // Boss
+    Tankbuster = 198, // player
     Spreadmarker = 139, // player
     Stackmarker = 62, // player
-    Tankbuster = 198 // player
+    RotateCCW = 168, // Boss
+    RotateCW = 167 // Boss
 }
 
-class CeruleumVent(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.CeruleumVent));
-class Exhaust(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Exhaust), new AOEShapeRect(43.5f, 5));
-class JarringBlow(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.JarringBlow));
-class MagitekRay(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.MagitekRay), 6, 4, 4);
-class WildFireBeam(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.WildFireBeamHelper), 6);
 class MagitektSlashRotation(BossModule module) : Components.GenericRotatingAOE(module)
 {
     private static readonly Angle a60 = 60.Degrees();
@@ -74,7 +70,7 @@ class MagitektSlashRotation(BossModule module) : Components.GenericRotatingAOE(m
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.MagitekSlashFirst or AID.MagitekSlashFollowUps)
+        if ((AID)spell.Action.ID is AID.MagitekSlashFirst or AID.MagitekSlashRest)
             AdvanceSequence(0, WorldState.CurrentTime);
     }
 
@@ -97,7 +93,7 @@ class MagitektSlashVoidzone(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorEState(Actor actor, ushort state)
     {
-        if ((OID)actor.OID != OID.FireslashVoidzone)
+        if ((OID)actor.OID != OID.FireVoidzone)
             return;
         if (state == 0x001)
             _aoes.Add(new(MagitektSlashRotation.Cone, D151MarkIIIBMagitekColossus.ArenaCenter, actor.Rotation));
@@ -106,23 +102,30 @@ class MagitektSlashVoidzone(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
+class JarringBlow(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.JarringBlow));
+class Exhaust(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Exhaust), new AOEShapeRect(43.5f, 5));
+class WildFireBeam(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.WildFireBeam), 6);
+class MagitekRay(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.MagitekRay), 6, 4, 4);
+class CeruleumVent(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.CeruleumVent));
+
 class D151MarkIIIBMagitekColossusStates : StateMachineBuilder
 {
     public D151MarkIIIBMagitekColossusStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<CeruleumVent>()
-            .ActivateOnEnter<Exhaust>()
-            .ActivateOnEnter<JarringBlow>()
-            .ActivateOnEnter<MagitekRay>()
-            .ActivateOnEnter<WildFireBeam>()
             .ActivateOnEnter<MagitektSlashRotation>()
-            .ActivateOnEnter<MagitektSlashVoidzone>();
+            .ActivateOnEnter<MagitektSlashVoidzone>()
+            .ActivateOnEnter<JarringBlow>()
+            .ActivateOnEnter<Exhaust>()
+            .ActivateOnEnter<WildFireBeam>()
+            .ActivateOnEnter<CeruleumVent>()
+            .ActivateOnEnter<MagitekRay>();
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 611, NameID = 7855)]
-public class D151MarkIIIBMagitekColossus(WorldState ws, Actor primary) : BossModule(ws, primary, new(-180.591f, 68.498f), new ArenaBoundsCircle(20))
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 611, NameID = 7855, SortOrder = 1)]
+public class D151MarkIIIBMagitekColossus(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    public static readonly WPos ArenaCenter = new(-180.591f, 68.498f);
+    public static readonly WPos ArenaCenter = new(-180.569f, 68.523f);
+    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Polygon(ArenaCenter, 19.55f, 24)], [new Rectangle(new(-180, 88.3f), 20, 1), new Rectangle(new(-160, 68), 20, 1, -102.5f.Degrees())]);
 }

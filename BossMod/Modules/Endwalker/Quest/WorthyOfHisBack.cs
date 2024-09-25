@@ -135,7 +135,7 @@ class EpeaPteroenta(BossModule module) : Components.GenericAOEs(module)
         var imminent = true;
         foreach (var c in Casters.Take(2))
         {
-            yield return new AOEInstance(new AOEShapeCone(20, 60.Degrees()), c.Position, c.Rotation, Module.CastFinishAt(c.CastInfo), imminent ? ArenaColor.Danger : ArenaColor.AOE);
+            yield return new(new AOEShapeCone(20, 60.Degrees()), c.Position, c.Rotation, Module.CastFinishAt(c.CastInfo), imminent ? Colors.Danger : Colors.AOE);
             imminent = false;
         }
     }
