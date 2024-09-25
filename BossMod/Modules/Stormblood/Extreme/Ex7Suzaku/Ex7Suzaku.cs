@@ -105,8 +105,8 @@ public enum IconID : uint
 
 public enum TetherID : uint
 {
-    Tether_14 = 14, // ScarletLady->ScarletLady
-    Tether_79 = 79, // Suzaku2->Boss
+    Birds = 14, // ScarletLady->ScarletLady
+    PayThePiper = 79, // Suzaku2->Boss
 }
 
 public enum Direction { Unset = -1, North = 0, East = 1, South = 2, West = 3 };
@@ -184,7 +184,7 @@ class RapturousEcho(BossModule module) : BossComponent(module)
 public class RapturousEchoTowers(BossModule module) : Components.GenericTowers(module)
 {
     private readonly HashSet<ulong> _seenInstanceIDs = [];
-    private bool _transitioned = false;
+    private bool _transitioned;
 
     public override void OnActorEAnim(Actor actor, uint state)
     {
@@ -296,7 +296,7 @@ class RapturousEchoDance(BossModule module) : BossComponent(module)
 
 class ScarletFeverArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCircle s_circle = new(Ex7Suzaku.InnerRadius);
+    private static readonly AOEShapeCircle circle = new(Ex7Suzaku.InnerRadius);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
@@ -304,7 +304,7 @@ class ScarletFeverArenaChange(BossModule module) : Components.GenericAOEs(module
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.ScarletFever && Module.Arena.Bounds == Ex7Suzaku.Phase1Bounds)
-            _aoe = new(s_circle, Module.Center, default, Module.CastFinishAt(spell, 7));
+            _aoe = new(circle, Module.Center, default, Module.CastFinishAt(spell, 7));
     }
 
     public override void OnActorEAnim(Actor actor, uint state)
@@ -314,55 +314,38 @@ class ScarletFeverArenaChange(BossModule module) : Components.GenericAOEs(module
     }
 }
 
-class MesmerizingMelody(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.MesmerizingMelody), s_knockbackDistance, kind: Kind.TowardsOrigin)
+class MesmerizingMelody(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.MesmerizingMelody), KnockbackDistance, kind: Kind.TowardsOrigin)
 {
-    private static readonly float s_knockbackDistance = 11;
-    private static readonly float s_safeDistance = Ex7Suzaku.OuterRadius - Ex7Suzaku.InnerRadius - s_knockbackDistance - 0.5f;
-    private (WPos, DateTime) _data;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            _data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
-    }
+    public const int KnockbackDistance = 11;
+    public const float SafeDistance = Ex7Suzaku.OuterRadius - Ex7Suzaku.InnerRadius - KnockbackDistance - 0.5f;
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || _data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(_data.Item1, Ex7Suzaku.OuterRadius - s_safeDistance, Ex7Suzaku.OuterRadius, default, 180.Degrees()), _data.Item2.AddSeconds(-0.5f));
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, Ex7Suzaku.OuterRadius - SafeDistance, Ex7Suzaku.OuterRadius, default, 180.Degrees()), source.Activation);
     }
 }
 
-class RuthlessRefrain(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.RuthlessRefrain), s_knockbackDistance, kind: Kind.AwayFromOrigin)
+class RuthlessRefrain(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.RuthlessRefrain), MesmerizingMelody.KnockbackDistance, kind: Kind.AwayFromOrigin)
 {
-    private static readonly float s_knockbackDistance = 11;
-    private static readonly float s_safeDistance = Ex7Suzaku.OuterRadius - Ex7Suzaku.InnerRadius - s_knockbackDistance - 0.5f;
-    private (WPos, DateTime) _data;
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        base.OnCastStarted(caster, spell);
-        if (spell.Action == WatchedAction)
-            _data = (caster.Position, Module.CastFinishAt(spell, 0.5f));
-    }
-
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Any() || _data.Item2 > Module.WorldState.CurrentTime) // 0.5s delay to wait for action effect
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(_data.Item1, Ex7Suzaku.InnerRadius, Ex7Suzaku.InnerRadius + s_safeDistance, default, 180.Degrees()), _data.Item2.AddSeconds(-0.5f));
+        var source = Sources(slot, actor).FirstOrDefault();
+        if (source != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, Ex7Suzaku.InnerRadius, Ex7Suzaku.InnerRadius + MesmerizingMelody.SafeDistance, default, 180.Degrees()), source.Activation);
     }
 }
 
 class PayThePiper(BossModule module) : BossComponent(module)
 {
-    private bool _isLoomingCrescendo = false;
+    private bool _isLoomingCrescendo;
     private Direction _marchDirection = Direction.Unset;
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
     {
         var target = WorldState.Actors.Find(tether.Target)!;
-        if (target != Module.Raid.Player() || (TetherID)tether.ID != TetherID.Tether_79)
+        if (target != Module.Raid.Player() || (TetherID)tether.ID != TetherID.PayThePiper)
             return;
         switch ((OID)source.OID)
         {
@@ -478,8 +461,8 @@ class Ex7SuzakuStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "Kismet", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 597, NameID = 7702)]
 public class Ex7Suzaku(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, Phase1Bounds)
 {
-    public static readonly int InnerRadius = 4;
-    public static readonly int OuterRadius = 20;
+    public const int InnerRadius = 4;
+    public const int OuterRadius = 20;
     public static readonly WPos ArenaCenter = new(100, 100);
     public static readonly ArenaBoundsCircle Phase1Bounds = new(OuterRadius);
     public static readonly ArenaBoundsComplex Phase2Bounds = new([new Donut(ArenaCenter, InnerRadius, OuterRadius)]);
