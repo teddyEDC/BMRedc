@@ -52,7 +52,7 @@ class Lap(BossModule module) : Components.SingleTargetCast(module, ActionID.Make
 class Lightburst(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Lightburst));
 class Crypsis(BossModule module) : BossComponent(module)
 {
-    private bool IsConcealed = false;
+    private bool IsConcealed;
     private readonly int RevealDistance = 9;
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
