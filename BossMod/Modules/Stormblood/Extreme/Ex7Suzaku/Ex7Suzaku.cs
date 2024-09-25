@@ -23,13 +23,14 @@ public enum OID : uint
     SouthernPyre = 0x246E, // R2, x0 (spawn during fight)
     WesternPyre = 0x246F, // R2, x0 (spawn during fight)
 
-    Helper = 0x233C, // R0.5, x8, Helper type
+    Helper = 0x233C
 }
 
 public enum AID : uint
 {
-    AutoAttack = 871, // Boss->player, no cast, single-target
+    AutoAttack1 = 871, // Boss->player, no cast, single-target
     AutoAttack2 = 12863, // Boss->player, no cast, single-target
+
     Cremate = 13009, // Boss->player, 3s cast, single-target tankbuster
 
     ScarletLadyAutoAttack = 14065, // ScarletLady->player, no cast, single-target
@@ -147,6 +148,7 @@ class RekindleSpread(BossModule module) : Components.SpreadFromIcon(module, (uin
         }
     }
 }
+
 class FleetingSummer(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FleetingSummer), new AOEShapeCone(40, 45.Degrees()));
 
 class RapturousEcho(BossModule module) : BossComponent(module)
@@ -311,6 +313,7 @@ class ScarletFeverArenaChange(BossModule module) : Components.GenericAOEs(module
             Module.Arena.Bounds = Ex7Suzaku.Phase2Bounds;
     }
 }
+
 class MesmerizingMelody(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.MesmerizingMelody), s_knockbackDistance, kind: Kind.TowardsOrigin)
 {
     private static readonly float s_knockbackDistance = 11;
@@ -330,6 +333,7 @@ class MesmerizingMelody(BossModule module) : Components.KnockbackFromCastTarget(
             hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(_data.Item1, Ex7Suzaku.OuterRadius - s_safeDistance, Ex7Suzaku.OuterRadius, default, 180.Degrees()), _data.Item2.AddSeconds(-0.5f));
     }
 }
+
 class RuthlessRefrain(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.RuthlessRefrain), s_knockbackDistance, kind: Kind.AwayFromOrigin)
 {
     private static readonly float s_knockbackDistance = 11;
@@ -349,6 +353,7 @@ class RuthlessRefrain(BossModule module) : Components.KnockbackFromCastTarget(mo
             hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(_data.Item1, Ex7Suzaku.InnerRadius, Ex7Suzaku.InnerRadius + s_safeDistance, default, 180.Degrees()), _data.Item2.AddSeconds(-0.5f));
     }
 }
+
 class PayThePiper(BossModule module) : BossComponent(module)
 {
     private bool _isLoomingCrescendo = false;
@@ -412,19 +417,19 @@ class PayThePiper(BossModule module) : BossComponent(module)
                 case Direction.Unset:
                     return;
                 case Direction.North:
-                    safeCenter = new WPos(Ex7Suzaku.ArenaCenter.X, Ex7Suzaku.ArenaCenter.Z + safeOffset);
+                    safeCenter = new(Ex7Suzaku.ArenaCenter.X, Ex7Suzaku.ArenaCenter.Z + safeOffset);
                     rotation = 90.Degrees();
                     break;
                 case Direction.East:
-                    safeCenter = new WPos(Ex7Suzaku.ArenaCenter.X - safeOffset, Ex7Suzaku.ArenaCenter.Z);
+                    safeCenter = new(Ex7Suzaku.ArenaCenter.X - safeOffset, Ex7Suzaku.ArenaCenter.Z);
                     rotation = 0.Degrees();
                     break;
                 case Direction.South:
-                    safeCenter = new WPos(Ex7Suzaku.ArenaCenter.X, Ex7Suzaku.ArenaCenter.Z - safeOffset);
+                    safeCenter = new(Ex7Suzaku.ArenaCenter.X, Ex7Suzaku.ArenaCenter.Z - safeOffset);
                     rotation = 90.Degrees();
                     break;
                 case Direction.West:
-                    safeCenter = new WPos(Ex7Suzaku.ArenaCenter.X + safeOffset, Ex7Suzaku.ArenaCenter.Z);
+                    safeCenter = new(Ex7Suzaku.ArenaCenter.X + safeOffset, Ex7Suzaku.ArenaCenter.Z);
                     rotation = 0.Degrees();
                     break;
             }
@@ -439,6 +444,7 @@ class ScathingNetStack(BossModule module) : Components.StackWithIcon(module, (ui
 class PhantomFlurryCombo(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PhantomFlurryCombo), new AOEShapeCone(41, 90.Degrees()));
 class PhantomFlurryKnockback(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.PhantomFlurryKnockback), new AOEShapeCone(41, 90.Degrees()));
 class Hotspot(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Hotspot), new AOEShapeCone(21, 45.Degrees()));
+
 class Ex7SuzakuStates : StateMachineBuilder
 {
     public Ex7SuzakuStates(BossModule module) : base(module)

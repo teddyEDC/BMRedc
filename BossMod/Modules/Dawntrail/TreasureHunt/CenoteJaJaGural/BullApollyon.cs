@@ -11,6 +11,7 @@ public enum OID : uint
     UolonOfFortune = 0x42FF, // R3.5
     Helper = 0x233C
 }
+
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
