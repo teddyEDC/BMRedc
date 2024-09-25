@@ -10,13 +10,14 @@ public enum OID : uint
     TuligoraQueen = 0x4304, // R0.84, icon 5, needs to be killed in order from 1 to 5 for maximum rewards
     UolonOfFortune = 0x42FF, // R3.5
     VasoconstrictorPool = 0x1EBCB8, // R0.5, x0 (spawn during fight), EventObj type
-    Helper = 0x233C, // R0.5
+    Helper = 0x233C
 }
 
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
     Teleport = 38264, // Boss->location, no cast, single-target
+
     Lap = 38274, // Boss->player, 5.0s cast, single-target tankbuster
 
     LightburstVisual = 38276, // Helper->location, no cast, range 40 circle visual
@@ -24,7 +25,7 @@ public enum AID : uint
 
     Crypsis1 = 38265, // Boss->self, 3.0s cast, single-target
     Crypsis2 = 38266, // Boss->self, 3.0s cast, single-target
-    GoldenGall = 38267, // Boss->self, 7.0s cast, range 40 180.000-degree cone
+    GoldenGall = 38267, // Boss->self, 7.0s cast, range 40 180-degree cone
 
     GoldenRadianceVisual = 38272, // Boss->self, 2.7+0.3s cast, single-target visual
     GoldenRadiance = 38273, // Helper->location, 3.0s cast, range 5 circle
@@ -32,7 +33,7 @@ public enum AID : uint
     BlindingLight = 38580, // Helper->players, 5.0s cast, range 6 circle spread
 
     AetherialLightVisual = 38270, // Boss->self, 4.7+0.3s cast, single-target visual
-    AetherialLight = 38271, // Helper->self, 5.0s cast, range 40 60.000-degree cone
+    AetherialLight = 38271, // Helper->self, 5.0s cast, range 40 60-degree cone
 
     VasoconstrictorVisual = 38269, // Boss->location, no cast, range 6 circle visual
     Vasoconstrictor1 = 38335, // Helper->self, 5.7s cast, range 6 circle
@@ -79,16 +80,20 @@ class Crypsis(BossModule module) : BossComponent(module)
             IsConcealed = false;
     }
 }
+
 class GoldenGall(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GoldenGall), new AOEShapeCone(40, 90.Degrees()));
 class GoldenRadiance(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GoldenRadiance), 5);
 class BlindingLight(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.BlindingLight), 6);
 class AetherialLight(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AetherialLight), new AOEShapeCone(40, 30.Degrees()), 4);
-class Vasoconstrictor1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Vasoconstrictor1), new AOEShapeCircle(6));
-class Vasoconstrictor2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Vasoconstrictor2), new AOEShapeCircle(6));
-class Vasoconstrictor3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Vasoconstrictor3), new AOEShapeCircle(6));
+
+abstract class Vasoconstrictor(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(6));
+class Vasoconstrictor1(BossModule module) : Vasoconstrictor(module, AID.Vasoconstrictor1);
+class Vasoconstrictor2(BossModule module) : Vasoconstrictor(module, AID.Vasoconstrictor2);
+class Vasoconstrictor3(BossModule module) : Vasoconstrictor(module, AID.Vasoconstrictor3);
+
 class VasoconstrictorPool(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.VasoconstrictorPool))
 {
-    private readonly AOEShape _shape = new AOEShapeCircle(16);
+    private readonly AOEShapeCircle _shape = new(16);
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         return Module.Enemies(OID.VasoconstrictorPool).Where(a => !a.IsDead).Select(a => new AOEInstance(_shape, a.Position));
@@ -111,7 +116,8 @@ class GoldenMolterStates : StateMachineBuilder
             .ActivateOnEnter<Vasoconstrictor2>()
             .ActivateOnEnter<Vasoconstrictor3>()
             .ActivateOnEnter<VasoconstrictorPool>()
-            .Raw.Update = () => module.Enemies(OID.Boss).All(e => e.IsDead) && module.Enemies(OID.TuraliOnion).All(e => e.IsDead) && module.Enemies(OID.TuraliEggplant).All(e => e.IsDead) && module.Enemies(OID.TuraliGarlic).All(e => e.IsDead) && module.Enemies(OID.TuraliTomato).All(e => e.IsDead) && module.Enemies(OID.TuligoraQueen).All(e => e.IsDead) && module.Enemies(OID.UolonOfFortune).All(e => e.IsDead);
+            .Raw.Update = () => module.Enemies(OID.TuraliTomato).Concat([module.PrimaryActor]).Concat(module.Enemies(OID.TuraliEggplant)).Concat(module.Enemies(OID.TuligoraQueen))
+            .Concat(module.Enemies(OID.TuraliOnion)).Concat(module.Enemies(OID.TuraliGarlic)).Concat(module.Enemies(OID.UolonOfFortune)).All(e => e.IsDeadOrDestroyed);
     }
 }
 
@@ -121,11 +127,7 @@ public class GoldenMolter(WorldState ws, Actor primary) : BossModule(ws, primary
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, allowDeadAndUntargetable: true);
-        Arena.Actors(Enemies(OID.TuraliTomato), Colors.Vulnerable);
-        Arena.Actors(Enemies(OID.TuligoraQueen), Colors.Vulnerable);
-        Arena.Actors(Enemies(OID.TuraliGarlic), Colors.Vulnerable);
-        Arena.Actors(Enemies(OID.TuraliEggplant), Colors.Vulnerable);
-        Arena.Actors(Enemies(OID.TuraliOnion), Colors.Vulnerable);
+        Arena.Actors(Enemies(OID.TuraliEggplant).Concat(Enemies(OID.TuraliTomato)).Concat(Enemies(OID.TuligoraQueen)).Concat(Enemies(OID.TuraliGarlic))
+        .Concat(Enemies(OID.TuraliOnion)).Concat(Enemies(OID.UolonOfFortune)), Colors.Vulnerable);
     }
 }
-
