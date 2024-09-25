@@ -18,28 +18,28 @@ public enum AID : uint
     AutoAttack = 870, // Boss->player, no cast, single-target
     Teleport = 38264, // Boss->location, no cast, single-target
 
-    Lap = 38274, // Boss->player, 5.0s cast, single-target tankbuster
+    Lap = 38274, // Boss->player, 5s cast, single-target tankbuster
 
     LightburstVisual = 38276, // Helper->location, no cast, range 40 circle visual
-    Lightburst = 38275, // Boss->self, 5.0s cast, single-target raidwide
+    Lightburst = 38275, // Boss->self, 5s cast, single-target raidwide
 
-    Crypsis1 = 38265, // Boss->self, 3.0s cast, single-target
-    Crypsis2 = 38266, // Boss->self, 3.0s cast, single-target
-    GoldenGall = 38267, // Boss->self, 7.0s cast, range 40 180-degree cone
+    Crypsis1 = 38265, // Boss->self, 3s cast, single-target
+    Crypsis2 = 38266, // Boss->self, 3s cast, single-target
+    GoldenGall = 38267, // Boss->self, 7s cast, range 40 180-degree cone
 
     GoldenRadianceVisual = 38272, // Boss->self, 2.7+0.3s cast, single-target visual
-    GoldenRadiance = 38273, // Helper->location, 3.0s cast, range 5 circle
+    GoldenRadiance = 38273, // Helper->location, 3s cast, range 5 circle
 
-    BlindingLight = 38580, // Helper->players, 5.0s cast, range 6 circle spread
+    BlindingLight = 38580, // Helper->players, 5s cast, range 6 circle spread
 
     AetherialLightVisual = 38270, // Boss->self, 4.7+0.3s cast, single-target visual
-    AetherialLight = 38271, // Helper->self, 5.0s cast, range 40 60-degree cone
+    AetherialLight = 38271, // Helper->self, 5s cast, range 40 60-degree cone
 
     VasoconstrictorVisual = 38269, // Boss->location, no cast, range 6 circle visual
     Vasoconstrictor1 = 38335, // Helper->self, 5.7s cast, range 6 circle
     Vasoconstrictor2 = 38336, // Helper->self, 7.3s cast, range 6 circle
     Vasoconstrictor3 = 38337, // Helper->self, 9.3s cast, range 6 circle
-    VasoconstrictorPool = 38268, // Boss->location, 4.0+0.6s cast, range 6 circle
+    VasoconstrictorPool = 38268, // Boss->location, 4+0.6s cast, range 6 circle
 }
 
 public enum SID : uint
@@ -84,7 +84,11 @@ class Crypsis(BossModule module) : BossComponent(module)
 class GoldenGall(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GoldenGall), new AOEShapeCone(40, 90.Degrees()));
 class GoldenRadiance(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GoldenRadiance), 5);
 class BlindingLight(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.BlindingLight), 6);
-class AetherialLight(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AetherialLight), new AOEShapeCone(40, 30.Degrees()), 4);
+
+class AetherialLight(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AetherialLight), new AOEShapeCone(40, 30.Degrees()), 4)
+{
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => ActiveCasters.Select((c, i) => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo), i < 2 ? Colors.Danger : Colors.AOE));
+}
 
 abstract class Vasoconstrictor(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(6));
 class Vasoconstrictor1(BossModule module) : Vasoconstrictor(module, AID.Vasoconstrictor1);
