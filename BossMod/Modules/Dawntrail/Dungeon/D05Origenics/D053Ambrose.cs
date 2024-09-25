@@ -11,7 +11,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 870, // Boss->player, no cast, single-target
+    AutoAttack1 = 870, // Boss->player, no cast, single-target
     AutoAttack2 = 872, // Superfluity/OrigenicsEyeborg->player, no cast, single-target
     Teleport = 36439, // Boss->location, no cast, single-target
 
@@ -112,7 +112,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
 
     private void AddSource(WDir direction, AOEShapeRect shape, Angle angle)
     {
-        _sources.Add(new(Module.Center + direction, 20, Activation, shape, angle, Kind.DirForward));
+        _sources.Add(new(Arena.Center + direction, 20, Activation, shape, angle, Kind.DirForward));
     }
 
     private void AddSourceAndData(WDir direction, AOEShapeRect shape, Angle angle)
@@ -268,7 +268,6 @@ public class D053Ambrose(WorldState ws, Actor primary) : BossModule(ws, primary,
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.Superfluity));
-        Arena.Actors(Enemies(OID.OrigenicsEyeborg));
+        Arena.Actors(Enemies(OID.Superfluity).Concat(Enemies(OID.OrigenicsEyeborg)));
     }
 }

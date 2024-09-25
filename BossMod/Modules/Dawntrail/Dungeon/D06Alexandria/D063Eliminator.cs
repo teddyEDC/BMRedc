@@ -11,8 +11,8 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    Teleport = 36763, // Boss->location, no cast, single-target
     AutoAttack = 36764, // Boss->player, no cast, single-target
+    Teleport = 36763, // Boss->location, no cast, single-target
 
     Disruption = 36765, // Boss->self, 5.0s cast, range 60 circle, raidwide
 
@@ -94,7 +94,7 @@ class DisruptionArenaChange(BossModule module) : Components.GenericAOEs(module)
 
 class Disruption(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Disruption));
 
-class Partition(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(40, 90.Degrees()));
+abstract class Partition(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(40, 90.Degrees()));
 class Partition1(BossModule module) : Partition(module, AID.Partition1);
 class Partition2(BossModule module) : Partition(module, AID.Partition2);
 class Partition3(BossModule module) : Partition(module, AID.Partition3);
@@ -226,6 +226,6 @@ public class D063Eliminator(WorldState ws, Actor primary) : BossModule(ws, prima
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.LightningGenerator));
+        Arena.Actors(Enemies(OID.LightningGenerator), Colors.Object);
     }
 }

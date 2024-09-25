@@ -79,6 +79,5 @@ public class D072Anthracite(WorldState ws, Actor primary) : BossModule(ws, prima
     private static readonly Circle circle1 = new(new(-124, -39), Radius);
     private static readonly Circle circle2 = new(new(-136, -63), Radius);
     private static readonly WPos arenaCenter = new(-130, -51);
-    private static readonly List<Shape> difference = [square1, square2, circle1, circle2];
-    private static readonly ArenaBoundsComplex arena = new([new Square(arenaCenter, 17.5f)], difference);
+    private static readonly ArenaBoundsComplex arena = new([new Square(arenaCenter, 17.5f)], [square1, square2, circle1, circle2]);
 }

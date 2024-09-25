@@ -10,13 +10,15 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
+    Teleport = 31131, // Boss->location, no cast, single-target, boss teleports 
+
     StygianDeluge = 31139, // Boss->self, 5.0s cast, range 80 circle
     AntediluvianVisual = 31119, // Boss->self, 5.0s cast, single-target
     Antediluvian = 31120, // Helper->self, 6.5s cast, range 15 circle
     BodySlamVisual = 31121, // Boss->location, 6.5s cast, single-target
     BodySlamKB = 31122, // Helper->self, 7.5s cast, range 60 circle, knockback 10, away from source
     BodySlam = 31123, // Helper->self, 7.5s cast, range 8 circle
-    Teleport = 31131, // Boss->location, no cast, single-target, boss teleports 
+
     HydrobombTelegraph = 32695, // Helper->location, 2.0s cast, range 4 circle
     HydraulicRamTelegraph = 32693, // Helper->location, 2.0s cast, width 8 rect charge
     HydraulicRamVisual = 32692, // Boss->self, 6.0s cast, single-target

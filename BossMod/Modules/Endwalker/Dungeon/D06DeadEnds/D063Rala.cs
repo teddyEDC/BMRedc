@@ -10,6 +10,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
+
     BenevolenceVisual = 25945, // Boss->self, 5.0s cast, single-target
     Benevolence = 25946, // Helper->players, 5.4s cast, range 6 circle, stack
     LamellarLight1 = 25939, // Helper->self, 6.0s cast, range 15 circle
@@ -67,8 +68,9 @@ class LamellarLightRect(BossModule module) : Components.SelfTargetedAOEs(module,
 class StillEmbrace(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.StillEmbrace), 6);
 class Benevolence(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Benevolence), 6, 4, 4);
 
-class LovingEmbraceLeft(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LovingEmbraceLeft), new AOEShapeCone(45, 90.Degrees()));
-class LovingEmbraceRight(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LovingEmbraceRight), new AOEShapeCone(45, 90.Degrees()));
+class LovingEmbrace(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(45, 90.Degrees()));
+class LovingEmbraceLeft(BossModule module) : LovingEmbrace(module, AID.LovingEmbraceLeft);
+class LovingEmbraceRight(BossModule module) : LovingEmbrace(module, AID.LovingEmbraceRight);
 
 class Pity(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.Pity));
 class WarmGlow(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.WarmGlow));

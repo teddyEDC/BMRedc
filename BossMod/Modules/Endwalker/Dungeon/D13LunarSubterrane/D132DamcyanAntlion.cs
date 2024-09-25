@@ -12,16 +12,17 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss, no cast, single-target
+
     Sandblast = 34813, // Boss->self, 5.0s cast, range 60 circle
-    Landslip = 34818, // Boss->self, 7.0s cast, single-target
-    Landslip2 = 34819, // Helper->self, 7.7s cast, range 40 width 10 rect, knockback dir 20 forward
+    LandslipVisual = 34818, // Boss->self, 7.0s cast, single-target
+    Landslip = 34819, // Helper->self, 7.7s cast, range 40 width 10 rect, knockback dir 20 forward
     Teleport = 34824, // Boss->location, no cast, single-target
     AntilonMarchTelegraph = 35871, // Helper->location, 1.5s cast, width 8 rect charge
-    AntlionMarch = 34816, // Boss->self, 5.5s cast, single-target
-    AntlionMarch2 = 34817, // Boss->location, no cast, width 8 rect charge
+    AntlionMarchVisual = 34816, // Boss->self, 5.5s cast, single-target
+    AntlionMarch = 34817, // Boss->location, no cast, width 8 rect charge
     Towerfall = 34820, // StonePillar->self, 2.0s cast, range 40 width 10 rect
-    EarthenGeyser = 34821, // Boss->self, 4.0s cast, single-target
-    EarthenGeyser2 = 34822, // Helper->players, 5.0s cast, range 10 circle
+    EarthenGeyserVisual = 34821, // Boss->self, 4.0s cast, single-target
+    EarthenGeyser = 34822, // Helper->players, 5.0s cast, range 10 circle
     PoundSand = 34443 // Boss->location, 6.0s cast, range 12 circle
 }
 
@@ -64,7 +65,7 @@ class Landslip(BossModule module) : Components.Knockback(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Landslip2)
+        if ((AID)spell.Action.ID == AID.Landslip)
         {
             Activation = Module.CastFinishAt(spell);
             _casters.Add(caster);
@@ -73,7 +74,7 @@ class Landslip(BossModule module) : Components.Knockback(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.Landslip2)
+        if ((AID)spell.Action.ID == AID.Landslip)
         {
             _casters.Remove(caster);
             if (++NumCasts > 4)
@@ -91,7 +92,7 @@ class Landslip(BossModule module) : Components.Knockback(module)
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<Towerfall>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) || !Module.InBounds(pos);
 }
 
-class EarthenGeyser(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.EarthenGeyser2), 10, 4, 4);
+class EarthenGeyser(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.EarthenGeyser), 10, 4, 4);
 class QuicksandVoidzone(BossModule module) : Components.PersistentVoidzone(module, 10, m => m.Enemies(OID.QuicksandVoidzone).Where(z => z.EventState != 7));
 class PoundSand(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.PoundSand), 12);
 
@@ -121,7 +122,7 @@ class AntlionMarch(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.AntlionMarch2)
+        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.AntlionMarch)
             _aoes.RemoveAt(0);
     }
 }

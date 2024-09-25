@@ -9,6 +9,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 24771, // Boss->player, no cast, single-target
+
     AglaeaBite = 25673, // Boss->self/player, 5.0s cast, range 9 90-degree cone, tankbuster 
 
     AglaeaClimb1 = 25666, // Boss->self, 7.0s cast, single-target

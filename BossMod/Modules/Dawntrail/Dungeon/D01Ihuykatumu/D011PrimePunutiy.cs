@@ -138,7 +138,7 @@ class ShoreShaker(BossModule module) : Components.ConcentricAOEs(module, _shapes
                 AID.ShoreShaker3 => 2,
                 _ => -1
             };
-            AdvanceSequence(order, Module.Center, WorldState.FutureTime(2));
+            AdvanceSequence(order, Arena.Center, WorldState.FutureTime(2));
         }
     }
 }

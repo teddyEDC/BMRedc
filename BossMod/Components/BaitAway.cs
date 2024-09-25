@@ -27,7 +27,7 @@ public class GenericBaitAway(BossModule module, ActionID aid = default, bool alw
     public BitMask ForbiddenPlayers; // these players should avoid baiting
     public List<Bait> CurrentBaits = [];
 
-    public IEnumerable<Bait> ActiveBaits => AllowDeadTargets ? CurrentBaits : CurrentBaits.Where(b => !b.Target.IsDead);
+    public IEnumerable<Bait> ActiveBaits => AllowDeadTargets ? CurrentBaits.Where(b => !b.Source.IsDead) : CurrentBaits.Where(b => !b.Source.IsDead && !b.Target.IsDead);
     public IEnumerable<Bait> ActiveBaitsOn(Actor target) => ActiveBaits.Where(b => b.Target == target);
     public IEnumerable<Bait> ActiveBaitsNotOn(Actor target) => ActiveBaits.Where(b => b.Target != target);
     public WPos BaitOrigin(Bait bait) => (CenterAtTarget ? bait.Target : bait.Source).Position;
@@ -138,11 +138,7 @@ public class BaitAwayTethers(BossModule module, AOEShape shape, uint tetherID, A
         if (DrawTethers)
         {
             foreach (var b in ActiveBaits)
-            {
-                if (Arena.Config.ShowOutlinesAndShadows)
-                    Arena.AddLine(b.Source.Position, b.Target.Position, Colors.Shadows, 2);
-                Arena.AddLine(b.Source.Position, b.Target.Position, Colors.Danger);
-            }
+                Arena.AddLine(b.Source.Position, b.Target.Position);
         }
     }
 

@@ -75,10 +75,7 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCone cone = new(30, 45.Degrees());
     private static readonly AOEShapeRect rectShort = new(28, 4);
     private static readonly AOEShapeRect rectLong = new(40, 4);
-    private static readonly Angle angle135 = 134.999f.Degrees();
-    private static readonly Angle angleM45 = -45.003f.Degrees();
-    private static readonly Angle angleM135 = -135.005f.Degrees();
-    private static readonly Angle angle45 = 44.998f.Degrees();
+    private static readonly Angle[] angles = Helpers.AnglesIntercardinals;
     private static readonly HashSet<WPos> cornerPositions = [new(-20.5f, -202.5f), new(20.5f, -161.5f), new(-20.5f, -161.5f), new(20.5f, -202.5f)];
     private int numCastsReflections;
     private int numCastsCannons;
@@ -114,13 +111,13 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
 
         if (modelState == 4)
         {
-            AddConeAOEs(activationFirst, angle135, angleM45);
-            AddConeAOEs(activationSecond, angleM135, angle45);
+            AddConeAOEs(activationFirst, angles[2], angles[0]);
+            AddConeAOEs(activationSecond, angles[3], angles[1]);
         }
         else if (modelState == 5)
         {
-            AddConeAOEs(activationFirst, angleM135, angle45);
-            AddConeAOEs(activationSecond, angle135, angleM45);
+            AddConeAOEs(activationFirst, angles[3], angles[1]);
+            AddConeAOEs(activationSecond, angles[2], angles[0]);
         }
     }
 
@@ -129,9 +126,9 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
         var activation = WorldState.FutureTime(6.9f);
 
         if (modelState == 4)
-            AddConeAOEs(activation, angle135, angleM45);
+            AddConeAOEs(activation, angles[2], angles[0]);
         else if (modelState == 5)
-            AddConeAOEs(activation, angleM135, angle45);
+            AddConeAOEs(activation, angles[3], angles[1]);
         foreach (var drudge in _activeDrudges)
         {
             var shape = cornerPositions.Contains(drudge.Position) ? rectShort : rectLong;

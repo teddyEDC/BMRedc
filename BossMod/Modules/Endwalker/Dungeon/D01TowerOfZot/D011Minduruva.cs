@@ -9,6 +9,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
+
     ManusyaBio = 25248, // Boss->player, 4.0s cast, single-target
     Teleport = 25241, // Boss->location, no cast, single-target
     ManusyaBlizzardIII1 = 25234, // Boss->self, 4.0s cast, single-target

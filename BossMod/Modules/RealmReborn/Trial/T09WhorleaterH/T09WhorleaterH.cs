@@ -25,11 +25,9 @@ public class T09WhorleaterH(WorldState ws, Actor primary) : BossModule(ws, prima
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor, Colors.Enemy, true);
+        Arena.Actor(PrimaryActor);
+        Arena.Actors(Enemies(OID.Tail).Concat(Enemies(OID.WavespineSahagin).Concat(Enemies(OID.WavespineSahagin)).Concat(Enemies(OID.WavetoothSahagin))));
         Arena.Actors(Enemies(OID.Spume), Colors.Vulnerable);
-        Arena.Actors(Enemies(OID.Tail));
-        Arena.Actors(Enemies(OID.WavespineSahagin));
-        Arena.Actors(Enemies(OID.WavetoothSahagin));
         Arena.Actor(Enemies(OID.Converter).FirstOrDefault(), Colors.Object);
     }
 

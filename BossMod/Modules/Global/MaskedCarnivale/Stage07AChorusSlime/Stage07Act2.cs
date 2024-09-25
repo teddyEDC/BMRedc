@@ -17,11 +17,7 @@ class SlimeExplosion(BossModule module) : Components.GenericStackSpread(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var p in Module.Enemies(OID.Boss).Where(x => !x.IsDead))
-        {
-            if (Arena.Config.ShowOutlinesAndShadows)
-                Arena.AddCircle(p.Position, 7.6f, Colors.Shadows, 2);
             Arena.AddCircle(p.Position, 7.6f, Colors.Danger);
-        }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
@@ -40,8 +36,6 @@ class Hints(BossModule module) : BossComponent(module)
     }
 }
 
-class Layout(BossModule module) : Layout4Quads(module);
-
 class Stage07Act2States : StateMachineBuilder
 {
     public Stage07Act2States(BossModule module) : base(module)
@@ -54,7 +48,7 @@ class Stage07Act2States : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.MaskedCarnivale, GroupID = 617, NameID = 8094, SortOrder = 2)]
 public class Stage07Act2 : BossModule
 {
-    public Stage07Act2(WorldState ws, Actor primary) : base(ws, primary, new(100, 100), Layout4Quads.arena)
+    public Stage07Act2(WorldState ws, Actor primary) : base(ws, primary, new(100, 100), Layouts.Layout4Quads)
     {
         ActivateComponent<Hints>();
         ActivateComponent<SlimeExplosion>();

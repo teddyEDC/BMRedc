@@ -1,7 +1,7 @@
 namespace BossMod.Endwalker.VariantCriterion.V02MR.V024Shishio;
 
 class Reisho1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ReishoFirst), new AOEShapeCircle(6));
-class Reisho2(BossModule module) : Components.PersistentVoidzone(module, 6, m => m.Enemies(OID.HauntingThrall))
+class Reisho2(BossModule module) : Components.PersistentVoidzone(module, 6, m => m.Enemies(OID.HauntingThrall), 10)
 {
     private bool started;
 
@@ -14,8 +14,7 @@ class Reisho2(BossModule module) : Components.PersistentVoidzone(module, 6, m =>
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (started && NumCasts != 20)
-            foreach (var w in ActiveAOEs(slot, actor))
-                hints.AddForbiddenZone(new AOEShapeRect(10, 6), w.Origin, w.Rotation);
+            base.AddAIHints(slot, actor, assignment, hints);
     }
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)

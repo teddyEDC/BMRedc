@@ -14,7 +14,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack = 870, // Boss->player, no cast, single-target
+    AutoAttack1 = 870, // Boss->player, no cast, single-target
     AutoAttack2 = 872, // IhuykatumuOcelot/IhuykatumuPuma/IhuykatumuSandworm2/IhuykatumuSandworm1->Boss, no cast, single-target
 
     RazorZephyr = 36340, // Boss->self, 4.0s cast, range 50 width 12 rect
@@ -80,7 +80,7 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes.Take(4);
 
-    private static readonly Dictionary<WPos, List<WPos>> coords = new()
+    private static readonly Dictionary<WPos, WPos[]> coords = new()
     {
         [new WPos(-121, 279)] = [new(-102.935f, 274.357f), new(-108.935f, 262.224f), new(-105.733f, 252.340f)], // SW whirlwind
         [new WPos(-93, 251)] = [new(-111.688f, 253.942f), new(-102.276f, 264.313f), new(-108.922f, 276.528f)] // NW whirlwind
@@ -101,7 +101,7 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
             foreach (var pos in coords.Keys)
                 if (actor.Position.AlmostEqual(pos, 1))
                 {
-                    for (var i = 0; i < coords[pos].Count; i++)
+                    for (var i = 0; i < coords[pos].Length; i++)
                         AddAOEs(coords[pos][i], delays[i]);
                     break;
                 }
@@ -138,7 +138,5 @@ class D013ApollyonStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 826, NameID = 12711)]
 public class D013Apollyon(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
 {
-    private static readonly List<Shape> union = [new Circle(new(-107, 265), 19.5f)];
-    private static readonly List<Shape> difference = [new Rectangle(new(-107, 285.75f), 20, 2)];
-    public static readonly ArenaBoundsComplex DefaultBounds = new(union, difference);
+    public static readonly ArenaBoundsComplex DefaultBounds = new([new Circle(new(-107, 265), 19.5f)], [new Rectangle(new(-107, 285.75f), 20, 2)]);
 }

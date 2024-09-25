@@ -106,9 +106,8 @@ class GreenTiles(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!ShouldActivateAOEs())
+        if (!ShouldActivateAOEs() || AI.AIManager.Instance?.Beh == null)
             return;
-
         base.AddAIHints(slot, actor, assignment, hints);
 
         var shape = ActiveAOEs(slot, actor).FirstOrDefault();
@@ -133,10 +132,10 @@ class GreenTiles(BossModule module) : Components.GenericAOEs(module)
         var forbidden = new List<Func<WPos, float>>();
         foreach (var seed in clippedSeeds)
             forbidden.Add(ShapeDistance.InvertedCircle(seed.Position, 3));
-
-        if (forbidden.Count > 0 && (actor.Position - closestSeed.Position).LengthSq() > 9)
+        var distance = (actor.Position - closestSeed.Position).LengthSq();
+        if (forbidden.Count > 0 && distance > 9)
             hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max());
-        else if ((actor.Position - closestSeed.Position).LengthSq() < 9)
+        else if (distance < 9)
             hints.InteractWithTarget = closestSeed;
     }
 

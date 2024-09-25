@@ -14,6 +14,7 @@ public enum AID : uint
 {
     AutoAttack = 871, // Sanduruva->player, no cast, single-target
     Teleport = 25254, // Sanduruva->location, no cast, single-target
+
     DeltaAttack = 25260, // Minduruva->Boss, 5.0s cast, single-target
     DeltaAttack1 = 25261, // Minduruva->Boss, 5.0s cast, single-target
     DeltaAttack2 = 25262, // Minduruva->Boss, 5.0s cast, single-target
@@ -203,7 +204,7 @@ class D013MagusSistersStates : StateMachineBuilder
             .ActivateOnEnter<DeltaBlizzardIII1>()
             .ActivateOnEnter<DeltaBlizzardIII2>()
             .ActivateOnEnter<DeltaBlizzardIII3>()
-            .Raw.Update = () => module.Enemies(OID.Boss).All(e => e.IsDead) && module.Enemies(OID.Sanduruva).All(e => e.IsDead) && module.Enemies(OID.Minduruva).All(e => e.IsDead);
+            .Raw.Update = () => module.Enemies(OID.Sanduruva).Concat(module.Enemies(OID.Minduruva)).Concat([module.PrimaryActor]).All(e => e.IsDeadOrDestroyed);
     }
 }
 
@@ -213,8 +214,7 @@ class D013MagusSisters(WorldState ws, Actor primary) : BossModule(ws, primary, n
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.Minduruva));
-        Arena.Actors(Enemies(OID.Sanduruva));
+        Arena.Actors(Enemies(OID.Minduruva).Concat(Enemies(OID.Sanduruva)));
     }
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
