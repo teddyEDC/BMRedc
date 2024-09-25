@@ -38,8 +38,8 @@ public enum SID : uint
 
 public enum IconID : uint
 {
-    BaitawayRect = 14,
-    BaitawayCone = 26
+    BaitawayCone = 26, // player
+    BaitawayRect = 14, // player
 }
 
 class FogPlumeCross(BossModule module) : Components.GenericAOEs(module)
@@ -68,22 +68,42 @@ class FogPlumeCross(BossModule module) : Components.GenericAOEs(module)
 
 class FogPlumeCircle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FogPlumeCircle), new AOEShapeCircle(6));
 
-class ColdFogGrowth(BossModule module) : Components.GenericAOEs(module)
+class ColdFog(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
+    private DateTime activation;
+    private bool reset;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
         if ((SID)status.ID == SID.AreaOfInfluenceUp)
-            _aoe = new(new AOEShapeCircle(4 + status.Extra), Arena.Center);
+            _aoe = new(new AOEShapeCircle(4 + status.Extra), Arena.Center, default, activation);
+    }
+
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    {
+        if ((AID)spell.Action.ID == AID.ColdFogVisual)
+            activation = Module.CastFinishAt(spell);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if ((AID)spell.Action.ID == AID.ColdFog)
+        {
             _aoe = null;
+            reset = false;
+        }
+    }
+
+    public override void Update()
+    {
+        if (_aoe != null && !reset && !Module.Enemies(OID.DraconicRegard).Any(x => !x.IsDead))
+        {
+            _aoe = _aoe.Value with { Activation = WorldState.FutureTime(5.6f) };
+            reset = true;
+        }
     }
 }
 
@@ -246,7 +266,7 @@ class D133MistDragonStates : StateMachineBuilder
         TrivialPhase()
             .ActivateOnEnter<FogPlumeCircle>()
             .ActivateOnEnter<FogPlumeCross>()
-            .ActivateOnEnter<ColdFogGrowth>()
+            .ActivateOnEnter<ColdFog>()
             .ActivateOnEnter<ChillingAspiration>()
             .ActivateOnEnter<RimeWreath>()
             .ActivateOnEnter<TouchDown>()

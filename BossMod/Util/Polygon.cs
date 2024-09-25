@@ -101,123 +101,47 @@ public record class RelPolygonWithHoles(List<WDir> Vertices, List<int> HoleStart
     public static Func<WPos, float> CacheFunction(Func<WPos, float> func)
     {
         var cache = new ConcurrentDictionary<WPos, float>();
-        return p =>
-        {
-            if (cache.TryGetValue(p, out var cachedValue))
-                return cachedValue;
-            var result = func(p);
-            cache[p] = result;
-            return result;
-        };
+        return p => cache.GetOrAdd(p, func);
     }
 
     public static Func<WPos, float> PolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
     {
-        var edgeCount = 0;
+        List<Edge> edges = [];
         foreach (var part in polygon.Parts)
         {
-            edgeCount += part.Exterior.Length;
-            foreach (var holeIndex in part.Holes)
-                edgeCount += part.Interior(holeIndex).Length;
+            AddEdgesFromPart(part, origin, edges);
         }
 
-        var edgeAx = new float[edgeCount];
-        var edgeAy = new float[edgeCount];
-        var edgeDx = new float[edgeCount];
-        var edgeDy = new float[edgeCount];
-        var edgeLengthSq = new float[edgeCount];
-
-        var edgeIndex = 0;
-
-        foreach (var part in polygon.Parts)
-        {
-            var exterior = part.Exterior;
-            var count = exterior.Length;
-            var prev = exterior[count - 1];
-            for (var i = 0; i < count; i++)
-            {
-                var curr = exterior[i];
-                var ax = origin.X + prev.X;
-                var ay = origin.Z + prev.Z;
-                var dx = origin.X + curr.X - ax;
-                var dy = origin.Z + curr.Z - ay;
-                var lengthSq = dx * dx + dy * dy + 1e-8f;
-
-                edgeAx[edgeIndex] = ax;
-                edgeAy[edgeIndex] = ay;
-                edgeDx[edgeIndex] = dx;
-                edgeDy[edgeIndex] = dy;
-                edgeLengthSq[edgeIndex] = lengthSq;
-
-                prev = curr;
-                edgeIndex++;
-            }
-
-            foreach (var holeIndex in part.Holes)
-            {
-                var hole = part.Interior(holeIndex);
-                count = hole.Length;
-                prev = hole[count - 1];
-                for (var i = 0; i < count; i++)
-                {
-                    var curr = hole[i];
-                    var ax = origin.X + prev.X;
-                    var ay = origin.Z + prev.Z;
-                    var dx = origin.X + curr.X - ax;
-                    var dy = origin.Z + curr.Z - ay;
-                    var lengthSq = dx * dx + dy * dy + 1e-8f;
-
-                    edgeAx[edgeIndex] = ax;
-                    edgeAy[edgeIndex] = ay;
-                    edgeDx[edgeIndex] = dx;
-                    edgeDy[edgeIndex] = dy;
-                    edgeLengthSq[edgeIndex] = lengthSq;
-
-                    prev = curr;
-                    edgeIndex++;
-                }
-            }
-        }
-
-        var spatialIndex = new SpatialIndex(edgeAx, edgeAy, edgeDx, edgeDy, cellSize: 1.0f);
+        var edgeArray = edges.ToArray();
+        var spatialIndex = new SpatialIndex(edgeArray, 1);
 
         float distanceFunc(WPos p)
         {
             var localPoint = new WDir(p.X - origin.X, p.Z - origin.Z);
             var isInside = polygon.Contains(localPoint);
+
             var minDistanceSq = float.MaxValue;
-
-            var px = p.X;
-            var py = p.Z;
-
-            foreach (var i in spatialIndex.Query(px, py))
+            foreach (var i in spatialIndex.Query(p.X, p.Z))
             {
-                var ax = edgeAx[i];
-                var ay = edgeAy[i];
-                var dx = edgeDx[i];
-                var dy = edgeDy[i];
-                var lengthSq = edgeLengthSq[i];
-
-                var t = ((px - ax) * dx + (py - ay) * dy) / lengthSq;
-                t = Math.Clamp(t, 0, 1);
-
-                var closestX = ax + t * dx;
-                var closestY = ay + t * dy;
-
-                var distX = px - closestX;
-                var distY = py - closestY;
-
-                var distanceSq = distX * distX + distY * distY;
-
-                if (distanceSq < minDistanceSq)
-                    minDistanceSq = distanceSq;
+                minDistanceSq = Math.Min(minDistanceSq, edgeArray[i].GetClosestDistance(p.X, p.Z));
             }
 
             var minDistance = MathF.Sqrt(minDistanceSq);
             return isInside ? -minDistance : minDistance;
         }
-
         return CacheFunction(distanceFunc);
+    }
+
+    private static void AddEdgesFromPart(RelPolygonWithHoles part, WPos origin, List<Edge> edges)
+    {
+        foreach (var edge in PolygonUtil.GetEdges(part.Exterior, origin))
+            edges.Add(edge);
+
+        foreach (var holeIndex in part.Holes)
+        {
+            foreach (var edge in PolygonUtil.GetEdges(part.Interior(holeIndex), origin))
+                edges.Add(edge);
+        }
     }
 
     public static Func<WPos, float> InvertedPolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
@@ -258,57 +182,54 @@ public record class RelSimplifiedComplexPolygon(List<RelPolygonWithHoles> Parts)
     }
 
     // positive offsets inflate, negative shrink polygon
-    public RelSimplifiedComplexPolygon Offset(float Offset)
+    public RelSimplifiedComplexPolygon Offset(float offset)
     {
-        var offset = new ClipperOffset();
+        var clipperOffset = new ClipperOffset();
         var exteriorPaths = new List<Path64>();
         var holePaths = new List<Path64>();
 
         foreach (var part in Parts)
         {
-            var exteriorPath = new Path64(part.Exterior.Length);
-            foreach (var vertex in part.Exterior)
-                exteriorPath.Add(new Point64(vertex.X * PolygonClipper.Scale, vertex.Z * PolygonClipper.Scale));
-            exteriorPaths.Add(exteriorPath);
-
-            foreach (var holeIndex in part.Holes)
-            {
-                var holePath = new Path64(part.Interior(holeIndex).Length);
-                foreach (var vertex in part.Interior(holeIndex))
-                    holePath.Add(new Point64(vertex.X * PolygonClipper.Scale, vertex.Z * PolygonClipper.Scale));
-                holePaths.Add(holePath);
-            }
+            exteriorPaths.Add(ToPath64(part.Exterior));
+            foreach (var i in part.Holes)
+                holePaths.Add(ToPath64(part.Interior(i)));
         }
 
-        foreach (var path in exteriorPaths)
-            offset.AddPath(path, JoinType.Miter, EndType.Polygon);
+        var exteriorSolution = new Paths64();
+        clipperOffset.AddPaths(new Paths64(exteriorPaths), JoinType.Miter, EndType.Polygon);
+        clipperOffset.Execute(offset * PolygonClipper.Scale, exteriorSolution);
 
-        var expandedHoles = new List<Path64>();
-        foreach (var path in holePaths)
-        {
-            var holeOffset = new ClipperOffset();
-            holeOffset.AddPath(path, JoinType.Miter, EndType.Polygon);
-            var expandedHole = new Paths64();
-            holeOffset.Execute(-Offset * PolygonClipper.Scale, expandedHole);
-            expandedHoles.AddRange(expandedHole);
-        }
-
-        var solution = new Paths64();
-        offset.Execute(Offset * PolygonClipper.Scale, solution);
+        clipperOffset.Clear();
+        var holeSolution = new Paths64();
+        clipperOffset.AddPaths(new Paths64(holePaths), JoinType.Miter, EndType.Polygon);
+        clipperOffset.Execute(-offset * PolygonClipper.Scale, holeSolution);
 
         var result = new RelSimplifiedComplexPolygon();
-        foreach (var path in solution)
+
+        foreach (var path in exteriorSolution)
         {
             var vertices = path.Select(pt => new WDir(pt.X * PolygonClipper.InvScale, pt.Y * PolygonClipper.InvScale)).ToList();
             result.Parts.Add(new RelPolygonWithHoles(vertices));
         }
 
-        foreach (var path in expandedHoles)
+        if (result.Parts.Count > 0)
         {
-            var vertices = path.Select(pt => new WDir(pt.X * PolygonClipper.InvScale, pt.Y * PolygonClipper.InvScale)).ToList();
-            result.Parts.Last().AddHole(vertices);
+            foreach (var hole in holeSolution)
+            {
+                var holeVertices = hole.Select(pt => new WDir(pt.X * PolygonClipper.InvScale, pt.Y * PolygonClipper.InvScale)).ToList();
+                result.Parts.Last().AddHole(holeVertices);
+            }
         }
+
         return result;
+    }
+
+    private static Path64 ToPath64(ReadOnlySpan<WDir> vertices)
+    {
+        var path = new Path64(vertices.Length);
+        foreach (var vertex in vertices)
+            path.Add(new Point64(vertex.X * PolygonClipper.Scale, vertex.Z * PolygonClipper.Scale));
+        return path;
     }
 }
 
@@ -422,6 +343,27 @@ public class PolygonClipper
 
 public static class PolygonUtil
 {
+    public static Edge[] GetEdges(ReadOnlySpan<WDir> vertices, WPos origin)
+    {
+        var vertexArray = vertices.ToArray();
+        var count = vertexArray.Length;
+
+        var edges = new List<Edge>();
+
+        if (count == 0)
+            return [];
+
+        var prev = vertexArray[count - 1];
+        for (var i = 0; i < count; i++)
+        {
+            var curr = vertexArray[i];
+            edges.Add(new Edge(origin.X + prev.X, origin.Z + prev.Z, curr.X - prev.X, curr.Z - prev.Z));
+            prev = curr;
+        }
+
+        return [.. edges];
+    }
+
     public static IEnumerable<(T, T)> EnumerateEdges<T>(IEnumerable<T> contour) where T : struct, IEquatable<T>
     {
         var contourList = contour as IList<T> ?? contour.ToList();
@@ -454,18 +396,35 @@ public static class PolygonUtil
     }
 }
 
+public struct Edge(float ax, float ay, float dx, float dy)
+{
+    public float Ax = ax, Ay = ay, Dx = dx, Dy = dy;
+    public float LengthSq = dx * dx + dy * dy + 1e-8f;
+
+    public readonly float GetClosestDistance(float px, float py)
+    {
+        var t = ((px - Ax) * Dx + (py - Ay) * Dy) / LengthSq;
+        t = Math.Clamp(t, 0, 1);
+
+        var closestX = Ax + t * Dx;
+        var closestY = Ay + t * Dy;
+
+        var distX = px - closestX;
+        var distY = py - closestY;
+
+        return distX * distX + distY * distY;
+    }
+}
+
 public class SpatialIndex
 {
     private readonly Dictionary<(int, int), List<int>> _gridDictionary;
     private readonly float _cellSize;
-    private readonly float[] _edgeAx, _edgeAy, _edgeDx, _edgeDy;
+    private readonly Edge[] _edges;
 
-    public SpatialIndex(float[] edgeAx, float[] edgeAy, float[] edgeDx, float[] edgeDy, float cellSize)
+    public SpatialIndex(Edge[] edges, float cellSize)
     {
-        _edgeAx = edgeAx;
-        _edgeAy = edgeAy;
-        _edgeDx = edgeDx;
-        _edgeDy = edgeDy;
+        _edges = edges;
         _cellSize = cellSize;
         _gridDictionary = [];
 
@@ -474,12 +433,12 @@ public class SpatialIndex
 
     public void BuildIndex()
     {
-        Parallel.For(0, _edgeAx.Length, i =>
+        Parallel.For(0, _edges.Length, i =>
         {
-            var minX = Math.Min(_edgeAx[i], _edgeAx[i] + _edgeDx[i]);
-            var maxX = Math.Max(_edgeAx[i], _edgeAx[i] + _edgeDx[i]);
-            var minY = Math.Min(_edgeAy[i], _edgeAy[i] + _edgeDy[i]);
-            var maxY = Math.Max(_edgeAy[i], _edgeAy[i] + _edgeDy[i]);
+            var minX = Math.Min(_edges[i].Ax, _edges[i].Ax + _edges[i].Dx);
+            var maxX = Math.Max(_edges[i].Ax, _edges[i].Ax + _edges[i].Dx);
+            var minY = Math.Min(_edges[i].Ay, _edges[i].Ay + _edges[i].Dy);
+            var maxY = Math.Max(_edges[i].Ay, _edges[i].Ay + _edges[i].Dy);
 
             var x0 = (int)Math.Floor(minX / _cellSize);
             var x1 = (int)Math.Floor(maxX / _cellSize);
@@ -505,10 +464,10 @@ public class SpatialIndex
         });
     }
 
-    public List<int> Query(float x, float y)
+    public List<int> Query(float px, float py)
     {
-        var cellX = (int)Math.Floor(x / _cellSize);
-        var cellY = (int)Math.Floor(y / _cellSize);
+        var cellX = (int)Math.Floor(px / _cellSize);
+        var cellY = (int)Math.Floor(py / _cellSize);
         var key = (cellX, cellY);
 
         return _gridDictionary.TryGetValue(key, out var list) ? list : [];

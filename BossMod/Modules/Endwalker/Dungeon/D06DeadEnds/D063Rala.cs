@@ -60,18 +60,6 @@ class Doom(BossModule module) : BossComponent(module)
             if (!_doomed.Contains(actor) && actor.Role == Role.Healer)
                 hints.Add($"Heal to full {c.Name}! (Doom)");
     }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        base.AddAIHints(slot, actor, assignment, hints);
-        foreach (var c in _doomed)
-        {
-            if (_doomed.Count > 0 && actor.Role == Role.Healer)
-                hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Esuna), c, ActionQueue.Priority.High);
-            else if (_doomed.Count > 0 && actor.Class == Class.BRD)
-                hints.ActionsToExecute.Push(ActionID.MakeSpell(BRD.AID.WardensPaean), c, ActionQueue.Priority.High);
-        }
-    }
 }
 
 class LamellarLightCircle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.LamellarLight1), new AOEShapeCircle(15), 3);
