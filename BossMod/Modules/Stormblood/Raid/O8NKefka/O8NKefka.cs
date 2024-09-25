@@ -12,79 +12,106 @@ public enum AID : uint
 
     Hyperdrive = 10542, // Boss->player, 4.0s cast, single-target
 
-    BlizzardBlitz1 = 10515, // GravenImage->self, 5.0s cast, range 10 circle // fake 
-    BlizzardBlitz2 = 10516, // GravenImage->self, 5.0s cast, range -40 donut
-    BlizzardBlitz3 = 10517, // GravenImage->self, 5.0s cast, range 40 circle // fake
-    BlizzardBlitz4 = 10518, // GravenImage->self, 5.0s cast, range 10 circle
-    BlizzardBlitz5 = 10519, // Boss->self, 5.0s cast, single-target // Cast indicator
-    BlizzardBlitz6 = 10520, // GravenImage->self, 5.0s cast, range 10 circle // Real out
-    BlizzardBlitz7 = 10521, // GravenImage->self, 5.0s cast, range -40 donut
+    BlizzardBlitzVisual = 10519, // Boss->self, 5.0s cast, single-target
+    BlizzardBlitzCircleFake1 = 10515, // GravenImage->self, 5.0s cast, range 10 circle
+    BlizzardBlitzCircleFake2 = 10517, // GravenImage->self, 5.0s cast, range 40 circle
+    BlizzardBlitzDonut1 = 10516, // GravenImage->self, 5.0s cast, range 10-40 donut
+    BlizzardBlitzDonut2 = 10521, // GravenImage->self, 5.0s cast, range 10-40 donut
+    BlizzardBlitzCircle1 = 10518, // GravenImage->self, 5.0s cast, range 10 circle
+    BlizzardBlitzCircle2 = 10520, // GravenImage->self, 5.0s cast, range 10 circle
 
-    ThrummingThunder1 = 10522, // Boss->self, 5.0s cast, single-target // Cast indicator
-    ThrummingThunder2 = 10523, // GravenImage->self, 5.0s cast, range 40+R width 10 rect // fake
-    ThrummingThunder3 = 10524, // GravenImage->self, 5.0s cast, range 40+R width 10 rect
-    ThrummingThunder4 = 10525, // GravenImage->self, 5.0s cast, range 40+R width 10 rect // Real line 2 and 4
+    ThrummingThunderVisual = 10522, // Boss->self, 5.0s cast, single-target
+    ThrummingThunderFake = 10523, // GravenImage->self, 5.0s cast, range 40+R width 10 rect
+    ThrummingThunder1 = 10524, // GravenImage->self, 5.0s cast, range 40+R width 10 rect
+    ThrummingThunder2 = 10525, // GravenImage->self, 5.0s cast, range 40+R width 10 rect
 
-    FlagrantFire1 = 10526, // Boss->self, 4.2s cast, single-target
-    FlagrantFire2 = 10527, // GravenImage->players, 5.2s cast, range 5 circle
-    FlagrantFire3 = 10528, // GravenImage->players, 5.2s cast, range 6 circle
+    FlagrantFireVisual = 10526, // Boss->self, 4.2s cast, single-target
+    FlagrantFireSpread = 10527, // GravenImage->players, 5.2s cast, range 5 circle
+    FlagrantFireStack = 10528, // GravenImage->players, 5.2s cast, range 6 circle
 
-    TimelyTeleport1 = 10529, // Boss->self, 4.0s cast, single-target
-    TimelyTeleport2 = 10530, // GravenImage->self, 4.0s cast, range 6 circle
-    RevoltingRuin = 10531, // Boss->self, no cast, range 100+R ?-degree cone
+    TimelyTeleportVisual1 = 10529, // Boss->self, 4.0s cast, single-target
+    TimelyTeleportVisual2 = 10530, // GravenImage->self, 4.0s cast, range 6 circle
+    RevoltingRuin = 10531, // Boss->self, no cast, range 100+R 120-degree cone
     AeroAssault = 10532, // Boss->self, 3.0s cast, range 100 circle
     GravenImage = 10533, // Boss->self, 5.0s cast, single-target
     Shockwave = 10535, // GravenImage->self, 13.0s cast, range 100+R width 40 rect
     WaveCannon = 10536, // GravenImage->self, 3.0s cast, range 70+R width 6 rect
 
-    GravitationalWave = 10537, // GravenImage->self, 6.0s cast, range 100+R ?-degree cone west half cleave
-    IntemperateWill = 10538, // GravenImage->self, 6.0s cast, range 100+R ?-degree cone east half cleave
-    AveMaria = 10539, // GravenImage->self, 6.0s cast, range 100 circle // reverse gaze, must look at tower
-    IndolentWill = 10540, // GravenImage->self, 6.0s cast, range 100 circle // gaze
+    GravitationalWave = 10537, // GravenImage->self, 6.0s cast, range 100+R 180-degree cone, west half cleave
+    IntemperateWill = 10538, // GravenImage->self, 6.0s cast, range 100+R 180-degree cone, east half cleave
+    AveMaria = 10539, // GravenImage->self, 6.0s cast, range 100 circle, reverse gaze, must look at tower
+    IndolentWill = 10540, // GravenImage->self, 6.0s cast, range 100 circle, gaze
 
     UltimaUpsurge = 10541, // Boss->self, 4.0s cast, range 100 circle
 }
 
-public enum SID : uint
-{
-    JestersTruths = 1487, // none->GravenImage/Boss, extra=0x0
-    JestersAntics = 1486, // none->GravenImage/Boss, extra=0x0
-    VulnerabilityUp = 202, // GravenImage/Boss->player, extra=0x1/0x2
-}
-public enum IconID : uint
-{
-    Spreadmarker = 23, // player
-    Stackmarker = 62, // player
-}
-
 class Hyperdrive(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Hyperdrive));
-class BlizzardBlitz1(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardBlitz1), new AOEShapeCircle(10));
-class BlizzardBlitz2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardBlitz2), new AOEShapeDonut(10, 40));
-class BlizzardBlitz3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardBlitz3), new AOEShapeDonut(10, 40));
-class BlizzardBlitz4(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardBlitz4), new AOEShapeCircle(10));
-class BlizzardBlitz6(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardBlitz6), new AOEShapeCircle(10));
-class BlizzardBlitz7(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlizzardBlitz7), new AOEShapeDonut(10, 40));
 
-class FlagrantFire2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.FlagrantFire2), 5);
-class FlagrantFire3(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.FlagrantFire3), 6);
+abstract class BlizzardBlitzDonut(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeDonut(10, 40));
+class BlizzardBlitzDonut1(BossModule module) : BlizzardBlitzDonut(module, AID.BlizzardBlitzDonut1);
+class BlizzardBlitzDonut2(BossModule module) : BlizzardBlitzDonut(module, AID.BlizzardBlitzDonut2);
 
-class ThrummingThunder2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ThrummingThunder2), new AOEShapeRect(40, 5));
-class ThrummingThunder3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ThrummingThunder3), new AOEShapeRect(40, 5));
-class ThrummingThunder4(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ThrummingThunder4), new AOEShapeRect(40, 5));
+abstract class BlizzardBlitzCircle(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCircle(10));
+class BlizzardBlitzCircle1(BossModule module) : BlizzardBlitzCircle(module, AID.BlizzardBlitzCircle1);
+class BlizzardBlitzCircle2(BossModule module) : BlizzardBlitzCircle(module, AID.BlizzardBlitzCircle2);
+
+class FlagrantFireSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.FlagrantFireSpread), 5);
+class FlagrantFireStack(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.FlagrantFireStack), 6, 8, 8);
+
+abstract class ThrummingThunder(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40, 5));
+class ThrummingThunder1(BossModule module) : ThrummingThunder(module, AID.ThrummingThunder1);
+class ThrummingThunder2(BossModule module) : ThrummingThunder(module, AID.ThrummingThunder2);
 
 class UltimaUpsurge(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.UltimaUpsurge));
 
-class TimelyTeleport2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TimelyTeleport2), new AOEShapeCircle(6));
-class AeroAssault(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.AeroAssault), 10, kind: Kind.AwayFromOrigin);
-class Shockwave(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Shockwave), 15, kind: Kind.DirForward);
+class AeroAssault(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.AeroAssault), 10)
+{
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        foreach (var c in Casters)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCone(c.Position, 15, Angle.FromDirection(Arena.Center - c.Position).Normalized(), 45.Degrees()), Module.CastFinishAt(c.CastInfo));
+    }
+}
+
+class Shockwave(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Shockwave), 15, kind: Kind.DirForward)
+{
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        foreach (var c in Casters)
+            hints.AddForbiddenZone(ShapeDistance.Cone(c.CastInfo!.Rotation.AlmostEqual(90.Degrees(), Angle.DegToRad) ? c.Position - new WDir(-33, 0) : c.Position - new WDir(33, 0), 40, c.Rotation, 135.Degrees()), Module.CastFinishAt(c.CastInfo));
+    }
+}
 
 class WaveCannon(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.WaveCannon), new AOEShapeRect(70, 3));
 
-class GravitationalWave(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GravitationalWave), new AOEShapeCone(100, 180.Degrees()));
-class IntemperateWill(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.IntemperateWill), new AOEShapeCone(100, 180.Degrees()));
+abstract class Cleave(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(100, 90.Degrees()));
+class GravitationalWave(BossModule module) : Cleave(module, AID.GravitationalWave);
+class IntemperateWill(BossModule module) : Cleave(module, AID.IntemperateWill);
 
 class AveMaria(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.AveMaria), true);
 class IndolentWill(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.IndolentWill));
+
+class RevoltingRuin(BossModule module) : Components.GenericAOEs(module)
+{
+    private AOEInstance? _aoe;
+    private static readonly AOEShapeCone cone = new(102.7f, 60.Degrees());
+
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    {
+        if ((AID)spell.Action.ID == AID.TimelyTeleportVisual2 && !caster.Position.AlmostEqual(Module.PrimaryActor.Position, 1))
+            _aoe = new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell, 3.1f));
+        else if ((AID)spell.Action.ID == AID.AeroAssault) // sometimes it does AeroAssault directly and skipping Revolting Ruin
+            _aoe = null;
+    }
+
+    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    {
+        if ((AID)spell.Action.ID == AID.RevoltingRuin)
+            _aoe = null;
+    }
+}
 
 class O8NKefkaStates : StateMachineBuilder
 {
@@ -92,16 +119,16 @@ class O8NKefkaStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<Hyperdrive>()
-            .ActivateOnEnter<BlizzardBlitz2>()
-            .ActivateOnEnter<BlizzardBlitz4>()
-            .ActivateOnEnter<BlizzardBlitz6>()
-            .ActivateOnEnter<BlizzardBlitz7>()
-            .ActivateOnEnter<FlagrantFire2>()
-            .ActivateOnEnter<FlagrantFire3>()
-            .ActivateOnEnter<ThrummingThunder3>()
-            .ActivateOnEnter<ThrummingThunder4>()
+            .ActivateOnEnter<BlizzardBlitzDonut1>()
+            .ActivateOnEnter<BlizzardBlitzDonut2>()
+            .ActivateOnEnter<BlizzardBlitzCircle1>()
+            .ActivateOnEnter<BlizzardBlitzCircle2>()
+            .ActivateOnEnter<FlagrantFireSpread>()
+            .ActivateOnEnter<FlagrantFireStack>()
+            .ActivateOnEnter<ThrummingThunder1>()
+            .ActivateOnEnter<ThrummingThunder2>()
             .ActivateOnEnter<UltimaUpsurge>()
-            .ActivateOnEnter<TimelyTeleport2>()
+            .ActivateOnEnter<RevoltingRuin>()
             .ActivateOnEnter<AeroAssault>()
             .ActivateOnEnter<Shockwave>()
             .ActivateOnEnter<WaveCannon>()
@@ -112,5 +139,5 @@ class O8NKefkaStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "The Combat Reborn Team (LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 289, NameID = 7131)]
-public class O8NKefka(WorldState ws, Actor primary) : BossModule(ws, primary, new(0, 0), new ArenaBoundsCircle(20));
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (LTS, Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 289, NameID = 7131)]
+public class O8NKefka(WorldState ws, Actor primary) : BossModule(ws, primary, default, new ArenaBoundsCircle(20));
