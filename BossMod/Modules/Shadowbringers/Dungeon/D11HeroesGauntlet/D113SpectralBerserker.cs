@@ -162,11 +162,13 @@ class CratersWildRampage(BossModule module) : Components.GenericAOEs(module)
     private static readonly Circle circle2 = new(pos2, 7);
     public readonly List<Circle> Circles = [];
     private bool invert;
+    private DateTime activation;
+    private const string hint = "Go inside crater!";
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (Circles.Count > 0)
-            yield return new(new AOEShapeCustom(Circles) with { InvertForbiddenZone = invert }, Arena.Center, Color: invert ? Colors.SafeFromAOE : Colors.AOE);
+            yield return new(new AOEShapeCustom(Circles) with { InvertForbiddenZone = invert }, Arena.Center, default, activation, invert ? Colors.SafeFromAOE : Colors.AOE);
     }
 
     public override void OnActorEAnim(Actor actor, uint state)
@@ -183,13 +185,30 @@ class CratersWildRampage(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.WildRampage)
+        {
             invert = true;
+            activation = Module.CastFinishAt(spell);
+        }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.WildRampage)
             invert = false;
+    }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        var activeSafespot = ActiveAOEs(slot, actor).Where(c => c.Color == Colors.SafeFromAOE).ToList();
+        if (activeSafespot.Count != 0)
+        {
+            if (!activeSafespot.Any(c => c.Check(actor.Position)))
+                hints.Add(hint);
+            else if (activeSafespot.Any(c => c.Check(actor.Position)))
+                hints.Add(hint, false);
+        }
+        else
+            base.AddHints(slot, actor, hints);
     }
 }
 

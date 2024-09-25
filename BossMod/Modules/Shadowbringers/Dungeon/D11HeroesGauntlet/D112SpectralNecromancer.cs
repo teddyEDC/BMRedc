@@ -85,11 +85,13 @@ class NecrobombBaitAway(BossModule module) : Components.BaitAwayIcon(module, new
 
 class Necrobombs(BossModule module) : BossComponent(module)
 {
+    private readonly NecrobombBaitAway _ba = module.FindComponent<NecrobombBaitAway>()!;
     private static readonly AOEShapeCircle circle = new(8);
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        base.AddAIHints(slot, actor, assignment, hints);
+        if (_ba.ActiveBaits.Any())
+            return;
         var forbidden = new List<Func<WPos, float>>();
         foreach (var e in WorldState.Actors.Where(x => !x.IsAlly && x.Tether.ID == (uint)TetherID.CrawlingNecrobombs))
             forbidden.Add(circle.Distance(e.Position, default));
@@ -137,13 +139,13 @@ class Doom(BossModule module) : BossComponent(module)
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (_doomed.Contains(actor) && !(actor.Role == Role.Healer))
-            hints.Add("You were doomed! Get healed to full fast.");
-        else if (_doomed.Contains(actor) && actor.Role == Role.Healer)
-            hints.Add("Heal yourself to full! (Doom).");
+        if (_doomed.Contains(actor) && !(actor.Role == Role.Healer || actor.Class == Class.BRD))
+            hints.Add("You were doomed! Get cleansed fast.");
+        if (_doomed.Contains(actor) && (actor.Role == Role.Healer || actor.Class == Class.BRD))
+            hints.Add("Cleanse yourself! (Doom).");
         foreach (var c in _doomed)
-            if (!_doomed.Contains(actor) && actor.Role == Role.Healer)
-                hints.Add($"Heal to full {c.Name}! (Doom)");
+            if (!_doomed.Contains(actor) && (actor.Role == Role.Healer || actor.Class == Class.BRD))
+                hints.Add($"Cleanse {c.Name}! (Doom)");
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
