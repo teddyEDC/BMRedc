@@ -1,4 +1,4 @@
-namespace BossMod.Stormblood.Dungeon.D15TheGhimlytDark.D0150ScholaColossus;
+namespace BossMod.Stormblood.Dungeon.D15TheGhimlytDark.D150ScholaColossus;
 
 public enum OID : uint
 {

@@ -198,7 +198,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
         return finalResult;
     }
 
-    private PolygonClipper.Operand CreateOperandFromShapes(IEnumerable<Shape>? shapes, WPos origin)
+    private static PolygonClipper.Operand CreateOperandFromShapes(IEnumerable<Shape>? shapes, WPos origin)
     {
         var operand = new PolygonClipper.Operand();
         if (shapes != null)
@@ -215,7 +215,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
 
         var combinedPolygon = GetCombinedPolygon(origin);
         var relativePosition = position - origin;
-        var result = combinedPolygon.Contains(new WDir(relativePosition.X, relativePosition.Z));
+        var result = combinedPolygon.Contains(new(relativePosition.X, relativePosition.Z));
         AddToCheckCache(cacheKey, result);
         return result;
     }
@@ -277,7 +277,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
         return result;
     }
 
-    private void AddToPolygonCache(int key, RelSimplifiedComplexPolygon polygon)
+    private static void AddToPolygonCache(int key, RelSimplifiedComplexPolygon polygon)
     {
         _polygonCache[key] = polygon;
         _polygonCacheQueue.Enqueue(key);
