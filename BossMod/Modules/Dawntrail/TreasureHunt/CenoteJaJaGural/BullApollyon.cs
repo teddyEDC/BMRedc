@@ -14,24 +14,24 @@ public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast, single-target
     Teleport = 38334, // Boss->location, no cast, single-target
-    Blade = 38261, // Boss->player, 5.0s cast, single-target tankbuster
+    Blade = 38261, // Boss->player, 5s cast, single-target tankbuster
 
     PyreburstVisual = 38263, // Helper->self, no cast, range 60 circle visual
-    Pyreburst = 38262, // Boss->self, 5.0s cast, single-target raidwide
+    Pyreburst = 38262, // Boss->self, 5s cast, single-target raidwide
 
-    FlameBlade1 = 38249, // Boss->self, 4.0s cast, range 40 width 10 rect
-    FlameBlade2 = 38250, // Helper->self, 11.0s cast, range 40 width 10 rect
+    FlameBlade1 = 38249, // Boss->self, 4s cast, range 40 width 10 rect
+    FlameBlade2 = 38250, // Helper->self, 11s cast, range 40 width 10 rect
     FlameBlade3 = 38251, // Helper->self, 2.5s cast, range 40 width 5 rect
 
     BlazingBreathVisual = 38257, // Boss->self, 2.3+0.7s cast, single-target visual
-    BlazingBreath = 38258, // Helper->player, 3.0s cast, range 44 width 10 rect
+    BlazingBreath = 38258, // Helper->player, 3s cast, range 44 width 10 rect
 
-    CrossfireBlade1 = 38253, // Boss->self, 4.0s cast, range 20 width 10 cross
-    CrossfireBlade2 = 38254, // Helper->self, 11.0s cast, range 20 width 10 cross
+    CrossfireBlade1 = 38253, // Boss->self, 4s cast, range 20 width 10 cross
+    CrossfireBlade2 = 38254, // Helper->self, 11s cast, range 20 width 10 cross
     CrossfireBlade3 = 38255, // Helper->self, 2.5s cast, range 40 width 5 rect
 
-    BlazingBlastVisual = 38259, // Boss->self, 3.0s cast, single-target visual
-    BlazingBlast = 38260, // Helper->location, 3.0s cast, range 6 circle
+    BlazingBlastVisual = 38259, // Boss->self, 3s cast, single-target visual
+    BlazingBlast = 38260, // Helper->location, 3s cast, range 6 circle
 }
 
 class Blade(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Blade));
@@ -75,5 +75,6 @@ public class BullApollyon(WorldState ws, Actor primary) : BossModule(ws, primary
         Arena.Actors(Enemies(OID.TuraliGarlic), Colors.Vulnerable);
         Arena.Actors(Enemies(OID.TuraliEggplant), Colors.Vulnerable);
         Arena.Actors(Enemies(OID.TuraliOnion), Colors.Vulnerable);
+        Arena.Actors(Enemies(OID.UolonOfFortune), Colors.Vulnerable);
     }
 }
