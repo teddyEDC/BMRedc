@@ -215,7 +215,7 @@ class RapturousEchoDance(BossModule module) : BossComponent(module)
         South = 0x00400020,
         West = 0x10000800
     };
-    private bool _transitioned = false;
+    private bool _transitioned;
     private readonly Dictionary<ulong, (WPos Position, uint State)> _platformData = [];
 
     public override void OnActorEAnim(Actor actor, uint state)
