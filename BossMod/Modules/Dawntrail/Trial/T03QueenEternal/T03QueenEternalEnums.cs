@@ -17,12 +17,12 @@ public enum AID : uint
 {
     AutoAttack = 36656, // QueenEternal4->player, no cast, single-target
 
-    LegitimateForce1 = 36638, // Boss->self, 8.0s cast, range 60 width 30 rect
-    LegitimateForce2 = 36639, // Boss->self, 8.0s cast, range 60 width 30 rect
-    LegitimateForce3 = 36640, // Boss->self, 8.0s cast, range 60 width 30 rect
-    LegitimateForce4 = 36641, // Boss->self, 8.0s cast, range 60 width 30 rect
-    LegitimateForce5 = 36642, // Boss->self, no cast, range 60 width 30 rect // Immediate follow up after a cast of LF1-4
-    LegitimateForce6 = 36643, // Boss->self, no cast, range 60 width 30 rect
+    LegitimateForce1 = 36638, // Boss->self, 8.0s cast, range 60 width 30 rect // west first
+    LegitimateForce2 = 36639, // Boss->self, 8.0s cast, range 60 width 30 rect // west first
+    LegitimateForce3 = 36640, // Boss->self, 8.0s cast, range 60 width 30 rect // east first
+    LegitimateForce4 = 36641, // Boss->self, 8.0s cast, range 60 width 30 rect // east first
+    LegitimateForce5 = 36642, // Boss->self, no cast, range 60 width 30 rect // west second
+    LegitimateForce6 = 36643, // Boss->self, no cast, range 60 width 30 rect // east second
 
     Aethertithe1 = 36604, // Boss->self, 3.0s cast, single-target
     Aethertithe2 = 36605, // Helper->self, no cast, range 100 circle
@@ -39,9 +39,9 @@ public enum AID : uint
 
     LockAndKey = 36630, // Boss->self, no cast, single-target
 
-    VirtualShift1 = 36606, // Boss->self, 5.0s cast, range 100 circle
+    VirtualShift1 = 36606, // Boss->self, 5.0s cast, range 100 circle // Arena changes to X
     VirtualShift2 = 36607, // Boss->self, 5.0s cast, range 100 circle
-    VirtualShift3 = 36608, // Boss->self, 5.0s cast, range 100 circle
+    VirtualShift3 = 36608, // Boss->self, 5.0s cast, range 100 circle // Arena changes to standard
 
     RuthlessRegalia = 36634, // QueenEternal2->self, no cast, range 100 width 12 rect
 
@@ -78,19 +78,20 @@ public enum AID : uint
     DivideAndConquer2 = 36637, // Helper->self, no cast, range 100 width 5 rect
 
     MorningStars = 39134, // Helper->player, no cast, single-target
-    FangsOfTheBraax = 36653, // WukLamat->Boss, no cast, single-target
 
     DynasticDiadem1 = 40058, // Boss->self, 5.0s cast, single-target
     DynasticDiadem2 = 40059, // Helper->self, 5.0s cast, range ?-70 donut
 
-    TrialsOfTural = 36652, // WukLamat->Boss, no cast, single-target
-    TailOfTheBraax = 36654, // WukLamat->Boss, no cast, single-target
     RoyalBanishment = 36644, // Boss->self, 3.0s cast, single-target
-    JawOfTheBraax = 36655, // WukLamat->Boss, no cast, single-target
 
     RoyalBanishment1 = 36645, // Helper->self, no cast, range 100 circle
     RoyalBanishment2 = 36647, // Helper->self, 3.5s cast, range 100 30.000-degree cone
 
+    // WukLamat Actions, ignore
+    JawOfTheBraax = 36655, // WukLamat->Boss, no cast, single-target
+    TrialsOfTural = 36652, // WukLamat->Boss, no cast, single-target
+    TailOfTheBraax = 36654, // WukLamat->Boss, no cast, single-target
+    FangsOfTheBraax = 36653, // WukLamat->Boss, no cast, single-target
     DawnsResolve = 36651, // WukLamat->Boss, 9.5s cast, range 60 circle
 }
 
