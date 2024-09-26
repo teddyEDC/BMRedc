@@ -12,7 +12,6 @@ public abstract record class ArenaBounds(float Radius, float MapResolution)
     private readonly PolygonClipper.Operand _clipOperand = new();
     public static readonly Dictionary<object, object> StaticCache = [];
     public readonly Dictionary<object, object> Cache = [];
-    public WPos Center;
 
     private float _screenHalfSize;
     public float ScreenHalfSize
@@ -266,9 +265,7 @@ public record class ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon 
             }
         }
 
-        var halfWidth = (maxX - minX) / 2;
-        var halfHeight = (maxZ - minZ) / 2;
-        var result = (halfWidth, halfHeight);
+        var result = ((maxX - minX) / 2, (maxZ - minZ) / 2);
         StaticCache[Poly] = result;
         return result;
     }
@@ -295,23 +292,22 @@ public record class ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon 
         ];
 
         Parallel.ForEach(map.EnumeratePixels(), pixel =>
+        {
+            var (x, y, pos) = pixel;
+            var relativeCenter = new WDir(pos.X, pos.Z);
+            var allInside = true;
+            for (var i = 0; i < sampleOffsets.Length; i++)
             {
-                var (x, y, pos) = pixel;
-                var relativeCenter = new WDir(pos.X, pos.Z);
-
-                var allInside = true;
-                foreach (var offset in sampleOffsets)
+                var samplePoint = relativeCenter + sampleOffsets[i];
+                if (!Poly.Contains(samplePoint))
                 {
-                    var samplePoint = relativeCenter + offset;
-                    if (!polygon.Contains(samplePoint))
-                    {
-                        allInside = false;
-                        break;
-                    }
+                    allInside = false;
+                    break;
                 }
-                map.Pixels[y * map.Width + x].MaxG = allInside ? float.MaxValue : 0;
             }
-        );
+
+            map.Pixels[y * map.Width + x].MaxG = allInside ? float.MaxValue : 0;
+        });
 
         return map;
     }
@@ -322,6 +318,8 @@ public record class ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon 
 // for convenience third list will optionally perform additional unions at the end
 public record class ArenaBoundsComplex : ArenaBoundsCustom
 {
+    public WPos Center;
+
     public ArenaBoundsComplex(IEnumerable<Shape> UnionShapes, IEnumerable<Shape>? DifferenceShapes = null, IEnumerable<Shape>? AdditionalShapes = null, float MapResolution = 0.5f, float Offset = 0)
         : base(BuildBounds(UnionShapes, DifferenceShapes, AdditionalShapes, MapResolution, Offset, out var center))
     {
@@ -377,11 +375,8 @@ public record class ArenaBoundsComplex : ArenaBoundsCustom
     private static int CreateCacheKey(IEnumerable<Shape> unionShapes, IEnumerable<Shape> differenceShapes, IEnumerable<Shape> additionalShapes)
     {
         var hashCode = new HashCode();
-        var unionKey = string.Join(",", unionShapes.Select(s => s.ToString()));
-        var differenceKey = string.Join(",", differenceShapes.Select(s => s.ToString()));
-        var additionalKey = string.Join(",", additionalShapes.Select(s => s.ToString()));
-        var combinedKey = $"{unionKey}|{differenceKey}|{additionalKey}";
-        hashCode.Add(combinedKey);
+        foreach (var shape in unionShapes.Concat(differenceShapes).Concat(additionalShapes))
+            hashCode.Add(shape.GetHashCode());
         return hashCode.ToHashCode();
     }
 

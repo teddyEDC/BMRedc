@@ -129,5 +129,5 @@ class D131HedetetStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 585, NameID = 7667)]
 public class D131Hedetet(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(174, 178), 19.5f)], [new Rectangle(new(174, 197.6f), 20, 1), new Rectangle(new(174, 158.3f), 20, 1)]);
+    private static readonly ArenaBoundsComplex arena = new([new Circle(new(174, 178), 19.5f)], [new Rectangle(new(174, 197.6f), 20, 1), new Rectangle(new(174, 158.3f), 20, 1)]);
 }
