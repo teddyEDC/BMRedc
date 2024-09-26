@@ -2,7 +2,6 @@ namespace BossMod.Dawntrail.Raid.M01NBlackCat;
 
 class ArenaChanges(BossModule module) : BossComponent(module)
 {
-    private ArenaBounds? arena;
     public static readonly WPos ArenaCenter = new(100, 100);
     public static readonly ArenaBoundsSquare DefaultBounds = new(20);
     private static readonly Square defaultSquare = new(ArenaCenter, 20);
@@ -59,7 +58,7 @@ class ArenaChanges(BossModule module) : BossComponent(module)
     private void UpdateArenaBounds()
     {
         var brokenTiles = Tiles.Where((tile, index) => DestroyedCells[index]).ToList();
-        arena = new ArenaBoundsComplex([defaultSquare], brokenTiles, Offset: -0.5f);
+        ArenaBoundsComplex arena = new([defaultSquare], brokenTiles, Offset: -0.5f);
         Arena.Bounds = arena;
         Arena.Center = arena.Center;
     }

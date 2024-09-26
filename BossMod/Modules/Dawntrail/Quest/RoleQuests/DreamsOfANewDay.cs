@@ -165,7 +165,7 @@ class DreamsOfANewDayP2States(BossModule module) : DreamsOfANewDayStates(module)
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.Quest, GroupID = 70359, NameID = 13046, SortOrder = 1)]
 public class DreamsOfANewDay(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Polygon(new(-757, -719), 19.5f, 20)]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-757, -719), 19.5f, 20)]);
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

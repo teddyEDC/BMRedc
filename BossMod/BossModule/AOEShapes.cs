@@ -223,11 +223,9 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
     private static int CreateCacheKey(IEnumerable<Shape> shapes1, IEnumerable<Shape> shapes2, IEnumerable<Shape> differenceShapes, OperandType operand)
     {
         var hashCode = new HashCode();
-        var shapes1Key = string.Join(",", shapes1.Select(s => s.ToString()));
-        var shapes2Key = string.Join(",", shapes2.Select(s => s.ToString()));
-        var differenceKey = string.Join(",", differenceShapes.Select(s => s.ToString()));
-        var combinedKey = $"{shapes1Key}|{shapes2Key}|{differenceKey}|{operand}";
-        hashCode.Add(combinedKey);
+        foreach (var shape in shapes1.Concat(shapes2).Concat(differenceShapes))
+            hashCode.Add(shape.GetHashCode());
+        hashCode.Add(operand);
         return hashCode.ToHashCode();
     }
 

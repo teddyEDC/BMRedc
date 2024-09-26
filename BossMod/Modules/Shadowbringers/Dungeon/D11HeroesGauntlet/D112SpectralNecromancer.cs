@@ -182,5 +182,5 @@ class D112SpectralNecromancerStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 737, NameID = 9508)]
 public class D112SpectralNecromancer(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(new(-450, -531), 19.5f)], [new Rectangle(new(-470, -531), 20, 1.25f, 90.Degrees())]);
+    private static readonly ArenaBoundsComplex arena = new([new Circle(new(-450, -531), 19.5f)], [new Rectangle(new(-470, -531), 20, 1.25f, 90.Degrees())]);
 }

@@ -299,7 +299,7 @@ class D013PhiliaStates : StateMachineBuilder
 public class D013Philia(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     public static readonly WPos ArenaCenter = new(134, -465); // slightly different from calculated center due to difference operation
-    private static readonly ArenaBounds arena = new ArenaBoundsComplex([new Circle(ArenaCenter, 19.5f)], [new Rectangle(new(134, -445), 20, 1.5f)]);
+    private static readonly ArenaBoundsComplex arena = new([new Circle(ArenaCenter, 19.5f)], [new Rectangle(new(134, -445), 20, 1.5f)]);
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
