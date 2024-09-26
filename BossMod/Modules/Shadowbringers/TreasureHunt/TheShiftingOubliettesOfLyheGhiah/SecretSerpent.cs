@@ -70,8 +70,7 @@ public class SecretSerpent(WorldState ws, Actor primary) : BossModule(ws, primar
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.SerpentHatchling));
+        Arena.Actors(Enemies(OID.SerpentHatchling).Concat([PrimaryActor]));
         Arena.Actors(Enemies(OID.SecretEgg).Concat(Enemies(OID.SecretTomato)).Concat(Enemies(OID.SecretQueen)).Concat(Enemies(OID.SecretGarlic)).Concat(Enemies(OID.SecretOnion)), Colors.Vulnerable);
     }
 
