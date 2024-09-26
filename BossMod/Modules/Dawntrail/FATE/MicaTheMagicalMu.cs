@@ -169,7 +169,7 @@ class FlourishingBow(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.TwinklingFlourishLong or AID.TwinklingFlourishShort or AID.TwinklingRingLong or AID.TwinklingRingShort && _aoes.Count > 0)
+        if (_aoes.Count > 0 && (AID)spell.Action.ID is AID.TwinklingFlourishLong or AID.TwinklingFlourishShort or AID.TwinklingRingLong or AID.TwinklingRingShort)
         {
             _aoes.RemoveAt(0);
         }
@@ -259,5 +259,5 @@ class MicaTheMagicalMuStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, GroupType = BossModuleInfo.GroupType.Fate, GroupID = 1922, NameID = 13049)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "veyn", GroupType = BossModuleInfo.GroupType.Fate, GroupID = 1922, NameID = 13049)]
 public class MicaTheMagicalMu(WorldState ws, Actor primary) : BossModule(ws, primary, new(791, 593), new ArenaBoundsRect(21, 20));
