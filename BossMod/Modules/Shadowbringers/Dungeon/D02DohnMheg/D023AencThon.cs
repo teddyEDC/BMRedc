@@ -78,6 +78,15 @@ class FunambulistsFantasia(BossModule module) : BossComponent(module)
     {
         var lyre = Module.Enemies(OID.LiarsLyre).FirstOrDefault();
         hints.WaypointManager.module = Module;
+        hints.WaypointManager.UpdateCurrentWaypoint(actor.Position);
+        if (hints.WaypointManager.HasWaypoints)
+        {
+            var currentWaypoint = hints.WaypointManager.CurrentWaypoint;
+            if (currentWaypoint.HasValue)
+            {
+                hints.ForcedMovement = (currentWaypoint.Value - actor.Position).ToVec3();
+            }
+        }
         if (Arena.Bounds == D033AencThon.chasmArena && lyre != null)
         {
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
@@ -100,13 +109,14 @@ class Finale(BossModule module) : Components.CastHint(module, ActionID.MakeSpell
 class CorrosiveBile(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
+    private static readonly AOEShapeCone cone = new(24.875f, 45.Degrees());
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.CorrosiveBileFirst)
-            _aoe = new(new AOEShapeCone(24.875f, 45.Degrees()), caster.Position, spell.Rotation, Module.CastFinishAt(spell));
+            _aoe = new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -128,13 +138,14 @@ class CorrosiveBile(BossModule module) : Components.GenericAOEs(module)
 class FlailingTentacles(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
+    private static readonly AOEShapeCross cross = new(38.875f, 3.5f);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.FlailingTentaclesVisual)
-            _aoe = new(new AOEShapeCross(38.875f, 3.5f), caster.Position, Module.PrimaryActor.Rotation + 45.Degrees(), Module.CastFinishAt(spell, 1));
+            _aoe = new(cross, caster.Position, Module.PrimaryActor.Rotation + 45.Degrees(), Module.CastFinishAt(spell, 1));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
