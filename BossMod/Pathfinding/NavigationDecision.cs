@@ -29,8 +29,7 @@ public struct NavigationDecision
         SafeBlocked,
         UptimeToPositional,
         UptimeBlocked,
-        Optimal,
-        CustomWaypoints
+        Optimal
     }
 
     public WPos? Destination;
