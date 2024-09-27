@@ -59,6 +59,12 @@ class DigestiveFluidBait(BossModule module) : Components.GenericBaitAway(module)
         if (CurrentBaits.Any(x => x.Target == actor))
             hints.Add("Bait away!");
     }
+
+    public override void Update()
+    {
+        if (CurrentBaits.Count > 0 && Module.Enemies(OID.Kamikiri).All(x => x.IsDead)) // if adds die baits get cancelled
+            CurrentBaits.Clear();
+    }
 }
 
 class BindBait(BossModule module) : Components.GenericBaitAway(module)
