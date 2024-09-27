@@ -16,7 +16,7 @@ public enum AID : uint
     CripplingBlow = 13732, // Boss->player, 4.0s cast, single-target
     VirtuosicCapriccio = 13708, // Boss->self, 5.0s cast, range 80+R circle
     ImpChoir = 13552, // Boss->self, 4.0s cast, range 80+R circle
-    ToadChoir = 13551, // Boss->self, 4.0s cast, range 17+R 120-degree cone
+    ToadChoir = 13551, // Boss->self, 4.0s cast, range 17+R 150-degree cone
 
     FunambulistsFantasia = 13498, // Boss->self, 4.0s cast, single-target, changes arena to planks over a chasm
     FunambulistsFantasiaPull = 13519, // Helper->self, 4.0s cast, range 50 circle, pull 50, between hitboxes
@@ -76,6 +76,8 @@ class FunambulistsFantasia(BossModule module) : BossComponent(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
+        if (AI.AIManager.Instance?.Beh == null)
+            return;
         var lyre = Module.Enemies(OID.LiarsLyre).FirstOrDefault();
         hints.WaypointManager.module = Module;
         hints.WaypointManager.UpdateCurrentWaypoint(actor.Position);

@@ -296,7 +296,7 @@ public record class ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon 
             var (x, y, pos) = pixel;
             var relativeCenter = new WDir(pos.X, pos.Z);
             var allInside = true;
-            for (var i = 0; i < sampleOffsets.Length; i++)
+            for (var i = 0; i < 9; i++)
             {
                 var samplePoint = relativeCenter + sampleOffsets[i];
                 if (!Poly.Contains(samplePoint))
