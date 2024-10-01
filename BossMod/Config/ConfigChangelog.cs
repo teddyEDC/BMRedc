@@ -14,7 +14,7 @@ public class ConfigChangelogWindow : UIWindow
     private readonly Version PreviousVersion;
     private readonly List<VersionedField> Fields;
 
-    public ConfigChangelogWindow() : base("VBM Changelog", true, new(400, 300))
+    public ConfigChangelogWindow() : base("BMR Changelog", true, new(400, 300))
     {
         PreviousVersion = GetPreviousPluginVersion();
         Service.Config.AssemblyVersion = GetCurrentPluginVersion();

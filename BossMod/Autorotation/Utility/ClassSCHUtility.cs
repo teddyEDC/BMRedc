@@ -60,7 +60,7 @@ public sealed class ClassSCHUtility(RotationModuleManager manager, Actor player)
         DefineSimpleConfig(res, Track.Resurrection, "Resurrection", "Raise", 10, SCH.AID.Resurrection);
 
         // Pet Summons
-        res.Define(Track.PetActions).As<PetOption>("Pet", "", 180)
+        res.Define(Track.Summons).As<PetOption>("Pet", "", 180)
             .AddOption(PetOption.None, "None", "Do not use automatically")
             .AddOption(PetOption.Eos, "Eos", "Summon Eos", 2, 0, ActionTargets.Self, 4)
             .AddOption(PetOption.Seraph, "Seraph", "Summon Seraph", 120, 22, ActionTargets.Self, 80)

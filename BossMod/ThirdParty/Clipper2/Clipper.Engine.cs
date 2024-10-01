@@ -887,7 +887,7 @@ namespace Clipper2Lib
       }
     }
   
-    // VBM/BMR edit: a version of AddReusableData that forces polytype; useful if same data is to be reused as subject or clip
+    // BMR edit: a version of AddReusableData that forces polytype; useful if same data is to be reused as subject or clip
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected void AddReuseableData(ReuseableDataContainer64 reuseableData, PathType typeOverride)
     {
@@ -3163,7 +3163,7 @@ private void DoHorizontal(Active horz)
       base.AddReuseableData(reuseableData);
     }
 
-    // VBM/BMR edit: a version of AddReusableData that forces polytype; useful if same data is to be reused as subject or clip
+    // BMR edit: a version of AddReusableData that forces polytype; useful if same data is to be reused as subject or clip
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public new void AddReuseableData(ReuseableDataContainer64 reuseableData, PathType typeOverride)
     {

@@ -29,7 +29,7 @@ class MainDebugWindow(WorldState ws, RotationModuleManager autorot, ActionManage
         _debugClassDefinitions.Dispose();
         _debugAddon.Dispose();
         // _debugCollision.Dispose();
-        //_debugVfx.Dispose();
+        // _debugVfx.Dispose();
         base.Dispose(disposing);
     }
 

@@ -3,7 +3,7 @@ using ImGuiNET;
 
 namespace BossMod;
 
-public class AIHintsVisualizer(AIHints hints, WorldState ws, Actor player, float preferredDistance)
+public class AIHintsVisualizer(AIHints hints, WorldState ws, Actor player, ulong targetID, Func<AIHints.Enemy?, (AIHints.Enemy? enemy, float range, Positional pos, bool tank)> targetSelect)
 {
     private readonly MapVisualizer?[] _zoneVisualizers = new MapVisualizer?[hints.ForbiddenZones.Count];
     private MapVisualizer? _pathfindVisualizer;
