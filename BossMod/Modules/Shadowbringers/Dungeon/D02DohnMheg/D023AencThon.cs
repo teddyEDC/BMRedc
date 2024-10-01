@@ -1,4 +1,4 @@
-﻿namespace BossMod.Shadowbringers.Dungeon.D02DohnMheg.D031AencThon;
+namespace BossMod.Shadowbringers.Dungeon.D02DohnMheg.D031AencThon;
 
 public enum OID : uint
 {

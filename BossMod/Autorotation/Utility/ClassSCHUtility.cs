@@ -2,11 +2,7 @@
 
 public sealed class ClassSCHUtility(RotationModuleManager manager, Actor player) : RoleHealerUtility(manager, player)
 {
-    public enum Track
-    {
-        WhisperingDawn = SharedTrack.Count, Adloquium, Succor, FeyIllumination, Lustrate, SacredSoil, Indomitability, DeploymentTactics,
-        EmergencyTactics, Dissipation, Excogitation, Aetherpact, Recitation, FeyBlessing, Consolation, Protraction, Expedient, Seraphism, Resurrection, PetActions
-    }
+    public enum Track { WhisperingDawn = SharedTrack.Count, Adloquium, Succor, FeyIllumination, Lustrate, SacredSoil, Indomitability, DeploymentTactics, EmergencyTactics, Dissipation, Excogitation, Aetherpact, Recitation, FeyBlessing, Consolation, Protraction, Expedient, Seraphism, Resurrection, Summons }
     public enum SuccorOption { None, Succor, Concitation }
     public enum DeployOption { None, Use, UseEx }
     public enum AetherpactOption { None, Use, End }
@@ -120,14 +116,15 @@ public sealed class ClassSCHUtility(RotationModuleManager manager, Actor player)
         if (recit.As<RecitationOption>() != RecitationOption.None)
             Hints.ActionsToExecute.Push(ActionID.MakeSpell(SCH.AID.Recitation), Player, recit.Priority(), recit.Value.ExpireIn);
 
-        var pet = strategy.Option(Track.PetActions);
-        var petAction = pet.As<PetOption>() switch
+        var pet = strategy.Option(Track.Summons);
+        var petSummons = pet.As<PetOption>() switch
         {
             PetOption.Eos => SCH.AID.SummonEos,
             PetOption.Seraph => SCH.AID.SummonSeraph,
             _ => default
         };
-        if (petAction != default)
-            Hints.ActionsToExecute.Push(ActionID.MakeSpell(petAction), Player, pet.Priority(), pet.Value.ExpireIn);
+        if (petSummons != default)
+            Hints.ActionsToExecute.Push(ActionID.MakeSpell(petSummons), Player, pet.Priority(), pet.Value.ExpireIn);
+
     }
 }
