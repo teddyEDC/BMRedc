@@ -299,7 +299,7 @@ public record class ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon 
             for (var i = 0; i < 9; i++)
             {
                 var samplePoint = relativeCenter + sampleOffsets[i];
-                if (!Poly.Contains(samplePoint))
+                if (!polygon.Contains(samplePoint))
                 {
                     allInside = false;
                     break;
