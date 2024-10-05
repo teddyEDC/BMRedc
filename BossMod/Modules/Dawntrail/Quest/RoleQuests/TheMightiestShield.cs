@@ -80,6 +80,9 @@ public enum SID : uint
 
 class Fractures(BossModule module) : Components.DirectionalParry(module, [(uint)OID.CrackedMettle1, (uint)OID.CrackedMettle2])
 {
+    private const int sideR = (int)(Side.Front | Side.Back | Side.Left) << 4;
+    private const int sideL = (int)(Side.Right | Side.Back | Side.Front) << 4;
+
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
         if ((OID)actor.OID is not OID.CrackedMettle1 and not OID.CrackedMettle2)
@@ -107,8 +110,6 @@ class Fractures(BossModule module) : Components.DirectionalParry(module, [(uint)
         {
             var first = ActorStates.FirstOrDefault();
             var target = WorldState.Actors.Find(first.Key)!;
-            var sideR = (uint)(Side.Front | Side.Back | Side.Left) << 4;
-            var sideL = (uint)(Side.Right | Side.Back | Side.Front) << 4;
             var dir = first.Value == sideR ? target.Rotation - 90.Degrees() : first.Value == sideL ? target.Rotation + 90.Degrees() : target.Rotation + 180.Degrees();
             hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(target.Position, target.HitboxRadius, 20, dir, 20.Degrees()));
         }
@@ -160,14 +161,14 @@ class NeedleGunOilShower(BossModule module) : Components.GenericAOEs(module)
 class HeavySurfaceMissiles(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = [];
-
+    private static readonly HashSet<AID> casts = [AID.HeavySurfaceMissiles1, AID.HeavySurfaceMissiles2, AID.HeavySurfaceMissiles3, AID.HeavySurfaceMissiles4];
     private static readonly AOEShapeCircle circle = new(14);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes.Take(2);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.HeavySurfaceMissiles1 or AID.HeavySurfaceMissiles2 or AID.HeavySurfaceMissiles3 or AID.HeavySurfaceMissiles4)
+        if (casts.Contains((AID)spell.Action.ID))
             _aoes.Add(new(circle, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
         if (_aoes.Count > 0)
             _aoes.SortBy(x => x.Activation);
@@ -175,7 +176,7 @@ class HeavySurfaceMissiles(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count > 0 && (AID)spell.Action.ID is AID.HeavySurfaceMissiles1 or AID.HeavySurfaceMissiles2 or AID.HeavySurfaceMissiles3 or AID.HeavySurfaceMissiles4)
+        if (casts.Contains((AID)spell.Action.ID))
             _aoes.RemoveAt(0);
     }
 }
