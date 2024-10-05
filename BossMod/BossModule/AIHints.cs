@@ -34,9 +34,11 @@ public sealed class AIHints
 
     public static readonly ArenaBounds DefaultBounds = new ArenaBoundsSquare(30);
 
-    public WPos Center;
-    public ArenaBounds Bounds = DefaultBounds;
+    // information needed to build base pathfinding map (onto which forbidden/goal zones are later rasterized), if needed (lazy, since it's somewhat expensive and not always needed)
+    public WPos PathfindMapCenter;
+    public ArenaBounds PathfindMapBounds = DefaultBounds;
     public WaypointManager WaypointManager { get; private set; } = new WaypointManager();
+    public Bitmap.Region PathfindMapObstacles;
 
     // list of potential targets
     public List<Enemy> PotentialTargets = [];
@@ -85,8 +87,9 @@ public sealed class AIHints
     // clear all stored data
     public void Clear()
     {
-        Center = default;
-        Bounds = DefaultBounds;
+        PathfindMapCenter = default;
+        PathfindMapBounds = DefaultBounds;
+        PathfindMapObstacles = default;
         PotentialTargets.Clear();
         ForcedTarget = null;
         ForcedMovement = null;
@@ -150,6 +153,21 @@ public sealed class AIHints
         ForbiddenZones.SortBy(e => e.activation);
         ForbiddenDirections.SortBy(e => e.activation);
         PredictedDamage.SortBy(e => e.activation);
+    }
+
+    public void InitPathfindMap(Pathfinding.Map map)
+    {
+        PathfindMapBounds.PathfindMap(map, PathfindMapCenter);
+        if (PathfindMapObstacles.Bitmap != null)
+        {
+            var offX = -PathfindMapObstacles.Rect.Left;
+            var offY = -PathfindMapObstacles.Rect.Top;
+            var r = PathfindMapObstacles.Rect.Clamped(PathfindMapObstacles.Bitmap.FullRect).Clamped(new(0, 0, map.Width, map.Height), offX, offY);
+            for (int y = r.Top; y < r.Bottom; ++y)
+                for (int x = r.Left; x < r.Right; ++x)
+                    if (PathfindMapObstacles.Bitmap[x, y])
+                        map.PixelMaxG[(y + offY) * map.Width + x + offX] = -900;
+        }
     }
 
     // query utilities
@@ -255,6 +273,4 @@ public sealed class AIHints
             return aoeTargets >= 0 ? 3 + aoeTargets : singleTarget(p);
         };
     }
-
-    public WPos ClampToBounds(WPos position) => Center + Bounds.ClampToBounds(position - Center);
 }
