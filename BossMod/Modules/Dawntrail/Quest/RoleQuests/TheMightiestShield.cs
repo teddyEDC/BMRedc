@@ -110,7 +110,7 @@ class Fractures(BossModule module) : Components.DirectionalParry(module, [(uint)
             var sideR = (uint)(Side.Front | Side.Back | Side.Left) << 4;
             var sideL = (uint)(Side.Right | Side.Back | Side.Front) << 4;
             var dir = first.Value == sideR ? target.Rotation - 90.Degrees() : first.Value == sideL ? target.Rotation + 90.Degrees() : target.Rotation + 180.Degrees();
-            hints.AddForbiddenZone(ShapeDistance.InvertedCone(target.Position, 20, dir, 20.Degrees()));
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(target.Position, target.HitboxRadius, 20, dir, 20.Degrees()));
         }
     }
 }
