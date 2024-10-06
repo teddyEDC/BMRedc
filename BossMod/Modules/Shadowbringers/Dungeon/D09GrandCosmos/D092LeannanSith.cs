@@ -112,9 +112,9 @@ class GreenTiles(BossModule module) : Components.GenericAOEs(module)
 
         var shape = ActiveAOEs(slot, actor).FirstOrDefault();
         var clippedSeeds = GetClippedSeeds(shape);
-        var closestSeed = clippedSeeds.Closest(actor.Position);
+        var closestSeed = clippedSeeds?.Closest(actor.Position);
 
-        if (!IsTransporting(actor) && closestSeed != null)
+        if (!IsTransporting(actor) && clippedSeeds != null && closestSeed != null)
             HandleNonTransportingActor(actor, hints, clippedSeeds, closestSeed);
         else if (!shape.Shape.Check(actor.Position, shape.Origin, default))
             HandleTransportingActor(actor, hints);
