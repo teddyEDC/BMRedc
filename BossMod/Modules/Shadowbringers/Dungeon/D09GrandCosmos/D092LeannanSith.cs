@@ -112,9 +112,9 @@ class GreenTiles(BossModule module) : Components.GenericAOEs(module)
 
         var shape = ActiveAOEs(slot, actor).FirstOrDefault();
         var clippedSeeds = GetClippedSeeds(shape);
-        var closestSeed = clippedSeeds?.Closest(actor.Position);
+        var closestSeed = clippedSeeds.Closest(actor.Position);
 
-        if (!IsTransporting(actor) && clippedSeeds != null && closestSeed != null)
+        if (!IsTransporting(actor) && closestSeed != null)
             HandleNonTransportingActor(actor, hints, clippedSeeds, closestSeed);
         else if (!shape.Shape.Check(actor.Position, shape.Origin, default))
             HandleTransportingActor(actor, hints);
@@ -152,11 +152,12 @@ class GreenTiles(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        var aoes = ActiveAOEs(slot, actor).FirstOrDefault();
         if (IsTransporting(actor) && ActiveAOEs(slot, actor).Any(c => c.Check(actor.Position)))
             hints.Add("Drop seed outside of vulnerable area!");
         else if (IsTransporting(actor) && ActiveAOEs(slot, actor).Any(c => !c.Check(actor.Position)))
             hints.Add("Drop your seed!");
-        else if (!IsTransporting(actor) && GetClippedSeeds(ActiveAOEs(slot, actor).FirstOrDefault()).Any())
+        else if (!IsTransporting(actor) && aoes.Shape != null && GetClippedSeeds(aoes).Any())
             hints.Add("Pick up seeds in vulnerable squares!");
     }
 }
