@@ -1,5 +1,3 @@
-using BossMod.AST;
-
 namespace BossMod.Dawntrail.Quest.JobQuests.Viper.VengeanceOfTheViper;
 
 public enum OID : uint
