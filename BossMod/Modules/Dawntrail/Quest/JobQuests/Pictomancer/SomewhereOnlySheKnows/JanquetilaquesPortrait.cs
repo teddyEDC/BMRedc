@@ -26,12 +26,11 @@ public enum AID : uint
 
     ArborMotif = 37525, // Boss->self, 5.0s cast, single-target
     TornadoInGreen = 37538, // Boss->self, 5.0s cast, range 10-40 donut
-    NineIviesVisual = 37528, // OerTheAncientArbor->self, 3.0s cast, single-target
+    NineIviesVisual1 = 37528, // OerTheAncientArbor->self, 3.0s cast, single-target
+    NineIviesVisual2 = 39744, // OerTheAncientArbor->self, no cast, single-target
     NineIvies = 37529, // Helper->self, 3.0s cast, range 50 20-degree cone
 
-    _Weaponskill_ = 39744, // OerTheAncientArbor->self, no cast, single-target
     SculptureCast = 37537, // Boss->self, 5.0s cast, range 45 circle, gaze
-
     MountainMotif = 37526, // Boss->self, 5.0s cast, single-target
     EarthquakeVisual = 37530, // TheHallowedPeak->self, 5.0s cast, single-target
     Earthquake1 = 37531, // Helper->self, 5.0s cast, range 10 circle
