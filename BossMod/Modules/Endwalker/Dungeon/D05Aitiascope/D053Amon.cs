@@ -63,7 +63,7 @@ class DarkForte(BossModule module) : Components.SingleTargetCast(module, ActionI
 class Entracte(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Entracte));
 class DreamsOfIce(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DreamsOfIce), new AOEShapeCircle(6));
 
-class CurtainCall(BossModule module) : Components.CastLineOfSightAOE(module, ActionID.MakeSpell(AID.CurtainCall), 60, false)
+class CurtainCall(BossModule module) : Components.CastLineOfSightAOE(module, ActionID.MakeSpell(AID.CurtainCall), 60)
 {
     public override IEnumerable<Actor> BlockerActors() => Module.Enemies(OID.Ice);
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
