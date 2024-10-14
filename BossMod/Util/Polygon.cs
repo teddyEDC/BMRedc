@@ -193,22 +193,10 @@ public record class RelPolygonWithHoles(List<WDir> Vertices, List<int> HoleStart
         public readonly float MinY = minY, InvBucketHeight = invBucketHeight;
     }
 
-    public static Func<WPos, float> CacheFunction(Func<WPos, float> func)
-    {
-        var cache = new ConcurrentDictionary<WPos, float>();
-        return p => cache.GetOrAdd(p, func);
-    }
-
     public static Func<WPos, float> PolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
     {
         var distanceFunction = new PolygonWithHolesDistanceFunction(origin, polygon);
-        return CacheFunction(distanceFunction.Distance);
-    }
-
-    public static Func<WPos, float> InvertedPolygonWithHoles(WPos origin, RelSimplifiedComplexPolygon polygon)
-    {
-        var distanceFunction = new PolygonWithHolesDistanceFunction(origin, polygon);
-        return CacheFunction(p => -distanceFunction.Distance(p));
+        return distanceFunction.Distance;
     }
 
     public readonly struct PolygonWithHolesDistanceFunction

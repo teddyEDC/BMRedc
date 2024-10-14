@@ -225,7 +225,7 @@ public class TankAI(RotationModuleManager manager, Actor player) : AIBase(manage
     {
         var currentCD = NextChargeIn(action);
         var maxCD = ActionDefinitions.Instance[action]!.Cooldown;
-        var effectRemaining = MathF.Max(0, actionDuration + currentCD - maxCD);
+        var effectRemaining = Math.Max(0, actionDuration + currentCD - maxCD);
         var ready = currentCD < deadline;
         if (resourceCheck != null)
             ready &= resourceCheck(this);

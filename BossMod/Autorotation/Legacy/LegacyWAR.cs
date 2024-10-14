@@ -405,7 +405,7 @@ public sealed class LegacyWAR : LegacyModule
     {
         OffensiveStrategy.Delay => false,
         OffensiveStrategy.Force => true,
-        _ => Player.InCombat && _state.TargetingEnemy && _state.SurgingTempestLeft > MathF.Max(_state.CD(WAR.AID.Upheaval), _state.AnimationLock)
+        _ => Player.InCombat && _state.TargetingEnemy && _state.SurgingTempestLeft > Math.Max(_state.CD(WAR.AID.Upheaval), _state.AnimationLock)
     };
 
     private bool ShouldUseOnslaught(OnslaughtStrategy strategy)
@@ -472,7 +472,7 @@ public sealed class LegacyWAR : LegacyModule
             return GetNextFCAction(aoe);
 
         // forbid automatic PR when out of melee range, to avoid fucking up player positioning when avoiding mechanics
-        var primalRendWindow = (strategyPR == OffensiveStrategy.Delay || _state.RangeToTarget > 3) ? 0 : MathF.Min(_state.PrimalRendLeft, _state.PositionLockIn);
+        var primalRendWindow = (strategyPR == OffensiveStrategy.Delay || _state.RangeToTarget > 3) ? 0 : Math.Min(_state.PrimalRendLeft, _state.PositionLockIn);
         var primalRuinationWindow = _state.PrimalRuinationLeft; // TODO: reconsider
         var irCD = _state.CD(_state.Unlocked(WAR.AID.InnerRelease) ? WAR.AID.InnerRelease : WAR.AID.Berserk);
 
