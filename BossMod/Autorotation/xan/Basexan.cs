@@ -310,7 +310,7 @@ public abstract class Basexan<AID, TraitID>(RotationModuleManager manager, Actor
         Manager.Hints.RecommendedPositional = (target, next, NextPositionalImminent, NextPositionalCorrect);
     }
 
-    public sealed override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, float forceMovementIn, bool isMoving)
+    public sealed override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         NextGCD = default;
         NextGCDPrio = 0;
@@ -320,7 +320,7 @@ public abstract class Basexan<AID, TraitID>(RotationModuleManager manager, Actor
         SwiftcastLeft = StatusLeft(BossMod.WHM.SID.Swiftcast);
         TrueNorthLeft = StatusLeft(BossMod.DRG.SID.TrueNorth);
 
-        ForceMovementIn = forceMovementIn;
+        ForceMovementIn = Hints.MaxCastTimeEstimate;
         AnimationLockDelay = estimatedAnimLockDelay;
 
         CombatTimer = (float)(World.CurrentTime - Manager.CombatStart).TotalSeconds;
@@ -363,25 +363,7 @@ public abstract class Basexan<AID, TraitID>(RotationModuleManager manager, Actor
 
 public abstract class Targetxan(RotationModuleManager manager, Actor player) : RotationModule(manager, player)
 {
-    protected (Actor? Target, P Priority) FindBetterTargetBy<P>(Actor? initial, float maxDistanceFromPlayer, Func<Actor, P> prioFunc, Func<AIHints.Enemy, bool>? filterFunc = null) where P : struct, IComparable
-    {
-        var bestTarget = initial;
-        var bestPrio = initial != null ? prioFunc(initial) : default;
-        foreach (var enemy in Hints.PriorityTargets.Where(x =>
-            x.Actor != initial &&
-            Player.DistanceToHitbox(x.Actor) <= maxDistanceFromPlayer
-            && (filterFunc == null || filterFunc(x))
-        ))
-        {
-            var newPrio = prioFunc(enemy.Actor);
-            if (newPrio.CompareTo(bestPrio) > 0)
-            {
-                bestPrio = newPrio;
-                bestTarget = enemy.Actor;
-            }
-        }
-        return (bestTarget, bestPrio);
-    }
+    protected T GetGauge<T>() where T : unmanaged => World.Client.GetGauge<T>();
 }
 
 static class Extendxan
