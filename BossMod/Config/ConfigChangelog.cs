@@ -15,35 +15,6 @@ abstract class ChangelogNotice
     public abstract void Draw();
 }
 
-class AINotice1 : ChangelogNotice
-{
-    public override Version Since => new(0, 0, 0, 253);
-
-    private void Bullet(string txt)
-    {
-        ImGui.Bullet();
-        ImGui.SameLine();
-        ImGui.TextWrapped(txt);
-    }
-
-    public override void Draw()
-    {
-        ImGui.TextUnformatted("The following AI configuration options have been removed:");
-        Bullet("AI Preset: AI mode will no longer attempt to control which preset is active, and the presence or absence of a preset will not affect targeting behavior.");
-        Bullet("Override positional");
-        Bullet("Override follow range");
-        Bullet("Follow target: This option had no effect.");
-        Bullet("Follow during active boss module");
-        Bullet("Follow during combat");
-        Bullet("Follow out of combat");
-        Bullet("Show advanced options in the UI");
-        ImGui.Spacing();
-        ImGui.TextUnformatted("The following AI configuration options have been renamed:");
-        Bullet("Forbid movement: renamed to Disable movement. Behavior is unchanged.");
-        Bullet("Forbid actions: renamed to Disable auto-target. Behavior is unchanged.");
-    }
-}
-
 public class ConfigChangelogWindow : UIWindow
 {
     private readonly Version PreviousVersion;

@@ -173,7 +173,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
 
     private void UpdateStampedeCount(ref Stampede stampede, float casterZ)
     {
-        if (MathF.Abs(casterZ - stampede.Position.Z) < 1)
+        if (Math.Abs(casterZ - stampede.Position.Z) < 1)
             ++stampede.Count;
 
         if (stampede.Count == 30)

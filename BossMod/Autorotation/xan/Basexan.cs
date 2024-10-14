@@ -45,7 +45,7 @@ public abstract class Basexan<AID, TraitID>(RotationModuleManager manager, Actor
     protected float CD(AID aid) => World.Client.Cooldowns[ActionDefinitions.Instance.Spell(aid)!.MainCooldownGroup].Remaining;
 
     public bool CanWeave(float cooldown, float actionLock, int extraGCDs = 0, float extraFixedDelay = 0)
-        => MathF.Max(cooldown, World.Client.AnimationLock) + actionLock + AnimationLockDelay <= GCD + GCDLength * extraGCDs + extraFixedDelay;
+        => Math.Max(cooldown, World.Client.AnimationLock) + actionLock + AnimationLockDelay <= GCD + GCDLength * extraGCDs + extraFixedDelay;
     public bool CanWeave(AID aid, int extraGCDs = 0, float extraFixedDelay = 0)
     {
         // TODO is this actually helpful?
@@ -267,7 +267,7 @@ public abstract class Basexan<AID, TraitID>(RotationModuleManager manager, Actor
 
     protected float NextCastStart => World.Client.AnimationLock > GCD ? World.Client.AnimationLock + AnimationLockDelay : GCD;
 
-    protected float GetSlidecastTime(AID aid) => MathF.Max(0, GetCastTime(aid) - 0.5f);
+    protected float GetSlidecastTime(AID aid) => Math.Max(0, GetCastTime(aid) - 0.5f);
     protected float GetSlidecastEnd(AID aid) => NextCastStart + GetSlidecastTime(aid);
 
     protected bool CanCast(AID aid)
@@ -303,7 +303,7 @@ public abstract class Basexan<AID, TraitID>(RotationModuleManager manager, Actor
         NextPositionalImminent = !ignore && positional.imm;
         NextPositionalCorrect = ignore || target == null || positional.pos switch
         {
-            Positional.Flank => MathF.Abs(target.Rotation.ToDirection().Dot((Player.Position - target.Position).Normalized())) < 0.7071067f,
+            Positional.Flank => Math.Abs(target.Rotation.ToDirection().Dot((Player.Position - target.Position).Normalized())) < 0.7071067f,
             Positional.Rear => target.Rotation.ToDirection().Dot((Player.Position - target.Position).Normalized()) < -0.7071068f,
             _ => true
         };

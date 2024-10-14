@@ -146,7 +146,7 @@ class AbilityInfo : CommonEnumInfo
                 foreach (var target in i.Action.Targets)
                 {
                     var offset = target.Target.PosRotAt(i.Action.Timestamp).XYZ() - origin;
-                    var dist = useMaxComp ? MathF.Max(Math.Abs(offset.X), Math.Abs(offset.Z)) : offset.Length();
+                    var dist = useMaxComp ? Math.Max(Math.Abs(offset.X), Math.Abs(offset.Z)) : offset.Length();
                     _points.Add((i, target.Target, dist, ReplayUtils.ActionDamage(target)));
                 }
             }
@@ -318,7 +318,7 @@ class AbilityInfo : CommonEnumInfo
                 foreach (var other in i.Replay.Participants.Where(p => p != i.Action.Source && p.OID == i.Action.Source.OID && p.ExistsInWorldAt(i.Action.Timestamp)))
                 {
                     var otherPos = other.PosRotAt(i.Action.Timestamp).XYZ();
-                    minDistance = MathF.Min(minDistance, (otherPos - pos).Length());
+                    minDistance = Math.Min(minDistance, (otherPos - pos).Length());
                 }
 
                 _points.Add((i, minDistance));
