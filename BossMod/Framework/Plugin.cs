@@ -20,6 +20,7 @@ public sealed class Plugin : IDalamudPlugin
     private readonly WorldState _ws;
     private readonly AIHints _hints;
     private readonly BossModuleManager _bossmod;
+    private readonly ZoneModuleManager _zonemod;
     private readonly AIHintsBuilder _hintsBuilder;
     private readonly MovementOverride _movementOverride;
     private readonly ActionManagerEx _amex;
@@ -77,7 +78,8 @@ public sealed class Plugin : IDalamudPlugin
         _ws = new(qpf, gameVersion);
         _hints = new();
         _bossmod = new(_ws);
-        _hintsBuilder = new(_ws, _bossmod);
+        _zonemod = new(_ws);
+        _hintsBuilder = new(_ws, _bossmod, _zonemod);
         _movementOverride = new();
         _amex = new(_ws, _hints, _movementOverride);
         _wsSync = new(_ws, _amex);
@@ -86,8 +88,8 @@ public sealed class Plugin : IDalamudPlugin
         _broadcast = new();
         _ipc = new(_rotation, _amex, _movementOverride, _ai);
         _dtr = new(_rotation, _ai);
-        _wndBossmod = new(_bossmod);
-        _wndBossmodHints = new(_bossmod);
+        _wndBossmod = new(_bossmod, _zonemod);
+        _wndBossmodHints = new(_bossmod, _zonemod);
         var config = Service.Config.Get<ReplayManagementConfig>();
         var replayDir = string.IsNullOrEmpty(config.ReplayFolder) ? dalamud.ConfigDirectory.FullName + "/replays" : config.ReplayFolder;
         _wndReplay = new ReplayManagementWindow(_ws, _rotationDB, new DirectoryInfo(replayDir));
@@ -119,6 +121,7 @@ public sealed class Plugin : IDalamudPlugin
         _amex.Dispose();
         _movementOverride.Dispose();
         _hintsBuilder.Dispose();
+        _zonemod.Dispose();
         _bossmod.Dispose();
         _dtr.Dispose();
         ActionDefinitions.Instance.Dispose();
@@ -269,14 +272,17 @@ public sealed class Plugin : IDalamudPlugin
     {
         var tsStart = DateTime.Now;
 
+        var userPreventingCast = _movementOverride.IsMoveRequested() && !_amex.Config.PreventMovingWhileCasting;
+        var maxCastTime = userPreventingCast ? 0 : _ai.ForceMovementIn;
+
         _dtr.Update();
         Camera.Instance?.Update();
         _wsSync.Update(_prevUpdateTime);
         _bossmod.Update();
-        _hintsBuilder.Update(_hints, PartyState.PlayerSlot);
+        _zonemod.ActiveModule?.Update();
+        _hintsBuilder.Update(_hints, PartyState.PlayerSlot, maxCastTime);
         _amex.QueueManualActions();
-        var userPreventingCast = _movementOverride.IsMoveRequested() && !_amex.Config.PreventMovingWhileCasting;
-        _rotation.Update(_amex.AnimationLockDelayEstimate, userPreventingCast ? 0 : _ai.ForceMovementIn, _movementOverride.IsMoving());
+        _rotation.Update(_amex.AnimationLockDelayEstimate, _movementOverride.IsMoving());
         _ai.Update();
         _broadcast.Update();
         _amex.FinishActionGather();
@@ -348,7 +354,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void ParseAutorotationSetCommand(string presetName, bool toggle)
     {
-        var preset = presetName.Length > 0 ? _rotation.Database.Presets.Presets.FirstOrDefault(p => p.Name == presetName) : RotationModuleManager.ForceDisable;
+        var preset = presetName.Length > 0 ? _rotation.Database.Presets.VisiblePresets.FirstOrDefault(p => p.Name == presetName) : RotationModuleManager.ForceDisable;
         if (preset != null)
         {
             var newPreset = toggle && _rotation.Preset == preset ? null : preset;
