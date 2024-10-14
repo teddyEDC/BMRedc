@@ -77,10 +77,10 @@ public class ConfigRoot
         }
     }
 
-    public List<string> ConsoleCommand(IReadOnlyList<string> args, bool save = true)
+    public List<string> ConsoleCommand(ReadOnlySpan<string> args, bool save = true)
     {
         List<string> result = [];
-        if (args.Count == 0)
+        if (args.Length == 0)
         {
             result.Add("Usage: /bmr cfg <config-type> <field> <value>");
             result.Add("Usage: /vbm cfg <config-type> <field> <value>");
@@ -106,7 +106,7 @@ public class ConfigRoot
                 foreach (var n in matchingNodes)
                     result.Add($"- {n.GetType().Name}");
             }
-            else if (args.Count == 1)
+            else if (args.Length == 1)
             {
                 result.Add("Usage: /bmr cfg <config-type> <field> <value>");
                 result.Add("Usage: /vbm cfg <config-type> <field> <value>");
@@ -142,7 +142,7 @@ public class ConfigRoot
                 {
                     try
                     {
-                        if (args.Count == 2)
+                        if (args.Length == 2)
                             result.Add(matchingFields[0].GetValue(matchingNodes[0])?.ToString() ?? $"Failed to get value of '{args[2]}'");
                         else
                         {
@@ -161,7 +161,7 @@ public class ConfigRoot
                     }
                     catch (Exception e)
                     {
-                        if (args.Count == 2)
+                        if (args.Length == 2)
                             result.Add($"Failed to get value of {matchingNodes[0].GetType().Name}.{matchingFields[0].Name} : {e}");
                         else
                             result.Add($"Failed to set {matchingNodes[0].GetType().Name}.{matchingFields[0].Name} to {args[2]}: {e}");
