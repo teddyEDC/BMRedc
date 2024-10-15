@@ -163,9 +163,9 @@ public enum OperandType
 }
 
 // shapes1 for unions, shapes 2 for shapes for XOR/intersection with shapes1, differences for shapes that get subtracted after previous operations
+// always create a new instance of AOEShapeCustom if something other than the invertforbiddenzone changes
 public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerable<Shape>? DifferenceShapes = null, IEnumerable<Shape>? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union) : AOEShape
 {
-    private Func<WPos, float>? shapeDistance;
     private RelSimplifiedComplexPolygon? polygon;
     private readonly Dictionary<(WPos, WPos, Angle), bool> _checkCache = [];
 
@@ -265,7 +265,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
 
     public override Func<WPos, float> Distance(WPos origin, Angle rotation)
     {
-        shapeDistance ??= RelPolygonWithHoles.PolygonWithHoles(origin, GetCombinedPolygon(origin));
+        var shapeDistance = RelPolygonWithHoles.PolygonWithHoles(origin, GetCombinedPolygon(origin));
         return InvertForbiddenZone ? p => -shapeDistance(p) : shapeDistance;
     }
 
