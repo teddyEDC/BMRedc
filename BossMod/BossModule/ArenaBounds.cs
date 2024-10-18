@@ -327,8 +327,8 @@ public record class ArenaBoundsComplex : ArenaBoundsCustom
         : base(BuildBounds(UnionShapes, DifferenceShapes, AdditionalShapes, MapResolution, Offset, out var center, out var halfWidth, out var halfHeight))
     {
         Center = center;
-        HalfWidth = halfWidth - Offset;
-        HalfHeight = halfHeight - Offset;
+        HalfWidth = halfWidth + Offset;
+        HalfHeight = halfHeight + Offset;
     }
 
     private static ArenaBoundsCustom BuildBounds(Shape[] unionShapes, Shape[]? differenceShapes, Shape[]? additionalShapes, float mapResolution, float offset, out WPos center, out float halfWidth, out float halfHeight)
