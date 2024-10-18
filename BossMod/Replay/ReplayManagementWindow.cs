@@ -1,4 +1,5 @@
 ﻿using BossMod.Autorotation;
+using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.ImGuiFileDialog;
 using ImGuiNET;
@@ -17,13 +18,15 @@ public class ReplayManagementWindow : UIWindow
     private readonly EventSubscriptions _subscriptions;
     private ReplayRecorder? _recorder;
     private string _message = "";
-    private bool _autoRecording;
+    private bool _recordingManual; // recording was started manually, and so should not be stopped automatically
+    private bool _recordingDuty; // recording was started automatically because we've entered duty
+    private int _recordingActiveModules; // recording was started automatically, because we've activated N modules
     private FileDialog? _folderDialog;
     private string _lastErrorMessage = "";
 
     private const string _windowID = "###Replay recorder";
 
-    public ReplayManagementWindow(WorldState ws, RotationDatabase rotationDB, DirectoryInfo logDir) : base(_windowID, false, new(300, 200))
+    public ReplayManagementWindow(WorldState ws, BossModuleManager bmm, RotationDatabase rotationDB, DirectoryInfo logDir) : base(_windowID, false, new(300, 200))
     {
         _ws = ws;
         _logDir = logDir;
@@ -36,9 +39,11 @@ public class ReplayManagementWindow : UIWindow
                 IsOpen = _config.ShowUI;
                 UpdateLogDirectory();
             }),
-            _ws.CurrentZoneChanged.Subscribe(op => UpdateAutoRecord(op.CFCID))
+            _ws.CurrentZoneChanged.Subscribe(op => OnZoneChange(op.CFCID)),
+            bmm.ModuleActivated.Subscribe(OnModuleActivation),
+            bmm.ModuleDeactivated.Subscribe(OnModuleDeactivation)
         );
-        if (!UpdateAutoRecord(_ws.CurrentCFCID))
+        if (!OnZoneChange(_ws.CurrentCFCID))
             UpdateTitle();
 
         RespectCloseHotkey = false;
@@ -71,54 +76,113 @@ public class ReplayManagementWindow : UIWindow
         if (ImGui.Button(!IsRecording() ? "Start recording" : "Stop recording"))
         {
             if (!IsRecording())
-                StartRecording();
+            {
+                _recordingManual = true;
+                StartRecording("");
+            }
             else
+            {
                 StopRecording();
-        }
-        ImGui.SameLine();
-        if (ImGui.Button("Select replay folder"))
-        {
-            _folderDialog ??= new FileDialog("select_replay_folder", "Select replay folder", "", _config.ReplayFolder, "", "", 1, false, ImGuiFileDialogFlags.SelectOnly);
-            _folderDialog.Show();
-        }
-
-        if (_folderDialog?.Draw() ?? false)
-        {
-            if (_folderDialog.GetIsOk())
-            {
-                _config.ReplayFolder = _folderDialog.GetResults().FirstOrDefault() ?? "";
-                _config.Modified.Fire();
             }
-            _folderDialog.Hide();
-            _folderDialog = null;
-        }
-        if (_recorder != null)
-        {
-            ImGui.InputText("###msg", ref _message, 1024);
             ImGui.SameLine();
-            if (ImGui.Button("Add log marker") && _message.Length > 0)
+            if (ImGui.Button("Select replay folder"))
             {
-                _ws.Execute(new WorldState.OpUserMarker(_message));
-                _message = "";
+                _folderDialog ??= new FileDialog("select_replay_folder", "Select replay folder", "", _config.ReplayFolder, "", "", 1, false, ImGuiFileDialogFlags.SelectOnly);
+                _folderDialog.Show();
             }
-        }
 
-        ImGui.SameLine();
-        if (ImGui.Button("Open replay folder") && _logDir != null)
-            _lastErrorMessage = OpenDirectory(_logDir);
+            if (_folderDialog?.Draw() ?? false)
+            {
+                if (_folderDialog.GetIsOk())
+                {
+                    _config.ReplayFolder = _folderDialog.GetResults().FirstOrDefault() ?? "";
+                    _config.Modified.Fire();
+                }
+                _folderDialog.Hide();
+                _folderDialog = null;
+            }
+            if (_recorder != null)
+            {
+                ImGui.InputText("###msg", ref _message, 1024);
+                ImGui.SameLine();
+                if (ImGui.Button("Add log marker") && _message.Length > 0)
+                {
+                    _ws.Execute(new WorldState.OpUserMarker(_message));
+                    _message = "";
+                }
+            }
 
-        if (_lastErrorMessage.Length > 0)
-        {
             ImGui.SameLine();
-            using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor3);
-            ImGui.TextUnformatted(_lastErrorMessage);
-        }
+            if (ImGui.Button("Open replay folder") && _logDir != null)
+                _lastErrorMessage = OpenDirectory(_logDir);
 
-        ImGui.Separator();
-        _manager.Draw();
+            if (_lastErrorMessage.Length > 0)
+            {
+                ImGui.SameLine();
+                using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor3);
+                ImGui.TextUnformatted(_lastErrorMessage);
+            }
+
+            ImGui.Separator();
+            _manager.Draw();
+        }
     }
 
-    public void StartRecording()
+    public bool IsRecording() => _recorder != null;
+
+    public override void OnClose()
+    {
+        SetVisible(false);
+    }
+
+    private void UpdateTitle() => WindowName = $"Replay recording: {(_recorder != null ? "in progress..." : "idle")}{_windowID}";
+
+    private bool OnZoneChange(uint cfcId)
+    {
+        if (!_config.AutoRecord || _recordingManual)
+            return false; // don't care
+
+        var isDuty = cfcId != 0;
+        if (_recordingDuty == isDuty)
+            return false; // don't care
+        _recordingDuty = isDuty;
+
+        if (isDuty && !IsRecording())
+        {
+            StartRecording("");
+            return true;
+        }
+
+        if (!isDuty && _recordingActiveModules <= 0 && IsRecording())
+        {
+            StopRecording();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void OnModuleActivation(BossModule m)
+    {
+        if (!_config.AutoRecord || _recordingManual)
+            return; // don't care
+
+        ++_recordingActiveModules;
+        if (!IsRecording())
+            StartRecording($"{m.GetType().Name}-");
+    }
+
+    private void OnModuleDeactivation(BossModule m)
+    {
+        if (!_config.AutoRecord || _recordingManual || _recordingActiveModules <= 0)
+            return; // don't care
+
+        --_recordingActiveModules;
+        if (_recordingActiveModules <= 0 && !_recordingDuty && IsRecording())
+            StopRecording();
+    }
+
+    public void StartRecording(string prefix)
     {
         if (IsRecording())
             return; // already recording
@@ -143,7 +207,7 @@ public class ReplayManagementWindow : UIWindow
         try
         {
             var replayFolder = string.IsNullOrEmpty(_config.ReplayFolder) ? _logDir : new DirectoryInfo(_config.ReplayFolder);
-            _recorder = new(_ws, _config.WorldLogFormat, true, replayFolder, GetPrefix());
+            _recorder = new(_ws, _config.WorldLogFormat, true, replayFolder, prefix + GetPrefix());
         }
         catch (Exception ex)
         {
@@ -155,40 +219,12 @@ public class ReplayManagementWindow : UIWindow
 
     public void StopRecording()
     {
+        _recordingManual = false;
+        _recordingDuty = false;
+        _recordingActiveModules = 0;
         _recorder?.Dispose();
         _recorder = null;
         UpdateTitle();
-    }
-
-    public bool IsRecording() => _recorder != null;
-
-    public override void OnClose()
-    {
-        SetVisible(false);
-    }
-
-    private void UpdateTitle() => WindowName = $"Replay recording: {(_recorder != null ? "in progress..." : "idle")}{_windowID}";
-
-    private bool UpdateAutoRecord(uint cfcId)
-    {
-        if (!_config.AutoRecord)
-            return false; // don't care
-
-        if (!IsRecording() && _config.AutoRecord && cfcId != 0)
-        {
-            StartRecording();
-            _autoRecording = true;
-            return true;
-        }
-
-        if (IsRecording() && _autoRecording && cfcId == 0)
-        {
-            StopRecording();
-            _autoRecording = false;
-            return true;
-        }
-
-        return false;
     }
 
     public void UpdateLogDirectory()
