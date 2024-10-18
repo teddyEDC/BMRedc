@@ -2,6 +2,7 @@
 using Dalamud.Common;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using System.IO;
@@ -29,7 +30,6 @@ public sealed class Plugin : IDalamudPlugin
     private readonly AI.Broadcast _broadcast;
     private readonly IPCProvider _ipc;
     private readonly DTRProvider _dtr;
-    private readonly SlashCommandProvider _slashCmd;
     private TimeSpan _prevUpdateTime;
 
     // windows
@@ -102,7 +102,6 @@ public sealed class Plugin : IDalamudPlugin
         dalamud.UiBuilder.Draw += DrawUI;
         dalamud.UiBuilder.OpenMainUi += () => OpenConfigUI();
         dalamud.UiBuilder.OpenConfigUi += () => OpenConfigUI();
-        RegisterSlashCommands();
 
         _ = new ConfigChangelogWindow();
     }
@@ -116,7 +115,6 @@ public sealed class Plugin : IDalamudPlugin
         _wndBossmodHints.Dispose();
         _wndBossmod.Dispose();
         _configUI.Dispose();
-        _slashCmd.Dispose();
         _dtr.Dispose();
         _ipc.Dispose();
         _ai.Dispose();
@@ -151,7 +149,7 @@ public sealed class Plugin : IDalamudPlugin
                 _wndDebug.BringToFront();
                 break;
             case "CFG":
-                var output = Service.Config.ConsoleCommand(split.AsSpan(1));
+                var output = Service.Config.ConsoleCommand(args);
                 foreach (var msg in output)
                     Service.ChatGui.Print(msg);
                 break;
@@ -187,7 +185,7 @@ public sealed class Plugin : IDalamudPlugin
             switch (messageData[1].ToUpperInvariant())
             {
                 case "ON":
-                    _wndReplay.StartRecording();
+                    _wndReplay.StartRecording("");
                     break;
                 case "OFF":
                     _wndReplay.StopRecording();

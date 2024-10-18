@@ -83,48 +83,49 @@ public class ReplayManagementWindow : UIWindow
             else
             {
                 StopRecording();
-        }
-        ImGui.SameLine();
-        if (ImGui.Button("Select replay folder"))
-        {
-            _folderDialog ??= new FileDialog("select_replay_folder", "Select replay folder", "", _config.ReplayFolder, "", "", 1, false, ImGuiFileDialogFlags.SelectOnly);
-            _folderDialog.Show();
-        }
-
-        if (_folderDialog?.Draw() ?? false)
-        {
-            if (_folderDialog.GetIsOk())
-            {
-                _config.ReplayFolder = _folderDialog.GetResults().FirstOrDefault() ?? "";
-                _config.Modified.Fire();
             }
-            _folderDialog.Hide();
-            _folderDialog = null;
-        }
-        if (_recorder != null)
-        {
-            ImGui.InputText("###msg", ref _message, 1024);
             ImGui.SameLine();
-            if (ImGui.Button("Add log marker") && _message.Length > 0)
+            if (ImGui.Button("Select replay folder"))
             {
-                _ws.Execute(new WorldState.OpUserMarker(_message));
-                _message = "";
+                _folderDialog ??= new FileDialog("select_replay_folder", "Select replay folder", "", _config.ReplayFolder, "", "", 1, false, ImGuiFileDialogFlags.SelectOnly);
+                _folderDialog.Show();
             }
-        }
 
-        ImGui.SameLine();
-        if (ImGui.Button("Open replay folder") && _logDir != null)
-            _lastErrorMessage = OpenDirectory(_logDir);
+            if (_folderDialog?.Draw() ?? false)
+            {
+                if (_folderDialog.GetIsOk())
+                {
+                    _config.ReplayFolder = _folderDialog.GetResults().FirstOrDefault() ?? "";
+                    _config.Modified.Fire();
+                }
+                _folderDialog.Hide();
+                _folderDialog = null;
+            }
+            if (_recorder != null)
+            {
+                ImGui.InputText("###msg", ref _message, 1024);
+                ImGui.SameLine();
+                if (ImGui.Button("Add log marker") && _message.Length > 0)
+                {
+                    _ws.Execute(new WorldState.OpUserMarker(_message));
+                    _message = "";
+                }
+            }
 
-        if (_lastErrorMessage.Length > 0)
-        {
             ImGui.SameLine();
-            using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor3);
-            ImGui.TextUnformatted(_lastErrorMessage);
-        }
+            if (ImGui.Button("Open replay folder") && _logDir != null)
+                _lastErrorMessage = OpenDirectory(_logDir);
 
-        ImGui.Separator();
-        _manager.Draw();
+            if (_lastErrorMessage.Length > 0)
+            {
+                ImGui.SameLine();
+                using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor3);
+                ImGui.TextUnformatted(_lastErrorMessage);
+            }
+
+            ImGui.Separator();
+            _manager.Draw();
+        }
     }
 
     public bool IsRecording() => _recorder != null;
@@ -181,7 +182,7 @@ public class ReplayManagementWindow : UIWindow
             StopRecording();
     }
 
-    private void StartRecording(string prefix)
+    public void StartRecording(string prefix)
     {
         if (IsRecording())
             return; // already recording
@@ -216,7 +217,7 @@ public class ReplayManagementWindow : UIWindow
         UpdateTitle();
     }
 
-    private void StopRecording()
+    public void StopRecording()
     {
         _recordingManual = false;
         _recordingDuty = false;
