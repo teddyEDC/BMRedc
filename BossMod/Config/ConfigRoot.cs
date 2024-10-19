@@ -77,15 +77,11 @@ public class ConfigRoot
         }
     }
 
-    public List<string> ConsoleCommand(ReadOnlySpan<char> cmd, bool save = true)
+    public List<string> ConsoleCommand(IReadOnlyList<string> args, bool save = true)
     {
-        Span<Range> ranges = stackalloc Range[3];
-        var numRanges = cmd.Split(ranges, ' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
         List<string> result = [];
-        if (numRanges == 0)
+        if (args.Count == 0)
         {
-            result.Add("Usage: /bmr cfg <config-type> <field> <value>");
             result.Add("Usage: /vbm cfg <config-type> <field> <value>");
             result.Add("Both config-type and field can be shortened. Valid config-types:");
             foreach (var t in _nodes.Keys)
@@ -93,10 +89,9 @@ public class ConfigRoot
         }
         else
         {
-            var cmdType = cmd[ranges[0]];
             List<ConfigNode> matchingNodes = [];
             foreach (var (t, n) in _nodes)
-                if (t.Name.AsSpan().Contains(cmdType, StringComparison.CurrentCultureIgnoreCase))
+                if (t.Name.Contains(args[0], StringComparison.CurrentCultureIgnoreCase))
                     matchingNodes.Add(n);
             if (matchingNodes.Count == 0)
             {
@@ -110,9 +105,8 @@ public class ConfigRoot
                 foreach (var n in matchingNodes)
                     result.Add($"- {n.GetType().Name}");
             }
-            else if (numRanges == 1)
+            else if (args.Count == 1)
             {
-                result.Add("Usage: /bmr cfg <config-type> <field> <value>");
                 result.Add("Usage: /vbm cfg <config-type> <field> <value>");
                 result.Add($"Valid fields for {matchingNodes[0].GetType().Name}:");
                 foreach (var f in matchingNodes[0].GetType().GetFields().Where(f => f.GetCustomAttribute<PropertyDisplayAttribute>() != null))
@@ -120,14 +114,13 @@ public class ConfigRoot
             }
             else
             {
-                var cmdField = cmd[ranges[1]];
                 List<FieldInfo> matchingFields = [];
                 foreach (var f in matchingNodes[0].GetType().GetFields().Where(f => f.GetCustomAttribute<PropertyDisplayAttribute>() != null))
-                    if (f.Name.AsSpan().Contains(cmdField, StringComparison.CurrentCultureIgnoreCase))
+                    if (f.Name.Contains(args[1], StringComparison.CurrentCultureIgnoreCase))
                         matchingFields.Add(f);
                 if (matchingFields.Count == 0)
                 {
-                    result.Add($"Field not found {cmdField}, Valid fields:");
+                    result.Add($"Field not found {args[1]}, Valid fields:");
                     foreach (var f in matchingNodes[0].GetType().GetFields().Where(f => f.GetCustomAttribute<PropertyDisplayAttribute>() != null))
                         result.Add($"- {f.Name}");
                 }
@@ -137,37 +130,38 @@ public class ConfigRoot
                     foreach (var f in matchingFields)
                         result.Add($"- {f.Name}");
                 }
-                else if (numRanges == 2)
+                /*else if (args.Count == 2)
                 {
-                    try
-                    {
-                        result.Add(matchingFields[0].GetValue(matchingNodes[0])?.ToString() ?? $"Failed to get value of {matchingNodes[0].GetType().Name}.{matchingFields[0].Name}");
-                    }
-                    catch (Exception e)
-                    {
-                        result.Add($"Failed to get value of {matchingNodes[0].GetType().Name}.{matchingFields[0].Name} : {e}");
-                    }
-                }
+                    result.Add("Usage: /vbm cfg <config-type> <field> <value>");
+                    result.Add($"Type of {matchingNodes[0].GetType().Name}.{matchingFields[0].Name} is {matchingFields[0].FieldType.Name}");
+                }*/
                 else
                 {
-                    var cmdValue = cmd[ranges[2]];
                     try
                     {
-                        var val = FromConsoleString(cmdValue, matchingFields[0].FieldType);
-                        if (val == null)
-                        {
-                            result.Add($"Failed to convert '{cmdValue}' to {matchingFields[0].FieldType}");
-                        }
+                        if (args.Count == 2)
+                            result.Add(matchingFields[0].GetValue(matchingNodes[0])?.ToString() ?? $"Failed to get value of '{args[2]}'");
                         else
                         {
-                            matchingFields[0].SetValue(matchingNodes[0], val);
-                            if (save)
-                                matchingNodes[0].Modified.Fire();
+                            var val = FromConsoleString(args[2], matchingFields[0].FieldType);
+                            if (val == null)
+                            {
+                                result.Add($"Failed to convert '{args[2]}' to {matchingFields[0].FieldType}");
+                            }
+                            else
+                            {
+                                matchingFields[0].SetValue(matchingNodes[0], val);
+                                if (save)
+                                    matchingNodes[0].Modified.Fire();
+                            }
                         }
                     }
                     catch (Exception e)
                     {
-                        result.Add($"Failed to set {matchingNodes[0].GetType().Name}.{matchingFields[0].Name} to {cmdValue}: {e}");
+                        if (args.Count == 2)
+                            result.Add($"Failed to get value of {matchingNodes[0].GetType().Name}.{matchingFields[0].Name} : {e}");
+                        else
+                            result.Add($"Failed to set {matchingNodes[0].GetType().Name}.{matchingFields[0].Name} to {args[2]}: {e}");
                     }
                 }
             }
@@ -175,7 +169,7 @@ public class ConfigRoot
         return result;
     }
 
-    private object? FromConsoleString(ReadOnlySpan<char> str, Type t)
+    private object? FromConsoleString(string str, Type t)
         => t == typeof(bool) ? bool.Parse(str)
         : t == typeof(float) ? float.Parse(str)
         : t == typeof(int) ? int.Parse(str)
@@ -277,7 +271,7 @@ public class ConfigRoot
             {
                 if (config?["CooldownPlans"] is not JsonObject plans)
                     continue;
-                var isTEA = k == typeof(Shadowbringers.Ultimate.TEA.TEAConfig).FullName;
+                bool isTEA = k == typeof(Shadowbringers.Ultimate.TEA.TEAConfig).FullName;
                 foreach (var (cls, planList) in plans)
                 {
                     if (planList?["Available"] is not JsonArray avail)
@@ -356,7 +350,7 @@ public class ConfigRoot
             if (jChild is not JsonObject jChildObj)
                 continue;
 
-            var realTypeName = isV0 ? (jChildObj["__type__"]?.ToString() ?? childTypeName) : childTypeName;
+            string realTypeName = isV0 ? (jChildObj["__type__"]?.ToString() ?? childTypeName) : childTypeName;
             ConvertV1GatherChildren(result, jChildObj, isV0);
             result.Add(realTypeName, jChild);
         }
