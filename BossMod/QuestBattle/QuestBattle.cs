@@ -5,7 +5,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Ipc;
 using ImGuiNET;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace BossMod.QuestBattle;
 
@@ -253,7 +252,7 @@ public abstract class QuestBattle : ZoneModule
     // low-resolution bounds centered on player character, with radius roughly equal to object load range
     // this allows AI to pathfind to any priority target regardless of distance, as long as it's loaded - this makes it easier to complete quest objectives which require combat
     // note that precision for aoe avoidance will obviously suffer
-    public static readonly ArenaBoundsSquare OverworldBounds = new(100, 2.5f);
+    public static readonly ArenaBoundsSquare OverworldBounds = new(100, default, 2.5f);
 
     protected static Vector3 V3(float x, float y, float z) => new(x, y, z); // TODO: this is cruft, remove...
     private static void Log(string msg) => Service.Log($"[QBD] {msg}");
@@ -618,7 +617,7 @@ public abstract class QuestBattle : ZoneModule
         var current = true;
         foreach (var wp in CurrentWaypoints)
         {
-            Camera.Instance?.DrawWorldLine(start, wp.Position, current ? ArenaColor.Safe : ArenaColor.Danger);
+            Camera.Instance?.DrawWorldLine(start, wp.Position, current ? Colors.Safe : Colors.Danger);
             current = false;
             start = wp.Position;
         }
