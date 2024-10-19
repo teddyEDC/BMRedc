@@ -25,7 +25,7 @@ class ConfigTest : TestWindow
         ImGui.SameLine();
         if (ImGui.Button("Execute"))
         {
-            var output = Service.Config.ConsoleCommand(_command);
+            var output = Service.Config.ConsoleCommand(_command.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             foreach (var msg in output)
             {
                 Service.Log(msg);

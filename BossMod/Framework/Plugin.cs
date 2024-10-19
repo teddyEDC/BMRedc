@@ -128,9 +128,7 @@ public sealed class Plugin : IDalamudPlugin
         _bossmod.Dispose();
         ActionDefinitions.Instance.Dispose();
         CommandManager.RemoveHandler("/bmr");
-        CommandManager.RemoveHandler("/bmrai");
         CommandManager.RemoveHandler("/vbm");
-        CommandManager.RemoveHandler("/vbmai");
     }
 
     private void OnCommand(string cmd, string args)
@@ -150,7 +148,7 @@ public sealed class Plugin : IDalamudPlugin
                 _wndDebug.BringToFront();
                 break;
             case "CFG":
-                var output = Service.Config.ConsoleCommand(args);
+                var output = Service.Config.ConsoleCommand(new ArraySegment<string>(split, 1, split.Length - 1));
                 foreach (var msg in output)
                     Service.ChatGui.Print(msg);
                 break;
