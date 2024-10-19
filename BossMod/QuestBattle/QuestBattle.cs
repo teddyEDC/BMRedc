@@ -228,7 +228,7 @@ public abstract class QuestBattle : ZoneModule
     private readonly EventSubscriptions _subscriptions;
     private readonly ZoneModuleConfig _config = Service.Config.Get<ZoneModuleConfig>();
 
-    public readonly List<QuestObjective> Objectives;
+    public List<QuestObjective> Objectives = [];
     public int CurrentObjectiveIndex { get; private set; }
     public QuestObjective? CurrentObjective => CurrentObjectiveIndex >= 0 && CurrentObjectiveIndex < Objectives.Count ? Objectives[CurrentObjectiveIndex] : null;
 
@@ -259,7 +259,7 @@ public abstract class QuestBattle : ZoneModule
 
     protected QuestBattle(WorldState ws) : base(ws)
     {
-        Objectives = DefineObjectives(ws);
+        Initialize(ws);
 
         _subscriptions = new(
             ws.Actors.EventStateChanged.Subscribe(act => CurrentObjective?.OnActorEventStateChanged?.Invoke(act)),
@@ -306,12 +306,12 @@ public abstract class QuestBattle : ZoneModule
         }
 
         // start first objective
-        Initialize();
+        OnObjectiveChanged();
     }
 
-    private void Initialize()
+    public void Initialize(WorldState ws)
     {
-        OnObjectiveChanged();
+        Objectives = DefineObjectives(ws);
     }
 
     protected override void Dispose(bool disposing)
