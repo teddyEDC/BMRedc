@@ -306,16 +306,29 @@ public abstract class QuestBattle : ZoneModule
         }
 
         // start first objective
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         OnObjectiveChanged();
     }
 
     protected override void Dispose(bool disposing)
     {
-        _subscriptions.Dispose();
+        if (disposing)
+        {
+            _subscriptions.Dispose();
 
-        // TODO: get rid of stuff below, this is bad...
-        if (Service.Condition != null)
-            Service.Condition.ConditionChange -= OnConditionChange;
+            // TODO: get rid of stuff below, this is bad...
+            if (Service.Condition != null)
+            {
+                Service.Condition.ConditionChange -= OnConditionChange;
+            }
+        }
+
+        // Ensure base.Dispose is always called
+        base.Dispose(disposing);
     }
 
     public override void Update()
