@@ -76,6 +76,8 @@ class Orbs(BossModule module) : Components.GenericAOEs(module, default, "GTFO fr
             var inRect = Module.Enemies(OID.Rings).FirstOrDefault(x => x.Position.InRect(position, 20 * o.Rotation.ToDirection(), Radius));
             if (inRect != null)
                 forbidden.Add(ShapeDistance.Capsule(o.Position, o.Rotation.ToDirection(), (position - inRect.Position).Length(), Radius));
+            else
+                forbidden.Add(ShapeDistance.Circle(o.Position, Radius));
         }
         hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min());
     }
