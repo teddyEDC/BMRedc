@@ -11,7 +11,7 @@ sealed class IPCProvider : IDisposable
     public IPCProvider(RotationModuleManager autorotation, ActionManagerEx amex, MovementOverride movement, AIManager ai)
     {
         Register("HasModuleByDataId", (uint dataId) => BossModuleRegistry.FindByOID(dataId) != null);
-        Register("Configuration", (IReadOnlyList<string> args, bool save) => Service.Config.ConsoleCommand(string.Join(' ', args), save));
+        Register("Configuration", (IReadOnlyList<string> args, bool save) => Service.Config.ConsoleCommand(args, save));
 
         Register("Presets.Get", (string name) =>
         {

@@ -308,14 +308,15 @@ public abstract class QuestBattle : ZoneModule
         }
 
         // start first objective
-        OnObjectiveChanged();
+        var player = ws.Party.Player();
+        var curObjective = CurrentObjective;
+        if (player != null && curObjective != null)
+            TryPathfind(player.PosRot.XYZ(), curObjective.Connections);
     }
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _subscriptions.Dispose();
+        _subscriptions.Dispose();
 
         // TODO: get rid of stuff below, this is bad...
         if (Service.Condition != null)

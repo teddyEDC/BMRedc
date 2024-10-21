@@ -46,7 +46,7 @@ public class TheProtectorAndTheDestroyer(WorldState ws) : QuestBattle(ws)
 
         // trigger zone transition
         new QuestObjective(ws)
-            .WithConnection(new(115.72f, 0.00f, 0.36f))
+            .WithConnection(new Vector3(115.72f, 0.00f, 0.36f))
             .CompleteOnState7(0x1EBAE1)
     ];
     }

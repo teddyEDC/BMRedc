@@ -41,21 +41,43 @@ public enum AID : uint
 class Orbs(BossModule module) : Components.GenericAOEs(module, default, "GTFO from voidzone!")
 {
     private readonly List<Actor> _orbs = [];
-    private static readonly AOEShapeCircle circle = new(3);
+    private const int Radius = 3;
+    private static readonly AOEShapeCircle circle = new(Radius);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        foreach (var p in _orbs)
-            yield return new(circle, p.Position);
+        return _orbs.Select(a =>
+        {
+            var position = a.Position;
+            var inRect = Module.Enemies(OID.Rings).FirstOrDefault(x => x.Position.InRect(position, 20 * a.Rotation.ToDirection(), Radius));
+            if (inRect != null)
+            {
+                var shapes = new Shape[]
+                {
+                    new Circle(a.Position, Radius),
+                    new Circle(inRect.Position, Radius),
+                    new RectangleSE(a.Position, inRect.Position, Radius)
+                };
+                return new AOEInstance(new AOEShapeCustom(shapes), Arena.Center);
+            }
+            else
+                return new(circle, a.Position);
+        });
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var p in _orbs)
+        if (_orbs.Count == 0)
+            return;
+        var forbidden = new List<Func<WPos, float>>();
+        foreach (var o in _orbs)
         {
-            hints.AddForbiddenZone(circle.Distance(p.Position, p.Rotation));
-            hints.AddForbiddenZone(ShapeDistance.Rect(p.Position, p.Rotation, 15, 0, circle.Radius), WorldState.FutureTime(2));
+            var position = o.Position;
+            var inRect = Module.Enemies(OID.Rings).FirstOrDefault(x => x.Position.InRect(position, 20 * o.Rotation.ToDirection(), Radius));
+            if (inRect != null)
+                forbidden.Add(ShapeDistance.Capsule(o.Position, o.Rotation.ToDirection(), (position - inRect.Position).Length(), Radius));
         }
+        hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Min());
     }
 
     public override void OnActorCreated(Actor actor)
@@ -101,8 +123,8 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
             }
             if (_casters.Count > 4 && NumCasts is 0 or 1)
             {
-                yield return new(rect, _casters[2].Position, default, _activation.AddSeconds(8.1f));
-                yield return new(rect, _casters[3].Position, default, _activation.AddSeconds(8.6f));
+                yield return new(rect, _casters[2].Position, default, _activation.AddSeconds(8.1f), Risky: false);
+                yield return new(rect, _casters[3].Position, default, _activation.AddSeconds(8.6f), Risky: false);
             }
             if (_casters.Count > 4)
             {
@@ -113,8 +135,8 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
             }
             if (_casters.Count == 6 && NumCasts is 2 or 3)
             {
-                yield return new(rect, _casters[4].Position, default, _activation.AddSeconds(9.1f));
-                yield return new(rect, _casters[5].Position, default, _activation.AddSeconds(11.1f));
+                yield return new(rect, _casters[4].Position, default, _activation.AddSeconds(9.1f), Risky: false);
+                yield return new(rect, _casters[5].Position, default, _activation.AddSeconds(11.1f), Risky: false);
             }
             if (_casters.Count == 6)
             {
@@ -135,8 +157,8 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
             }
             if (_casters.Count > 4 && NumCasts is 0 or 1)
             {
-                yield return new(rect, _casters[2].Position, default, _activation.AddSeconds(8.1f));
-                yield return new(rect, _casters[3].Position, default, _activation.AddSeconds(8.1f));
+                yield return new(rect, _casters[2].Position, default, _activation.AddSeconds(8.1f), Risky: false);
+                yield return new(rect, _casters[3].Position, default, _activation.AddSeconds(8.1f), Risky: false);
             }
             if (_casters.Count > 4)
             {
@@ -147,8 +169,8 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
             }
             if (_casters.Count == 6 && NumCasts is 2 or 3)
             {
-                yield return new(rect, _casters[4].Position, default, _activation.AddSeconds(11.1f));
-                yield return new(rect, _casters[5].Position, default, _activation.AddSeconds(11.1f));
+                yield return new(rect, _casters[4].Position, default, _activation.AddSeconds(11.1f), Risky: false);
+                yield return new(rect, _casters[5].Position, default, _activation.AddSeconds(11.1f), Risky: false);
             }
             if (_casters.Count == 6)
             {
