@@ -259,7 +259,9 @@ public abstract class QuestBattle : ZoneModule
 
     protected QuestBattle(WorldState ws) : base(ws)
     {
-        Initialize(ws);
+#pragma warning disable CA2214 // TODO: this is kinda working rn, but still not good...
+        Objectives = DefineObjectives(ws);
+#pragma warning restore CA2214
 
         _subscriptions = new(
             ws.Actors.EventStateChanged.Subscribe(act => CurrentObjective?.OnActorEventStateChanged?.Invoke(act)),
@@ -309,25 +311,16 @@ public abstract class QuestBattle : ZoneModule
         OnObjectiveChanged();
     }
 
-    public void Initialize(WorldState ws)
-    {
-        Objectives = DefineObjectives(ws);
-    }
-
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
             _subscriptions.Dispose();
 
-            // TODO: get rid of stuff below, this is bad...
-            if (Service.Condition != null)
-            {
-                Service.Condition.ConditionChange -= OnConditionChange;
-            }
-        }
+        // TODO: get rid of stuff below, this is bad...
+        if (Service.Condition != null)
+            Service.Condition.ConditionChange -= OnConditionChange;
 
-        // Ensure base.Dispose is always called
         base.Dispose(disposing);
     }
 

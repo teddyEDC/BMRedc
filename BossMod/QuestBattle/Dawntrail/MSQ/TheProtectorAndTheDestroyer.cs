@@ -3,15 +3,15 @@
 [ZoneModuleInfo(BossModuleInfo.Maturity.Contributed, 998)]
 public class TheProtectorAndTheDestroyer(WorldState ws) : QuestBattle(ws)
 {
-    public override unsafe List<QuestObjective> DefineObjectives(WorldState ws)
+    public override List<QuestObjective> DefineObjectives(WorldState ws)
     {
         if (ws.Party.Player()?.PosRot.Y > 50)
             return [];
 
         return [
         new QuestObjective(ws)
-            .WithConnection(new Waypoint(new Vector3(-0.57f, -6.05f, 209.93f), false))
-            .WithConnection(new Waypoint(new Vector3(0.01f, 0.00f, 114.44f), false))
+            .WithConnection(new Waypoint(new(-0.57f, -6.05f, 209.93f), false))
+            .WithConnection(new Waypoint(new(0.01f, 0.00f, 114.44f), false))
             .WithConnection(new Vector3(7.51f, 7.89f, 21.07f))
             .With(obj => {
                 List<uint> sadCitizens = [];
@@ -46,7 +46,7 @@ public class TheProtectorAndTheDestroyer(WorldState ws) : QuestBattle(ws)
 
         // trigger zone transition
         new QuestObjective(ws)
-            .WithConnection(new Vector3(115.72f, 0.00f, 0.36f))
+            .WithConnection(new(115.72f, 0.00f, 0.36f))
             .CompleteOnState7(0x1EBAE1)
     ];
     }
