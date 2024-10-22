@@ -2,7 +2,7 @@ namespace BossMod;
 
 public abstract record class Shape
 {
-    public const float MaxApproxError = 0.01f;
+    public const float MaxApproxError = CurveApprox.ScreenError;
 
     public abstract List<WDir> Contour(WPos center);
 
@@ -108,15 +108,15 @@ public record class Polygon(WPos Center, float Radius, int Vertices, Angle Rotat
     {
         var angleIncrement = 2 * MathF.PI / Vertices;
         var initialRotation = Rotation.Rad;
-        var vertices = new List<WDir>();
-        for (var i = 0; i < Vertices; i++)
+        var vertices = new List<WDir>(Vertices);
+        for (var i = Vertices - 1; i >= 0; i--)
         {
             var angle = i * angleIncrement + initialRotation;
             var x = Center.X + Radius * MathF.Cos(angle);
             var z = Center.Z + Radius * MathF.Sin(angle);
             vertices.Add(new WDir(x - center.X, z - center.Z));
         }
-        vertices.Reverse();
+
         return vertices;
     }
     public override string ToString() => $"{nameof(Polygon)}:{Center.X},{Center.Z},{Radius},{Vertices},{Rotation}";

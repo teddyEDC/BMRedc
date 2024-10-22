@@ -167,8 +167,6 @@ public enum OperandType
 public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerable<Shape>? DifferenceShapes = null, IEnumerable<Shape>? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union) : AOEShape
 {
     private RelSimplifiedComplexPolygon? polygon;
-    private readonly Dictionary<(WPos, WPos, Angle), bool> _checkCache = [];
-
     private readonly int hashkey = CreateCacheKey(Shapes1, Shapes2 ?? [], DifferenceShapes ?? [], Operand);
 
     public override string ToString() => $"Custom AOE shape: hashkey={hashkey}, ifz={InvertForbiddenZone}";
@@ -209,13 +207,8 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
 
     public override bool Check(WPos position, WPos origin, Angle rotation)
     {
-        var cacheKey = (position, origin, rotation);
-        if (_checkCache.TryGetValue(cacheKey, out var cachedResult))
-            return cachedResult;
-
         var relativePosition = position - origin;
         var result = GetCombinedPolygon(origin).Contains(new(relativePosition.X, relativePosition.Z));
-        AddToCheckCache(cacheKey, result);
         return result;
     }
 
@@ -267,12 +260,5 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
     {
         var shapeDistance = new PolygonWithHolesDistanceFunction(origin, GetCombinedPolygon(origin)).Distance;
         return InvertForbiddenZone ? p => -shapeDistance(p) : shapeDistance;
-    }
-
-    private void AddToCheckCache((WPos, WPos, Angle) key, bool result)
-    {
-        if (_checkCache.Count > 2500)
-            _checkCache.Clear();
-        _checkCache[key] = result;
     }
 }

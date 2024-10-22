@@ -197,15 +197,7 @@ public record class ArenaBoundsCustom : ArenaBounds
     protected override PolygonClipper.Operand BuildClipPoly() => new(poly);
     public override void PathfindMap(Pathfinding.Map map, WPos center) => map.Init(_cachedMap ??= BuildMap(), center);
 
-    public override bool Contains(WDir offset)
-    {
-        var cacheKey = (poly, offset, Radius);
-        if (Cache.TryGetValue(cacheKey, out var cachedResult))
-            return (bool)cachedResult;
-        var result = poly.Contains(offset);
-        AddToInstanceCache(cacheKey, result);
-        return result;
-    }
+    public override bool Contains(WDir offset) => poly.Contains(offset);
 
     public override float IntersectRay(WDir originOffset, WDir dir)
     {
