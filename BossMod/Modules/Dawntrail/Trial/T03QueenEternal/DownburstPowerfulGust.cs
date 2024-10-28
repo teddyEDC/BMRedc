@@ -27,7 +27,13 @@ class DownburstKB(BossModule module) : Components.KnockbackFromCastTarget(module
                 hints.AddForbiddenZone(ShapeDistance.InvertedCone(source.Origin, 5, source.Direction + offset, 10.Degrees()), source.Activation);
             }
             else
-                hints.AddForbiddenZone(ShapeDistance.InvertedCross(source.Origin, source.Direction, 5, 0.5f), source.Activation);
+            {
+                var forbidden = new List<Func<WPos, float>>();
+                foreach (var a in Helpers.AnglesCardinals)
+                    forbidden.Add(ShapeDistance.InvertedCone(source.Origin, 5, source.Direction + a, 10.Degrees()));
+                if (forbidden.Count > 0)
+                    hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), source.Activation);
+            }
         }
     }
 }
