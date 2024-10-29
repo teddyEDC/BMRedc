@@ -519,7 +519,7 @@ sealed class AIManager : IDisposable
             return;
         }
 
-        var normalizedInput = userInput.ToLower();
+        var normalizedInput = userInput.ToUpperInvariant();
         var preset = Autorot.Database.Presets.VisiblePresets
             .FirstOrDefault(p => p.Name.Trim().Equals(normalizedInput, StringComparison.OrdinalIgnoreCase))
             ?? RotationModuleManager.ForceDisable;
