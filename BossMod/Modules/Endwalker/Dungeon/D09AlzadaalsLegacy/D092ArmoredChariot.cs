@@ -75,7 +75,7 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCone cone = new(30, 45.Degrees());
     private static readonly AOEShapeRect rectShort = new(28, 4);
     private static readonly AOEShapeRect rectLong = new(40, 4);
-    private static readonly Angle[] angles = Helpers.AnglesIntercardinals;
+    private static Angle[] Angles => Angle.AnglesIntercardinals;
     private static readonly HashSet<WPos> cornerPositions = [new(-20.5f, -202.5f), new(20.5f, -161.5f), new(-20.5f, -161.5f), new(20.5f, -202.5f)];
     private int numCastsReflections;
     private int numCastsCannons;
@@ -111,13 +111,13 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
 
         if (modelState == 4)
         {
-            AddConeAOEs(activationFirst, angles[2], angles[0]);
-            AddConeAOEs(activationSecond, angles[3], angles[1]);
+            AddConeAOEs(activationFirst, Angles[2], Angles[0]);
+            AddConeAOEs(activationSecond, Angles[3], Angles[1]);
         }
         else if (modelState == 5)
         {
-            AddConeAOEs(activationFirst, angles[3], angles[1]);
-            AddConeAOEs(activationSecond, angles[2], angles[0]);
+            AddConeAOEs(activationFirst, Angles[3], Angles[1]);
+            AddConeAOEs(activationSecond, Angles[2], Angles[0]);
         }
     }
 
@@ -126,9 +126,9 @@ class AssaultCannon(BossModule module) : Components.GenericAOEs(module)
         var activation = WorldState.FutureTime(6.9f);
 
         if (modelState == 4)
-            AddConeAOEs(activation, angles[2], angles[0]);
+            AddConeAOEs(activation, Angles[2], Angles[0]);
         else if (modelState == 5)
-            AddConeAOEs(activation, angles[3], angles[1]);
+            AddConeAOEs(activation, Angles[3], Angles[1]);
         foreach (var drudge in _activeDrudges)
         {
             var shape = cornerPositions.Contains(drudge.Position) ? rectShort : rectLong;
