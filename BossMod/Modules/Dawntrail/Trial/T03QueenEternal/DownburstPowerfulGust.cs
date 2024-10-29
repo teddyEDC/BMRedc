@@ -16,6 +16,7 @@ class DownburstKB(BossModule module) : Components.KnockbackFromCastTarget(module
     private static readonly WPos botLeft = new(92.5f, 100);
     private static readonly WPos botRight = new(107.5f, 100);
     private static readonly WPos topRight = new(107.5f, 85);
+
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var source = Sources(slot, actor).FirstOrDefault();
@@ -29,10 +30,9 @@ class DownburstKB(BossModule module) : Components.KnockbackFromCastTarget(module
             else
             {
                 var forbidden = new List<Func<WPos, float>>();
-                foreach (var a in Helpers.AnglesCardinals)
-                    forbidden.Add(ShapeDistance.InvertedCone(source.Origin, 5, source.Direction + a, 10.Degrees()));
-                if (forbidden.Count > 0)
-                    hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), source.Activation);
+                for (var i = 0; i < 4; ++i)
+                    forbidden.Add(ShapeDistance.InvertedCone(source.Origin, 5, source.Direction + Angle.AnglesCardinals[i], 10.Degrees()));
+                hints.AddForbiddenZone(p => forbidden.Max(f => f(p)), source.Activation);
             }
         }
     }
