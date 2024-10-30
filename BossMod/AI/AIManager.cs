@@ -506,16 +506,11 @@ sealed class AIManager : IDisposable
         }
 
         var userInput = string.Join(" ", presetName.Skip(1)).Trim();
-        if (userInput == "null")
+        if (userInput == "null" || string.IsNullOrWhiteSpace(userInput))
         {
             Autorot.Preset = null;
             _config.AIAutorotPresetName = null;
             Service.Log("Disabled AI autorotation preset.");
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(userInput))
-        {
-            Service.Log("No valid preset name provided.");
             return;
         }
 
