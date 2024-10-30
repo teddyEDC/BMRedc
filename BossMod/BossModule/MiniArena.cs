@@ -281,28 +281,37 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
     public void Border(uint color)
     {
         var dl = ImGui.GetWindowDrawList();
-        foreach (var p in Bounds.ShapeSimplified.Parts)
+
+        for (var partIndex = 0; partIndex < Bounds.ShapeSimplified.Parts.Count; partIndex++)
         {
+            var part = Bounds.ShapeSimplified.Parts[partIndex];
             Vector2? lastPoint = null;
-            foreach (var off in p.Exterior)
+
+            for (var exteriorIndex = 0; exteriorIndex < part.Exterior.Length; exteriorIndex++)
             {
-                var currentPoint = ScreenCenter + WorldOffsetToScreenOffset(off);
+                var offset = part.Exterior[exteriorIndex];
+                var currentPoint = ScreenCenter + WorldOffsetToScreenOffset(offset);
                 if (lastPoint != currentPoint)
                     dl.PathLineTo(currentPoint);
                 lastPoint = currentPoint;
             }
+
             dl.PathStroke(color, ImDrawFlags.Closed, 2);
 
-            foreach (var i in p.Holes)
+            foreach (var holeIndex in part.Holes)
             {
                 lastPoint = null;
-                foreach (var off in p.Interior(i))
+
+                var holeInteriorPoints = part.Interior(holeIndex);
+                for (var interiorIndex = 0; interiorIndex < holeInteriorPoints.Length; interiorIndex++)
                 {
-                    var currentPoint = ScreenCenter + WorldOffsetToScreenOffset(off);
+                    var offset = holeInteriorPoints[interiorIndex];
+                    var currentPoint = ScreenCenter + WorldOffsetToScreenOffset(offset);
                     if (lastPoint != currentPoint)
                         dl.PathLineTo(currentPoint);
                     lastPoint = currentPoint;
                 }
+
                 dl.PathStroke(color, ImDrawFlags.Closed, 2);
             }
         }
