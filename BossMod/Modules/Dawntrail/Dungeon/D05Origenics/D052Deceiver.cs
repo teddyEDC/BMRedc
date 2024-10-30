@@ -132,31 +132,28 @@ class Surge(BossModule module) : Components.Knockback(module)
         if ((AID)spell.Action.ID == AID.Surge)
         {
             var activation = Module.CastFinishAt(spell, 0.8f);
-            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + Angle.AnglesCardinals[3], Kind.DirForward, default, ActiveSafeWalls));
-            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + Angle.AnglesCardinals[0], Kind.DirForward, default, ActiveSafeWalls));
+            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + Angle.AnglesCardinals[3], Kind.DirForward, default, GetActiveSafeWalls()));
+            _sources.Add(new(caster.Position, 30, activation, _shape, spell.Rotation + Angle.AnglesCardinals[0], Kind.DirForward, default, GetActiveSafeWalls()));
         }
     }
 
-    public SafeWall[] ActiveSafeWalls
+    public SafeWall[] GetActiveSafeWalls()
     {
-        get
+        foreach (var kvp in ArenaChanges.ArenaBoundsMap)
         {
-            foreach (var kvp in ArenaChanges.ArenaBoundsMap)
+            if (Arena.Bounds == kvp.Value)
             {
-                if (Arena.Bounds == kvp.Value)
+                return kvp.Key switch
                 {
-                    return kvp.Key switch
-                    {
-                        0x1B => walls2A1B,
-                        0x1E => walls2C1E,
-                        0x1D => walls2D1D,
-                        0x1C => walls2B1C,
-                        _ => []
-                    };
-                }
+                    0x1B => walls2A1B,
+                    0x1E => walls2C1E,
+                    0x1D => walls2D1D,
+                    0x1C => walls2B1C,
+                    _ => []
+                };
             }
-            return [];
         }
+        return [];
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -174,8 +171,9 @@ class Surge(BossModule module) : Components.Knockback(module)
         if (source != default)
         {
             var forbidden = new List<Func<WPos, float>>();
-            for (var i = 0; i < ActiveSafeWalls.Length; ++i)
-                forbidden.Add(ShapeDistance.InvertedRect(new(Arena.Center.X, ActiveSafeWalls[i].Vertex1.Z - 5), ActiveSafeWalls[i].Vertex1.X == XWest ? -offset : offset, 10, default, 20));
+            var safewalls = GetActiveSafeWalls();
+            for (var i = 0; i < safewalls.Length; ++i)
+                forbidden.Add(ShapeDistance.InvertedRect(new(Arena.Center.X, safewalls[i].Vertex1.Z - 5), safewalls[i].Vertex1.X == XWest ? -offset : offset, 10, default, 20));
             hints.AddForbiddenZone(p => forbidden.Max(f => f(p)), source.Activation);
         }
     }
@@ -190,7 +188,7 @@ class SurgeHint(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var component = Module.FindComponent<Surge>()!.Sources(slot, actor).Any();
-        var activeSafeWalls = Module.FindComponent<Surge>()!.ActiveSafeWalls;
+        var activeSafeWalls = Module.FindComponent<Surge>()!.GetActiveSafeWalls();
         if (component)
             for (var i = 0; i < activeSafeWalls.Length; ++i)
                 yield return new(rect, new(Arena.Center.X, activeSafeWalls[i].Vertex1.Z - 5), activeSafeWalls[i].Vertex1.X == -187.5f ? Angle.AnglesCardinals[0] : Angle.AnglesCardinals[3], default, Colors.SafeFromAOE, false);
