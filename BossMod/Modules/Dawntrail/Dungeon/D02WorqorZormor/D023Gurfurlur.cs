@@ -256,7 +256,7 @@ class Windswrath2(BossModule module) : Windswrath(module, AID.Windswrath2)
             else
                 forbidden.Add(ShapeDistance.InvertedCircle(sources.Origin, 8));
             if (forbidden.Count > 0)
-                hints.AddForbiddenZone(p => forbidden.Select(f => f(p)).Max(), sources.Activation);
+                hints.AddForbiddenZone(p => forbidden.Max(f => f(p)), sources.Activation);
         }
     }
 }
