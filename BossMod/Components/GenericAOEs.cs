@@ -33,7 +33,7 @@ public abstract class GenericAOEs(BossModule module, ActionID aid = default, str
 }
 
 // self-targeted aoe that happens at the end of the cast
-public class SelfTargetedAOEs(BossModule module, ActionID aid, AOEShape shape, int maxCasts = int.MaxValue, uint color = 0) : GenericAOEs(module, aid)
+public abstract class SelfTargetedAOEs(BossModule module, ActionID aid, AOEShape shape, int maxCasts = int.MaxValue, uint color = 0) : GenericAOEs(module, aid)
 {
     public AOEShape Shape { get; init; } = shape;
     public int MaxCasts = maxCasts; // used for staggered aoes, when showing all active would be pointless
@@ -59,7 +59,7 @@ public class SelfTargetedAOEs(BossModule module, ActionID aid, AOEShape shape, i
 }
 
 // self-targeted aoe that uses current caster's rotation instead of rotation from cast-info - used by legacy modules written before i've reversed real cast rotation
-public class SelfTargetedLegacyRotationAOEs(BossModule module, ActionID aid, AOEShape shape, int maxCasts = int.MaxValue) : GenericAOEs(module, aid)
+public abstract class SelfTargetedLegacyRotationAOEs(BossModule module, ActionID aid, AOEShape shape, int maxCasts = int.MaxValue) : GenericAOEs(module, aid)
 {
     public AOEShape Shape { get; init; } = shape;
     public int MaxCasts = maxCasts; // used for staggered aoes, when showing all active would be pointless
@@ -83,7 +83,7 @@ public class SelfTargetedLegacyRotationAOEs(BossModule module, ActionID aid, AOE
 }
 
 // location-targeted circle aoe that happens at the end of the cast
-public class LocationTargetedAOEs(BossModule module, ActionID aid, float radius, int maxCasts = int.MaxValue) : GenericAOEs(module, aid)
+public abstract class LocationTargetedAOEs(BossModule module, ActionID aid, float radius, int maxCasts = int.MaxValue) : GenericAOEs(module, aid)
 {
     public AOEShapeCircle Shape { get; init; } = new(radius);
     public int MaxCasts = maxCasts; // used for staggered aoes, when showing all active would be pointless
@@ -109,7 +109,7 @@ public class LocationTargetedAOEs(BossModule module, ActionID aid, float radius,
 }
 
 // location-targeted aoe component which supports shapes that aren't circles
-public class LocationTargetedAOEsOther(BossModule module, ActionID aid, AOEShape shape, int maxCasts = int.MaxValue) : GenericAOEs(module, aid)
+public abstract class LocationTargetedAOEsOther(BossModule module, ActionID aid, AOEShape shape, int maxCasts = int.MaxValue) : GenericAOEs(module, aid)
 {
     public AOEShape Shape { get; init; } = shape;
     public int MaxCasts = maxCasts; // used for staggered aoes, when showing all active would be pointless
@@ -135,7 +135,7 @@ public class LocationTargetedAOEsOther(BossModule module, ActionID aid, AOEShape
 }
 
 // 'charge at location' aoes that happen at the end of the cast
-public class ChargeAOEs(BossModule module, ActionID aid, float halfWidth) : GenericAOEs(module, aid)
+public abstract class ChargeAOEs(BossModule module, ActionID aid, float halfWidth) : GenericAOEs(module, aid)
 {
     public float HalfWidth { get; init; } = halfWidth;
     public readonly List<(Actor caster, AOEShape shape, Angle direction)> Casters = [];
