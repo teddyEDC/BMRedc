@@ -2,7 +2,7 @@
 
 // generic 'directional parry' component that shows actors and sides it's forbidden to attack them from
 // uses common status + custom prediction
-public class DirectionalParry(BossModule module, uint[] actorOID) : AddsMulti(module, actorOID)
+public abstract class DirectionalParry(BossModule module, uint[] actorOID) : AddsMulti(module, actorOID)
 {
     [Flags]
     public enum Side

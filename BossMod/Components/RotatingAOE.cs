@@ -1,7 +1,7 @@
 ﻿namespace BossMod.Components;
 
 // generic 'rotating aoes' component - a sequence of aoes (typically cones) with same origin and increasing rotation
-public class GenericRotatingAOE(BossModule module) : GenericAOEs(module)
+public abstract class GenericRotatingAOE(BossModule module) : GenericAOEs(module)
 {
     public record struct Sequence
     (

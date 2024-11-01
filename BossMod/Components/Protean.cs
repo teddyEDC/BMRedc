@@ -32,7 +32,7 @@ public abstract class GenericProtean(BossModule module, ActionID aid, AOEShape s
 }
 
 // typical protean will originate from primary actor and hit all alive players
-public class SimpleProtean(BossModule module, ActionID aid, AOEShape shape) : GenericProtean(module, aid, shape)
+public abstract class SimpleProtean(BossModule module, ActionID aid, AOEShape shape) : GenericProtean(module, aid, shape)
 {
     public override IEnumerable<(Actor source, Actor target)> ActiveAOEs() => Raid.WithoutSlot().Select(p => (Module.PrimaryActor, p));
 }
