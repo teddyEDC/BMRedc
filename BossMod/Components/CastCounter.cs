@@ -1,7 +1,7 @@
 ﻿namespace BossMod.Components;
 
 // generic component that counts specified casts
-public abstract class CastCounter(BossModule module, ActionID aid) : BossComponent(module)
+public class CastCounter(BossModule module, ActionID aid) : BossComponent(module)
 {
     public ActionID WatchedAction { get; private set; } = aid;
     public int NumCasts { get; protected set; }

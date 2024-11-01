@@ -1,7 +1,7 @@
 ﻿namespace BossMod.Components;
 
 // generic 'wild charge': various mechanics that consist of charge aoe on some target that other players have to stay in; optionally some players can be marked as 'having to be closest to source' (usually tanks)
-public abstract class GenericWildCharge(BossModule module, float halfWidth, ActionID aid = default, float fixedLength = 0) : CastCounter(module, aid)
+public class GenericWildCharge(BossModule module, float halfWidth, ActionID aid = default, float fixedLength = 0) : CastCounter(module, aid)
 {
     public enum PlayerRole
     {

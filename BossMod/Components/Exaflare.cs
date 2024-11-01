@@ -1,7 +1,7 @@
 ﻿namespace BossMod.Components;
 
 // generic 'exaflare' component - these mechanics are a bunch of moving aoes, with different lines either staggered or moving with different speed
-public abstract class Exaflare(BossModule module, AOEShape shape, ActionID aid = default) : GenericAOEs(module, aid, "GTFO from exaflare!")
+public class Exaflare(BossModule module, AOEShape shape, ActionID aid = default) : GenericAOEs(module, aid, "GTFO from exaflare!")
 {
     public class Line
     {
@@ -21,7 +21,7 @@ public abstract class Exaflare(BossModule module, AOEShape shape, ActionID aid =
 
     public bool Active => Lines.Count > 0;
 
-    protected Exaflare(BossModule module, float radius, ActionID aid = new()) : this(module, new AOEShapeCircle(radius), aid) { }
+    public Exaflare(BossModule module, float radius, ActionID aid = new()) : this(module, new AOEShapeCircle(radius), aid) { }
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {

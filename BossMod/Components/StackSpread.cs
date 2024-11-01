@@ -210,7 +210,7 @@ public abstract class UniformStackSpread(BossModule module, float stackRadius, f
 }
 
 // spread/stack mechanic that selects targets by casts
-public abstract class CastStackSpread(BossModule module, ActionID stackAID, ActionID spreadAID, float stackRadius, float spreadRadius, int minStackSize = 2, int maxStackSize = int.MaxValue, bool alwaysShowSpreads = false)
+public class CastStackSpread(BossModule module, ActionID stackAID, ActionID spreadAID, float stackRadius, float spreadRadius, int minStackSize = 2, int maxStackSize = int.MaxValue, bool alwaysShowSpreads = false)
     : UniformStackSpread(module, stackRadius, spreadRadius, minStackSize, maxStackSize, alwaysShowSpreads)
 {
     public ActionID StackAction { get; init; } = stackAID;
@@ -246,13 +246,13 @@ public abstract class CastStackSpread(BossModule module, ActionID stackAID, Acti
 }
 
 // generic 'spread from targets of specific cast' mechanic
-public abstract class SpreadFromCastTargets(BossModule module, ActionID aid, float radius, bool drawAllSpreads = true) : CastStackSpread(module, default, aid, 0, radius, alwaysShowSpreads: drawAllSpreads);
+public class SpreadFromCastTargets(BossModule module, ActionID aid, float radius, bool drawAllSpreads = true) : CastStackSpread(module, default, aid, 0, radius, alwaysShowSpreads: drawAllSpreads);
 
 // generic 'stack with targets of specific cast' mechanic
-public abstract class StackWithCastTargets(BossModule module, ActionID aid, float radius, int minStackSize = 2, int maxStackSize = int.MaxValue) : CastStackSpread(module, aid, default, radius, 0, minStackSize, maxStackSize);
+public class StackWithCastTargets(BossModule module, ActionID aid, float radius, int minStackSize = 2, int maxStackSize = int.MaxValue) : CastStackSpread(module, aid, default, radius, 0, minStackSize, maxStackSize);
 
 // spread/stack mechanic that selects targets by icon and finishes by cast event
-public abstract class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon, ActionID stackAID, ActionID spreadAID, float stackRadius, float spreadRadius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue, bool alwaysShowSpreads = false, int maxCasts = 1)
+public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon, ActionID stackAID, ActionID spreadAID, float stackRadius, float spreadRadius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue, bool alwaysShowSpreads = false, int maxCasts = 1)
     : UniformStackSpread(module, stackRadius, spreadRadius, minStackSize, maxStackSize, alwaysShowSpreads)
 {
     public uint StackIcon { get; init; } = stackIcon;
@@ -299,14 +299,14 @@ public abstract class IconStackSpread(BossModule module, uint stackIcon, uint sp
 }
 
 // generic 'spread from actors with specific icon' mechanic
-public abstract class SpreadFromIcon(BossModule module, uint icon, ActionID aid, float radius, float activationDelay, bool drawAllSpreads = true) : IconStackSpread(module, 0, icon, default, aid, 0, radius, activationDelay, alwaysShowSpreads: drawAllSpreads);
+public class SpreadFromIcon(BossModule module, uint icon, ActionID aid, float radius, float activationDelay, bool drawAllSpreads = true) : IconStackSpread(module, 0, icon, default, aid, 0, radius, activationDelay, alwaysShowSpreads: drawAllSpreads);
 
 // generic 'stack with actors with specific icon' mechanic
-public abstract class StackWithIcon(BossModule module, uint icon, ActionID aid, float radius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue, int maxCasts = 1) : IconStackSpread(module, icon, 0, aid, default, radius, 0, activationDelay, minStackSize, maxStackSize, false, maxCasts);
+public class StackWithIcon(BossModule module, uint icon, ActionID aid, float radius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue, int maxCasts = 1) : IconStackSpread(module, icon, 0, aid, default, radius, 0, activationDelay, minStackSize, maxStackSize, false, maxCasts);
 
 // generic single hit "line stack" component, usually do not have an iconID, instead players get marked by cast event
 // usually these have 50 range and 4 halfWidth, but it can be modified
-public abstract class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolve, float activationDelay, float range = 50, float halfWidth = 4, int minStackSize = 4, int maxStackSize = int.MaxValue, int maxCasts = 1, bool markerIsFinalTarget = true) : GenericBaitAway(module)
+public class LineStack(BossModule module, ActionID aidMarker, ActionID aidResolve, float activationDelay, float range = 50, float halfWidth = 4, int minStackSize = 4, int maxStackSize = int.MaxValue, int maxCasts = 1, bool markerIsFinalTarget = true) : GenericBaitAway(module)
 {
     // TODO: add forbidden slots logic?
     // TODO: add logic for min and max stack size
@@ -426,7 +426,7 @@ public abstract class LineStack(BossModule module, ActionID aidMarker, ActionID 
 }
 
 // generic 'donut stack' mechanic
-public abstract class DonutStack(BossModule module, ActionID aid, uint icon, float innerRadius, float outerRadius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue) : UniformStackSpread(module, innerRadius / 3, default, minStackSize, maxStackSize)
+public class DonutStack(BossModule module, ActionID aid, uint icon, float innerRadius, float outerRadius, float activationDelay, int minStackSize = 2, int maxStackSize = int.MaxValue) : UniformStackSpread(module, innerRadius / 3, default, minStackSize, maxStackSize)
 {
     // this is a donut targeted on each player, it is best solved by stacking
     // regular stack component won't work because this is self targeted

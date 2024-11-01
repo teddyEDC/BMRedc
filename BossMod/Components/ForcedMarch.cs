@@ -3,7 +3,7 @@
 // generic component dealing with 'forced march' mechanics
 // these mechanics typically feature 'march left/right/forward/backward' debuffs, which rotate player and apply 'forced march' on expiration
 // if there are several active march debuffs, we assume they are chained together
-public abstract class GenericForcedMarch(BossModule module, float activationLimit = float.MaxValue) : BossComponent(module)
+public class GenericForcedMarch(BossModule module, float activationLimit = float.MaxValue) : BossComponent(module)
 {
     public class PlayerState
     {
@@ -87,7 +87,7 @@ public abstract class GenericForcedMarch(BossModule module, float activationLimi
 }
 
 // typical forced march is driven by statuses
-public abstract class StatusDrivenForcedMarch(BossModule module, float duration, uint statusForward, uint statusBackward, uint statusLeft, uint statusRight, uint statusForced = 1257, uint statusForcedNPCs = 3629, float activationLimit = float.MaxValue) : GenericForcedMarch(module, activationLimit)
+public class StatusDrivenForcedMarch(BossModule module, float duration, uint statusForward, uint statusBackward, uint statusLeft, uint statusRight, uint statusForced = 1257, uint statusForcedNPCs = 3629, float activationLimit = float.MaxValue) : GenericForcedMarch(module, activationLimit)
 {
     public float Duration = duration;
     public readonly uint[] Statuses = [statusForward, statusLeft, statusBackward, statusRight, statusForced, statusForcedNPCs]; // 5 elements: fwd, left, back, right, forced, forcedNPCs
@@ -121,7 +121,7 @@ public abstract class StatusDrivenForcedMarch(BossModule module, float duration,
 }
 
 // action driven forced march
-public abstract class ActionDrivenForcedMarch(BossModule module, ActionID aid, float duration, Angle rotation, float actioneffectdelay, uint statusForced = 1257, uint statusForcedNPCs = 3629, float activationLimit = float.MaxValue) : GenericForcedMarch(module, activationLimit)
+public class ActionDrivenForcedMarch(BossModule module, ActionID aid, float duration, Angle rotation, float actioneffectdelay, uint statusForced = 1257, uint statusForcedNPCs = 3629, float activationLimit = float.MaxValue) : GenericForcedMarch(module, activationLimit)
 {
     public float Duration = duration;
     public float Actioneffectdelay = actioneffectdelay;
