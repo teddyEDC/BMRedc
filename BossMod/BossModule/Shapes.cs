@@ -154,3 +154,61 @@ public record class DonutSegment(WPos Center, float InnerRadius, float OuterRadi
 // for donut segments defined by inner and outer radius, direction and half angle
 public record class DonutSegmentHA(WPos Center, float InnerRadius, float OuterRadius, Angle CenterDir, Angle HalfAngle) : DonutSegment(Center, InnerRadius, OuterRadius,
 CenterDir - HalfAngle, CenterDir + HalfAngle);
+
+// Approximates a cone with a customizable number of vertices
+public record class ConeV(WPos Center, float Radius, Angle CenterDir, Angle HalfAngle, int Vertices) : Shape
+{
+    public override List<WDir> Contour(WPos center)
+    {
+        var angleIncrement = 2 * HalfAngle.Rad / (Vertices - 1);
+        var startAngle = CenterDir.Rad - HalfAngle.Rad;
+        var vertices = new List<WDir>(Vertices);
+
+        for (var i = 0; i < Vertices; i++)
+        {
+            var angle = startAngle + i * angleIncrement;
+            var (sin, cos) = ((float, float))Math.SinCos(angle);
+            var x = Center.X + Radius * cos;
+            var z = Center.Z + Radius * sin;
+            vertices.Add(new WDir(x - center.X, z - center.Z));
+        }
+
+        vertices.Add(new WDir(Center.X - center.X, Center.Z - center.Z));
+        return vertices;
+    }
+
+    public override string ToString() => $"{nameof(ConeV)}:{Center.X},{Center.Z},{Radius},{CenterDir},{HalfAngle},{Vertices}";
+}
+
+// Approximates a donut segment with a customizable number of vertices
+public record class DonutSegmentV(WPos Center, float InnerRadius, float OuterRadius, Angle CenterDir, Angle HalfAngle, int Vertices) : Shape
+{
+    public override List<WDir> Contour(WPos center)
+    {
+        var angleIncrement = 2 * HalfAngle.Rad / (Vertices - 1);
+        var startAngle = CenterDir.Rad - HalfAngle.Rad;
+        var contourVertices = new List<WDir>();
+
+        for (var i = Vertices - 1; i >= 0; i--)
+        {
+            var angle = startAngle + i * angleIncrement;
+            var (sin, cos) = ((float, float))Math.SinCos(angle);
+            var x = Center.X + OuterRadius * cos;
+            var z = Center.Z + OuterRadius * sin;
+            contourVertices.Add(new WDir(x - center.X, z - center.Z));
+        }
+
+        for (var i = 0; i < Vertices; i++)
+        {
+            var angle = startAngle + i * angleIncrement;
+            var (sin, cos) = ((float, float))Math.SinCos(angle);
+            var x = Center.X + InnerRadius * cos;
+            var z = Center.Z + InnerRadius * sin;
+            contourVertices.Add(new WDir(x - center.X, z - center.Z));
+        }
+
+        return contourVertices;
+    }
+
+    public override string ToString() => $"{nameof(DonutSegmentV)}:{Center.X},{Center.Z},{InnerRadius},{OuterRadius},{CenterDir},{HalfAngle},{Vertices}";
+}
