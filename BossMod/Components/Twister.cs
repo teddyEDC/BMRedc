@@ -38,7 +38,7 @@ public abstract class GenericTwister(BossModule module, float radius, uint oid, 
 // twister that activates immediately on init
 public abstract class ImmediateTwister : GenericTwister
 {
-    public ImmediateTwister(BossModule module, float radius, uint oid, float activationDelay) : base(module, radius, oid)
+    protected ImmediateTwister(BossModule module, float radius, uint oid, float activationDelay) : base(module, radius, oid)
     {
         AddPredicted(activationDelay);
     }

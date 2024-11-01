@@ -35,7 +35,7 @@ public abstract class CastInterruptHint : CastHint
     public bool ShowNameInHint { get; init; } // important if there are several targets
     public string HintExtra { get; init; }
 
-    public CastInterruptHint(BossModule module, ActionID aid, bool canBeInterrupted = true, bool canBeStunned = false, string hintExtra = "", bool showNameInHint = false) : base(module, aid, "")
+    protected CastInterruptHint(BossModule module, ActionID aid, bool canBeInterrupted = true, bool canBeStunned = false, string hintExtra = "", bool showNameInHint = false) : base(module, aid, "")
     {
         CanBeInterrupted = canBeInterrupted;
         CanBeStunned = canBeStunned;

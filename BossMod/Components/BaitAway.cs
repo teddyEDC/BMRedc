@@ -113,7 +113,7 @@ public abstract class GenericBaitAway(BossModule module, ActionID aid = default,
 // bait on all players, requiring everyone to spread out
 public abstract class BaitAwayEveryone : GenericBaitAway
 {
-    public BaitAwayEveryone(BossModule module, Actor? source, AOEShape shape, ActionID aid = default) : base(module, aid)
+    protected BaitAwayEveryone(BossModule module, Actor? source, AOEShape shape, ActionID aid = default) : base(module, aid)
     {
         AllowDeadTargets = false;
         if (source != null)

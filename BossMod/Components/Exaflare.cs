@@ -21,7 +21,7 @@ public abstract class Exaflare(BossModule module, AOEShape shape, ActionID aid =
 
     public bool Active => Lines.Count > 0;
 
-    public Exaflare(BossModule module, float radius, ActionID aid = new()) : this(module, new AOEShapeCircle(radius), aid) { }
+    protected Exaflare(BossModule module, float radius, ActionID aid = new()) : this(module, new AOEShapeCircle(radius), aid) { }
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
