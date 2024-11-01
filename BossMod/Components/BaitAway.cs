@@ -3,7 +3,7 @@
 // generic component for mechanics that require baiting some aoe (by proximity, by tether, etc) away from raid
 // some players can be marked as 'forbidden' - if any of them is baiting, they are warned
 // otherwise we show own bait as as outline (and warn if player is clipping someone) and other baits as filled (and warn if player is being clipped)
-public abstract class GenericBaitAway(BossModule module, ActionID aid = default, bool alwaysDrawOtherBaits = true, bool centerAtTarget = false) : CastCounter(module, aid)
+public class GenericBaitAway(BossModule module, ActionID aid = default, bool alwaysDrawOtherBaits = true, bool centerAtTarget = false) : CastCounter(module, aid)
 {
     public record struct Bait(Actor Source, Actor Target, AOEShape Shape, DateTime Activation = default)
     {
@@ -111,9 +111,9 @@ public abstract class GenericBaitAway(BossModule module, ActionID aid = default,
 }
 
 // bait on all players, requiring everyone to spread out
-public abstract class BaitAwayEveryone : GenericBaitAway
+public class BaitAwayEveryone : GenericBaitAway
 {
-    protected BaitAwayEveryone(BossModule module, Actor? source, AOEShape shape, ActionID aid = default) : base(module, aid)
+    public BaitAwayEveryone(BossModule module, Actor? source, AOEShape shape, ActionID aid = default) : base(module, aid)
     {
         AllowDeadTargets = false;
         if (source != null)
@@ -122,7 +122,7 @@ public abstract class BaitAwayEveryone : GenericBaitAway
 }
 
 // component for mechanics requiring tether targets to bait their aoe away from raid
-public abstract class BaitAwayTethers(BossModule module, AOEShape shape, uint tetherID, ActionID aid = default, uint enemyOID = default, float activationDelay = default) : GenericBaitAway(module, aid)
+public class BaitAwayTethers(BossModule module, AOEShape shape, uint tetherID, ActionID aid = default, uint enemyOID = default, float activationDelay = default) : GenericBaitAway(module, aid)
 {
     public AOEShape Shape = shape;
     public uint TID = tetherID;
@@ -178,7 +178,7 @@ public abstract class BaitAwayTethers(BossModule module, AOEShape shape, uint te
 }
 
 // component for mechanics requiring icon targets to bait their aoe away from raid
-public abstract class BaitAwayIcon(BossModule module, AOEShape shape, uint iconID, ActionID aid = default, float activationDelay = 5.1f, bool centerAtTarget = false) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
+public class BaitAwayIcon(BossModule module, AOEShape shape, uint iconID, ActionID aid = default, float activationDelay = 5.1f, bool centerAtTarget = false) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
 {
     public AOEShape Shape = shape;
     public uint IID = iconID;
@@ -201,7 +201,7 @@ public abstract class BaitAwayIcon(BossModule module, AOEShape shape, uint iconI
 }
 
 // component for mechanics requiring cast targets to gtfo from raid (aoe tankbusters etc)
-public abstract class BaitAwayCast(BossModule module, ActionID aid, AOEShape shape, bool centerAtTarget = false, bool endsOnCastEvent = false) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
+public class BaitAwayCast(BossModule module, ActionID aid, AOEShape shape, bool centerAtTarget = false, bool endsOnCastEvent = false) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
 {
     public AOEShape Shape = shape;
     public bool EndsOnCastEvent = endsOnCastEvent;
@@ -227,7 +227,7 @@ public abstract class BaitAwayCast(BossModule module, ActionID aid, AOEShape sha
 }
 
 // a variation of BaitAwayCast for charges that end at target
-public abstract class BaitAwayChargeCast(BossModule module, ActionID aid, float halfWidth) : GenericBaitAway(module, aid)
+public class BaitAwayChargeCast(BossModule module, ActionID aid, float halfWidth) : GenericBaitAway(module, aid)
 {
     public float HalfWidth = halfWidth;
 
@@ -260,7 +260,7 @@ public abstract class BaitAwayChargeCast(BossModule module, ActionID aid, float 
 }
 
 // a variation of baits with tethers for charges that end at target
-public abstract class BaitAwayChargeTether(BossModule module, float halfWidth, float activationDelay, ActionID aidGood, ActionID aidBad = default, uint tetherIDBad = 57, uint tetherIDGood = 1, uint enemyOID = default, float minimumDistance = default)
+public class BaitAwayChargeTether(BossModule module, float halfWidth, float activationDelay, ActionID aidGood, ActionID aidBad = default, uint tetherIDBad = 57, uint tetherIDGood = 1, uint enemyOID = default, float minimumDistance = default)
 : StretchTetherDuo(module, minimumDistance, activationDelay, tetherIDBad, tetherIDGood, new AOEShapeRect(default, halfWidth), default, enemyOID)
 {
     public ActionID AidGood = aidGood;

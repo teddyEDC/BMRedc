@@ -184,11 +184,33 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
 {
     private RelSimplifiedComplexPolygon? polygon;
     private readonly int hashkey = CreateCacheKey(Shapes1, Shapes2 ?? [], DifferenceShapes ?? [], Operand);
-
+    public static readonly Dictionary<int, RelSimplifiedComplexPolygon> Cache = [];
+    public static readonly LinkedList<int> CacheOrder = new();
+    public void AddToCache(RelSimplifiedComplexPolygon value)
+    {
+        if (Cache.Count >= 50)
+        {
+            var lruKey = CacheOrder.Last?.Value;
+            if (lruKey != null)
+            {
+                Cache.Remove(lruKey.Value);
+                CacheOrder.RemoveLast();
+            }
+        }
+        Cache[hashkey] = value;
+        CacheOrder.Remove(hashkey);
+        CacheOrder.AddFirst(hashkey);
+    }
     public override string ToString() => $"Custom AOE shape: hashkey={hashkey}, ifz={InvertForbiddenZone}";
 
     private RelSimplifiedComplexPolygon GetCombinedPolygon(WPos origin)
     {
+        if (Cache.TryGetValue(hashkey, out var cachedResult)) // for moving custom AOEs we don't want to recalculate the polygon every frame since they move at server ticks and not frame
+        {
+            CacheOrder.Remove(hashkey);
+            CacheOrder.AddFirst(hashkey);
+            return polygon = cachedResult;
+        }
         var shapes1 = CreateOperandFromShapes(Shapes1, origin);
         var shapes2 = CreateOperandFromShapes(Shapes2, origin);
         var differenceOperands = CreateOperandFromShapes(DifferenceShapes, origin);
@@ -204,6 +226,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
         polygon = combinedShapes != null
             ? clipper.Difference(new PolygonClipper.Operand(combinedShapes), differenceOperands)
             : clipper.Difference(shapes1, differenceOperands);
+        AddToCache(polygon);
         return polygon;
     }
 

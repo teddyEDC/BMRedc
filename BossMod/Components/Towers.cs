@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Components;
 
-public abstract class GenericTowers(BossModule module, ActionID aid = default) : CastCounter(module, aid)
+public class GenericTowers(BossModule module, ActionID aid = default) : CastCounter(module, aid)
 {
     public struct Tower(WPos position, float radius, int minSoakers = 1, int maxSoakers = 1, BitMask forbiddenSoakers = default, DateTime activation = default)
     {
@@ -91,7 +91,7 @@ public abstract class GenericTowers(BossModule module, ActionID aid = default) :
     }
 }
 
-public abstract class CastTowers(BossModule module, ActionID aid, float radius, int minSoakers = 1, int maxSoakers = 1) : GenericTowers(module, aid)
+public class CastTowers(BossModule module, ActionID aid, float radius, int minSoakers = 1, int maxSoakers = 1) : GenericTowers(module, aid)
 {
     public float Radius = radius;
     public int MinSoakers = minSoakers;

@@ -82,7 +82,7 @@ public abstract class GenericGaze(BossModule module, ActionID aid = new(), bool 
 }
 
 // gaze that happens on cast end
-public abstract class CastGaze(BossModule module, ActionID aid, bool inverted = false, float range = 10000) : GenericGaze(module, aid, inverted)
+public class CastGaze(BossModule module, ActionID aid, bool inverted = false, float range = 10000) : GenericGaze(module, aid, inverted)
 {
     public readonly List<Actor> _casters = [];
 
@@ -104,7 +104,7 @@ public abstract class CastGaze(BossModule module, ActionID aid, bool inverted = 
 }
 
 // cast weakpoint component: a number of casts (with supposedly non-intersecting shapes), player should face specific side determined by active status to the caster for aoe he's in
-public abstract class CastWeakpoint(BossModule module, ActionID aid, AOEShape shape, uint statusForward, uint statusBackward, uint statusLeft, uint statusRight) : GenericGaze(module, aid, true)
+public class CastWeakpoint(BossModule module, ActionID aid, AOEShape shape, uint statusForward, uint statusBackward, uint statusLeft, uint statusRight) : GenericGaze(module, aid, true)
 {
     public AOEShape Shape = shape;
     public readonly uint[] Statuses = [statusForward, statusLeft, statusBackward, statusRight]; // 4 elements: fwd, left, back, right

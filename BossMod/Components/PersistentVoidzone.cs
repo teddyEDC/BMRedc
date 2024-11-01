@@ -4,7 +4,7 @@ namespace BossMod.Components;
 // voidzone (circle aoe that stays active for some time) centered at each existing object with specified OID, assumed to be persistent voidzone center
 // for moving 'voidzones', the hints can mark the area in front of each source as dangerous
 // TODO: typically sources are either eventobj's with eventstate != 7 or normal actors that are non dead; other conditions are much rarer
-public abstract class PersistentVoidzone(BossModule module, float radius, Func<BossModule, IEnumerable<Actor>> sources, float moveHintLength = 0) : GenericAOEs(module, default, "GTFO from voidzone!")
+public class PersistentVoidzone(BossModule module, float radius, Func<BossModule, IEnumerable<Actor>> sources, float moveHintLength = 0) : GenericAOEs(module, default, "GTFO from voidzone!")
 {
     public AOEShape Shape { get; init; } = moveHintLength == 0 ? new AOEShapeCircle(radius) : new AOEShapeCapsule(radius, moveHintLength);
     public Func<BossModule, IEnumerable<Actor>> Sources { get; init; } = sources;
@@ -29,7 +29,7 @@ public abstract class PersistentVoidzone(BossModule module, float radius, Func<B
 // note that if voidzone is predicted by cast start rather than cast event, we have to account for possibility of cast finishing without event (e.g. if actor dies before cast finish)
 // TODO: this has problems when target moves - castevent and spawn position could be quite different
 // TODO: this has problems if voidzone never actually spawns after castevent, eg because of phase changes
-public abstract class PersistentVoidzoneAtCastTarget(BossModule module, float radius, ActionID aid, Func<BossModule, IEnumerable<Actor>> sources, float castEventToSpawn) : GenericAOEs(module, aid, "GTFO from voidzone!")
+public class PersistentVoidzoneAtCastTarget(BossModule module, float radius, ActionID aid, Func<BossModule, IEnumerable<Actor>> sources, float castEventToSpawn) : GenericAOEs(module, aid, "GTFO from voidzone!")
 {
     public AOEShapeCircle Shape { get; init; } = new(radius);
     public Func<BossModule, IEnumerable<Actor>> Sources { get; init; } = sources;
@@ -79,7 +79,7 @@ public abstract class PersistentVoidzoneAtCastTarget(BossModule module, float ra
 // these are normal voidzones that could be 'inverted' (e.g. when you need to enter a voidzone at specific time to avoid some mechanic)
 // TODO: i'm not sure whether these should be considered actual voidzones (if so, should i merge them with base component? what about cast prediction?) or some completely other type of mechanic (maybe drawing differently)
 // TODO: might want to have per-player invertability
-public abstract class PersistentInvertibleVoidzone(BossModule module, float radius, Func<BossModule, IEnumerable<Actor>> sources, ActionID aid = default) : CastCounter(module, aid)
+public class PersistentInvertibleVoidzone(BossModule module, float radius, Func<BossModule, IEnumerable<Actor>> sources, ActionID aid = default) : CastCounter(module, aid)
 {
     public AOEShapeCircle Shape { get; init; } = new(radius);
     public Func<BossModule, IEnumerable<Actor>> Sources { get; init; } = sources;
@@ -120,7 +120,7 @@ public abstract class PersistentInvertibleVoidzone(BossModule module, float radi
 }
 
 // invertible voidzone that is inverted when specific spell is being cast; resolved when cast ends
-public abstract class PersistentInvertibleVoidzoneByCast(BossModule module, float radius, Func<BossModule, IEnumerable<Actor>> sources, ActionID aid) : PersistentInvertibleVoidzone(module, radius, sources, aid)
+public class PersistentInvertibleVoidzoneByCast(BossModule module, float radius, Func<BossModule, IEnumerable<Actor>> sources, ActionID aid) : PersistentInvertibleVoidzone(module, radius, sources, aid)
 {
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

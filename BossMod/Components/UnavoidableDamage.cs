@@ -1,7 +1,7 @@
 ﻿namespace BossMod.Components;
 
 // generic unavoidable raidwide, started and finished by a single cast
-public abstract class RaidwideCast(BossModule module, ActionID aid, string hint = "Raidwide") : CastHint(module, aid, hint)
+public class RaidwideCast(BossModule module, ActionID aid, string hint = "Raidwide") : CastHint(module, aid, hint)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
@@ -11,7 +11,7 @@ public abstract class RaidwideCast(BossModule module, ActionID aid, string hint 
 }
 
 // generic unavoidable raidwide, initiated by a custom condition and applied by an instant cast after a delay
-public abstract class RaidwideInstant(BossModule module, ActionID aid, float delay, string hint = "Raidwide") : CastCounter(module, aid)
+public class RaidwideInstant(BossModule module, ActionID aid, float delay, string hint = "Raidwide") : CastCounter(module, aid)
 {
     public float Delay = delay;
     public string Hint = hint;
@@ -40,7 +40,7 @@ public abstract class RaidwideInstant(BossModule module, ActionID aid, float del
 }
 
 // generic unavoidable instant raidwide initiated by a cast (usually visual-only)
-public abstract class RaidwideCastDelay(BossModule module, ActionID actionVisual, ActionID actionAOE, float delay, string hint = "Raidwide") : RaidwideInstant(module, actionAOE, delay, hint)
+public class RaidwideCastDelay(BossModule module, ActionID actionVisual, ActionID actionAOE, float delay, string hint = "Raidwide") : RaidwideInstant(module, actionAOE, delay, hint)
 {
     public ActionID ActionVisual = actionVisual;
 
@@ -52,7 +52,7 @@ public abstract class RaidwideCastDelay(BossModule module, ActionID actionVisual
 }
 
 // generic unavoidable instant raidwide cast initiated by NPC yell
-public abstract class RaidwideAfterNPCYell(BossModule module, ActionID aid, uint npcYellID, float delay, string hint = "Raidwide") : RaidwideInstant(module, aid, delay, hint)
+public class RaidwideAfterNPCYell(BossModule module, ActionID aid, uint npcYellID, float delay, string hint = "Raidwide") : RaidwideInstant(module, aid, delay, hint)
 {
     public uint NPCYellID = npcYellID;
 
@@ -64,7 +64,7 @@ public abstract class RaidwideAfterNPCYell(BossModule module, ActionID aid, uint
 }
 
 // generic unavoidable single-target damage, started and finished by a single cast (typically tankbuster, but not necessary)
-public abstract class SingleTargetCast(BossModule module, ActionID aid, string hint = "Tankbuster") : CastHint(module, aid, hint)
+public class SingleTargetCast(BossModule module, ActionID aid, string hint = "Tankbuster") : CastHint(module, aid, hint)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
@@ -80,7 +80,7 @@ public abstract class SingleTargetCast(BossModule module, ActionID aid, string h
 }
 
 // generic unavoidable single-target damage, initiated by a custom condition and applied by an instant cast after a delay
-public abstract class SingleTargetInstant(BossModule module, ActionID aid, float delay, string hint = "Tankbuster") : CastCounter(module, aid)
+public class SingleTargetInstant(BossModule module, ActionID aid, float delay, string hint = "Tankbuster") : CastCounter(module, aid)
 {
     public float Delay = delay; // delay from visual cast end to cast event
     public string Hint = hint;
@@ -109,7 +109,7 @@ public abstract class SingleTargetInstant(BossModule module, ActionID aid, float
 }
 
 // generic unavoidable instant single-target damage initiated by a cast (usually visual-only)
-public abstract class SingleTargetCastDelay(BossModule module, ActionID actionVisual, ActionID actionAOE, float delay, string hint = "Tankbuster") : SingleTargetInstant(module, actionAOE, delay, hint)
+public class SingleTargetCastDelay(BossModule module, ActionID actionVisual, ActionID actionAOE, float delay, string hint = "Tankbuster") : SingleTargetInstant(module, actionAOE, delay, hint)
 {
     public ActionID ActionVisual = actionVisual;
 
@@ -124,7 +124,7 @@ public abstract class SingleTargetCastDelay(BossModule module, ActionID actionVi
 }
 
 // generic unavoidable instant single-target damage initiated by a cast (usually visual-only)
-public abstract class SingleTargetEventDelay(BossModule module, ActionID actionVisual, ActionID actionAOE, float delay, string hint = "Tankbuster") : SingleTargetInstant(module, actionAOE, delay, hint)
+public class SingleTargetEventDelay(BossModule module, ActionID actionVisual, ActionID actionAOE, float delay, string hint = "Tankbuster") : SingleTargetInstant(module, actionAOE, delay, hint)
 {
     public ActionID ActionVisual = actionVisual;
 
@@ -140,4 +140,4 @@ public abstract class SingleTargetEventDelay(BossModule module, ActionID actionV
 }
 
 // generic unavoidable single-target damage, started and finished by a single cast, that can be delayed by moving out of range (typically tankbuster, but not necessary)
-public abstract class SingleTargetDelayableCast(BossModule module, ActionID aid, string hint = "Tankbuster") : SingleTargetCastDelay(module, aid, aid, 0, hint);
+public class SingleTargetDelayableCast(BossModule module, ActionID aid, string hint = "Tankbuster") : SingleTargetCastDelay(module, aid, aid, 0, hint);
