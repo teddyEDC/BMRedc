@@ -1,4 +1,5 @@
-﻿namespace BossMod;
+﻿using System.Runtime.CompilerServices;
+namespace BossMod;
 
 // a bunch of utilities for approximating curves with line segments
 // we need them, since clipping and rendering works with polygons
@@ -44,6 +45,7 @@ public static class CurveApprox
         return points;
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization)] // code breaks without this in release mode, do not remove
     public static WDir[] CircleArc(float radius, Angle angleStart, Angle angleEnd, float maxError)
     {
         var length = angleEnd - angleStart;
