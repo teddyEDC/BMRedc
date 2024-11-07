@@ -3,7 +3,7 @@
 class Border(BossModule module) : Components.GenericAOEs(module)
 {
     public static readonly WPos BoundsCenter = new(-416, -184);
-    public static readonly ArenaBounds DefaultBounds = new ArenaBoundsCircle(34.5f);
+    public static readonly ArenaBoundsCircle DefaultBounds = new(34.5f);
     private const float _innerRingRadius = 14.5f;
     private const float _outerRingRadius = 27.5f;
     private const float _ringHalfWidth = 2.5f;
@@ -12,7 +12,7 @@ class Border(BossModule module) : Components.GenericAOEs(module)
     private bool Active;
     private static readonly Shape[] labyrinth = [new PolygonCustom(InDanger()), new PolygonCustom(MidDanger()), new PolygonCustom(OutDanger())];
     private static readonly AOEShapeCustom customShape = new(labyrinth);
-    private static readonly ArenaBounds labPhase = new ArenaBoundsComplex([new Circle(BoundsCenter, 34.5f)], labyrinth);
+    private static readonly ArenaBoundsComplex labPhase = new([new Circle(BoundsCenter, 34.5f)], labyrinth);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
