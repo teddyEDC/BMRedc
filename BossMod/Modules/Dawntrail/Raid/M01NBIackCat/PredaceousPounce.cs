@@ -18,9 +18,9 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
         if (_aoes.Count > 0)
         {
             var aoeCount = Math.Clamp(_aoes.Count, 0, 2);
-            for (var i = aoeCount; i < _aoes.Count; i++)
+            for (var i = aoeCount; i < _aoes.Count; ++i)
                 yield return _aoes[i];
-            for (var i = 0; i < aoeCount; i++)
+            for (var i = 0; i < aoeCount; ++i)
                 yield return _aoes[i] with { Color = Colors.Danger };
         }
     }
@@ -37,7 +37,7 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
         if (_aoes.Count == 12 && !sorted)
         {
             _aoes.SortBy(x => x.Activation);
-            for (var i = 0; i < _aoes.Count; i++)
+            for (var i = 0; i < _aoes.Count; ++i)
                 _aoes[i] = new(_aoes[i].Shape, _aoes[i].Origin, _aoes[i].Rotation, WorldState.FutureTime(13.5f + i * 0.5f));
             sorted = true;
         }
