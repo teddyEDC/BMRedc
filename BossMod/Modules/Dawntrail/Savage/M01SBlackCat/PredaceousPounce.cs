@@ -40,7 +40,11 @@ class PredaceousPounce(BossModule module) : Components.GenericAOEs(module)
         {
             AOEs.SortBy(x => x.Activation);
             for (var i = 0; i < count; ++i)
-                AOEs[i] = new(AOEs[i].Shape, AOEs[i].Origin, AOEs[i].Rotation, WorldState.FutureTime(13.5f + i * 0.5f));
+            {
+                var aoe = AOEs[i];
+                aoe.Activation = WorldState.FutureTime(13.5f + i * 0.5f);
+                AOEs[i] = aoe;
+            }
             sorted = true;
         }
     }
