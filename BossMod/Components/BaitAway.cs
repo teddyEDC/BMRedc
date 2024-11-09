@@ -178,13 +178,13 @@ public class BaitAwayTethers(BossModule module, AOEShape shape, uint tetherID, A
 }
 
 // component for mechanics requiring icon targets to bait their aoe away from raid
-public class BaitAwayIcon(BossModule module, AOEShape shape, uint iconID, ActionID aid = default, float activationDelay = 5.1f, bool centerAtTarget = false) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
+public class BaitAwayIcon(BossModule module, AOEShape shape, uint iconID, ActionID aid = default, float activationDelay = 5.1f, bool centerAtTarget = false, Actor? source = null) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
 {
     public AOEShape Shape = shape;
     public uint IID = iconID;
     public float ActivationDelay = activationDelay;
 
-    public virtual Actor? BaitSource(Actor target) => Module.PrimaryActor;
+    public virtual Actor? BaitSource(Actor target) => source ?? Module.PrimaryActor;
 
     public override void OnEventIcon(Actor actor, uint iconID)
     {
@@ -290,6 +290,8 @@ public class BaitAwayChargeTether(BossModule module, float halfWidth, float acti
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        if (!ActiveBaits.Any())
+            return;
         base.AddHints(slot, actor, hints);
         if (ActiveBaitsOn(actor).Any(b => PlayersClippedBy(b).Any()))
             hints.Add(BaitAwayHint);
