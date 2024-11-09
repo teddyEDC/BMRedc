@@ -41,7 +41,7 @@ class Shock(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.Shock)
+        if ((AID)spell.Action.ID == AID.Shock)
             _aoes.Clear();
     }
 }
