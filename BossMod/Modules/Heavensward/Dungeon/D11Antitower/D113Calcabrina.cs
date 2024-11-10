@@ -138,4 +138,17 @@ public class D113Calcabrina(WorldState ws, Actor primary) : BossModule(ws, prima
         Arena.Actors(Enemies(OID.Brina).Concat(Enemies(OID.Boss)).Concat(Enemies(OID.Calcabrina)));
         Arena.Actors(Enemies(OID.CalcaPlayer1).Concat(Enemies(OID.CalcaPlayer2)).Concat(Enemies(OID.BrinaPlayer1)).Concat(Enemies(OID.BrinaPlayer2)), Colors.Vulnerable);
     }
+
+    protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        for (var i = 0; i < hints.PotentialTargets.Count; ++i)
+        {
+            var e = hints.PotentialTargets[i];
+            e.Priority = (OID)e.Actor.OID switch
+            {
+                OID.BrinaPlayer1 or OID.BrinaPlayer2 or OID.CalcaPlayer1 or OID.CalcaPlayer2 => 1,
+                _ => 0
+            };
+        }
+    }
 }

@@ -166,8 +166,7 @@ public class D111ZuroRoggo(WorldState ws, Actor primary) : BossModule(ws, primar
             var e = hints.PotentialTargets[i];
             e.Priority = (OID)e.Actor.OID switch
             {
-                OID.PoroggoChoirtoad => 2,
-                OID.Boss => 1,
+                OID.PoroggoChoirtoad => 1,
                 _ => 0
             };
         }
