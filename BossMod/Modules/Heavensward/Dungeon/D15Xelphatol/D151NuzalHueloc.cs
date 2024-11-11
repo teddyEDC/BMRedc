@@ -80,7 +80,7 @@ class D151NuzalHuelocStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 182, NameID = 5265)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 182, NameID = 5265, SortOrder = 2)]
 public class D151NuzalHueloc(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly WPos[] vertices = [new(-73.36f, -91.53f), new(-67.17f, -90.22f), new(-66.55f, -89.97f), new(-64.94f, -89.05f), new(-64.45f, -88.60f),
@@ -93,7 +93,7 @@ public class D151NuzalHueloc(WorldState ws, Actor primary) : BossModule(ws, prim
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actors(Enemies(OID.IxaliStitcher).Concat([PrimaryActor]).Concat(Enemies(OID.FloatingTurret)).Concat(Enemies(OID.Airstone)));
+        Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly));
     }
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

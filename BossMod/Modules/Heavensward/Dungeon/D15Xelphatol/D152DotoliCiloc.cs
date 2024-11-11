@@ -189,14 +189,13 @@ class D152DotoliCilocStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 182, NameID = 5269)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 182, NameID = 5269, SortOrder = 6)]
 public class D152DotoliCiloc(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
 {
     public static readonly WPos ArenaCenter = new(245.289f, 13.626f);
-    private static readonly float multi = 1 / MathF.Cos(MathF.PI / 16);
     private const float offset = 0.42f;
-    public static readonly Polygon[] StartingBoundsP = [new Polygon(ArenaCenter, 29.45f * multi, 16, 11.25f.Degrees())];
-    public static readonly Polygon[] DefaultBoundsP = [new Polygon(ArenaCenter, 20 * multi, 16, 11.25f.Degrees())];
+    public static readonly Polygon[] StartingBoundsP = [new Polygon(ArenaCenter, 29.45f * CosPI.Pi16th, 16, 11.25f.Degrees())];
+    public static readonly Polygon[] DefaultBoundsP = [new Polygon(ArenaCenter, 20 * CosPI.Pi16th, 16, 11.25f.Degrees())];
     private static readonly WPos[] verticesW = [new(227.1f, 17.333f), new(226.122f, 13.411f), new(227, 10.126f), new(225.087f, 9.583f), new(224.016f, 13.541f), new(225.124f, 17.756f)];
     private static readonly WPos[] verticesN = GenerateRotatedVertices(verticesW, 90);
     private static readonly WPos[] verticesE = GenerateRotatedVertices(verticesW, 180);
