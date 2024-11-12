@@ -74,7 +74,7 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
     private Angle rotation;
     private const int RectDistance = 9;
     private const int CircleDistance = 5;
-    private readonly Angle offset = 90.Degrees();
+    private static readonly Angle offset = 90.Degrees();
     private static readonly AOEShapeCone _shape = new(30, 90.Degrees());
 
     private bool IsKnockback(Actor actor, Shape shape, MagneticPole pole)

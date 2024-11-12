@@ -70,6 +70,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
     private delegate void ExecuteCommandGTDelegate(uint commandId, Vector3* position, uint param1, uint param2, uint param3, uint param4);
     private readonly ExecuteCommandGTDelegate _executeCommandGT;
     private DateTime _nextAllowedExecuteCommand;
+    private const uint InvalidEntityId = 0xE0000000;
 
     public ActionManagerEx(WorldState ws, AIHints hints, MovementOverride movement)
     {
@@ -133,7 +134,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
         return _inst->GetGroundPositionForCursor(&res) ? res : null;
     }
 
-    public void FaceTarget(Vector3 position, ulong unkObjID = 0xE0000000) => _inst->AutoFaceTargetPosition(&position, unkObjID);
+    public void FaceTarget(Vector3 position, ulong unkObjID = InvalidEntityId) => _inst->AutoFaceTargetPosition(&position, unkObjID);
     public void FaceDirection(WDir direction)
     {
         var player = GameObjectManager.Instance()->Objects.IndexSorted[0].Value;
@@ -303,9 +304,9 @@ public sealed unsafe class ActionManagerEx : IDisposable
         var castInfo = player->GetCastInfo();
         var isCasting = castInfo != null && castInfo->IsCasting != 0;
         var currentAction = isCasting ? new((ActionType)castInfo->ActionType, castInfo->ActionId) : actionImminent ? AutoQueue.Action : default;
-        var currentTargetId = isCasting ? (ulong)castInfo->TargetId : (AutoQueue.Target?.InstanceID ?? 0xE0000000);
+        var currentTargetId = isCasting ? (ulong)castInfo->TargetId : (AutoQueue.Target?.InstanceID ?? InvalidEntityId);
         var currentTargetSelf = currentTargetId == player->EntityId;
-        var currentTargetObj = currentTargetSelf ? &player->GameObject : currentTargetId is not 0 and not 0xE0000000 ? GameObjectManager.Instance()->Objects.GetObjectByGameObjectId(currentTargetId) : null;
+        var currentTargetObj = currentTargetSelf ? &player->GameObject : currentTargetId is not 0 and not InvalidEntityId ? GameObjectManager.Instance()->Objects.GetObjectByGameObjectId(currentTargetId) : null;
         WPos? currentTargetPos = currentTargetObj != null ? new WPos(currentTargetObj->Position.X, currentTargetObj->Position.Z) : null;
         var currentTargetLoc = isCasting ? new WPos(castInfo->TargetLocation.X, castInfo->TargetLocation.Z) : new(AutoQueue.TargetPos.XZ()); // note: this only matters for area-targeted spells, for which targetlocation in castinfo is set correctly
         var idealOrientation = currentAction ? _smartRotationTweak.GetSpellOrientation(GetSpellIdForAction(currentAction), new(player->Position.X, player->Position.Z), currentTargetSelf, currentTargetPos, currentTargetLoc) : null;
@@ -348,7 +349,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
         if (actionImminent)
         {
             var actionAdj = NormalizeActionForQueue(AutoQueue.Action);
-            var targetID = AutoQueue.Target?.InstanceID ?? 0xE0000000;
+            var targetID = AutoQueue.Target?.InstanceID ?? InvalidEntityId;
             var status = GetActionStatus(actionAdj, targetID);
             if (status == 0)
             {
@@ -385,7 +386,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
             _inst->UseAction(CSActionType.Action, 4);
     }
 
-    // note: targetId is usually your current primary target (or 0xE0000000 if you don't target anyone), unless you do something like /ac XXX <f> etc
+    // note: targetId is usually your current primary target (or InvalidEntityId if you don't target anyone), unless you do something like /ac XXX <f> etc
     private bool UseActionDetour(ActionManager* self, CSActionType actionType, uint actionId, ulong targetId, uint extraParam, ActionManager.UseActionMode mode, uint comboRouteId, bool* outOptAreaTargeted)
     {
         var action = new ActionID((ActionType)actionType, actionId);
@@ -394,7 +395,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
 
         // if mouseover mode is enabled AND target is a usual primary target AND current mouseover is valid target for action, then we override target to mouseover
         var primaryTarget = TargetSystem.Instance()->Target;
-        var primaryTargetId = primaryTarget != null ? primaryTarget->GetGameObjectId() : 0xE0000000;
+        var primaryTargetId = primaryTarget != null ? primaryTarget->GetGameObjectId() : InvalidEntityId;
         var targetOverridden = targetId != primaryTargetId;
         if (Config.PreferMouseover && !targetOverridden)
         {
@@ -407,7 +408,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
         }
 
         (ulong, Vector3?) getAreaTarget() => targetOverridden ? (targetId, null) :
-            (Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtTarget ? targetId : 0xE0000000, Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtCursor ? GetWorldPosUnderCursor() : null);
+            (Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtTarget ? targetId : InvalidEntityId, Config.GTMode == ActionTweaksConfig.GroundTargetingMode.AtCursor ? GetWorldPosUnderCursor() : null);
 
         // note: only standard mode can be filtered
         // note: current implementation introduces slight input lag (on button press, next autorotation update will pick state updates, which will be executed on next action manager update)
@@ -456,7 +457,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
         if (res)
         {
             var entry = (BozjaHolsterID)self->State.HolsterActions[(int)holsterIndex];
-            HandleActionRequest(ActionID.MakeBozjaHolster(entry, (int)slot), 0, 0xE0000000, default, prevRot, currRot);
+            HandleActionRequest(ActionID.MakeBozjaHolster(entry, (int)slot), 0, InvalidEntityId, default, prevRot, currRot);
         }
         return res;
     }
