@@ -120,7 +120,7 @@ public sealed class AIHintsBuilder : IDisposable
         if (actor.Type is not ActorType.Enemy and not ActorType.Helper || actor.IsAlly)
             return;
         var data = actor.CastInfo!.IsSpell() ? Service.LuminaRow<Lumina.Excel.Sheets.Action>(actor.CastInfo.Action.ID) : null;
-        var dat = data.Value;
+        var dat = data!.Value;
         if (data == null || dat.CastType == 1)
             return;
         if (dat.CastType is 2 or 5 && dat.EffectRange >= RaidwideSize)
@@ -135,10 +135,10 @@ public sealed class AIHintsBuilder : IDisposable
             5 => new AOEShapeCircle(dat.EffectRange + actor.HitboxRadius),
             //6 => custom shapes
             //7 => new AOEShapeCircle(data.EffectRange), - used for player ground-targeted circles a-la asylum
-            8 => new AOEShapeRect((actor.CastInfo!.LocXZ - actor.Position).Length(), data.XAxisModifier * HalfWidth),
+            8 => new AOEShapeRect((actor.CastInfo!.LocXZ - actor.Position).Length(), dat.XAxisModifier * HalfWidth),
             10 => new AOEShapeDonut(3, dat.EffectRange),
-            11 => new AOEShapeCross(dat.EffectRange, data.XAxisModifier * HalfWidth),
-            12 => new AOEShapeRect(dat.EffectRange, data.XAxisModifier * HalfWidth),
+            11 => new AOEShapeCross(dat.EffectRange, dat.XAxisModifier * HalfWidth),
+            12 => new AOEShapeRect(dat.EffectRange, dat.XAxisModifier * HalfWidth),
             13 => new AOEShapeCone(dat.EffectRange, DetermineConeAngle(dat) * HalfWidth),
             _ => null
         };
@@ -156,7 +156,7 @@ public sealed class AIHintsBuilder : IDisposable
     private Angle DetermineConeAngle(Lumina.Excel.Sheets.Action data)
     {
         var omen = data.Omen.ValueNullable;
-        var om = omen.Value;
+        var om = omen!.Value;
         if (omen == null)
         {
             Service.Log($"[AutoHints] No omen data for {data.RowId} '{data.Name}'...");
