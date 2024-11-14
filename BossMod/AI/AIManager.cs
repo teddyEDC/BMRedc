@@ -111,9 +111,9 @@ sealed class AIManager : IDisposable
         if (!messageText.StartsWith("bmrai ", StringComparison.OrdinalIgnoreCase) && !messageText.StartsWith("vbmai ", StringComparison.OrdinalIgnoreCase))
             return;
 
-        var messageData = messagePrefix.Text.Split(' ');
-        if (messageData.Length < 2)
-            return;
+    //    var messageData = messagePrefix.Text.Split(' ');
+    //    if (messageData.Length < 2)
+    //        return;
 
         switch (messageData[1])
         {
