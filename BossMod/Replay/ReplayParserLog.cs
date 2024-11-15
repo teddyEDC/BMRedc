@@ -682,13 +682,20 @@ public sealed class ReplayParserLog : IDisposable
     private NetworkState.OpServerIPC ParseNetworkServerIPC()
     {
         var packet = new NetworkState.ServerIPC((Network.ServerIPC.PacketID)_input.ReadInt(), _input.ReadUShort(false), _input.ReadUInt(false), _input.ReadUInt(true), new(_input.ReadLong()), _input.ReadBytes());
-        if (_version < 22 && packet.ID == Network.ServerIPC.PacketID.ActorControl && packet.Payload[0] == (byte)Network.ServerIPC.ActorControlCategory.TargetIcon)
+
+        if (_version < 22 && packet.ID == Network.ServerIPC.PacketID.ActorControl)
         {
-            unsafe
+            if (packet.Payload.Length > 0 && packet.Payload[0] == (byte)Network.ServerIPC.ActorControlCategory.TargetIcon)
             {
-                fixed (byte* p = &packet.Payload[8])
+                if (packet.Payload.Length >= 12)
                 {
-                    _legacyIcons[packet.SourceServerActor] = *(uint*)p;
+                    unsafe
+                    {
+                        fixed (byte* p = &packet.Payload[8])
+                        {
+                            _legacyIcons[packet.SourceServerActor] = *(uint*)p;
+                        }
+                    }
                 }
             }
         }

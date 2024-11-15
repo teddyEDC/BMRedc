@@ -47,7 +47,7 @@ class AbsoluteAuthorityHeel(BossModule module) : Components.CastCounter(module, 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         if (_targets[pcSlot])
-            Arena.AddCircle(pc.Position, Radius, ArenaColor.Safe);
+            Arena.AddCircle(pc.Position, Radius, Colors.Safe);
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)

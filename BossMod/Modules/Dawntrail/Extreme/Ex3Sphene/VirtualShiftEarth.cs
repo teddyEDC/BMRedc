@@ -19,8 +19,8 @@ class VirtualShiftEarth(BossModule module) : BossComponent(module)
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        Arena.AddRect(Midpoint + CenterOffset, new(0, 1), HalfExtent.Z, HalfExtent.Z, HalfExtent.X, ArenaColor.Border, 2);
-        Arena.AddRect(Midpoint - CenterOffset, new(0, 1), HalfExtent.Z, HalfExtent.Z, HalfExtent.X, ArenaColor.Border, 2);
+        Arena.AddRect(Midpoint + CenterOffset, new(0, 1), HalfExtent.Z, HalfExtent.Z, HalfExtent.X, Colors.Border, 2);
+        Arena.AddRect(Midpoint - CenterOffset, new(0, 1), HalfExtent.Z, HalfExtent.Z, HalfExtent.X, Colors.Border, 2);
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
@@ -152,7 +152,7 @@ class MeteorImpact(BossModule module) : Components.CastCounter(module, default)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var p in Raid.WithSlot().IncludedInMask(_meteorsAbovePlatforms).Actors())
-            Arena.AddCircle(p.Position, 4, ArenaColor.Danger);
+            Arena.AddCircle(p.Position, 4, Colors.Danger);
     }
 
     public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
@@ -200,13 +200,13 @@ class WeightyBlow(BossModule module) : Components.CastCounter(module, ActionID.M
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actors(_boulders, ArenaColor.Object, true);
+        Arena.Actors(_boulders, Colors.Object, true);
         if (_activeBaits)
         {
             var origin = BaitSource(pc);
             var offset = pc.Position - origin;
             var len = offset.Length();
-            Arena.AddRect(origin, offset / len, len, 0, HalfWidth, ArenaColor.Safe);
+            Arena.AddRect(origin, offset / len, len, 0, HalfWidth, Colors.Safe);
         }
     }
 

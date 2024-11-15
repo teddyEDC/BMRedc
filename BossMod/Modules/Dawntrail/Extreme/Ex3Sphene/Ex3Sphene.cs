@@ -4,7 +4,7 @@ class ProsecutionOfWar(BossModule module) : Components.TankSwap(module, ActionID
 class DyingMemory(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.DyingMemory));
 class DyingMemoryLast(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.DyingMemoryLast));
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, PrimaryActorOID = (uint)OID.BossP1, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1017, NameID = 13029)]
+[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "veyn", PrimaryActorOID = (uint)OID.BossP1, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1017, NameID = 13029)]
 public class Ex3Sphene(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20))
 {
     private Actor? _bossP2;
@@ -20,7 +20,7 @@ public class Ex3Sphene(WorldState ws, Actor primary) : BossModule(ws, primary, n
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        Arena.Actor(_bossP2, ArenaColor.Enemy);
+        Arena.Actor(PrimaryActor);
+        Arena.Actor(_bossP2);
     }
 }

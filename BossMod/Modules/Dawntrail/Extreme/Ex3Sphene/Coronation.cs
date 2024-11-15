@@ -28,13 +28,13 @@ class Coronation(BossModule module) : Components.GenericAOEs(module, ActionID.Ma
     {
         foreach (ref var g in Groups.AsSpan())
         {
-            Arena.Actor(g.Source, ArenaColor.Object, true);
+            Arena.Actor(g.Source, Colors.Object, true);
             if (g.Contains(pc))
             {
                 if (g.LeftPartner != null)
-                    Arena.AddLine(g.LeftPartner.Position, g.Source.Position, ArenaColor.Danger);
+                    Arena.AddLine(g.LeftPartner.Position, g.Source.Position, Colors.Danger);
                 if (g.RightPartner != null)
-                    Arena.AddLine(g.RightPartner.Position, g.Source.Position, ArenaColor.Danger);
+                    Arena.AddLine(g.RightPartner.Position, g.Source.Position, Colors.Danger);
             }
         }
     }

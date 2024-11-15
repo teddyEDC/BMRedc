@@ -1,6 +1,5 @@
 ﻿using ImGuiNET;
 using Lumina.Excel.Sheets;
-using System.Text;
 
 namespace BossMod.ReplayAnalysis;
 
@@ -28,10 +27,10 @@ class IconInfo : CommonEnumInfo
                 foreach (var icon in replay.EncounterIcons(enc))
                 {
                     var data = _data.GetOrAdd(icon.ID);
-                    data.SourceOIDs.Add(icon.Source.Type != ActorType.DutySupport ? icon.Source.OID : 0);
+                    data.SourceOIDs.Add(icon.Source.OID);
                     if (icon.Target != null)
                     {
-                        data.TargetOIDs.Add(icon.Target.Type != ActorType.DutySupport ? icon.Target.OID : 0);
+                        data.TargetOIDs.Add(icon.Target.OID);
                         data.SeenTargetNonSelf |= icon.Target != icon.Source;
                     }
                 }

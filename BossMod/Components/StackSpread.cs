@@ -435,7 +435,7 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
     public uint Icon { get; init; } = icon;
     public ActionID Aid { get; init; } = aid;
 
-    public override void OnEventIcon(Actor actor, uint iconID)
+    public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
     {
         if (iconID == Icon)
             AddStack(actor, WorldState.FutureTime(ActivationDelay));

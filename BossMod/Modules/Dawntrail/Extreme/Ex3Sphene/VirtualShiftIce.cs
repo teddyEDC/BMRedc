@@ -43,11 +43,11 @@ class Rush(BossModule module) : Components.GenericBaitAway(module)
         base.DrawArenaForeground(pcSlot, pc);
         foreach (var b in CurrentBaits)
         {
-            Arena.Actor(b.Source, ArenaColor.Object, true);
+            Arena.Actor(b.Source, Colors.Object, true);
             if (b.Target == pc)
             {
-                Arena.AddLine(b.Source.Position, b.Target.Position, _unstretched[pcSlot] ? ArenaColor.Danger : ArenaColor.Safe);
-                Arena.AddCircle(SafeSpot(b.Source), 1, ArenaColor.Safe);
+                Arena.AddLine(b.Source.Position, b.Target.Position, _unstretched[pcSlot] ? Colors.Danger : Colors.Safe);
+                Arena.AddCircle(SafeSpot(b.Source), 1, Colors.Safe);
             }
         }
     }
@@ -111,7 +111,7 @@ class Rush(BossModule module) : Components.GenericBaitAway(module)
     }
 }
 
-class IceDart(BossModule module) : Components.BaitAwayTethers(module, new AOEShapeCircle(16), (uint)TetherID.IceDart, ActionID.MakeSpell(AID.IceDart), true)
+class IceDart(BossModule module) : Components.BaitAwayTethers(module, new AOEShapeCircle(16), (uint)TetherID.IceDart, ActionID.MakeSpell(AID.IceDart), centerAtTarget: true)
 {
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
