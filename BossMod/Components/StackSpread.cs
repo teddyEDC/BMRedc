@@ -265,7 +265,7 @@ public class IconStackSpread(BossModule module, uint stackIcon, uint spreadIcon,
     public int MaxCasts { get; init; } = maxCasts; // for stacks where the final AID hits multiple times
     private int castCounter;
 
-    public override void OnEventIcon(Actor actor, uint iconID)
+    public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
     {
         if (iconID == StackIcon)
         {
