@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Group;
 
 namespace BossMod.AI;
 
-sealed class AIManager : IDisposable
+sealed class AIManager(RotationModuleManager autorot, ActionManagerEx amex, MovementOverride movement) : IDisposable
 {
     public static AIManager? Instance;
     public readonly RotationModuleManager Autorot;
