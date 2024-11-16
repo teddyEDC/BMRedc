@@ -10,7 +10,7 @@ class VoiceOfThunder : Components.PersistentInvertibleVoidzone
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         if (Sources(Module).Any(x => !Shape.Check(actor.Position, x)))
-            hints.Add("Touch the balls!");
+            hints.Add("Touch the orbs!");
     }
 }
 

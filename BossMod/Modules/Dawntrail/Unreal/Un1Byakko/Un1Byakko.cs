@@ -9,8 +9,8 @@ class WhiteHerald(BossModule module) : Components.SpreadFromIcon(module, (uint)I
 class DistantClap(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.DistantClap), new AOEShapeDonut(4, 25));
 class SweepTheLegBoss(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SweepTheLegBoss), new AOEShapeCone(28.3f, 135.Degrees()));
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1007, NameID = 7092, PlanLevel = 100)]
-public class Un1Byakko(WorldState ws, Actor primary) : BossModule(ws, primary, new(0, 0), new ArenaBoundsCircle(20))
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "veyn", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1007, NameID = 7092, PlanLevel = 100)]
+public class Un1Byakko(WorldState ws, Actor primary) : BossModule(ws, primary, default, new ArenaBoundsCircle(20))
 {
     private Actor? _hakutei;
     public Actor? Boss() => PrimaryActor;
@@ -25,7 +25,7 @@ public class Un1Byakko(WorldState ws, Actor primary) : BossModule(ws, primary, n
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        Arena.Actor(_hakutei, ArenaColor.Enemy);
+        Arena.Actor(PrimaryActor);
+        Arena.Actor(_hakutei);
     }
 }

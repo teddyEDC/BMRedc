@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Dawntrail.Unreal.Un1Byakko;
 
-class UnrelentingAnguish(BossModule module) : Components.PersistentVoidzone(module, 2, m => m.Enemies(OID.AratamaForce).Where(z => !z.IsDead), 1);
+class UnrelentingAnguish(BossModule module) : Components.PersistentVoidzone(module, 2, m => m.Enemies(OID.AratamaForce).Where(z => !z.IsDead), 2);
 
 // TODO: show something
 class OminousWind(BossModule module) : BossComponent(module)

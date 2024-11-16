@@ -32,6 +32,7 @@ public enum AID : uint
     UnrelentingAnguish = 39950, // Boss->self, 3.0s cast, single-target, visual (orbs)
     UnrelentingAnguishAratama = 39958, // AratamaForce->self, no cast, range 2 circle, orb explosion
     OminousWind = 39948, // Boss->self, no cast, single-target, apply bubbles
+    OminousWindAOE = 39949, // Helper->self, no cast, range 6 circle
     FireAndLightningBoss = 39930, // Boss->self, 4.0s cast, range 50+R width 20 rect
 
     DanceOfTheIncomplete = 39924, // Boss->self, no cast, single-target, visual (split off tiger)
