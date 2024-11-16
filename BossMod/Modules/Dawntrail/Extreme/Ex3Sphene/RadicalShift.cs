@@ -19,7 +19,7 @@ class RadicalShift(BossModule module) : BossComponent(module)
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
         if (_triangulation != null)
-            Arena.Zone(_triangulation, ArenaColor.AOE);
+            Arena.Zone(_triangulation, Colors.AOE);
     }
 
     public override void OnEventEnvControl(byte index, uint state)
@@ -76,7 +76,7 @@ class RadicalShift(BossModule module) : BossComponent(module)
     };
 
     private void UpdateTriangulation(ArenaBoundsCustom? platform)
-        => _triangulation = platform != null ? Arena.Bounds.ClipAndTriangulate(platform.Clipper.Difference(new(CurveApprox.Rect(new(0, 1), platform.Radius, platform.Radius)), new(platform.Poly))) : null;
+        => _triangulation = platform != null ? Arena.Bounds.ClipAndTriangulate(platform.Clipper.Difference(new((ReadOnlySpan<WDir>)CurveApprox.Rect(new(0, 1), 20, 20)), new(platform.poly))) : null;
 }
 
 class RadicalShiftAOE(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.RadicalShiftAOE), 5);
