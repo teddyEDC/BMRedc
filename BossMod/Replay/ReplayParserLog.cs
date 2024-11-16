@@ -176,10 +176,42 @@ public sealed class ReplayParserLog : IDisposable
         public override bool CanRead() => true;
         public override void ReadVoid() { }
         public override string ReadString() => _input.ReadString();
-        public override float ReadFloat() => _input.ReadSingle();
+        public override float ReadFloat()
+        {
+            try
+            {
+                return _input.ReadSingle();
+            }
+            catch (EndOfStreamException)
+            {
+                Service.Log("Reached the end of the file unexpectedly. Returning default value.");
+                return 0f;
+            }
+            catch (Exception ex)
+            {
+                Service.Log($"An unexpected error occurred: {ex.Message}");
+                throw;
+            }
+        }
         public override double ReadDouble() => _input.ReadDouble();
         public override Vector3 ReadVec3() => new(_input.ReadSingle(), _input.ReadSingle(), _input.ReadSingle());
-        public override Angle ReadAngle() => _input.ReadSingle().Radians();
+        public override Angle ReadAngle()
+        {
+            try
+            {
+                return _input.ReadSingle().Radians();
+            }
+            catch (EndOfStreamException)
+            {
+                Service.Log("Reached the end of the file unexpectedly. Returning default angle.");
+                return 0f.Radians();
+            }
+            catch (Exception ex)
+            {
+                Service.Log($"An unexpected error occurred while reading an angle: {ex.Message}");
+                throw;
+            }
+        }
         public override bool ReadBool() => _input.ReadBoolean();
         public override sbyte ReadSByte() => _input.ReadSByte();
         public override short ReadShort() => _input.ReadInt16();
