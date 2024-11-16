@@ -67,8 +67,9 @@ public class TankbusterTether(BossModule module, ActionID aid, uint tetherID, fl
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         // show tethered targets with circles
-        foreach (var side in _tethers)
+        for (var i = 0; i < _tethers.Count; ++i)
         {
+            var side = _tethers[i];
             Arena.AddLine(side.Enemy.Position, side.Player.Position, side.Player.Role == Role.Tank ? Colors.Safe : 0);
             Arena.AddCircle(side.Player.Position, Radius);
         }
@@ -123,9 +124,11 @@ public class TankbusterTether(BossModule module, ActionID aid, uint tetherID, fl
 }
 
 // generic component for tethers that need to be intercepted eg. to prevent a boss from gaining buffs
-public class InterceptTether(BossModule module, ActionID aid, uint tetherID) : CastCounter(module, aid)
+public class InterceptTether(BossModule module, ActionID aid, uint tetherIDBad = 84, uint tetherIDGood = 17, uint[]? excludedAllies = null) : CastCounter(module, aid)
 {
-    public uint TID { get; init; } = tetherID;
+    public uint TIDGood = tetherIDGood;
+    public uint TIDBad = tetherIDBad;
+    public uint[]? ExcludedAllies = excludedAllies;
     private readonly List<(Actor Player, Actor Enemy)> _tethers = [];
     private BitMask _tetheredPlayers;
     private const string hint = "Grab the tether!";
@@ -143,8 +146,17 @@ public class InterceptTether(BossModule module, ActionID aid, uint tetherID) : C
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        foreach (var side in _tethers)
-            Arena.AddLine(side.Enemy.Position, side.Player.Position, side.Player.Type is ActorType.Player or ActorType.Buddy ? Colors.Safe : 0);
+        if (!Active)
+            return;
+        var exclude = new List<Actor> { };
+        if (ExcludedAllies != null)
+            for (var i = 0; i < ExcludedAllies.Length; ++i)
+                exclude.AddRange(Module.Enemies(ExcludedAllies[i]));
+        for (var i = 0; i < _tethers.Count; ++i)
+        {
+            var side = _tethers[i];
+            Arena.AddLine(side.Enemy.Position, side.Player.Position, Raid.WithoutSlot().Exclude(exclude).Contains(side.Player) ? Colors.Safe : 0);
+        }
     }
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
@@ -167,17 +179,16 @@ public class InterceptTether(BossModule module, ActionID aid, uint tetherID) : C
         }
     }
 
-    // we support both player->enemy and enemy->player tethers
     private (int PlayerSlot, Actor Player, Actor Enemy)? DetermineTetherSides(Actor source, ActorTetherInfo tether)
     {
-        if (tether.ID != TID)
+        if (tether.ID != TIDGood && tether.ID != TIDBad)
             return null;
 
         var target = WorldState.Actors.Find(tether.Target);
         if (target == null)
             return null;
 
-        var (player, enemy) = source.Type is ActorType.Player or ActorType.Buddy ? (source, target) : (target, source);
+        var (player, enemy) = Raid.WithoutSlot().Contains(source) ? (source, target) : (target, source);
         var playerSlot = Raid.FindSlot(player.InstanceID);
         return (playerSlot, player, enemy);
     }
