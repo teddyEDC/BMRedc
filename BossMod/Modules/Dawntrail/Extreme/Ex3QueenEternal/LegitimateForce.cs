@@ -25,10 +25,10 @@ class LegitimateForce(BossModule module) : Components.GenericAOEs(module)
     {
         switch ((AID)spell.Action.ID)
         {
-            case AID.LegitimateForceFirstL:
+            case AID.LegitimateForceFirstR:
                 AddAOEs(caster, spell, -90, 90);
                 break;
-            case AID.LegitimateForceFirstR:
+            case AID.LegitimateForceFirstL:
                 AddAOEs(caster, spell, 90, -90);
                 break;
         }
