@@ -65,7 +65,7 @@ public enum AID : uint
 
     Bombogenesis = 39944, // Boss->self, no cast, single-target, visual (3 baited puddle icons)
     GaleForce = 39945, // Helper->self, no cast, range 6 circle, baited puddle
-    VacuumClaw = 39946, // Helper->self, no cast, range ? circle, growing voidzone aoe
+    VacuumClaw = 39946, // Helper->self, no cast, range 12 circle, growing voidzone aoe
     VacuumBlade = 39947, // Helper->self, no cast, range 100 circle, raidwide
 }
 

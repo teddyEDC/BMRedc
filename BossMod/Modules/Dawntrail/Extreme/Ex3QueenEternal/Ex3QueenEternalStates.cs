@@ -74,13 +74,12 @@ class Ex3QueenEternalStates : StateMachineBuilder
     private void P1DivideAndConquer(uint id, float delay)
     {
         Cast(id, AID.DivideAndConquer, delay, 7.5f)
-            .ActivateOnEnter<DivideAndConquerBait>();
+            .ActivateOnEnter<DivideAndConquerBait>()
+            .ActivateOnEnter<DivideAndConquerAOE>();
         ComponentCondition<DivideAndConquerBait>(id + 0x10, 0.1f, comp => comp.NumCasts > 0, "Protean 1");
         ComponentCondition<DivideAndConquerBait>(id + 0x20, 7, comp => comp.NumCasts >= 8, "Protean 8")
             .DeactivateOnExit<DivideAndConquerBait>();
-        ComponentCondition<DivideAndConquerAOE>(id + 0x30, 1.1f, comp => comp.Casters.Count > 0)
-            .ActivateOnEnter<DivideAndConquerAOE>();
-        ComponentCondition<DivideAndConquerAOE>(id + 0x31, 3, comp => comp.NumCasts > 0, "Lines")
+        ComponentCondition<DivideAndConquerAOE>(id + 0x30, 4, comp => comp.NumCasts > 0, "Lines")
             .DeactivateOnExit<DivideAndConquerAOE>();
     }
 
@@ -284,8 +283,8 @@ class Ex3QueenEternalStates : StateMachineBuilder
         ComponentCondition<RadicalShiftAOE>(id + 0x110, 5.2f, comp => comp.NumFinishedSpreads > 0, "Spread")
             .ActivateOnEnter<RadicalShiftAOE>()
             .DeactivateOnExit<RadicalShiftAOE>();
-
         ActorCast(id + 0x200, _module.BossP2, AID.WorldShatterP2, 3, 5, true, "Raidwide + platform end")
+            .DeactivateOnExit<RadicalShift>()
             .OnExit(() => _module.Arena.Bounds = Ex3QueenEternal.NormalBounds)
             .OnExit(() => _module.Arena.Center = Ex3QueenEternal.ArenaCenter)
             .SetHint(StateMachine.StateHint.Raidwide);
