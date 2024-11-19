@@ -2,10 +2,24 @@
 
 class UnrelentingAnguish(BossModule module) : Components.PersistentVoidzone(module, 2, m => m.Enemies(OID.AratamaForce).Where(z => !z.IsDead), 2);
 
-// TODO: show something
 class OminousWind(BossModule module) : BossComponent(module)
 {
     public BitMask Targets;
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        if (Targets[slot] && Raid.WithSlot().IncludedInMask(Targets).InRadiusExcluding(actor, 6).Any())
+            hints.Add("GTFO from other bubble!");
+    }
+
+    public override PlayerPriority CalcPriority(int pcSlot, Actor pc, int playerSlot, Actor player, ref uint customColor) => Targets[pcSlot] && Targets[playerSlot] ? PlayerPriority.Danger : PlayerPriority.Irrelevant;
+
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
+    {
+        if (Targets[pcSlot])
+            foreach (var (_, p) in Raid.WithSlot().IncludedInMask(Targets).Exclude(pc))
+                Arena.AddCircle(p.Position, 6, ArenaColor.Danger);
+    }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {

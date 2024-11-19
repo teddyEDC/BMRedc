@@ -10,6 +10,7 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
     public bool SafeInsideHitbox = safeInsideHitbox;
     public float MaxRange { get; private set; } = maxRange;
     public bool Rect { get; private set; } = rect; // if the AOE is a rectangle instead of a circle
+    public BitMask IgnoredPlayers;
     public WPos? Origin { get; private set; } // inactive if null
     public List<(WPos Center, float Radius)> Blockers { get; private set; } = [];
     public List<(float Distance, Angle Dir, Angle HalfWidth)> Visibility { get; private set; } = [];
@@ -17,7 +18,11 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
     public List<Shape> UnionShapes = [];
     public List<Shape> DifferenceShapes = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Safezones.Take(1);
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) 
+    {
+        if (!IgnoredPlayers[pcSlot])
+            return Safezones.Take(1);
+    }
     public void Modify(WPos? origin, IEnumerable<(WPos Center, float Radius)> blockers, DateTime nextExplosion = default)
     {
         NextExplosion = nextExplosion;
@@ -38,7 +43,7 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (ActiveAOEs(slot, actor).Any(c => c.Risky && !c.Check(actor.Position)) && Origin != null && ((WPos)Origin - actor.Position).Length() < MaxRange)
+        if (ActiveAOEs(slot, actor).Any(c => c.Risky && !c.Check(actor.Position)) && Origin != null && ((WPos)Origin - actor.Position).LengthSq() < MaxRange * MaxRange)
             hints.Add(WarningText);
     }
 
@@ -50,7 +55,7 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
 
     public void AddSafezone(DateTime activation, Angle rotation = default)
     {
-        if (Origin != null)
+        if (Origin != null && !IgnoredPlayers[slot])
         {
             if (!Rect)
             {

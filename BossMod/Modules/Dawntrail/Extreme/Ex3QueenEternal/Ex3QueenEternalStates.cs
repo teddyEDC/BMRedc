@@ -24,12 +24,11 @@ class Ex3QueenEternalStates : StateMachineBuilder
         P1Coronation(id + 0x60000, 3.1f);
         P1AbsoluteAuthority(id + 0x70000, 6.2f);
         P1VirtualShiftIce(id + 0x80000, 12.3f);
-        P1ProsecutionOfWar(id + 0x90000, 7.2f);
-        P1RoyalDomain(id + 0xA0000, 8.1f);
-        P1LegitimateForce(id + 0xB0000, 6.1f);
-        P1RoyalDomain(id + 0xC0000, 3);
-        P1Enrage(id + 0xD0000, 8.2f);
-        SimpleState(id + 0xFF0000, 10000, "???");
+        P1ProsecutionOfWar(id + 0x90000, 8.1f);
+        P1RoyalDomain(id + 0xA0000, 8.2f);
+        P1LegitimateForce(id + 0xB0000, 6.3f);
+        P1RoyalDomain(id + 0xC0000, 3.1f);
+        Cast(id + 0xD0000, AID.AuthorityEternal, 3.2f, 10, "Enrage");
     }
 
     private void Phase2(uint id)
@@ -39,8 +38,7 @@ class Ex3QueenEternalStates : StateMachineBuilder
         P2DimensionalDistortion(id + 0x20000, 7.2f);
         P2DyingMemory(id + 0x30000, 1.3f);
         P2RadicalShift(id + 0x40000, 11.4f);
-        // TODO: enrage
-        SimpleState(id + 0xFF0000, 10000, "???");
+        ActorCast(id + 0x50000, _module.BossP2, AID.Preservation, 7.3f, 14, true, "Enrage");
     }
 
     private void P1Aethertithe(uint id, float delay)
@@ -91,15 +89,10 @@ class Ex3QueenEternalStates : StateMachineBuilder
 
     private void P1LegitimateForce(uint id, float delay)
     {
-        CastMulti(id + 0x100, [AID.LegitimateForceFirstR, AID.LegitimateForceFirstL], delay, 8, "Side 1")
+        CastMulti(id, [AID.LegitimateForceFirstR, AID.LegitimateForceFirstL], delay, 8, "Side 1")
             .ActivateOnEnter<LegitimateForce>();
-        ComponentCondition<LegitimateForce>(id + 0x110, 3.1f, comp => comp.NumCasts > 1, "Side 2")
+        ComponentCondition<LegitimateForce>(id + 0x10, 3.1f, comp => comp.NumCasts > 1, "Side 2")
             .DeactivateOnExit<LegitimateForce>();
-    }
-
-    private void P1Enrage(uint id, float delay)
-    {
-        Cast(id, AID.AuthorityEternal, delay, 10, "Enrage");
     }
 
     private void P1Coronation(uint id, float delay)
@@ -110,9 +103,9 @@ class Ex3QueenEternalStates : StateMachineBuilder
         Cast(id + 0x20, AID.AtomicRay, 1.1f, 3);
         ComponentCondition<AtomicRay>(id + 0x30, 1.2f, comp => comp.Active)
             .ActivateOnEnter<AtomicRay>();
-        ComponentCondition<Coronation>(id + 0x40, 5, comp => comp.NumCasts > 0, "Coronation")
+        ComponentCondition<Coronation>(id + 0x40, 4.9f, comp => comp.NumCasts > 0, "Coronation")
             .DeactivateOnExit<Coronation>();
-        ComponentCondition<AtomicRay>(id + 0x41, 1, comp => comp.NumFinishedSpreads > 0, "Spread")
+        ComponentCondition<AtomicRay>(id + 0x41, 1.1f, comp => comp.NumFinishedSpreads > 0, "Spread")
             .DeactivateOnExit<AtomicRay>();
     }
 
@@ -177,10 +170,7 @@ class Ex3QueenEternalStates : StateMachineBuilder
             .ActivateOnEnter<VirtualShiftEarth>();
         CastEnd(id + 0x11, 4);
 
-        CastMulti(id + 0x100, [AID.LegitimateForceFirstR, AID.LegitimateForceFirstL], 3.2f, 8, "Side 1")
-            .ActivateOnEnter<LegitimateForce>();
-        ComponentCondition<LegitimateForce>(id + 0x110, 3.1f, comp => comp.NumCasts > 1, "Side 2")
-            .DeactivateOnExit<LegitimateForce>();
+        P1LegitimateForce(id + 0x100, 3.2f);
         ComponentCondition<LawsOfEarthBurst>(id + 0x120, 5, comp => comp.NumCasts > 0, "Towers")
             .ActivateOnEnter<LawsOfEarthBurst1>()
             .DeactivateOnExit<LawsOfEarthBurst>();
