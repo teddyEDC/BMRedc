@@ -18,7 +18,7 @@ class OminousWind(BossModule module) : BossComponent(module)
     {
         if (Targets[pcSlot])
             foreach (var (_, p) in Raid.WithSlot().IncludedInMask(Targets).Exclude(pc))
-                Arena.AddCircle(p.Position, 6, ArenaColor.Danger);
+                Arena.AddCircle(p.Position, 6, Colors.Danger);
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)

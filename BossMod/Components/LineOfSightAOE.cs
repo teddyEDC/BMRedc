@@ -18,11 +18,8 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
     public List<Shape> UnionShapes = [];
     public List<Shape> DifferenceShapes = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) 
-    {
-        if (!IgnoredPlayers[pcSlot])
-            return Safezones.Take(1);
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => !IgnoredPlayers[slot] ? Safezones.Take(1) : [];
+
     public void Modify(WPos? origin, IEnumerable<(WPos Center, float Radius)> blockers, DateTime nextExplosion = default)
     {
         NextExplosion = nextExplosion;
@@ -32,8 +29,9 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
         Visibility.Clear();
         if (origin != null)
         {
-            foreach (var b in Blockers)
+            for (var i = 0; i < Blockers.Count; ++i)
             {
+                var b = Blockers[i];
                 var toBlock = b.Center - origin.Value;
                 var dist = toBlock.Length();
                 Visibility.Add((dist, Angle.FromDirection(toBlock), b.Radius < dist ? Angle.Asin(b.Radius / dist) : 90.Degrees()));
@@ -55,7 +53,7 @@ public abstract class GenericLineOfSightAOE(BossModule module, ActionID aid, flo
 
     public void AddSafezone(DateTime activation, Angle rotation = default)
     {
-        if (Origin != null && !IgnoredPlayers[slot])
+        if (Origin != null)
         {
             if (!Rect)
             {
