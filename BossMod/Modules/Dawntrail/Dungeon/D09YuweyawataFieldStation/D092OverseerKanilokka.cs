@@ -37,8 +37,7 @@ public enum AID : uint
 
 class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeDonut donutBig = new(15, 20);
-    private static readonly AOEShapeDonut donutSmall = new(5, 15);
+    private static readonly AOEShapeDonut donutSmall = new(5, 15), donutBig = new(15, 20);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
@@ -57,7 +56,6 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
         switch (state)
         {
             case 0x00020001:
-            case 0x00080004:
                 SetArena(D092OverseerKanilokka.DefaultArena, D092OverseerKanilokka.DefaultArena.Center);
                 break;
             case 0x00200010:
@@ -68,6 +66,9 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
                 break;
             case 0x02000100:
                 SetArena(D092OverseerKanilokka.ArenaENVC02000100, D092OverseerKanilokka.ArenaENVC02000100.Center);
+                break;
+            case 0x00080004:
+                SetArena(D092OverseerKanilokka.StartingBounds, D092OverseerKanilokka.StartingBounds.Center);
                 break;
         }
         _aoe = null;
@@ -135,7 +136,7 @@ class D092OverseerKanilokkaStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1008, NameID = 13623)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1008, NameID = 13634)]
 public class D092OverseerKanilokka(WorldState ws, Actor primary) : BossModule(ws, primary, StartingBounds.Center, StartingBounds)
 {
     private const int Edges = 60;
@@ -174,8 +175,4 @@ public class D092OverseerKanilokka(WorldState ws, Actor primary) : BossModule(ws
     new PolygonCustom(vertices00800040South), new PolygonCustom(vertices00800040West), ..TinyPolygon], difference, Offset: Offset);
     public static readonly ArenaBoundsComplex ArenaENVC02000100 = new([new PolygonCustom(vertices02000100East), new PolygonCustom(vertices02000100North),
     new PolygonCustom(vertices02000100West), ..TinyPolygon], difference, Offset: Offset);
-    protected override void DrawEnemies(int pcSlot, Actor pc)
-    {
-        Arena.Actors(Enemies(OID.PreservedSoul).Where(x => x.CastInfo != null).Concat([PrimaryActor]), allowDeadAndUntargetable: true);
-    }
 }
