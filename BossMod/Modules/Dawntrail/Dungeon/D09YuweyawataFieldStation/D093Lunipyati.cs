@@ -281,7 +281,7 @@ class D093LunipyatiStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1008, NameID = 13610)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1008, NameID = 13610, SortOrder = 9)]
 public class D093Lunipyati(WorldState ws, Actor primary) : BossModule(ws, primary, startingBounds.Center, startingBounds)
 {
     private const int Edges = 60;

@@ -91,7 +91,34 @@ class DarkSouls(BossModule module) : Components.SingleTargetCast(module, ActionI
 class TelltaleTears(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.TelltaleTears), 5);
 class SoulDouse(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.SoulDouse), 6, 4, 4);
 class LostHope(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.LostHope), "Apply temporary misdirection");
-class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18));
+class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18))
+{
+    // AI cannot handle temporary misdirection at the moment. to enable AI to clear it on tanks at least, we press invuln
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (AI.AIManager.Instance?.Beh == null || Casters.Count == 0 || actor.Role != Role.Tank)
+            return;
+        var isDelayDeltaLow = (Module.CastFinishAt(Casters[0].CastInfo) - WorldState.CurrentTime).TotalSeconds < 5;
+        if (isDelayDeltaLow)
+        {
+            switch (actor.Class)
+            {
+                case Class.PLD:
+                    hints.ActionsToExecute.Push(ActionID.MakeSpell(PLD.AID.HallowedGround), actor, ActionQueue.Priority.High);
+                    break;
+                case Class.WAR:
+                    hints.ActionsToExecute.Push(ActionID.MakeSpell(WAR.AID.Holmgang), actor, ActionQueue.Priority.High);
+                    break;
+                case Class.GNB:
+                    hints.ActionsToExecute.Push(ActionID.MakeSpell(GNB.AID.Superbolide), actor, ActionQueue.Priority.High);
+                    break;
+                case Class.DRK:
+                    hints.ActionsToExecute.Push(ActionID.MakeSpell(DRK.AID.LivingDead), actor, ActionQueue.Priority.High);
+                    break;
+            }
+        }
+    }
+}
 
 class DarkII(BossModule module) : Components.GenericAOEs(module)
 {
@@ -136,7 +163,7 @@ class D092OverseerKanilokkaStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1008, NameID = 13634)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1008, NameID = 13634, SortOrder = 6)]
 public class D092OverseerKanilokka(WorldState ws, Actor primary) : BossModule(ws, primary, StartingBounds.Center, StartingBounds)
 {
     private const int Edges = 60;
