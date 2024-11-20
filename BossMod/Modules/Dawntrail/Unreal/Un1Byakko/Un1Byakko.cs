@@ -12,8 +12,9 @@ class SweepTheLegBoss(BossModule module) : Components.SelfTargetedAOEs(module, A
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "veyn, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1007, NameID = 7092, PlanLevel = 100)]
 public class Un1Byakko(WorldState ws, Actor primary) : BossModule(ws, primary, default, DefaultBounds)
 {
-    public static readonly ArenaBoundsComplex DefaultBounds = new([new Polygon(default, 19.5f, 48)]);
-    public static readonly ArenaBoundsComplex FreeFallBounds = new([new Polygon(default, 15, 48)]);
+    public static readonly ArenaBoundsComplex NormalBounds = new([new Polygon(default, 19.5f, 48)]);
+    public static readonly ArenaBoundsComplex IntermissionBounds = new([new Polygon(default, 15, 48)]);
+
     private Actor? _hakutei;
     public Actor? Boss() => PrimaryActor;
     public Actor? Hakutei() => _hakutei;
