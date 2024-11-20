@@ -156,10 +156,12 @@ class LeapingEarth(BossModule module) : Components.GenericAOEs(module)
             angles.Add(spell.Rotation.Rad);
             if (angles.Count < 4)
                 return;
-            Service.Log($"{HasTwoOppositePairs(angles)}, {HasMixedPattern1(angles)}");
-            if (HasTwoOppositePairs(angles))
+            var total = 0f;
+            for (var i = 0; i < 4; ++i)
+                total += angles[i];
+            if (MathF.Round(total) is 5 or -2)
                 GenerateAOEsForOppositePairPattern();
-            else if (HasMixedPattern1(angles))
+            else if (MathF.Round(2 * total) == 3)
                 GenerateAOEsForMixedPattern1();
             else
                 GenerateAOEsForMixedPattern2();
@@ -202,22 +204,6 @@ class LeapingEarth(BossModule module) : Components.GenericAOEs(module)
             var adjustedAngle = (isIntercardinal ? 1 : -1) * 45 + angle * Angle.RadToDeg;
             AddAOEs(WPos.GenerateRotatedVertices(D093Lunipyati.ArenaCenter, spiralSmallPoints, adjustedAngle));
         }
-    }
-
-    private static bool HasTwoOppositePairs(List<float> angles)
-    {
-        var total = 0f;
-        for (var i = 0; i < 4; ++i)
-            total += angles[i];
-        return MathF.Round(total) is 5 or -2;
-    }
-
-    private static bool HasMixedPattern1(List<float> angles)
-    {
-        var total = 0f;
-        for (var i = 0; i < 4; ++i)
-            total += angles[i];
-        return MathF.Round(2 * total) == 3;
     }
 
     private void AddAOEs(WPos[] points)
