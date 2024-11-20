@@ -2,10 +2,10 @@ namespace BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation.D90ForestWoolback;
 
 public enum OID : uint
 {
-    Boss = 0x46A4, // R3.900, x1
-    ForestAxeBeak = 0x4611, // R3.000, x1
-    ForestWoolback = 0x4613, // R3.900, x1
-    Electrogolem = 0x46A3, // R1.900, x1
+    Boss = 0x46A4, // R3.9
+    ForestAxeBeak = 0x4611, // R3.0
+    ForestWoolback = 0x4613, // R3.9
+    Electrogolem = 0x46A3 // R1.9
 }
 
 public enum AID : uint
@@ -13,7 +13,7 @@ public enum AID : uint
     AutoAttack = 872, // Boss/ForestAxeBeak/Electrogolem/ForestWoolback->player, no cast, single-target
 
     SweepingGouge = 40668, // ForestWoolback->self, 4.0s cast, range 9 90-degree cone
-    Thunderball = 40666, // ForestAxeBeak->location, 4.0s cast, range 8 circle
+    Thunderball = 40666 // ForestAxeBeak->location, 4.0s cast, range 8 circle
 }
 
 class SweepingGouge(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SweepingGouge), new AOEShapeCone(9, 45.Degrees()));
