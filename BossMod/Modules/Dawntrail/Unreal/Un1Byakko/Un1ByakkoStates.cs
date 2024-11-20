@@ -151,7 +151,6 @@ class Un1ByakkoStates : StateMachineBuilder
         ActorCast(id + 0x10, _module.Hakutei, AID.RoarOfThunder, 4.4f, 20, true, "Add enrage") // note: pretty large variance here
             .ActivateOnEnter<VoiceOfThunder>()
             .DeactivateOnExit<VoiceOfThunder>()
-            .OnExit(() => _module.Arena.Bounds = Un1Byakko.FreeFallBounds)
             .SetHint(StateMachine.StateHint.Raidwide | StateMachine.StateHint.DowntimeStart);
         ComponentCondition<Intermission>(id + 0x12, 5.7f, comp => comp.Active)
             .ActivateOnEnter<Intermission>()
@@ -163,7 +162,6 @@ class Un1ByakkoStates : StateMachineBuilder
             .ActivateOnEnter<ImperialGuard>();
         ComponentCondition<ImperialGuard>(id + 0x22, 12, comp => comp.NumCasts > 1, "Line 2");
         ComponentCondition<IntermissionSweepTheLeg>(id + 0x23, 13.6f, comp => comp.NumCasts > 1, "Donut 2")
-            .OnExit(() => _module.Arena.Bounds = Un1Byakko.DefaultBounds)
             .DeactivateOnExit<IntermissionOrbAratama>()
             .DeactivateOnExit<IntermissionSweepTheLeg>();
         ComponentCondition<ImperialGuard>(id + 0x24, 3.4f, comp => comp.NumCasts > 2, "Line 3")
