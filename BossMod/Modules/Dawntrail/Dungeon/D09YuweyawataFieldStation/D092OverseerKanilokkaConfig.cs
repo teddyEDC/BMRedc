@@ -8,7 +8,7 @@ public class D092OverseerKanilokkaConfig() : ConfigNode()
         [PropertyDisplay("Tank Invuln")]
         TankInvuln,
 
-        [PropertyDisplay("Teleport hack (Always)")]
+        [PropertyDisplay("Teleport hack (Always)\nWARNING: This should ONLY be used when multi-boxing!")]
         TeleportHackAlways,
 
         [PropertyDisplay("Teleport hack (NPC)")]
@@ -18,7 +18,7 @@ public class D092OverseerKanilokkaConfig() : ConfigNode()
     [PropertyDisplay("Necrohazard mechanic solver",
         tooltip: "Select how to solve mechanic:" +
         "\nTank Invuln - Will solve the mechanic by using the Tank's invuln ability." +
-        "\nTeleport hack (Always) - Always uses teleport hacks to solve mechanic." +
-        "\nTeleport hack (NPC) - Only Uses teleport hacks when NPC are in the party!")]
+        "\nTeleport hack (Always) - Always uses teleport hacks to solve mechanic, even with other players present." +
+        "\nTeleport hack (NPC) - Only Uses teleport hacks when NPC are in the party.")]
     public NecrohazardMechanic NecroHazardMechanicHints = NecrohazardMechanic.TankInvuln;
 }
