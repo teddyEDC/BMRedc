@@ -1,4 +1,7 @@
 ﻿using BossMod;
+using Dalamud.Game.ClientState.Objects.SubKinds;
+using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using System;
 using System.Collections.Generic;
@@ -10,6 +13,10 @@ using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 namespace BossModReborn.Util;
 public static unsafe class PlayerEx
 {
+    public static IPlayerCharacter Object => Service.ClientState.LocalPlayer;
+    public static unsafe FFXIVClientStructs.FFXIV.Client.Game.Camera* Camera => CameraManager.Instance()->GetActiveCamera();
+    public static unsafe CameraEx* CameraEx => (CameraEx*)CameraManager.Instance()->GetActiveCamera();
+
     public static CSGameObject* GameObject
     {
         get
@@ -65,4 +72,5 @@ public static unsafe class PlayerEx
             Service.Log("Error in SetPlayerPosition" + ex);
         }
     }
+
 }
