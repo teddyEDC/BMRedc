@@ -79,8 +79,7 @@ public abstract class BossModule : IDisposable
 
     public void ClearComponents(Predicate<BossComponent> condition)
     {
-        _components.RemoveAll(condition);
-        componentCount = 0;
+        componentCount -= _components.RemoveAll(condition);
     }
 
     protected BossModule(WorldState ws, Actor primary, WPos center, ArenaBounds bounds)
