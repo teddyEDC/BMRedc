@@ -237,7 +237,7 @@ public abstract class BossModule : IDisposable
         for (var i = 0; i < componentCount; ++i)
             _components[i].AddAIHints(slot, actor, assignment, hints);
         CalculateModuleAIHints(slot, actor, assignment, hints);
-        if (!WindowConfig.AllowAutomaticActions || AI.AIManager.Instance?.Beh != null)
+        if (!WindowConfig.AllowAutomaticActions && AI.AIManager.Instance?.Beh == null)
             hints.ActionsToExecute.Clear();
     }
 
