@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace BossMod.Util;
 
-namespace BossModReborn.Util;
 public enum LimitedKeys
 {
     //
@@ -169,43 +164,43 @@ public enum LimitedKeys
     //
     // Summary:
     //     The 0 key.
-    Digit_0 = 48,
+    Digit0 = 48,
     //
     // Summary:
     //     The 1 key.
-    Digit_1 = 49,
+    Digit1 = 49,
     //
     // Summary:
     //     The 2 key.
-    Digit_2 = 50,
+    Digit2 = 50,
     //
     // Summary:
     //     The 3 key.
-    Digit_3 = 51,
+    Digit3 = 51,
     //
     // Summary:
     //     The 4 key.
-    Digit_4 = 52,
+    Digit4 = 52,
     //
     // Summary:
     //     The 5 key.
-    Digit_5 = 53,
+    Digit5 = 53,
     //
     // Summary:
     //     The 6 key.
-    Digit_6 = 54,
+    Digit6 = 54,
     //
     // Summary:
     //     The 7 key.
-    Digit_7 = 55,
+    Digit7 = 55,
     //
     // Summary:
     //     The 8 key.
-    Digit_8 = 56,
+    Digit8 = 56,
     //
     // Summary:
     //     The 9 key.
-    Digit_9 = 57,
+    Digit9 = 57,
     //
     // Summary:
     //     The A key.

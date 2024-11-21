@@ -1,19 +1,16 @@
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Plugin.Services;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using BossMod.Util;
 using ImGuiNET;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
 namespace BossMod;
 
 class DebugTeleport
 {
-    private bool EnableNoClip = false;
-    private bool ncActive;
-    private float NoClipSpeed = 0.05f;
-
+    private bool EnableNoClip;
+    private float NoClipSpeed = 0.001f;
     private Vector3 inputCoordinates = new(0, 0, 0);
-    private Vector3 playerCoordinates = new Vector3(PlayerEx.Position.X, PlayerEx.Position.Y, PlayerEx.Position.Z);
 
     public unsafe void Draw()
     {
@@ -24,7 +21,7 @@ class DebugTeleport
             Enable();
             ImGui.SameLine();
             ImGui.SetNextItemWidth(150);
-            ImGui.InputFloat("No Clip Speed", ref NoClipSpeed, 0.05f);
+            ImGui.InputFloat("No Clip Speed", ref NoClipSpeed, 0.001f);
         }
         else
         {
@@ -46,11 +43,11 @@ class DebugTeleport
             SetPlayerPosition(inputCoordinates);
         }
         ImGui.SetNextItemWidth(150);
-        ImGui.InputFloat("X Coordinate", ref inputCoordinates.X, 1.0f);
+        ImGui.InputFloat("X Coordinate", ref inputCoordinates.X, 1f);
         ImGui.SetNextItemWidth(150);
-        ImGui.InputFloat("Y Coordinate", ref inputCoordinates.Y, 1.0f);
+        ImGui.InputFloat("Y Coordinate", ref inputCoordinates.Y, 1f);
         ImGui.SetNextItemWidth(150);
-        ImGui.InputFloat("Z Coordinate", ref inputCoordinates.Z, 1.0f);
+        ImGui.InputFloat("Z Coordinate", ref inputCoordinates.Z, 1f);
         ImGui.EndGroup();
     }
 

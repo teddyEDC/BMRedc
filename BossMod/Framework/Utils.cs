@@ -1,5 +1,4 @@
-﻿using BossModReborn.Util;
-using Dalamud.Game.ClientState.Objects.Types;
+﻿using Dalamud.Game.ClientState.Objects.Types;
 using PInvoke;
 using System.Globalization;
 using System.Reflection;
@@ -301,9 +300,8 @@ public static partial class Utils
     /// <summary>
     /// Sets whether <see cref="User32.GetKeyState"/> or <see cref="User32.GetAsyncKeyState"/> will be used when calling <see cref="IsKeyPressed(Keys)"/> or <see cref="IsKeyPressed(LimitedKeys)"/>
     /// </summary>
+    private static bool UseAsyncKeyCheck;
 #pragma warning restore
-    public static bool UseAsyncKeyCheck = false;
-
     /// <summary>
     /// Checks if a key is pressed via winapi.
     /// </summary>
@@ -311,14 +309,15 @@ public static partial class Utils
     /// <returns>Whether the key is currently pressed</returns>
     public static bool IsKeyPressed(int key)
     {
-        if (key == 0) return false;
+        if (key == 0)
+            return false;
         if (UseAsyncKeyCheck)
         {
-            return Bitmask.IsBitSet(User32.GetKeyState(key), 15);
+            return Bitmasks.IsBitSet(User32.GetKeyState(key), 15);
         }
         else
         {
-            return Bitmask.IsBitSet(User32.GetAsyncKeyState(key), 15);
+            return Bitmasks.IsBitSet(User32.GetAsyncKeyState(key), 15);
         }
     }
 
@@ -327,15 +326,16 @@ public static partial class Utils
     /// </summary>
     /// <param name="key">Key</param>
     /// <returns>Whether the key is currently pressed</returns>
-    public static bool IsKeyPressed(LimitedKeys key) => IsKeyPressed((int)key);
+    public static bool IsKeyPressed(Util.LimitedKeys key) => IsKeyPressed((int)key);
 
-    public static bool IsAnyKeyPressed(IEnumerable<LimitedKeys> keys) => keys.Any(IsKeyPressed);
+    public static bool IsAnyKeyPressed(IEnumerable<Util.LimitedKeys> keys) => keys.Any(IsKeyPressed);
 
-    public static bool IsKeyPressed(IEnumerable<LimitedKeys> keys)
+    public static bool IsKeyPressed(IEnumerable<Util.LimitedKeys> keys)
     {
         foreach (var x in keys)
         {
-            if (IsKeyPressed(x)) return true;
+            if (IsKeyPressed(x))
+                return true;
         }
         return false;
     }
@@ -344,14 +344,16 @@ public static partial class Utils
     {
         foreach (var x in keys)
         {
-            if (IsKeyPressed(x)) return true;
+            if (IsKeyPressed(x))
+                return true;
         }
         return false;
     }
 
     public static Vector3 RotatePoint(float cx, float cy, float angle, Vector3 p)
     {
-        if (angle == 0f) return p;
+        if (angle == 0f)
+            return p;
         var s = (float)Math.Sin(angle);
         var c = (float)Math.Cos(angle);
 
@@ -370,7 +372,7 @@ public static partial class Utils
     }
 }
 
-public static class Bitmask
+public static class Bitmasks
 {
     public static bool IsBitSet(ulong b, int pos)
     {

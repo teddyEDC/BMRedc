@@ -112,8 +112,7 @@ class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, Actio
             case D092OverseerKanilokkaConfig.NecrohazardMechanic.TankInvuln:
                 if (actor.Role != Role.Tank)
                     return;
-                var isDelayDeltaLow = (Module.CastFinishAt(Casters[0].CastInfo) - WorldState.CurrentTime).TotalSeconds < 5;
-                if (isDelayDeltaLow)
+                if ((Module.CastFinishAt(Casters[0].CastInfo) - WorldState.CurrentTime).TotalSeconds < 5)
                 {
                     switch (actor.Class)
                     {
@@ -132,7 +131,6 @@ class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, Actio
                     }
                 }
                 break;
-
             case D092OverseerKanilokkaConfig.NecrohazardMechanic.TeleportHackAlways:
                 Teleport();
                 break;
