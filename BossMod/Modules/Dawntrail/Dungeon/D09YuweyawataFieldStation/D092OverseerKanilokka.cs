@@ -1,8 +1,4 @@
-﻿using BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation;
-using BossModReborn.Util;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
-
-namespace BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation.D092OverseerKanilokka;
+﻿namespace BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation.D092OverseerKanilokka;
 
 public enum OID : uint
 {
@@ -97,20 +93,25 @@ class SoulDouse(BossModule module) : Components.StackWithCastTargets(module, Act
 class LostHope(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.LostHope), "Apply temporary misdirection");
 class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18))
 {
-    private Vector3 SafeSpotCoordsThreeArm = new Vector3(99.179f, 12.5f, -57.336f);
-    private Vector3 SafeSpotCoordsFourArm = new Vector3(120.899f, 12.5f, -83.930f);
-    private bool Teleported { get; set; } = false;
+    private static readonly Vector3 SafeSpotCoordsThreeArm = new(99, 12.5f, -58);
+    private static readonly Vector3 SafeSpotCoordsFourArm = new(121, 12.5f, -84);
+    private bool teleported;
 
     // AI cannot handle temporary misdirection at the moment. to enable AI to clear it on tanks at least, we press invuln
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-
-        switch (Service.Config.Get<D092OverseerKanilokkaConfig>().NecoHazardMechanicHints)
+        if (teleported)
         {
-            case D092OverseerKanilokkaConfig.NecoHazardMechanic.TankInvuln:
-                if (AI.AIManager.Instance?.Beh == null || Casters.Count == 0 || actor.Role != Role.Tank)
+            base.AddAIHints(slot, actor, assignment, hints);
+            return;
+        }
+        if (AI.AIManager.Instance?.Beh == null || Casters.Count == 0)
+            return;
+        switch (Service.Config.Get<D092OverseerKanilokkaConfig>().NecroHazardMechanicHints)
+        {
+            case D092OverseerKanilokkaConfig.NecrohazardMechanic.TankInvuln:
+                if (actor.Role != Role.Tank)
                     return;
-
                 var isDelayDeltaLow = (Module.CastFinishAt(Casters[0].CastInfo) - WorldState.CurrentTime).TotalSeconds < 5;
                 if (isDelayDeltaLow)
                 {
@@ -132,40 +133,27 @@ class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, Actio
                 }
                 break;
 
-            case D092OverseerKanilokkaConfig.NecoHazardMechanic.TeleportHackAlways:
-                if (Teleported)
-                    return;
-
-                if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC00800040)
-                {
-                    PlayerEx.SetPlayerPosition(SafeSpotCoordsFourArm);
-                    Teleported = true;
-                }
-                if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC02000100)
-                {
-                    PlayerEx.SetPlayerPosition(SafeSpotCoordsThreeArm);
-                    Teleported = true;
-                }
+            case D092OverseerKanilokkaConfig.NecrohazardMechanic.TeleportHackAlways:
+                Teleport();
                 break;
-
-            case D092OverseerKanilokkaConfig.NecoHazardMechanic.TeleportHackNPC:
+            case D092OverseerKanilokkaConfig.NecrohazardMechanic.TeleportHackNPC:
                 if (Raid.WithoutSlot().Any(x => x.Type == ActorType.Buddy))
-                {
-                    if (Teleported)
-                        return;
-
-                    if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC00800040)
-                    {
-                        PlayerEx.SetPlayerPosition(SafeSpotCoordsFourArm);
-                        Teleported = true;
-                    }
-                    if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC02000100)
-                    {
-                        PlayerEx.SetPlayerPosition(SafeSpotCoordsThreeArm);
-                        Teleported = true;
-                    }
-                }
+                    Teleport();
                 break;
+        }
+    }
+
+    private void Teleport()
+    {
+        if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC00800040)
+        {
+            Util.PlayerEx.SetPlayerPosition(SafeSpotCoordsFourArm);
+            teleported = true;
+        }
+        else if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC02000100)
+        {
+            Util.PlayerEx.SetPlayerPosition(SafeSpotCoordsThreeArm);
+            teleported = true;
         }
     }
 }

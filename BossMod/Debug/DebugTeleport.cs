@@ -1,17 +1,12 @@
-﻿using BossModReborn.Util;
+﻿using BossMod.Util;
 using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BossMod;
 
 class DebugTeleport
 {
-    private Vector3 inputCoordinates = new Vector3(0, 0, 0);
-    private Vector3 playerCoordinates = new Vector3(PlayerEx.Position.X, PlayerEx.Position.Y, PlayerEx.Position.Z);
+    private Vector3 inputCoordinates = new(0, 0, 0);
+
     public unsafe void Draw()
     {
         ImGui.BeginGroup();

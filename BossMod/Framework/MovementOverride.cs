@@ -27,8 +27,6 @@ public sealed unsafe class MovementOverride : IDisposable
     private float UserMoveUp;
     private float ActualMoveLeft;
     private float ActualMoveUp;
-
-    private bool _movementBlocked;
     private bool _legacyMode;
 
     public bool IsMoving() => ActualMoveLeft != 0 || ActualMoveUp != 0;
@@ -45,8 +43,8 @@ public sealed unsafe class MovementOverride : IDisposable
 
     public bool MovementBlocked
     {
-        get => _movementBlocked && !IsForceUnblocked();
-        set => _movementBlocked = value;
+        get => field && !IsForceUnblocked();
+        set;
     }
 
     private delegate bool RMIWalkIsInputEnabled(void* self);
@@ -78,7 +76,7 @@ public sealed unsafe class MovementOverride : IDisposable
     public void Dispose()
     {
         Service.GameConfig.UiControlChanged -= OnConfigChanged;
-        _movementBlocked = false;
+        MovementBlocked = false;
         UserMoveLeft = 0;
         UserMoveUp = 0;
         ActualMoveLeft = 0;

@@ -3,16 +3,13 @@
 // the manager contains a set of rotation module instances corresponding to the selected preset/plan
 public sealed class RotationModuleManager : IDisposable
 {
-#pragma warning disable IDE0032
-    private Preset? _preset; // if non-null, this preset overrides the configuration
-#pragma warning restore IDE0032
     public Preset? Preset
     {
-        get => _preset;
+        get;
         set
         {
-            DirtyActiveModules(_preset != value);
-            _preset = value;
+            DirtyActiveModules(field != value);
+            field = value;
         }
     }
 

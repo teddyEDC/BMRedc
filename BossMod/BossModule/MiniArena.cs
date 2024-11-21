@@ -11,9 +11,6 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 {
     public readonly BossModuleConfig Config = config;
     private WPos _center = center;
-#pragma warning disable IDE0032
-    private ArenaBounds _bounds = bounds;
-#pragma warning restore IDE0032
     private readonly TriangulationCache _triCache = new();
 
     public WPos Center
@@ -31,16 +28,16 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public ArenaBounds Bounds
     {
-        get => _bounds;
+        get;
         set
         {
-            if (!ReferenceEquals(_bounds, value))
+            if (!ReferenceEquals(field, value))
             {
-                _bounds = value;
+                field = value;
                 _triCache.Invalidate();
             }
         }
-    }
+    } = bounds;
 
     public float ScreenHalfSize => 150 * Config.ArenaScale;
     public float ScreenMarginSize => 20 * Config.ArenaScale;
@@ -359,7 +356,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void CardinalNames()
     {
-        var offCenter = (ScreenHalfSize + ScreenMarginSize * 0.5f) * _bounds.ScaleFactor;
+        var offCenter = (ScreenHalfSize + ScreenMarginSize * 0.5f) * Bounds.ScaleFactor;
         var fontSetting = Config.CardinalsFontSize;
         var sizeoffset = fontSetting - 17;
         var offS = RotatedCoords(new(0, offCenter + sizeoffset));

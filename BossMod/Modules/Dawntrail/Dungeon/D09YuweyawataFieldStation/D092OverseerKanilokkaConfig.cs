@@ -3,7 +3,7 @@
 [ConfigDisplay(Order = 0x100, Parent = typeof(DawntrailConfig))]
 public class D092OverseerKanilokkaConfig() : ConfigNode()
 {
-    public enum NecoHazardMechanic
+    public enum NecrohazardMechanic
     {
         [PropertyDisplay("Tank Invuln")]
         TankInvuln,
@@ -16,9 +16,9 @@ public class D092OverseerKanilokkaConfig() : ConfigNode()
     }
 
     [PropertyDisplay("Necrohazard mechanic solver",
-        tooltip:"Select how to solve mechanic:" +
+        tooltip: "Select how to solve mechanic:" +
         "\nTank Invuln - Will solve the mechanic by using the Tank's invuln ability." +
         "\nTeleport hack (Always) - Always uses teleport hacks to solve mechanic." +
         "\nTeleport hack (NPC) - Only Uses teleport hacks when NPC are in the party!")]
-    public NecoHazardMechanic NecoHazardMechanicHints = NecoHazardMechanic.TankInvuln;
+    public NecrohazardMechanic NecroHazardMechanicHints = NecrohazardMechanic.TankInvuln;
 }
