@@ -1,4 +1,3 @@
-﻿using BossMod;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -10,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
-namespace BossModReborn.Util;
+namespace BossMod.Util;
 public static unsafe class PlayerEx
 {
     public static IPlayerCharacter Object => Service.ClientState.LocalPlayer;
@@ -31,7 +30,7 @@ public static unsafe class PlayerEx
         get
         {
             var localPlayer = Service.ClientState.LocalPlayer;
-            return localPlayer != null ? localPlayer.Position : (Vector3?)null;
+            return localPlayer?.Position;
         }
         set
         {
@@ -47,7 +46,7 @@ public static unsafe class PlayerEx
         get
         {
             var localPlayer = Service.ClientState.LocalPlayer;
-            return (Vector3)(localPlayer != null ? localPlayer.Position : (Vector3?)null);
+            return localPlayer != null ? localPlayer.Position : Vector3.Zero;
         }
     }
 
@@ -57,7 +56,6 @@ public static unsafe class PlayerEx
         {
             if (Service.ClientState.LocalPlayer != null)
             {
-                // Assuming PlayerEx.SetPosition accepts a Vector3
                 SetPosition = position;
                 Service.Log("Setting player position to: " + position.ToString());
 
