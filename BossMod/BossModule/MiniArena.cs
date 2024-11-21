@@ -322,14 +322,14 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
     {
         var dl = ImGui.GetWindowDrawList();
 
-        for (var partIndex = 0; partIndex < Bounds.ShapeSimplified.Parts.Count; partIndex++)
+        for (var i = 0; i < Bounds.ShapeSimplified.Parts.Count; ++i)
         {
-            var part = Bounds.ShapeSimplified.Parts[partIndex];
+            var part = Bounds.ShapeSimplified.Parts[i];
             Vector2? lastPoint = null;
 
-            for (var exteriorIndex = 0; exteriorIndex < part.Exterior.Length; exteriorIndex++)
+            for (var j = 0; j < part.Exterior.Length; ++j)
             {
-                var offset = part.Exterior[exteriorIndex];
+                var offset = part.Exterior[j];
                 var currentPoint = ScreenCenter + WorldOffsetToScreenOffset(offset);
                 if (lastPoint != currentPoint)
                     dl.PathLineTo(currentPoint);
@@ -343,9 +343,9 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
                 lastPoint = null;
 
                 var holeInteriorPoints = part.Interior(holeIndex);
-                for (var interiorIndex = 0; interiorIndex < holeInteriorPoints.Length; interiorIndex++)
+                for (var k = 0; k < holeInteriorPoints.Length; ++k)
                 {
-                    var offset = holeInteriorPoints[interiorIndex];
+                    var offset = holeInteriorPoints[k];
                     var currentPoint = ScreenCenter + WorldOffsetToScreenOffset(offset);
                     if (lastPoint != currentPoint)
                         dl.PathLineTo(currentPoint);
@@ -377,9 +377,13 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
         var scale07 = scale * 0.7f * dir;
         var scale035 = scale * 0.35f * dir;
         var scale0433 = scale * 0.433f * dir.OrthoR();
+        var positionscale07 = position + scale07;
+        var positionscale035 = position - scale035;
+        var positionscale035pscale0433 = positionscale035 + scale0433;
+        var positionscale035mscale0433 = positionscale035 - scale0433;
         if (Config.ShowOutlinesAndShadows)
-            AddTriangle(position + scale07, position - scale035 + scale0433, position - scale035 - scale0433, Colors.Shadows, 2);
-        AddTriangleFilled(position + scale07, position - scale035 + scale0433, position - scale035 - scale0433, color);
+            AddTriangle(positionscale07, positionscale035pscale0433, positionscale035mscale0433, Colors.Shadows, 2);
+        AddTriangleFilled(positionscale07, positionscale035pscale0433, positionscale035mscale0433, color);
     }
 
     public void ActorOutsideBounds(WPos position, Angle rotation, uint color)
@@ -389,7 +393,8 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
         var scale07 = scale * 0.7f * dir;
         var scale035 = scale * 0.35f * dir;
         var scale0433 = scale * 0.433f * dir.OrthoR();
-        AddTriangle(position + scale07, position - scale035 + scale0433, position - scale035 - scale0433, color);
+        var positionscale035 = position - scale035;
+        AddTriangle(position + scale07, positionscale035 + scale0433, positionscale035 - scale0433, color);
     }
 
     public void ActorProjected(WPos from, WPos to, Angle rotation, uint color)
