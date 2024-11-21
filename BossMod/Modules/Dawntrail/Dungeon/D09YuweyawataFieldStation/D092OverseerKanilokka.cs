@@ -1,4 +1,8 @@
-﻿namespace BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation.D092OverseerKanilokka;
+﻿using BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation;
+using BossModReborn.Util;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+
+namespace BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation.D092OverseerKanilokka;
 
 public enum OID : uint
 {
@@ -93,29 +97,75 @@ class SoulDouse(BossModule module) : Components.StackWithCastTargets(module, Act
 class LostHope(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.LostHope), "Apply temporary misdirection");
 class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18))
 {
+    private Vector3 SafeSpotCoordsThreeArm = new Vector3(99.179f, 12.5f, -57.336f);
+    private Vector3 SafeSpotCoordsFourArm = new Vector3(120.899f, 12.5f, -83.930f);
+    private bool Teleported { get; set; } = false;
+
     // AI cannot handle temporary misdirection at the moment. to enable AI to clear it on tanks at least, we press invuln
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (AI.AIManager.Instance?.Beh == null || Casters.Count == 0 || actor.Role != Role.Tank)
-            return;
-        var isDelayDeltaLow = (Module.CastFinishAt(Casters[0].CastInfo) - WorldState.CurrentTime).TotalSeconds < 5;
-        if (isDelayDeltaLow)
+
+        switch (Service.Config.Get<D092OverseerKanilokkaConfig>().NecoHazardMechanicHints)
         {
-            switch (actor.Class)
-            {
-                case Class.PLD:
-                    hints.ActionsToExecute.Push(ActionID.MakeSpell(PLD.AID.HallowedGround), actor, ActionQueue.Priority.High);
-                    break;
-                case Class.WAR:
-                    hints.ActionsToExecute.Push(ActionID.MakeSpell(WAR.AID.Holmgang), actor, ActionQueue.Priority.High);
-                    break;
-                case Class.GNB:
-                    hints.ActionsToExecute.Push(ActionID.MakeSpell(GNB.AID.Superbolide), actor, ActionQueue.Priority.High);
-                    break;
-                case Class.DRK:
-                    hints.ActionsToExecute.Push(ActionID.MakeSpell(DRK.AID.LivingDead), actor, ActionQueue.Priority.High);
-                    break;
-            }
+            case D092OverseerKanilokkaConfig.NecoHazardMechanic.TankInvuln:
+                if (AI.AIManager.Instance?.Beh == null || Casters.Count == 0 || actor.Role != Role.Tank)
+                    return;
+
+                var isDelayDeltaLow = (Module.CastFinishAt(Casters[0].CastInfo) - WorldState.CurrentTime).TotalSeconds < 5;
+                if (isDelayDeltaLow)
+                {
+                    switch (actor.Class)
+                    {
+                        case Class.PLD:
+                            hints.ActionsToExecute.Push(ActionID.MakeSpell(PLD.AID.HallowedGround), actor, ActionQueue.Priority.High);
+                            break;
+                        case Class.WAR:
+                            hints.ActionsToExecute.Push(ActionID.MakeSpell(WAR.AID.Holmgang), actor, ActionQueue.Priority.High);
+                            break;
+                        case Class.GNB:
+                            hints.ActionsToExecute.Push(ActionID.MakeSpell(GNB.AID.Superbolide), actor, ActionQueue.Priority.High);
+                            break;
+                        case Class.DRK:
+                            hints.ActionsToExecute.Push(ActionID.MakeSpell(DRK.AID.LivingDead), actor, ActionQueue.Priority.High);
+                            break;
+                    }
+                }
+                break;
+
+            case D092OverseerKanilokkaConfig.NecoHazardMechanic.TeleportHackAlways:
+                if (Teleported)
+                    return;
+
+                if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC00800040)
+                {
+                    PlayerEx.SetPlayerPosition(SafeSpotCoordsFourArm);
+                    Teleported = true;
+                }
+                if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC02000100)
+                {
+                    PlayerEx.SetPlayerPosition(SafeSpotCoordsThreeArm);
+                    Teleported = true;
+                }
+                break;
+
+            case D092OverseerKanilokkaConfig.NecoHazardMechanic.TeleportHackNPC:
+                if (Raid.WithoutSlot().Any(x => x.Type == ActorType.Buddy))
+                {
+                    if (Teleported)
+                        return;
+
+                    if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC00800040)
+                    {
+                        PlayerEx.SetPlayerPosition(SafeSpotCoordsFourArm);
+                        Teleported = true;
+                    }
+                    if (Arena.Bounds == D092OverseerKanilokka.ArenaENVC02000100)
+                    {
+                        PlayerEx.SetPlayerPosition(SafeSpotCoordsThreeArm);
+                        Teleported = true;
+                    }
+                }
+                break;
         }
     }
 }
