@@ -13,14 +13,17 @@ public abstract record class ArenaBounds(float Radius, float MapResolution, floa
     private readonly PolygonClipper.Operand _clipOperand = new();
     public readonly Dictionary<object, object> Cache = [];
 
+#pragma warning disable IDE0032
+    private float _screenHalfSize;
+#pragma warning restore IDE0032
     public float ScreenHalfSize
     {
-        get;
+        get => _screenHalfSize;
         set
         {
-            if (field != value)
+            if (_screenHalfSize != value)
             {
-                field = value;
+                _screenHalfSize = value;
                 MaxApproxError = CurveApprox.ScreenError / value * Radius;
                 ShapeSimplified = Clipper.Simplify(BuildClipPoly());
                 ShapeTriangulation = ShapeSimplified.Triangulate();
