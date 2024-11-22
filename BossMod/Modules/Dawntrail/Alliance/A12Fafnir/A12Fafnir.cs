@@ -1,8 +1,8 @@
 ﻿namespace BossMod.Dawntrail.Alliance.A12Fafnir;
 
 class DarkMatterBlast(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.DarkMatterBlast));
-class HorridRoar2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HorridRoar2), 4);
-class HorridRoar3(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HorridRoar3), 8);
+class HorridRoar2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HorridRoarAOE), 4);
+class HorridRoar3(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HorridRoarSpread), 8);
 class SpikeFlail(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SpikeFlail), new AOEShapeCone(80, 135.Degrees()));
 class Touchdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Touchdown), new AOEShapeCircle(27));
 
@@ -12,7 +12,7 @@ class HurricaneWing1(BossModule module) : Components.ConcentricAOEs(module, _sha
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.HurricaneWing7)
+        if ((AID)spell.Action.ID == AID.HurricaneWingConcentricA1)
             AddSequence(Arena.Center, Module.CastFinishAt(spell));
     }
 
@@ -22,10 +22,10 @@ class HurricaneWing1(BossModule module) : Components.ConcentricAOEs(module, _sha
         {
             var order = (AID)spell.Action.ID switch
             {
-                AID.HurricaneWing7 => 0,
-                AID.HurricaneWing8 => 1,
-                AID.HurricaneWing9 => 2,
-                AID.HurricaneWing10 => 3,
+                AID.HurricaneWingConcentricA1 => 0,
+                AID.HurricaneWingConcentricA2 => 1,
+                AID.HurricaneWingConcentricA3 => 2,
+                AID.HurricaneWingConcentricA4 => 3,
                 _ => -1
             };
             AdvanceSequence(order, Arena.Center, WorldState.FutureTime(3));
@@ -39,7 +39,7 @@ class HurricaneWing2(BossModule module) : Components.ConcentricAOEs(module, _sha
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.HurricaneWing11)
+        if ((AID)spell.Action.ID == AID.HurricaneWingConcentricB1)
             AddSequence(Arena.Center, Module.CastFinishAt(spell));
     }
 
@@ -49,10 +49,10 @@ class HurricaneWing2(BossModule module) : Components.ConcentricAOEs(module, _sha
         {
             var order = (AID)spell.Action.ID switch
             {
-                AID.HurricaneWing11 => 0,
-                AID.HurricaneWing12 => 1,
-                AID.HurricaneWing13 => 2,
-                AID.HurricaneWing14 => 3,
+                AID.HurricaneWingConcentricB1 => 0,
+                AID.HurricaneWingConcentricB2 => 1,
+                AID.HurricaneWingConcentricB3 => 2,
+                AID.HurricaneWingConcentricB4 => 3,
                 _ => -1
             };
             AdvanceSequence(order, Arena.Center, WorldState.FutureTime(3));
