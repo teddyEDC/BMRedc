@@ -94,7 +94,7 @@ class LostHope(BossModule module) : Components.CastHint(module, ActionID.MakeSpe
 class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18))
 {
     private static readonly Vector3 SafeSpotCoordsThreeArm = new(99, 12.5f, -58);
-    private static readonly Vector3 SafeSpotCoordsFourArm = new(121, 12.5f, -84);
+    private static readonly Vector3 SafeSpotCoordsFourArm = new(116, 12.5f, -84.5f);
     private bool teleported;
 
     // AI cannot handle temporary misdirection at the moment. to enable AI to clear it on tanks at least, we press invuln

@@ -7,7 +7,8 @@ public enum OID : uint
     Darter = 0x41E9, // R2.25
     RavagingWind = 0x41E7, // R3.0
     SpatialRift = 0x1EBCD6, // R0.5
-    Unknown = 0x41E6, // R1.0
+    FireVoidzone = 0x1EBCCB, // R0.5
+    Helper2 = 0x41E6, // R1.0
     Helper = 0x233C
 }
 
@@ -69,17 +70,17 @@ public enum AID : uint
     HurricaneWingConcentricD3 = 40826, // Helper->self, 9.0s cast, range 9-16 donut
     HurricaneWingConcentricD4 = 40827, // Helper->self, 11.0s cast, range 9 circle
 
-    HurricaneWingConcentricE1 = 40834, // Helper->self, 4.0s cast, range ?-30 donut
+    HurricaneWingConcentricE1 = 40834, // Helper->self, 4.0s cast, range 23-30 donut
     HurricaneWingConcentricE2 = 40835, // Helper->self, 6.0s cast, range 16-23 donut
     HurricaneWingConcentricE3 = 40836, // Helper->self, 8.0s cast, range 9-16 donut
     HurricaneWingConcentricE4 = 40837, // Helper->self, 10.0s cast, range 9 circle
 
-    OffensivePostureVisual1 = 40811, // Boss->self, 8.0+1.0s cast, single-target
-    OffensivePostureVisual2 = 40814, // Boss->self, 8.0+1.1s cast, single-target
-    OffensivePostureVisual3 = 40816, // Boss->self, 8.0+1.2s cast, single-target
+    OffensivePostureVisual1 = 40811, // Boss->self, 8.0+1.0s cast, single-target, touchdown
+    OffensivePostureVisual2 = 40814, // Boss->self, 8.0+1.1s cast, single-target, dragon breath
+    OffensivePostureVisual3 = 40816, // Boss->self, 8.0+1.2s cast, single-target, spike flail
 
     SpikeFlail = 41114, // Helper->self, 9.0s cast, range 80 270-degree cone, rear cone aoe
-    DragonBreath = 40815, // Helper->self, no cast, range 17-30 donut, dnut, inner circle is boss hitbox 
+    DragonBreath = 40815, // Helper->self, no cast, range 16-30 donut segment
     Touchdown = 41116, // Helper->self, 9.2s cast, range 24 circle, point blank AOE, likely slightly larger than Boss hitbox
 
     PestilentSphere = 40859, // Darter->player, 5.0s cast, single-target

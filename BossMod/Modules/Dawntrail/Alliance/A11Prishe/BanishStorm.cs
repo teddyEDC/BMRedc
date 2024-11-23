@@ -16,7 +16,7 @@ class BanishStorm(BossModule module) : Components.Exaflare(module, 6)
         4 * (-30.001f).Degrees().ToDirection(),
         4 * (-90.004f).Degrees().ToDirection(),
         4 * 29.996f.Degrees().ToDirection(),
-        4 * 149.996f.Degrees().ToDirection(),
+        4 * 149.996f.Degrees().ToDirection()
     ];
     private static readonly Dictionary<byte, (int position, int[] directions, int[] numExplosions)> LineConfigs = new()
     {
@@ -35,7 +35,7 @@ class BanishStorm(BossModule module) : Components.Exaflare(module, 6)
         { 0x06, (4, [9, 11, 10], [13, 9, 9]) },
         { 0x07, (5, [0, 1, 2], [5, 10, 10]) },
         { 0x33, (5, [0, 1, 2], [5, 10, 10]) },
-        { 0x04, (5, [3, 5, 4], [13, 9, 9]) },
+        { 0x04, (5, [3, 5, 4], [13, 9, 9]) }
     };
 
     public override void OnEventEnvControl(byte index, uint state)
