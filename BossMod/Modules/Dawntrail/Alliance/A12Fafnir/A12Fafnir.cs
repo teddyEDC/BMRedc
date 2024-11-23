@@ -4,7 +4,7 @@ class DarkMatterBlast(BossModule module) : Components.RaidwideCast(module, Actio
 class HorridRoar2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.HorridRoarAOE), 4);
 class HorridRoar3(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HorridRoarSpread), 8);
 class SpikeFlail(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SpikeFlail), new AOEShapeCone(80, 135.Degrees()));
-class Touchdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Touchdown), new AOEShapeCircle(27));
+class Touchdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Touchdown), new AOEShapeCircle(24));
 
 class HurricaneWing1(BossModule module) : Components.ConcentricAOEs(module, _shapes)
 {
@@ -61,4 +61,9 @@ class HurricaneWing2(BossModule module) : Components.ConcentricAOEs(module, _sha
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team (LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1015, NameID = 13662)]
-public class A12Fafnir(WorldState ws, Actor primary) : BossModule(ws, primary, new(-500, 600), new ArenaBoundsCircle(35));
+public class A12Fafnir(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, new ArenaBoundsCircle(34.5f))
+{
+    public static readonly WPos ArenaCenter = new(-500, 600);
+    public static readonly ArenaBoundsCircle DefaultBounds = new(30);
+    public static readonly ArenaBoundsCircle FireArena = new(16);
+}
