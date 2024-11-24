@@ -79,6 +79,10 @@ sealed class IPCProvider : IDisposable
             ms.Settings.Add(new(default, iTrack, new() { Option = iOpt }));
             return true;
         });
+
+        Register("AI.SetPreset", (string name) =>
+            ai.SetAIPreset(autorotation.Database.Presets.VisiblePresets.FirstOrDefault(x => x.Name == name)));
+        Register("AI.GetPreset", () => ai.GetAIPreset);
     }
 
     public void Dispose() => _disposeActions?.Invoke();
@@ -118,10 +122,10 @@ sealed class IPCProvider : IDisposable
     //    _disposeActions += p.UnregisterAction;
     //}
 
-    //private void Register<T1>(string name, Action<T1> func)
-    //{
-    //    var p = Service.PluginInterface.GetIpcProvider<T1, object>("BossMod." + name);
-    //    p.RegisterAction(func);
-    //    _disposeActions += p.UnregisterAction;
-    //}
+    private void Register<T1>(string name, Action<T1> func)
+    {
+        var p = Service.PluginInterface.GetIpcProvider<T1, object>("BossMod." + name);
+        p.RegisterAction(func);
+        _disposeActions += p.UnregisterAction;
+    }
 }
