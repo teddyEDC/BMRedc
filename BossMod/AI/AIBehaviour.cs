@@ -150,7 +150,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             }
         }
         var adjRotation = targeting.PreferTanking ? targeting.Target.DesiredRotation : targeting.Target.Actor.Rotation;
-        return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, targeting.Target.Actor.Position, adjRange, adjRotation, targeting.PreferredPosition);
+        return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, autorot.Hints.RecommendedPositional.Target?.Position, adjRange, adjRotation, autorot.Hints.RecommendedPositional.Pos);
     }
 
     private void FocusMaster(Actor master)
