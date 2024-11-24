@@ -61,12 +61,12 @@ public enum AID : uint
 
     CriticalStrikes = 41090, // ArkAngelHM2->player, no cast, single-target
 
-    Dragonfall1 = 41086, // ArkAngelGK->self, 9.0s cast, single-target // Gk tetheres each a healer in each alliance then stackmarkers
+    Dragonfall1 = 41086, // ArkAngelGK->self, 9.0s cast, single-target, Gk tetheres each a healer in each alliance then stackmarkers
     Dragonfall2 = 41087, // ArkAngelGK->players, no cast, range 6 circle
 
-    Guillotine1 = 41063, // ArkAngelTT->self, 10.5s cast, range 40 ?-degree cone
-    Guillotine2 = 41064, // Helper->self, no cast, range 40 ?-degree cone
-    Guillotine3 = 41065, // Helper->self, no cast, range 40 ?-degree cone
+    Guillotine1 = 41063, // ArkAngelTT->self, 10.5s cast, range 40 270-degree cone
+    Guillotine2 = 41064, // Helper->self, no cast, range 40 270-degree cone
+    Guillotine3 = 41065, // Helper->self, no cast, range 40 270-degree cone
 
     //
     DominionSlash = 41093, // ArkAngelEV->self, 5.0s cast, range 100 circle
