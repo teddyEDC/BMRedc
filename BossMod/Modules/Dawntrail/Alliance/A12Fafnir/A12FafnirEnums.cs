@@ -70,11 +70,6 @@ public enum AID : uint
     HurricaneWingConcentricD3 = 40826, // Helper->self, 9.0s cast, range 9-16 donut
     HurricaneWingConcentricD4 = 40827, // Helper->self, 11.0s cast, range 9 circle
 
-    HurricaneWingConcentricE1 = 40834, // Helper->self, 4.0s cast, range 23-30 donut
-    HurricaneWingConcentricE2 = 40835, // Helper->self, 6.0s cast, range 16-23 donut
-    HurricaneWingConcentricE3 = 40836, // Helper->self, 8.0s cast, range 9-16 donut
-    HurricaneWingConcentricE4 = 40837, // Helper->self, 10.0s cast, range 9 circle
-
     OffensivePostureVisual1 = 40811, // Boss->self, 8.0+1.0s cast, single-target, touchdown
     OffensivePostureVisual2 = 40814, // Boss->self, 8.0+1.1s cast, single-target, dragon breath
     OffensivePostureVisual3 = 40816, // Boss->self, 8.0+1.2s cast, single-target, spike flail
@@ -93,26 +88,11 @@ public enum AID : uint
     WingedTerrorVisual = 40847, // Boss->self, 6.0+1.4s cast, single-target
     WingedTerror = 40848, // Helper->self, 7.4s cast, range 70 width 25 rect
 
-    Venom = 40858, // Darter->self, 4.0s cast, range 30 120-degree cone
-}
-
-public enum SID : uint
-{
-    Bleeding = 3077, // none->player, extra=0x0
-    Burns1 = 1787, // Boss->player, extra=0x0
-    Burns2 = 2194, // Boss->player, extra=0x0
-    Concussion = 997, // Helper->player, extra=0xF43
-    DirectionalDisregard = 3808, // none->Boss, extra=0x0
-    Hysteria = 296, // Helper->player, extra=0x0
-    Liftoff = 4377, // Helper->player, extra=0x0
-    Stun = 4433, // Helper->player, extra=0x0
-    Unknown = 2056, // none->Boss, extra=0x328/0x346/0x347/0x327/0x348
-    VulnerabilityUp = 1789, // Helper->player, extra=0x1/0x4/0x2/0x3/0x5
-    Windburn = 2947, // Helper->player, extra=0x0
+    Venom = 40858 // Darter->self, 4.0s cast, range 30 120-degree cone
 }
 
 public enum IconID : uint
 {
-    Icon342 = 342, // player->self
-    Icon499 = 499, // player->self
+    LineStack = 568, // Boss->player
+    Tankbuster = 342 // player->self
 }

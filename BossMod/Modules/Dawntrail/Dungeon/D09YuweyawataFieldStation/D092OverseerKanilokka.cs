@@ -93,8 +93,8 @@ class SoulDouse(BossModule module) : Components.StackWithCastTargets(module, Act
 class LostHope(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.LostHope), "Apply temporary misdirection");
 class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18))
 {
-    private static readonly Vector3 SafeSpotCoordsThreeArm = new(99, 12.5f, -58);
-    private static readonly Vector3 SafeSpotCoordsFourArm = new(116, 12.5f, -84.5f);
+    private static readonly Vector3 SafeSpotCoordsThreeArm = new(99.179f, 12.5f, -57.336f);
+    private static readonly Vector3 SafeSpotCoordsFourArm = new(120.899f, 12.5f, -83.930f);
     private bool teleported;
 
     // AI cannot handle temporary misdirection at the moment. to enable AI to clear it on tanks at least, we press invuln
