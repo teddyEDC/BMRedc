@@ -44,7 +44,8 @@ public enum AID : uint
     ConcertedDissolution = 41084, // Helper->self, 6.0s cast, range 40 ?-degree cone // need to confirm angle
     LightsChain = 41085, // Helper->self, 8.0s cast, range ?-40 donut
 
-    Meteor = 41098, // ArkAngelTT->self, 11.0s cast, single-target // interruptible VERY heavy raidwide
+    MeteorVisual = 41098, // ArkAngelTT->self, 11.0s cast, single-target, interruptible VERY heavy raidwide
+    Meteor = 41099, // Helper->location, no cast, range 100 circle
 
     Aethersplit1 = 41104, // Boss->ArkAngelEV/ArkAngelTT, no cast, single-target
     Aethersplit2 = 41105, // ArkAngelGK->ArkAngelTT/ArkAngelEV, no cast, single-target
