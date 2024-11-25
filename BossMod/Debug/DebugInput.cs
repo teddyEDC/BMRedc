@@ -66,13 +66,13 @@ public unsafe struct CameraX
     [FieldOffset(0x14C)] public float DirVMax;
 }
 
-internal sealed unsafe class DebugInput(RotationModuleManager autorot, MovementOverride move) : IDisposable
+internal sealed unsafe class DebugInput : IDisposable
 {
     private delegate byte ConvertVirtualKeyDelegate(int vkCode);
-    private readonly ConvertVirtualKeyDelegate _convertVirtualKey = Service.KeyState.GetType().GetMethod("ConvertVirtualKey", BindingFlags.NonPublic | BindingFlags.Instance)!.CreateDelegate<ConvertVirtualKeyDelegate>(Service.KeyState);
+    private readonly ConvertVirtualKeyDelegate _convertVirtualKey;
 
     private delegate ref int GetRefValueDelegate(int vkCode);
-    private readonly GetRefValueDelegate _getKeyRef = Service.KeyState.GetType().GetMethod("GetRefValue", BindingFlags.NonPublic | BindingFlags.Instance)!.CreateDelegate<GetRefValueDelegate>(Service.KeyState);
+    private readonly GetRefValueDelegate _getKeyRef;
 
     //private readonly PlayerController* _playerController;
 
@@ -86,9 +86,9 @@ internal sealed unsafe class DebugInput(RotationModuleManager autorot, MovementO
     //private readonly Hook<RMICameraDelegate> _rmiCameraHook;
 
     private readonly UITree _tree = new();
-    private readonly WorldState _ws = autorot.Bossmods.WorldState;
-    private readonly AIHints _hints = autorot.Hints;
-    private readonly MovementOverride _move = move;
+    private readonly WorldState _ws;
+    private readonly AIHints _hints;
+    private readonly MovementOverride _move;
     //private readonly AI.AIController _navi;
     private Vector3 _prevPos;
     private float _prevSpeed;
@@ -99,6 +99,37 @@ internal sealed unsafe class DebugInput(RotationModuleManager autorot, MovementO
     private int _gamepadButtonOverride = -1;
     private int _gamepadButtonValue;
     private bool _gamepadNavigate;
+    //private bool _pmcOverrideDirEnable;
+    //private float _pmcOverrideDir;
+    //private float _pmcOverrideVertical;
+    //private float _pmcDesiredAzimuth;
+    //private float _pmcDesiredAltitude;
+    //private float _pmcCameraSpeedH;
+    //private float _pmcCameraSpeedV;
+
+    public DebugInput(RotationModuleManager autorot, MovementOverride move)
+    {
+        _convertVirtualKey = Service.KeyState.GetType().GetMethod("ConvertVirtualKey", BindingFlags.NonPublic | BindingFlags.Instance)!.CreateDelegate<ConvertVirtualKeyDelegate>(Service.KeyState);
+        _getKeyRef = Service.KeyState.GetType().GetMethod("GetRefValue", BindingFlags.NonPublic | BindingFlags.Instance)!.CreateDelegate<GetRefValueDelegate>(Service.KeyState);
+        _ws = autorot.Bossmods.WorldState;
+        _hints = autorot.Hints;
+        _move = move;
+        //_amex = autorot.ActionManager;
+        //_navi = new(_amex);
+
+        //_playerController = (PlayerController*)Service.SigScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 3C 01 75 1E 48 8D 0D");
+        //Service.Log($"[DebugInput] playerController addess: 0x{(nint)_playerController:X}");
+        Service.Log("[DebugInput] fix me");
+
+        //_rmiWalkHook = Service.Hook.HookFromSignature<RMIWalkDelegate>("E8 ?? ?? ?? ?? 80 7B 3E 00 48 8D 3D", RMIWalkDetour);
+        //Service.Log($"[DebugInput] rmiwalk addess: 0x{_rmiWalkHook.Address:X}");
+
+        //_rmiFlyHook = Service.Hook.HookFromSignature<RMIFlyDelegate>("E8 ?? ?? ?? ?? 0F B6 0D ?? ?? ?? ?? B8", RMIFlyDetour);
+        //Service.Log($"[DebugInput] rmifly addess: 0x{_rmiFlyHook.Address:X}");
+
+        //_rmiCameraHook = Service.Hook.HookFromSignature<RMICameraDelegate>("40 53 48 83 EC 70 44 0F 29 44 24 ?? 48 8B D9", RMICameraDetour);
+        //Service.Log($"[DebugInput] rmicamera addess: 0x{_rmiCameraHook.Address:X}");
+    }
 
     public void Dispose()
     {
