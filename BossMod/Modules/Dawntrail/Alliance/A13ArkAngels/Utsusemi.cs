@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Alliance.A13ArkAngels;
+namespace BossMod.Dawntrail.Alliance.A13ArkAngels;
 
 class Utsusemi(BossModule module) : BossComponent(module)
 {
@@ -16,8 +16,8 @@ class Utsusemi(BossModule module) : BossComponent(module)
         var source = TetheredClone(pc);
         if (source != null)
         {
-            Arena.Actor(source, ArenaColor.Object, true);
-            Arena.AddLine(source.Position, pc.Position, ArenaColor.Danger);
+            Arena.Actor(source, Colors.Object, true);
+            Arena.AddLine(source.Position, pc.Position, Colors.Danger);
         }
     }
 

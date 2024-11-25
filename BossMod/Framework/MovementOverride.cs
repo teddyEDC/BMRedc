@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.Config;
+﻿using BossMod.AI;
+using Dalamud.Game.Config;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.System.Input;
@@ -122,8 +123,9 @@ public sealed unsafe class MovementOverride : IDisposable
             *sumForward = dir.Z;
         }
 
-        if (_tweaksConfig.MisdirectionThreshold < 180 && PlayerHasMisdirection())
+        if ((AIManager.Instance?.Beh != null || _tweaksConfig.MisdirectionThreshold < 180) && PlayerHasMisdirection())
         {
+            var threshold = AIManager.Instance?.Beh != null ? 20 : _tweaksConfig.MisdirectionThreshold;
             if (!movementAllowed)
             {
                 // we are already moving, see whether we need to force stop it
@@ -133,13 +135,13 @@ public sealed unsafe class MovementOverride : IDisposable
                 if (!MovementBlocked)
                     _rmiWalkHook.Original(self, &realLeft, &realForward, &realTurn, &realStrafe, &realUnk, 1);
                 var desiredRelDir = realLeft != 0 || realForward != 0 ? Angle.FromDirection(new(realLeft, realForward)) : DirectionToDestination(false)?.h;
-                _forcedControlState = desiredRelDir != null && (desiredRelDir.Value + ForwardMovementDirection() - ForcedMovementDirection->Radians()).Normalized().Abs().Deg <= _tweaksConfig.MisdirectionThreshold;
+                _forcedControlState = desiredRelDir != null && (desiredRelDir.Value + ForwardMovementDirection() - ForcedMovementDirection->Radians()).Normalized().Abs().Deg <= threshold;
             }
             else if (*sumLeft != 0 || *sumForward != 0)
             {
                 var currentDir = Angle.FromDirection(new(*sumLeft, *sumForward)) + ForwardMovementDirection();
                 var dirDelta = currentDir - ForcedMovementDirection->Radians();
-                _forcedControlState = dirDelta.Normalized().Abs().Deg <= _tweaksConfig.MisdirectionThreshold;
+                _forcedControlState = dirDelta.Normalized().Abs().Deg <= threshold;
                 if (!_forcedControlState.Value)
                 {
                     // forbid movement for now
@@ -195,7 +197,7 @@ public sealed unsafe class MovementOverride : IDisposable
         var sm = player != null && player->IsCharacter() ? player->GetStatusManager() : null;
         if (sm == null)
             return false;
-        for (int i = 0; i < sm->NumValidStatuses; ++i)
+        for (var i = 0; i < sm->NumValidStatuses; ++i)
             if (sm->Status[i].StatusId is 1422 or 2936 or 3694 or 3909)
                 return true;
         return false;

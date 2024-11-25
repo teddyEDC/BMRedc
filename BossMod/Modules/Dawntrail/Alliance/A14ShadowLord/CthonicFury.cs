@@ -1,27 +1,16 @@
-﻿namespace BossMod.Dawntrail.Alliance.A14ShadowLord;
+namespace BossMod.Dawntrail.Alliance.A14ShadowLord;
 
-class CthonicFury(BossModule module) : BossComponent(module)
+class CthonicFury(BossModule module) : Components.GenericAOEs(module)
 {
-    public bool Active;
+    private AOEInstance? _aoe;
+    public bool Active => _aoe != null || Arena.Bounds != A14ShadowLord.DefaultBounds;
+    private static readonly AOEShapeCustom aoe = new([new Circle(A14ShadowLord.ArenaCenter, 30)], A14ShadowLord.Combined);
 
-    private static readonly List<RelTriangle> _triangulation = A14ShadowLord.NormalBounds.Clipper.Difference(new(A14ShadowLord.NormalBounds.ShapeSimplified), new(A14ShadowLord.ChtonicBounds.Poly)).Triangulate();
-
-    public override void AddHints(int slot, Actor actor, TextHints hints)
-    {
-        if (Active && !A14ShadowLord.ChtonicBounds.Contains(actor.Position - Module.Center))
-            hints.Add("GTFO from aoe!");
-    }
-
-    public override void DrawArenaBackground(int pcSlot, Actor pc)
-    {
-        if (Active)
-            Arena.Zone(_triangulation, ArenaColor.AOE);
-    }
-
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.CthonicFuryStart)
-            Active = true;
+            _aoe = new(aoe, Arena.Center, default, Module.CastFinishAt(spell));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -29,11 +18,11 @@ class CthonicFury(BossModule module) : BossComponent(module)
         switch ((AID)spell.Action.ID)
         {
             case AID.CthonicFuryStart:
-                Active = false;
-                Module.Arena.Bounds = A14ShadowLord.ChtonicBounds;
+                _aoe = null;
+                Arena.Bounds = A14ShadowLord.ComplexBounds;
                 break;
             case AID.CthonicFuryEnd:
-                Module.Arena.Bounds = A14ShadowLord.NormalBounds;
+                Arena.Bounds = A14ShadowLord.DefaultBounds;
                 break;
         }
     }
@@ -42,15 +31,8 @@ class CthonicFury(BossModule module) : BossComponent(module)
 class BurningCourt(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningCourt), new AOEShapeCircle(8));
 class BurningMoat(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningMoat), new AOEShapeDonut(5, 15));
 class BurningKeep(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningKeep), new AOEShapeRect(11.5f, 11.5f, 11.5f));
-class BurningBattlements(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningBattlements), new AOEShapeCustom(BuildPolygon()))
-{
-    public static RelSimplifiedComplexPolygon BuildPolygon()
-    {
-        RelPolygonWithHoles poly = new([.. CurveApprox.Rect(new(100, 0), new(0, 100))]);
-        poly.AddHole(CurveApprox.Rect(new(11.5f, 0), new(0, 11.5f)));
-        return new([poly]);
-    }
-}
+class BurningBattlements(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningBattlements),
+new AOEShapeCustom([new Square(A14ShadowLord.ArenaCenter, 45)], [new Square(A14ShadowLord.ArenaCenter, 11.5f, 45.Degrees())]));
 
 class DarkNebula(BossModule module) : Components.Knockback(module)
 {

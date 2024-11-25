@@ -245,7 +245,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
     {
         foreach (var p in vertices)
             PathLineTo(center + p.Rotate(rotation));
-        PathStroke(true, color != 0 ? color : ArenaColor.Danger, thickness);
+        PathStroke(true, color != 0 ? color : Colors.Danger, thickness);
     }
 
     public void AddComplexPolygon(WPos center, WDir rotation, RelSimplifiedComplexPolygon poly, uint color, float thickness = 1)
@@ -314,7 +314,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
     public void ZoneRect(WPos start, WPos end, float halfWidth, uint color)
         => Zone(_triCache[TriangulationCache.GetKeyHash(9, start, end, halfWidth)] ??= _bounds.ClipAndTriangulateRect(start - Center, end - Center, halfWidth), color);
     public void ZoneComplex(WPos origin, Angle direction, RelSimplifiedComplexPolygon poly, uint color)
-        => Zone(_triCache[TriangulationCache.GetKeyHash((10, origin, direction, poly))] ?? Bounds.ClipAndTriangulate(poly.Transform(origin - Center, direction.ToDirection())), color);
+        => Zone(_triCache[TriangulationCache.GetKeyHash(10, origin, direction, poly)] ?? Bounds.ClipAndTriangulate(poly.Transform(origin - Center, direction.ToDirection())), color);
     public void ZonePoly(object key, IEnumerable<WPos> contour, uint color)
         => Zone(_triCache[TriangulationCache.GetKeyHash(11, key)] ??= _bounds.ClipAndTriangulate(contour.Select(p => p - Center)), color);
     public void ZoneRelPoly(object key, IEnumerable<WDir> relContour, uint color)
