@@ -43,7 +43,7 @@ public enum AID : uint
     TachiGekkoVisual = 41366, // TachiGekkoHelper->self, 7.0s cast, range 50 circle, visual (???)
     TachiKasha = 41083, // Helper->self, 12.0s cast, range 4+16 circle, out
     ConcertedDissolution = 41084, // Helper->self, 6.0s cast, range 40 30-degree cone
-    LightsChain = 41085, // Helper->self, 8.0s cast, range 5-40 donut
+    LightsChain = 41085, // Helper->self, 8.0s cast, range 4-40 donut
     Meteor = 41098, // BossTT->self, 11.0s cast, single-target, interruptible ???
     MeteorAOE = 41099, // Helper->location, no cast, range 100 circle
 

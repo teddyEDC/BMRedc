@@ -13,6 +13,7 @@ class A11PrisheStates : StateMachineBuilder
             .ActivateOnEnter<BanishStorm>()
             .ActivateOnEnter<Explosion>()
             .ActivateOnEnter<KnuckleSandwich>()
+            .ActivateOnEnter<AsuranFists>()
             .ActivateOnEnter<AuroralUppercut>()
             .ActivateOnEnter<Holy>()
             .ActivateOnEnter<NullifyingDropkick>();
