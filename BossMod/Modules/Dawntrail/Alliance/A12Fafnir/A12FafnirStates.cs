@@ -25,6 +25,7 @@ class A12FafnirStates : StateMachineBuilder
             .ActivateOnEnter<HorridRoarSpread>()
             .ActivateOnEnter<AbsoluteTerror>()
             .ActivateOnEnter<HurricaneWingRaidwide>()
+            .ActivateOnEnter<HurricaneWingRW>()
             .ActivateOnEnter<WingedTerror>();
     }
     // private void SinglePhase(uint id)
