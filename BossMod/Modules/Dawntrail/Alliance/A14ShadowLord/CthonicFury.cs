@@ -4,13 +4,15 @@ class CthonicFury(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
     public bool Active => _aoe != null || Arena.Bounds != A14ShadowLord.DefaultBounds;
-    private static readonly AOEShapeCustom aoe = new([new Circle(A14ShadowLord.ArenaCenter, 30)], A14ShadowLord.Combined);
+    private static readonly Square[] def = [new Square(A14ShadowLord.ArenaCenter, 45)]; // using a square for the difference instead of a circle since less vertices will result in slightly better performance
+    public static readonly AOEShapeCustom AOEBurningBattlements = new(def, [new Square(A14ShadowLord.ArenaCenter, 11.5f, 45.Degrees())]);
+    private static readonly AOEShapeCustom aoeCthonicFury = new(def, A14ShadowLord.Combined);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.CthonicFuryStart)
-            _aoe = new(aoe, Arena.Center, default, Module.CastFinishAt(spell));
+            _aoe = new(aoeCthonicFury, Arena.Center, default, Module.CastFinishAt(spell));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -31,8 +33,7 @@ class CthonicFury(BossModule module) : Components.GenericAOEs(module)
 class BurningCourt(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningCourt), new AOEShapeCircle(8));
 class BurningMoat(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningMoat), new AOEShapeDonut(5, 15));
 class BurningKeep(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningKeep), new AOEShapeRect(11.5f, 11.5f, 11.5f));
-class BurningBattlements(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningBattlements),
-new AOEShapeCustom([new Square(A14ShadowLord.ArenaCenter, 45)], [new Square(A14ShadowLord.ArenaCenter, 11.5f, 45.Degrees())]));
+class BurningBattlements(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BurningBattlements), CthonicFury.AOEBurningBattlements);
 
 class DarkNebula(BossModule module) : Components.Knockback(module)
 {
