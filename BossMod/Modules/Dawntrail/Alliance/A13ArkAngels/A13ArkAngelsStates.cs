@@ -7,7 +7,8 @@ class A13ArkAngelsStates : StateMachineBuilder
     public A13ArkAngelsStates(A13ArkAngels module) : base(module)
     {
         _module = module;
-        DeathPhase(0, SinglePhase);
+        DeathPhase(0, SinglePhase)
+            .ActivateOnEnter<Components.StayInBounds>();
     }
 
     private void SinglePhase(uint id)
