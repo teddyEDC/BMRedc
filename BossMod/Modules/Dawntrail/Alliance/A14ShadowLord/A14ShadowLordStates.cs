@@ -7,6 +7,7 @@ class A14ShadowLordStates : StateMachineBuilder
         // these timelines seem to not work correctly, too much variations, possibly also depends on raid DPS
         // DeathPhase(0, SinglePhase);
         TrivialPhase()
+            .ActivateOnEnter<StayInBounds>()
             .ActivateOnEnter<UmbraSmash>()
             .ActivateOnEnter<Implosion>()
             .ActivateOnEnter<GigaSlash>()
