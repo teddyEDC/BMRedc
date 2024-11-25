@@ -91,13 +91,10 @@ public sealed class Plugin : IDalamudPlugin
         _dtr = new(_rotation, _ai);
         _wndBossmod = new(_bossmod, _zonemod);
         _wndBossmodHints = new(_bossmod, _zonemod);
-        var config = Service.Config.Get<ReplayManagementConfig>();
-        var replayDir = string.IsNullOrEmpty(config.ReplayFolder) ? dalamud.ConfigDirectory.FullName + "/replays" : config.ReplayFolder;
-        _wndReplay = new ReplayManagementWindow(_ws, _bossmod, _rotationDB, new DirectoryInfo(replayDir));
-        _configUI = new(Service.Config, _ws, new DirectoryInfo(replayDir), _rotationDB);
-        config.Modified.ExecuteAndSubscribe(() => _wndReplay.UpdateLogDirectory());
-        _wndRotation = new(_rotation, _amex, () => OpenConfigUI("Autorotatiion presets"));
-        _wndDebug = new(_ws, _rotation, _zonemod, _amex, _hintsBuilder, dalamud);
+        _wndReplay = new(_ws, _bossmod, _rotationDB, replayDir);
+        _wndRotation = new(_rotation, _amex, () => OpenConfigUI("Autorotation Presets"));
+        _wndAI = new(_ai);
+        _wndDebug = new(_ws, _rotation, _zonemod, _amex, _movementOverride, _hintsBuilder, dalamud);
 
         dalamud.UiBuilder.DisableAutomaticUiHide = true;
         dalamud.UiBuilder.Draw += DrawUI;
