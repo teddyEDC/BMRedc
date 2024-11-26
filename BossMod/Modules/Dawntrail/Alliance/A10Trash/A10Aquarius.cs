@@ -1,14 +1,14 @@
-namespace BossMod.Dawntrail.Alliance.A10ElderGobbue;
+namespace BossMod.Dawntrail.Alliance.A10Aquarius;
 
 public enum OID : uint
 {
-    Boss = 0x468D, // R2.28
+    Boss = 0x468F, // R2.1
+    ElderGobbue = 0x468D, // R2.28
     RobberCrab1 = 0x468E, // R0.7
     RobberCrab2 = 0x4711, // R0.7
     DeathCap = 0x468C, // R1.65
     BarkSpider1 = 0x468B, // R1.5
     BarkSpider2 = 0x4710, // R1.5
-    Aquarius = 0x468F, // R2.1
     Skimmer1 = 0x468A, // R1.5
     Skimmer2 = 0x470F // R0.6
 }
@@ -31,14 +31,14 @@ public enum AID : uint
 class CursedSphere(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CursedSphere), 3);
 class WaterIII(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.WaterIII), 7);
 class BubbleShower(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BubbleShower), new AOEShapeCone(6, 30.Degrees()));
-class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BubbleShower), new AOEShapeCone(15, 60.Degrees()));
+class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scoop), new AOEShapeCone(15, 60.Degrees()));
 class Beatdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Beatdown), new AOEShapeRect(9, 1.5f));
 class SpiderWeb(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SpiderWeb), new AOEShapeCircle(6));
 class HundredFists(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.HundredFists), showNameInHint: true);
 
-public class A10ElderGobbueStates : StateMachineBuilder
+public class A10AquariusStates : StateMachineBuilder
 {
-    public A10ElderGobbueStates(BossModule module) : base(module)
+    public A10AquariusStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<WaterIII>()
@@ -52,8 +52,8 @@ public class A10ElderGobbueStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1015, NameID = 13603, SortOrder = 3)]
-public class A10ElderGobbue(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1015, NameID = 13605, SortOrder = 3)]
+public class A10Aquarius(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly WPos[] vertices = [new(-500.62f, 686.9f), new(-488.18f, 686.93f), new(-487.84f, 687.31f), new(-486.66f, 692.24f), new(-486.41f, 692.91f),
     new(-486.06f, 693.39f), new(-485.44f, 693.68f), new(-484.78f, 693.9f), new(-484.23f, 693.88f), new(-483.59f, 693.9f),

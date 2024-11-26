@@ -16,12 +16,13 @@ public class StayInBounds(BossModule module) : BossComponent(module)
 public class A14ShadowLord(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, DefaultBounds)
 {
     private const int RadiusSmall = 8;
+    private const float HalfWidth = 1.94f; // the HalfWidth of the bridge seems to be either slightly less than 2 or they are not perfectly centered
     public static readonly WPos ArenaCenter = new(150, 800);
     public static readonly ArenaBoundsCircle DefaultBounds = new(30);
     private static readonly Circle[] circles = [new(new(166, 800), RadiusSmall), new(new(134, 800), RadiusSmall),
     new(new(150, 816), RadiusSmall), new(new(150, 784), RadiusSmall)];
-    private static readonly RectangleSE[] rects = [new(circles[1].Center, circles[2].Center, 2), new(circles[1].Center, circles[3].Center, 2),
-    new(circles[3].Center, circles[0].Center, 2), new(circles[0].Center, circles[2].Center, 2)];
+    private static readonly RectangleSE[] rects = [new(circles[1].Center, circles[2].Center, HalfWidth), new(circles[1].Center, circles[3].Center, HalfWidth),
+    new(circles[3].Center, circles[0].Center, HalfWidth), new(circles[0].Center, circles[2].Center, HalfWidth)];
     public static readonly Shape[] Combined = [.. circles, .. rects];
     public static readonly ArenaBoundsComplex ComplexBounds = new(Combined);
 }
