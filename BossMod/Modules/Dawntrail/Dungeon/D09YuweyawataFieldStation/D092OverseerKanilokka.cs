@@ -90,8 +90,8 @@ class Bloodburst(BossModule module) : Components.RaidwideCast(module, ActionID.M
 class DarkSouls(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.DarkSouls));
 class TelltaleTears(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.TelltaleTears), 5);
 class SoulDouse(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.SoulDouse), 6, 4, 4);
-class LostHope(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.LostHope), "Apply temporary misdirection");
-class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18)) { }
+class LostHope(BossModule module) : Components.TemporaryMisdirection(module, ActionID.MakeSpell(AID.LostHope));
+class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Necrohazard), new AOEShapeCircle(18));
 
 class DarkII(BossModule module) : Components.GenericAOEs(module)
 {
