@@ -45,19 +45,8 @@ class ScraplineTyphoon(BossModule module) : Components.GenericAOEs(module)
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        var count = _aoes.Count;
-        if (count > 0)
-        {
-            for (var i = 0; i < count; ++i)
-            {
-                var boss = Module.PrimaryActor.Position; // if boss moves initial origin is not correct anymore, so we update it every frame to be safe
-                var aoe = _aoes[i];
-                if (i == 0)
-                    yield return count > 1 ? aoe with { Color = Colors.Danger, Origin = boss } : aoe with { Origin = boss };
-                else if (i > 0)
-                    yield return aoe with { Origin = boss, Risky = false };
-            }
-        }
+        if (_aoes.Count > 0)
+            yield return _aoes[0] with { Origin = Module.PrimaryActor.Position };
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
