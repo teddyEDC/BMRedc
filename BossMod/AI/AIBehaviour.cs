@@ -68,7 +68,10 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         var masterIsMoving = TrackMasterMovement(master);
         var moveWithMaster = masterIsMoving && (master == player || _followMaster);
         ForceMovementIn = moveWithMaster || gazeImminent || pyreticImminent ? 0 : _naviDecision.LeewaySeconds;
-
+        if (!forbidActions)
+        {
+            autorot.Preset = target.Target != null ? AIPreset : null;
+        }
         UpdateMovement(player, master, target, gazeImminent || pyreticImminent, misdirectionMode ? autorot.Hints.MisdirectionThreshold : default, !forbidActions ? autorot.Hints.ActionsToExecute : null);
     }
 
