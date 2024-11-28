@@ -135,15 +135,16 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         if (AIPreset == null || _config.OverrideAutorotation)
         {
             var target = autorot.WorldState.Actors.Find(player.TargetID);
-            var decision = await Task.Run(() =>
+            if (_followMaster && (!_config.FollowTarget || _config.FollowTarget && target == null))
             {
-                if (_followMaster && (!_config.FollowTarget || _config.FollowTarget && target == null))
-                    return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, _config.MaxDistanceToSlot, new(), Positional.Any);
-                if (_followMaster && _config.FollowTarget && target != null)
-                    return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, target != player ? _config.DesiredPositional : Positional.Any);
-                return new();
-            }).ConfigureAwait(true);
-            return (decision, targeting);
+                var decision = await Task.Run(() => NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, _config.MaxDistanceToSlot, new(), Positional.Any)).ConfigureAwait(true);
+                return (decision, targeting);
+            }
+            if (_followMaster && _config.FollowTarget && target != null)
+            {
+                var decision = await Task.Run(() => NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, target != player ? _config.DesiredPositional : Positional.Any)).ConfigureAwait(true);
+                return (decision, targeting);
+            }
         }
         if (targeting.Target == null)
         {
