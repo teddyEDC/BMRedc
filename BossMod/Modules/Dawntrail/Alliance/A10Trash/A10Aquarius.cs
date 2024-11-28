@@ -25,13 +25,15 @@ public enum AID : uint
     WaterIII = 41666, // Aquarius->location, 3.0s cast, range 7 circle
     Beatdown = 41662, // Boss->self, 2.0s cast, range 9 width 3 rect
     SpiderWeb = 41659, // BarkSpider1->self, 4.0s cast, range 6 circle
-    HundredFists = 40648 // Aquarius->self, 6.0s cast, single-target
+    HundredFists = 40648, // Aquarius->self, 6.0s cast, single-target, applies Hundred Fists status (ID 1594) to self
+    Agaricus = 41661 // DeathCap->self, 3.0s cast, range 5 circle
 }
 
 class CursedSphere(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CursedSphere), 3);
 class WaterIII(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.WaterIII), 7);
 class BubbleShower(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BubbleShower), new AOEShapeCone(6, 30.Degrees()));
 class Scoop(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Scoop), new AOEShapeCone(15, 60.Degrees()));
+class Agaricus(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Agaricus), new AOEShapeCircle(5));
 class Beatdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Beatdown), new AOEShapeRect(9, 1.5f));
 class SpiderWeb(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SpiderWeb), new AOEShapeCircle(6));
 class HundredFists(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.HundredFists), showNameInHint: true);
@@ -48,6 +50,7 @@ public class A10AquariusStates : StateMachineBuilder
             .ActivateOnEnter<Beatdown>()
             .ActivateOnEnter<SpiderWeb>()
             .ActivateOnEnter<HundredFists>()
+            .ActivateOnEnter<Agaricus>()
             .Raw.Update = () => Module.WorldState.Actors.Where(x => x.IsTargetable && !x.IsAlly).All(x => x.IsDeadOrDestroyed);
     }
 }

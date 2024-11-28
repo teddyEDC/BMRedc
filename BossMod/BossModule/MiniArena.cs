@@ -86,7 +86,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
         if (Config.OpaqueArenaBackground)
         {
-            await GenerateBackgroundAsync().ConfigureAwait(true);
+            await GenerateBackgroundAsync();
         }
     }
     private Task GenerateBackgroundAsync()
