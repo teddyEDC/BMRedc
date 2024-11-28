@@ -139,12 +139,12 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
                 if (_followMaster && _config.FollowTarget && target != null)
                     return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, target != player ? _config.DesiredPositional : Positional.Any);
                 return new();
-            });
+            }).ConfigureAwait(true);
             return (decision, targeting);
         }
         if (targeting.Target == null)
         {
-            var decision = await Task.Run(() => NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, null, 0, new(), Positional.Any));
+            var decision = await Task.Run(() => NavigationDecision.Build(_naviCtx, autorot.WorldState, autorot.Hints, player, null, 0, new(), Positional.Any)).ConfigureAwait(true);
             return (decision, targeting);
         }
 
@@ -160,7 +160,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
                 {
                     var dest = autorot.Hints.ClampToBounds(targeting.Target.DesiredPosition - adjRange * desiredToTarget.Normalized());
                     return NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, dest, 0.5f, new(), Positional.Any);
-                });
+                }).ConfigureAwait(true);
 
                 return (decision, targeting);
             }
@@ -170,7 +170,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
         var finalDecision = await Task.Run(() =>
             NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, autorot.Hints.RecommendedPositional.Target?.Position, adjRange, adjRotation, autorot.Hints.RecommendedPositional.Pos)
-        );
+        ).ConfigureAwait(true);
 
         return (finalDecision, targeting);
     }
