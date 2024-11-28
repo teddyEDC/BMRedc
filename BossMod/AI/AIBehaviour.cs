@@ -57,8 +57,8 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         {
             var actorTarget = autorot.WorldState.Actors.Find(player.TargetID);
             (var naviDecision, target) = followTarget && actorTarget != null
-                ? await BuildNavigationDecision(player, actorTarget, target)
-                : await BuildNavigationDecision(player, master, target);
+                ? await BuildNavigationDecision(player, actorTarget, target).ConfigureAwait(true)
+                : await BuildNavigationDecision(player, master, target).ConfigureAwait(true);
             _naviDecision = naviDecision;
 
             // There is a difference between having a small positive leeway and having a negative one for pathfinding, prefer to keep positive
