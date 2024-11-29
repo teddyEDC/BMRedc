@@ -63,8 +63,7 @@ class RavagingRoots(BossModule module) : Components.GenericRotatingAOE(module)
 class SapSpiller(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCone cone = new(40, 60.Degrees());
-    private static readonly Angle a180 = 180.Degrees();
-    private static readonly Angle a90 = 90.Degrees();
+    private static readonly Angle a180 = 180.Degrees(), a90 = 90.Degrees();
     private readonly List<AOEInstance> _aoes = [];
     private static readonly HashSet<AID> castEnd = [AID.NoxiousSap2, AID.NoxiousSap3, AID.NoxiousSap4,
     AID.NoxiousSap5, AID.NoxiousSap6, AID.NoxiousSap7, AID.NoxiousSap8, AID.NoxiousSap9];
@@ -114,7 +113,7 @@ class SapSpiller(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count > 0 && castEnd.Contains((AID)spell.Action.ID))
+        if (_aoes.Count != 0 && castEnd.Contains((AID)spell.Action.ID))
             _aoes.RemoveAt(0);
     }
 }
