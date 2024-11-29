@@ -22,6 +22,7 @@ public enum AID : uint
     NoxiousSap6 = 37371, // Boss->self, no cast, range 30 120-degree cone
     NoxiousSap7 = 42174, // Boss->self, no cast, range 30 120-degree cone
     NoxiousSap8 = 42173, // Boss->self, no cast, range 30 120-degree cone
+    NoxiousSap9 = 42172, // Boss->self, no cast, range 30 120-degree cone
 
     Neurotoxify = 38331, // Boss->self, 5.0s cast, range 40 circle
 
@@ -66,7 +67,7 @@ class SapSpiller(BossModule module) : Components.GenericAOEs(module)
     private static readonly Angle a90 = 90.Degrees();
     private readonly List<AOEInstance> _aoes = [];
     private static readonly HashSet<AID> castEnd = [AID.NoxiousSap2, AID.NoxiousSap3, AID.NoxiousSap4,
-    AID.NoxiousSap5, AID.NoxiousSap6, AID.NoxiousSap7, AID.NoxiousSap8];
+    AID.NoxiousSap5, AID.NoxiousSap6, AID.NoxiousSap7, AID.NoxiousSap8, AID.NoxiousSap9];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
