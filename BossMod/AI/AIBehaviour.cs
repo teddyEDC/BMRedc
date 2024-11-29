@@ -132,15 +132,15 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         if (_config.ForbidMovement)
             return (new NavigationDecision { LeewaySeconds = float.MaxValue }, targeting);
 
-        if (AIPreset == null || _config.OverrideAutorotation)
+        if (_followMaster && (AIPreset == null || _config.OverrideAutorotation))
         {
             var target = autorot.WorldState.Actors.Find(player.TargetID);
-            if (_followMaster && (!_config.FollowTarget || _config.FollowTarget && target == null))
+            if (!_config.FollowTarget || _config.FollowTarget && target == null)
             {
                 var decision = await Task.Run(() => NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, master.Position, _config.MaxDistanceToSlot, new(), Positional.Any)).ConfigureAwait(true);
                 return (decision, targeting);
             }
-            if (_followMaster && _config.FollowTarget && target != null)
+            if (_config.FollowTarget && target != null)
             {
                 var decision = await Task.Run(() => NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, target.Position, target.HitboxRadius + (_config.DesiredPositional != Positional.Any ? 2.6f : _config.MaxDistanceToTarget), target.Rotation, target != player ? _config.DesiredPositional : Positional.Any)).ConfigureAwait(true);
                 return (decision, targeting);
@@ -172,11 +172,11 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
         var adjRotation = targeting.PreferTanking ? targeting.Target.DesiredRotation : targeting.Target.Actor.Rotation;
 
-        var finalDecision = await Task.Run(() =>
+        var fdecision = await Task.Run(() =>
             NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, autorot.Hints.RecommendedPositional.Target?.Position, adjRange, adjRotation, autorot.Hints.RecommendedPositional.Pos)
         ).ConfigureAwait(true);
 
-        return (finalDecision, targeting);
+        return (fdecision, targeting);
     }
     private void FocusMaster(Actor master)
     {
