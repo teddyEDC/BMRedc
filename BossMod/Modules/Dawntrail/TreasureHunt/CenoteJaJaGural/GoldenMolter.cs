@@ -184,7 +184,7 @@ public class GoldenMolter(WorldState ws, Actor primary) : BossModule(ws, primary
                 OID.TuraliOnion => 5,
                 OID.TuraliEggplant => 4,
                 OID.TuraliGarlic => 3,
-                OID.TuraliTomato => 2,
+                OID.TuraliTomato or OID.AlpacaOfFortune => 2,
                 OID.TuligoraQueen or OID.UolonOfFortune => 1,
                 _ => 0
             };
