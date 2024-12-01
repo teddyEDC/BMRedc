@@ -25,8 +25,8 @@ public class FRU(WorldState ws, Actor primary) : BossModule(ws, primary, new(100
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actor(PrimaryActor, ArenaColor.Enemy);
-        Arena.Actor(_bossP2, ArenaColor.Enemy);
-        Arena.Actor(_iceVeil, ArenaColor.Enemy);
+        Arena.Actor(PrimaryActor);
+        Arena.Actor(_bossP2);
+        Arena.Actor(_iceVeil);
     }
 }

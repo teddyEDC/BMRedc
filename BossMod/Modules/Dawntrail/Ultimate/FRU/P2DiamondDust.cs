@@ -73,7 +73,7 @@ class P2DiamondDustSafespots(BossModule module) : BossComponent(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         if (_safespots[pcSlot] != default)
-            Arena.AddCircle(_safespots[pcSlot], 1, ArenaColor.Safe);
+            Arena.AddCircle(_safespots[pcSlot], 1, Colors.Safe);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -193,9 +193,9 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actor(_source, ArenaColor.Object, true);
+        Arena.Actor(_source, Colors.Object, true);
         if (AOEs.Count > 0)
-            Arena.AddCircle(pc.Position, 32, ArenaColor.Safe);
+            Arena.AddCircle(pc.Position, 32, Colors.Safe);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

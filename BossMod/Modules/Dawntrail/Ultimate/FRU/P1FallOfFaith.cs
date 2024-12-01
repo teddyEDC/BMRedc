@@ -55,19 +55,19 @@ class P1FallOfFaith(BossModule module) : Components.CastCounter(module, default)
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
         foreach (var bait in ActiveBaits(pcSlot, pc, true))
-            bait.shape.Draw(Arena, bait.origin, bait.dir, ArenaColor.AOE);
+            bait.shape.Draw(Arena, bait.origin, bait.dir, Colors.AOE);
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var bait in ActiveBaits(pcSlot, pc, false))
-            bait.shape.Outline(Arena, bait.origin, bait.dir, _fireTethers[NumCasts] ? ArenaColor.Safe : ArenaColor.Danger);
+            bait.shape.Outline(Arena, bait.origin, bait.dir, _fireTethers[NumCasts] ? Colors.Safe : Colors.Danger);
 
         ref var state = ref _states[pcSlot];
         var firstBait = state.OddGroup == true ? 0 : 1;
         var safespot = NumCasts <= firstBait ? state.Spot1 : NumCasts <= firstBait + 2 ? state.Spot2 : default;
         if (safespot != default)
-            Arena.AddCircle(safespot, 1, ArenaColor.Safe);
+            Arena.AddCircle(safespot, 1, Colors.Safe);
     }
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)

@@ -14,7 +14,7 @@ class P1BoundOfFaith(BossModule module) : Components.UniformStackSpread(module, 
         if (_assignedGroups[pcSlot] != 0 && _safeSide != 0)
         {
             var safeDir = _safeSide * (90 - _assignedGroups[pcSlot] * 22.5f).Degrees();
-            Arena.AddCircle(Module.Center + 19 * safeDir.ToDirection(), 1, ArenaColor.Safe);
+            Arena.AddCircle(Module.Center + 19 * safeDir.ToDirection(), 1, Colors.Safe);
         }
     }
 

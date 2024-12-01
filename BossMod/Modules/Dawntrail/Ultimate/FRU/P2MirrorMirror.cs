@@ -12,7 +12,7 @@ class P2MirrorMirrorReflectedScytheKickBlue(BossModule module) : Components.Gene
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         if (_position != default)
-            Arena.Actor(_position, Angle.FromDirection(Module.Center - _position), ArenaColor.Object);
+            Arena.Actor(_position, Angle.FromDirection(Arena.Center - _position), Colors.Object);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -24,7 +24,7 @@ class P2MirrorMirrorReflectedScytheKickBlue(BossModule module) : Components.Gene
     public override void OnEventEnvControl(byte index, uint state)
     {
         if (index is >= 1 and <= 8 && state == 0x00020001)
-            _position = Module.Center + 20 * (225 - index * 45).Degrees().ToDirection();
+            _position = Arena.Center + 20 * (225 - index * 45).Degrees().ToDirection();
     }
 }
 
@@ -32,7 +32,7 @@ class P2MirrorMirrorReflectedScytheKickRed(BossModule module) : Components.SelfT
 {
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actors(Casters, ArenaColor.Object, true);
+        Arena.Actors(Casters, Colors.Object, true);
     }
 }
 
@@ -55,7 +55,7 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
     {
         if (index is >= 1 and <= 8 && state == 0x00020001)
         {
-            _mirror = Module.Center + 20 * (225 - index * 45).Degrees().ToDirection();
+            _mirror = Arena.Center + 20 * (225 - index * 45).Degrees().ToDirection();
         }
     }
 
