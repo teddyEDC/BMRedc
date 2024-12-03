@@ -32,7 +32,7 @@ class Level5DeathSentence(BossModule module) : Components.CastInterruptHint(modu
 class SentinelRoar(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SentinelRoar));
 class WordOfTheWood(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.CastWordOfTheWood), new AOEShapeCone(30, 90.Degrees()));
 
-public class WhispersOfTheWood(BossModule module) : Components.GenericRotatingAOE(module)
+class WhispersOfTheWood(BossModule module) : Components.GenericRotatingAOE(module)
 {
     private static readonly AOEShapeCone _shape = new(30, 90.Degrees());
     private static readonly Dictionary<string, Angle[]> _angleSequences = new()
