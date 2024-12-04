@@ -25,15 +25,16 @@ public enum SID : uint
     ForwardMarch = 2161,
     AboutFace = 2162
 }
+
 class ResonantBuzz(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ResonantBuzz), "Applies Forced March!");
 class ResonantBuzzMarch(BossModule module) : Components.StatusDrivenForcedMarch(module, 3, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace)
 {
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => Module.FindComponent<BeeBeAOE>()?.ActiveAOEs(slot, actor).Any(a => a.Shape.Check(pos, a.Origin, a.Rotation)) ?? false;
 
-    public override void AddHints(int slot, Actor caster, TextHints hints)
+    public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        var last = ForcedMovements(caster).LastOrDefault();
-        if (last.from != last.to && DestinationUnsafe(slot, caster, last.to))
+        var last = ForcedMovements(actor).LastOrDefault();
+        if (last.from != last.to && DestinationUnsafe(slot, actor, last.to))
             hints.Add("Aim outside of the AOE!");
     }
 }
@@ -53,14 +54,14 @@ class BeeBeAOE(BossModule module) : Components.GenericAOEs(module)
     {
         if (caster != Module.PrimaryActor)
             return;
-
+        var activation = WorldState.FutureTime(15);
         switch ((AID)spell.Action.ID)
         {
             case AID.BeeBeGone:
-                _activeAOEs.Add(new(_shapeCircle, caster.Position, default, WorldState.FutureTime(15)));
+                _activeAOEs.Add(new(_shapeCircle, caster.Position, default, activation));
                 break;
             case AID.BeeBeHere:
-                _activeAOEs.Add(new(_shapeDonut, caster.Position, default, WorldState.FutureTime(15)));
+                _activeAOEs.Add(new(_shapeDonut, caster.Position, default, activation));
                 break;
         }
     }
