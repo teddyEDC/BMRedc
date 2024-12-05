@@ -203,7 +203,7 @@ public class StretchTetherDuo(BossModule module, float minimumDistance, float ac
     public uint TIDBad = tetherIDBad;
     public float MinimumDistance = minimumDistance;
     public bool KnockbackImmunity { get; init; } = knockbackImmunity;
-    public readonly IReadOnlyList<Actor> _enemies = module.Enemies(enemyOID);
+    public readonly List<Actor> _enemies = module.Enemies(enemyOID);
     public readonly List<(Actor, uint)> TetherOnActor = [];
     public readonly List<(Actor, DateTime)> ActivationDelayOnActor = [];
     public float ActivationDelay = activationDelay;

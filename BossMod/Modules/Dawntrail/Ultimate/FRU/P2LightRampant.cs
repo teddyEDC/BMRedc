@@ -11,7 +11,7 @@ class P2LightRampant(BossModule module) : BossComponent(module)
             var source = Raid[i];
             var target = _tetherTargets[i];
             if (source != null && target != null)
-                Arena.AddLine(source.Position, target.Position, (source.Position - target.Position).LengthSq() < 625 ? ArenaColor.Danger : ArenaColor.Safe);
+                Arena.AddLine(source.Position, target.Position, (source.Position - target.Position).LengthSq() < 625 ? Colors.Danger : Colors.Safe);
         }
     }
 

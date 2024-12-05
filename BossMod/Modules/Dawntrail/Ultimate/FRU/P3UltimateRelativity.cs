@@ -32,7 +32,7 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
     {
         var assignedDir = States[pcSlot].AssignedDir;
         if (assignedDir != default)
-            Arena.AddCircle(Module.Center + RangeHint(States[pcSlot], pc.Class.IsSupport(), NumCasts) * assignedDir, 1, ArenaColor.Safe);
+            Arena.AddCircle(Module.Center + RangeHint(States[pcSlot], pc.Class.IsSupport(), NumCasts) * assignedDir, 1, Colors.Safe);
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
