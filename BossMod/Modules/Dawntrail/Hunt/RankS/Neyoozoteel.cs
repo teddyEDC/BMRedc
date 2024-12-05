@@ -103,7 +103,7 @@ class SapSpiller(BossModule module) : Components.GenericAOEs(module)
         }
     }
 
-    private void AddAOEs(Angle[] angles, ActorCastInfo spell)
+    private void AddAOEs(ReadOnlySpan<Angle> angles, ActorCastInfo spell)
     {
         for (var i = 0; i < 3; ++i)
         {
