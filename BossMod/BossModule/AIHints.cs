@@ -1,4 +1,6 @@
-﻿namespace BossMod;
+﻿using BossMod.AST;
+
+namespace BossMod;
 
 // information relevant for AI decision making process for a specific player
 public sealed class AIHints
@@ -37,7 +39,6 @@ public sealed class AIHints
     // information needed to build base pathfinding map (onto which forbidden/goal zones are later rasterized), if needed (lazy, since it's somewhat expensive and not always needed)
     public WPos PathfindMapCenter;
     public ArenaBounds PathfindMapBounds = DefaultBounds;
-    public WaypointManager WaypointManager { get; private set; } = new WaypointManager();
     public Bitmap.Region PathfindMapObstacles;
 
     // list of potential targets
@@ -134,7 +135,7 @@ public sealed class AIHints
         {
             // fate mob in fate we are NOT a part of, skip entirely. it's okay to "attack" these (i.e., they won't be added as forbidden targets) because we can't even hit them
             // (though aggro'd mobs will continue attacking us after we unsync, but who really cares)
-            if (actor.FateID > 0 && actor.FateID != allowedFateID)
+            if (actor.FateID != 0 && actor.FateID != allowedFateID)
                 continue;
 
             // target is dying; skip it so that AI retargets, but ensure that it's not marked as a forbidden target

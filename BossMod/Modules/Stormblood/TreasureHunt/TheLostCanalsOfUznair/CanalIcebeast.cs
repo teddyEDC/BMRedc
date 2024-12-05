@@ -53,8 +53,12 @@ class CanalIcebeastStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 268, NameID = 6650)]
-public class CanalIcebeast(WorldState ws, Actor primary) : BossModule(ws, primary, new(0, -420), new ArenaBoundsCircle(20))
+public class CanalIcebeast(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
+    private static readonly WPos center = new(0, -420);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(center, 19.51f * CosPI.Pi8th, 8, 22.5f.Degrees()), new Rectangle(center, 27.66f, 5.5f),
+    new Rectangle(new(0, -440), 5.5f, 7.5f)], [new Rectangle(new(0, -400), 20, 3.35f)]);
+
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
