@@ -3,7 +3,7 @@
 // generic component used for drawing adds
 public class Adds(BossModule module, uint oid, int priority = 0) : BossComponent(module)
 {
-    public readonly IReadOnlyList<Actor> Actors = module.Enemies(oid);
+    public readonly List<Actor> Actors = module.Enemies(oid);
     public IEnumerable<Actor> ActiveActors => Actors.Where(a => a.IsTargetable && !a.IsDead);
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)

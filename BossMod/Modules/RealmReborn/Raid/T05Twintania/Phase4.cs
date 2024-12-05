@@ -43,7 +43,7 @@ class P4Twisters(BossModule module) : BossComponent(module)
 class P4Dreadknights(BossModule module) : BossComponent(module)
 {
     private Actor? _target;
-    private readonly IReadOnlyList<Actor> _dreadknights = module.Enemies(OID.Dreadknight);
+    private readonly List<Actor> _dreadknights = module.Enemies(OID.Dreadknight);
     public IEnumerable<Actor> ActiveDreadknights => _dreadknights.Where(a => !a.IsDead);
 
     public override void Update()
