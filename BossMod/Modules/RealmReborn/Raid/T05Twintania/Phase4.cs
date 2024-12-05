@@ -3,7 +3,7 @@
 // P4 mechanics
 class P4Twisters(BossModule module) : BossComponent(module)
 {
-    private readonly IReadOnlyList<Actor> _twisters = module.Enemies(OID.Twister);
+    private readonly List<Actor> _twisters = module.Enemies(OID.Twister);
     private readonly List<WPos> _predictedPositions = [];
     private IEnumerable<Actor> ActiveTwisters => _twisters.Where(t => t.EventState != 7);
 
