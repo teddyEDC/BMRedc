@@ -62,6 +62,5 @@ public sealed class StayWithinLeylines(RotationModuleManager manager, Actor play
                     Hints.GoalZones.Add(Hints.GoalSingleTarget(zone.Position, 1f));
             }
         }
-
     }
 }
