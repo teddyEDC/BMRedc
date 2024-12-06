@@ -93,9 +93,12 @@ class Draw(BossModule module) : Components.GenericAOEs(module)
     {
         if (_safeZones.Count != 0)
             for (var i = 0; i < 6; ++i)
+            {
+                var card = _cards[i];
                 if (i != _safeZones[0])
                     for (var j = 0; j < _cards[j].Count; ++j)
-                        yield return new(_shape, _cards[i][j].Position, default, _activation);
+                        yield return new(_shape, card[j].Position, default, _activation);
+            }
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
