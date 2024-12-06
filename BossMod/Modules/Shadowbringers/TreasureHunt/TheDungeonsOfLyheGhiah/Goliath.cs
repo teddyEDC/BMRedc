@@ -72,7 +72,7 @@ class GoliathStates : StateMachineBuilder
             .ActivateOnEnter<HeirloomScream>()
             .ActivateOnEnter<PungentPirouette>()
             .ActivateOnEnter<Pollen>()
-            .Raw.Update = () => Module.WorldState.Actors.Where(x => !x.IsAlly && x.IsTargetable).All(x => x.IsDeadOrDestroyed);
+            .Raw.Update = () => module.Enemies(Goliath.All).All(x => x.IsDeadOrDestroyed);
     }
 }
 
@@ -107,12 +107,15 @@ public class Goliath(WorldState ws, Actor primary) : BossModule(ws, primary, are
     new(13.6f, -413.3f), new(12.62f, -414.9f), new(12.36f, -415.55f), new(12.47f, -416.28f), new(12.81f, -416.95f)];
     private static readonly ArenaBoundsComplex arena = new([new PolygonCustom(vertices)]);
 
+    private static readonly uint[] bonusAdds = [(uint)OID.DungeonEgg, (uint)OID.DungeonGarlic, (uint)OID.DungeonTomato, (uint)OID.DungeonOnion,
+    (uint)OID.DungeonQueen, (uint)OID.KeeperOfKeys];
+    public static readonly uint[] All = [(uint)OID.Boss, (uint)OID.GoliathsJavelin, .. bonusAdds];
+
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
         Arena.Actors(Enemies(OID.GoliathsJavelin));
-        Arena.Actors(Enemies(OID.DungeonEgg).Concat(Enemies(OID.DungeonTomato)).Concat(Enemies(OID.DungeonQueen).Concat(Enemies(OID.DungeonGarlic)).Concat(Enemies(OID.DungeonOnion))
-        .Concat(Enemies(OID.KeeperOfKeys))), Colors.Vulnerable);
+        Arena.Actors(Enemies(bonusAdds), Colors.Vulnerable);
     }
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
