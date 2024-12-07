@@ -138,7 +138,6 @@ public abstract class BossModule : IDisposable
     {
         StateMachine.Reset();
         ClearComponents(_ => true);
-
         _subscriptions.Dispose();
     }
 
