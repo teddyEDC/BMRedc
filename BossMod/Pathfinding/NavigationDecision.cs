@@ -42,24 +42,18 @@ public struct NavigationDecision
     public Decision DecisionType;
 
     public const float DefaultForbiddenZoneCushion = 0.15f;
-    public static bool IsInBlockedPixel(WPos position, Context ctx)
-    {
-        if (ctx.Map.Pixels.Length == 0)
-            return false;
-        var gridPos = ctx.Map.WorldToGrid(position);
-        if (gridPos.x < 0 || gridPos.x >= ctx.Map.Width || gridPos.y < 0 || gridPos.y >= ctx.Map.Height)
-            return true; // Treat out-of-bounds as blocked
-        return ctx.Map.Pixels[gridPos.y * ctx.Map.Width + gridPos.x].MaxG < 0;
-    }
+
     public static NavigationDecision Build(Context ctx, WorldState ws, AIHints hints, Actor player, WPos? targetPos, float targetRadius, Angle targetRot, Positional positional, float playerSpeed = 6, float forbiddenZoneCushion = DefaultForbiddenZoneCushion)
     {
         if (targetRadius < 1)
             targetRadius = 1; // ensure targetRadius is at least 1 to prevent game from freezing
         hints.PathfindMapBounds.PathfindMap(ctx.Map, hints.PathfindMapCenter);
-        if (!Service.Config.Get<AI.AIConfig>().AllowAIToBeOutsideBounds && IsInBlockedPixel(player.Position, ctx))
+
+        if (!Service.Config.Get<AI.AIConfig>().AllowAIToBeOutsideBounds && IsOutsideBounds(player.Position, ctx))
         {
             return FindPathFromOutsideBounds(ctx, player.Position, playerSpeed);
         }
+
         (Func<WPos, float> shapeDistance, DateTime activation)[] localForbiddenZones = [.. hints.ForbiddenZones];
         var imminent = ImminentExplosionTime(ws.CurrentTime);
         var len = localForbiddenZones.Length;
@@ -156,7 +150,6 @@ public struct NavigationDecision
             if (!player.Position.InCircle(targetPos.Value, targetRadius))
             {
                 // we're not in uptime zone, just run to it, avoiding any aoes
-                hints.PathfindMapBounds.PathfindMap(ctx.Map, hints.PathfindMapCenter);
                 for (var i = 0; i < len; ++i)
                 {
                     var zf = localForbiddenZones[i];
@@ -203,7 +196,6 @@ public struct NavigationDecision
             if (!inPositional)
             {
                 // we're in uptime zone, but not in correct quadrant - move there, avoiding all aoes and staying within uptime zone
-                hints.PathfindMapBounds.PathfindMap(ctx.Map, hints.PathfindMapCenter);
                 ctx.Map.BlockPixelsInside(ShapeDistance.InvertedCircle(targetPos.Value, targetRadius), 0, 0);
                 for (var i = 0; i < len; ++i)
                 {
@@ -440,5 +432,15 @@ public struct NavigationDecision
         var dir = targetRot.ToDirection();
         var adjDest = targetPos.Value + dir * dir.Dot(dest.Value - targetPos.Value);
         return (dest.Value - adjDest).LengthSq() < 1 ? adjDest : dest;
+    }
+
+    public static bool IsOutsideBounds(WPos position, Context ctx)
+    {
+        if (ctx.Map.Pixels.Length == 0)
+            return false;
+        var gridPos = ctx.Map.WorldToGrid(position);
+        if (gridPos.x < 0 || gridPos.x >= ctx.Map.Width || gridPos.y < 0 || gridPos.y >= ctx.Map.Height)
+            return true; // outside current pathfinding map
+        return ctx.Map.Pixels[gridPos.y * ctx.Map.Width + gridPos.x].MaxG == float.NegativeInfinity; // inside pathfinding map, but outside actual walkable bounds
     }
 }
