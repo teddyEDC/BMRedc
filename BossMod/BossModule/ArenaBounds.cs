@@ -109,7 +109,7 @@ public abstract record class ArenaBounds(float Radius, float MapResolution, floa
     }
 }
 
-public record class ArenaBoundsCircle(float Radius, float MapResolution = ArenaBounds.Half) : ArenaBounds(Radius, MapResolution)
+public sealed record class ArenaBoundsCircle(float Radius, float MapResolution = ArenaBounds.Half) : ArenaBounds(Radius, MapResolution)
 {
     private Pathfinding.Map? _cachedMap;
 
@@ -170,7 +170,7 @@ public record class ArenaBoundsRect(float HalfWidth, float HalfHeight, Angle Rot
     }
 }
 
-public record class ArenaBoundsSquare(float Radius, Angle Rotation = default, float MapResolution = ArenaBounds.Half) : ArenaBoundsRect(Radius, Radius, Rotation, MapResolution) { }
+public sealed record class ArenaBoundsSquare(float Radius, Angle Rotation = default, float MapResolution = ArenaBounds.Half) : ArenaBoundsRect(Radius, Radius, Rotation, MapResolution) { }
 
 // custom complex polygon bounds
 public record class ArenaBoundsCustom : ArenaBounds
@@ -336,7 +336,7 @@ public record class ArenaBoundsCustom : ArenaBounds
 // for creating complex bounds by using two IEnumerable of shapes
 // first IEnumerable contains platforms that will be united, second optional IEnumberale contains shapes that will be subtracted
 // for convenience third list will optionally perform additional unions at the end
-public record class ArenaBoundsComplex : ArenaBoundsCustom
+public sealed record class ArenaBoundsComplex : ArenaBoundsCustom
 {
     public readonly WPos Center;
     public ArenaBoundsComplex(Shape[] UnionShapes, Shape[]? DifferenceShapes = null, Shape[]? AdditionalShapes = null, float MapResolution = Half, float Offset = 0)

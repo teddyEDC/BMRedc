@@ -4,14 +4,6 @@ class TeraSlash(BossModule module) : Components.CastCounter(module, ActionID.Mak
 class DoomArc(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.DoomArc));
 class UnbridledRage(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeRect(100, 4), (uint)IconID.UnbridledRage, ActionID.MakeSpell(AID.UnbridledRageAOE), 5.9f);
 class DarkNova(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.DarkNova), 6);
-public class StayInBounds(BossModule module) : BossComponent(module)
-{
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (!Arena.InBounds(actor.Position))
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonut(Arena.Center, 11, 12));
-    }
-}
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1015, NameID = 13653, SortOrder = 8)]
 public class A14ShadowLord(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, DefaultBounds)

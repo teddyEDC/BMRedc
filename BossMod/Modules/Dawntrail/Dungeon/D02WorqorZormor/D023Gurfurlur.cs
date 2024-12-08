@@ -263,7 +263,6 @@ class D023GurfurlurStates : StateMachineBuilder
     public D023GurfurlurStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<Components.StayInBounds>()
             .ActivateOnEnter<HeavingHaymakerArenaChange>()
             .ActivateOnEnter<HeavingHaymaker>()
             .ActivateOnEnter<Whirlwind>()

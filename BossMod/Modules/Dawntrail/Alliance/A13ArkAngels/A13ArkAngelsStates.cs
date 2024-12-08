@@ -8,7 +8,6 @@ class A13ArkAngelsStates : StateMachineBuilder
     {
         _module = module;
         DeathPhase(0, SinglePhase)
-            .ActivateOnEnter<Components.StayInBounds>()
             .Raw.Update = () => module.Enemies(A13ArkAngels.Bosses).All(x => x.IsDeadOrDestroyed);
     }
 

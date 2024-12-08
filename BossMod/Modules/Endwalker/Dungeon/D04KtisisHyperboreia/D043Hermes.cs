@@ -127,7 +127,6 @@ class D043HermesStates : StateMachineBuilder
     public D043HermesStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<Components.StayInBounds>()
             .ActivateOnEnter<TrismegistosArenaChange>()
             .ActivateOnEnter<TrueBraveryInterruptHint>()
             .ActivateOnEnter<CosmicKiss>()

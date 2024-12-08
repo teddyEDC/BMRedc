@@ -199,7 +199,6 @@ class TakingAStandStates : StateMachineBuilder
     public TakingAStandStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<Components.StayInBounds>()
             .ActivateOnEnter<RoarArenaChange>()
             .ActivateOnEnter<Roar1>()
             .ActivateOnEnter<Roar2>()
