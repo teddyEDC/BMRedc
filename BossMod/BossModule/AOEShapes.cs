@@ -193,6 +193,7 @@ public enum OperandType
 public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerable<Shape>? DifferenceShapes = null, IEnumerable<Shape>? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union, WPos Origin = default) : AOEShape
 {
     private RelSimplifiedComplexPolygon? polygon;
+    private PolygonWithHolesDistanceFunction? shapeDistance;
     private readonly int hashkey = CreateCacheKey(Shapes1, Shapes2 ?? [], DifferenceShapes ?? [], Operand, Origin);
     public static readonly Dictionary<int, RelSimplifiedComplexPolygon> Cache = [];
     public static readonly LinkedList<int> CacheOrder = new();
@@ -304,20 +305,23 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
 
     public override Func<WPos, float> Distance(WPos origin, Angle rotation)
     {
-        var shapeDistance = new PolygonWithHolesDistanceFunction(origin, polygon ?? GetCombinedPolygon(origin)).Distance;
-        return InvertForbiddenZone ? p => -shapeDistance(p) : shapeDistance;
+        shapeDistance ??= new PolygonWithHolesDistanceFunction(origin, polygon ?? GetCombinedPolygon(origin));
+        var dis = shapeDistance.Value.Distance;
+        return InvertForbiddenZone ? p => -dis(p) : dis;
     }
 }
 
 public sealed record class AOEShapeCustomAlt(RelSimplifiedComplexPolygon Poly, Angle DirectionOffset = default, bool InvertForbiddenZone = false) : AOEShape
 {
+    private PolygonWithHolesDistanceFunction? shapeDistance;
     public override string ToString() => $"Custom: off={DirectionOffset}, ifz={InvertForbiddenZone}";
     public override bool Check(WPos position, WPos origin, Angle rotation) => Poly.Contains((position - origin).Rotate(-rotation - DirectionOffset));
     public override void Draw(MiniArena arena, WPos origin, Angle rotation, uint color = 0) => arena.ZoneComplex(origin, rotation + DirectionOffset, Poly, color);
     public override void Outline(MiniArena arena, WPos origin, Angle rotation, uint color = 0) => arena.AddComplexPolygon(origin, (rotation + DirectionOffset).ToDirection(), Poly, color);
     public override Func<WPos, float> Distance(WPos origin, Angle rotation)
     {
-        var shapeDistance = new PolygonWithHolesDistanceFunction(origin, Poly).Distance;
-        return InvertForbiddenZone ? p => -shapeDistance(p) : shapeDistance;
+        shapeDistance ??= new PolygonWithHolesDistanceFunction(origin, Poly);
+        var dis = shapeDistance.Value.Distance;
+        return InvertForbiddenZone ? p => -dis(p) : dis;
     }
 }
