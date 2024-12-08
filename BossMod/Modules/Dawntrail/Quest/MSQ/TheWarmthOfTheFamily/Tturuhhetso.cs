@@ -2,7 +2,6 @@ namespace BossMod.Dawntrail.Quest.MSQ.TheWarmthOfTheFamily.Tturuhhetso;
 
 public enum OID : uint
 {
-
     Boss = 0x4638, // R5.95
     ScaleArmoredLeg = 0x4648, // R5.95
     BallOfFire = 0x4639, // R1.0
@@ -215,6 +214,7 @@ public class Tturuhhetso(WorldState ws, Actor primary) : BossModule(ws, primary,
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly));
+        Arena.Actor(PrimaryActor);
+        Arena.Actors(Enemies(OID.ScaleArmoredLeg));
     }
 }
