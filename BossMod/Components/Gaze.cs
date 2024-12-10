@@ -49,7 +49,7 @@ public abstract class GenericGaze(BossModule module, ActionID aid = new(), bool 
         foreach (var eye in ActiveEyes(pcSlot, pc))
         {
             var danger = HitByEye(pc, eye) != Inverted;
-            var eyeCenter = Arena.WorldPositionToScreenPosition(eye.Position);
+            var eyeCenter = IndicatorScreenPos(eye.Position);
             DrawEye(eyeCenter, danger);
 
             if (pc.Position.InCircle(eye.Position, eye.Range))
@@ -71,6 +71,23 @@ public abstract class GenericGaze(BossModule module, ActionID aid = new(), bool 
     }
 
     private static bool HitByEye(Actor actor, Eye eye) => (actor.Rotation + eye.Forward).ToDirection().Dot((eye.Position - actor.Position).Normalized()) >= 0.707107f; // 45-degree
+
+    private Vector2 IndicatorScreenPos(WPos eye)
+    {
+        if (Arena.InBounds(eye) || Arena.Bounds is not ArenaBoundsCircle and not ArenaBoundsSquare)
+        {
+            return Arena.WorldPositionToScreenPosition(eye);
+        }
+        else if (Arena.Bounds is ArenaBoundsRect)
+        {
+            return Arena.WorldPositionToScreenPosition(Arena.ClampToBounds(eye) + 2 * (eye - Arena.Center).Normalized());
+        }
+        else
+        {
+            var dir = (eye - Arena.Center).Normalized();
+            return Arena.ScreenCenter + Arena.RotatedCoords(dir.ToVec2()) * (Arena.ScreenHalfSize + Arena.ScreenMarginSize * 0.5f);
+        }
+    }
 }
 
 // gaze that happens on cast end

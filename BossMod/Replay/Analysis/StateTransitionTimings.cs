@@ -108,9 +108,9 @@ class StateTransitionTimings
                 var value = kv.Value.Instances.Count > 0
                     ? $"avg={kv.Value.AvgTime:f2}-{from.ExpectedTime:f2}={kv.Value.AvgTime - from.ExpectedTime:f2} +- {kv.Value.StdDev:f2}, [{kv.Value.MinTime:f2}, {kv.Value.MaxTime:f2}] range, {kv.Value.Instances.Count} seen"
                     : $"never seen ({from.ExpectedTime:f2} expected)";
-                var color = !kv.Value.Expected ? 0xff0080ff
-                    : kv.Value.Instances.Count > 0 && Math.Abs(from.ExpectedTime - kv.Value.AvgTime) > Math.Ceiling(kv.Value.StdDev * 10) / 10 ? 0xff00ffff
-                    : 0xffffffff;
+                var color = !kv.Value.Expected ? Colors.TextColor5
+                    : kv.Value.Instances.Count > 0 && Math.Abs(from.ExpectedTime - kv.Value.AvgTime) > Math.Ceiling(kv.Value.StdDev * 10) / 10 ? Colors.TextColor2
+                    : Colors.TextColor1;
                 //bool warn = from.ExpectedTime < Math.Round(m.MinTime, 1) || from.ExpectedTime > Math.Round(m.MaxTime, 1);
                 return new($"{name}: {value}###{name}", kv.Value.Instances.Count == 0, color);
             }

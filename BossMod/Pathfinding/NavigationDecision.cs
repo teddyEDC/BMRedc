@@ -47,12 +47,6 @@ public struct NavigationDecision
     {
         if (targetRadius < 1)
             targetRadius = 1; // ensure targetRadius is at least 1 to prevent game from freezing
-        hints.PathfindMapBounds.PathfindMap(ctx.Map, hints.PathfindMapCenter);
-
-        if (!Service.Config.Get<AI.AIConfig>().AllowAIToBeOutsideBounds && IsOutsideBounds(player.Position, ctx))
-        {
-            return FindPathFromOutsideBounds(ctx, player.Position, playerSpeed);
-        }
 
         (Func<WPos, float> shapeDistance, DateTime activation)[] localForbiddenZones = [.. hints.ForbiddenZones];
         var imminent = ImminentExplosionTime(ws.CurrentTime);
@@ -69,6 +63,18 @@ public struct NavigationDecision
                 numImminentZones = mid;
                 right = mid - 1;
             }
+        }
+
+        hints.PathfindMapBounds.PathfindMap(ctx.Map, hints.PathfindMapCenter);
+
+        if (!Service.Config.Get<AI.AIConfig>().AllowAIToBeOutsideBounds && IsOutsideBounds(player.Position, ctx))
+        {
+            for (var i = 0; i < len; ++i)
+            {
+                var zf = localForbiddenZones[i];
+                AddBlockerZone(ctx.Map, imminent, zf.activation, zf.shapeDistance, forbiddenZoneCushion);
+            }
+            return FindPathFromOutsideBounds(ctx, player.Position, playerSpeed);
         }
 
         // Check whether player is inside each forbidden zone
@@ -316,9 +322,8 @@ public struct NavigationDecision
         foreach (var p in ctx.Map.EnumeratePixels())
         {
             var px = ctx.Map[p.x, p.y];
-            if (px.Priority == 0 && px.MaxG == float.MaxValue)
+            if (px.MaxG > 0) // assume any pixel not marked as blocked is better than being outside of bounds
             {
-                // safe pixel, candidate
                 var distance = (p.center - startPos).LengthSq();
                 if (distance < closestDistance)
                 {
@@ -436,11 +441,10 @@ public struct NavigationDecision
 
     public static bool IsOutsideBounds(WPos position, Context ctx)
     {
-        if (ctx.Map.Pixels.Length == 0)
-            return false;
-        var gridPos = ctx.Map.WorldToGrid(position);
-        if (gridPos.x < 0 || gridPos.x >= ctx.Map.Width || gridPos.y < 0 || gridPos.y >= ctx.Map.Height)
+        var map = ctx.Map;
+        var (x, y) = map.WorldToGrid(position);
+        if (x < 0 || x >= map.Width || y < 0 || y >= map.Height)
             return true; // outside current pathfinding map
-        return ctx.Map.Pixels[gridPos.y * ctx.Map.Width + gridPos.x].MaxG == float.NegativeInfinity; // inside pathfinding map, but outside actual walkable bounds
+        return map.Pixels[y * map.Width + x].MaxG == -1; // inside pathfinding map, but outside actual walkable bounds
     }
 }

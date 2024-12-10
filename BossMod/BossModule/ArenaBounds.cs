@@ -128,7 +128,7 @@ public sealed record class ArenaBoundsCircle(float Radius, float MapResolution =
     private Pathfinding.Map BuildMap()
     {
         var map = new Pathfinding.Map(MapResolution, default, Radius, Radius);
-        map.BlockPixelsInsideConvex(p => -ShapeDistance.Circle(default, Radius)(p), float.NegativeInfinity, 0);
+        map.BlockPixelsInsideConvex(p => -ShapeDistance.Circle(default, Radius)(p), -1, 0);
         return map;
     }
 }
@@ -149,7 +149,7 @@ public record class ArenaBoundsRect(float HalfWidth, float HalfHeight, Angle Rot
     private Pathfinding.Map BuildMap()
     {
         var map = new Pathfinding.Map(MapResolution, default, HalfWidth, HalfHeight, Rotation);
-        map.BlockPixelsInsideConvex(p => -ShapeDistance.Rect(default, Rotation, HalfHeight, HalfHeight, HalfWidth)(p), float.NegativeInfinity, 0);
+        map.BlockPixelsInsideConvex(p => -ShapeDistance.Rect(default, Rotation, HalfHeight, HalfHeight, HalfWidth)(p), -1, 0);
         return map;
     }
 
@@ -158,8 +158,6 @@ public record class ArenaBoundsRect(float HalfWidth, float HalfHeight, Angle Rot
 
     public override WDir ClampToBounds(WDir offset)
     {
-        if (offset.X == default) // if actor is almost in the center of the arena, do nothing
-            return offset;
         var offsetX = offset.Dot(Orientation.OrthoL());
         var offsetY = offset.Dot(Orientation);
         if (Math.Abs(offsetX) > HalfWidth)
@@ -325,7 +323,7 @@ public record class ArenaBoundsCustom : ArenaBounds
                 }
 
                 ref var pixel = ref pixels[rowOffset + x];
-                pixel.MaxG = allInside ? float.MaxValue : float.NegativeInfinity;
+                pixel.MaxG = allInside ? float.MaxValue : -1;
             }
         });
 

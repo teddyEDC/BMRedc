@@ -239,10 +239,10 @@ public sealed record class Polygon(WPos Center, float Radius, int Edges, Angle R
             var angleIncrement = Angle.DoublePI / Edges;
             var initialRotation = Rotation.Rad;
             var vertices = new List<WDir>(Edges);
-            for (var i = Edges - 1; i >= 0; --i)
+            for (var i = 0; i < Edges; ++i)
             {
                 var (sin, cos) = ((float, float))Math.SinCos(i * angleIncrement + initialRotation);
-                vertices.Add(new(Center.X + Radius * cos, Center.Z + Radius * sin));
+                vertices.Add(new(Center.X + Radius * sin, Center.Z + Radius * cos));
             }
             Points = [.. vertices];
         }
@@ -303,7 +303,7 @@ public record class DonutSegment(WPos Center, float InnerRadius, float OuterRadi
 public sealed record class DonutSegmentHA(WPos Center, float InnerRadius, float OuterRadius, Angle CenterDir, Angle HalfAngle) : DonutSegment(Center, InnerRadius, OuterRadius,
 CenterDir - HalfAngle, CenterDir + HalfAngle);
 
-// Approximates a cone with a customizable number of edges for the circle arc
+// Approximates a cone with a customizable number of edges for the circle arc - with 1 edge this turns into a triangle, 2 edges result in a parallelogram
 public sealed record class ConeV(WPos Center, float Radius, Angle CenterDir, Angle HalfAngle, int Edges) : Shape
 {
     public override List<WDir> Contour(WPos center)
@@ -313,11 +313,10 @@ public sealed record class ConeV(WPos Center, float Radius, Angle CenterDir, Ang
             var angleIncrement = 2 * HalfAngle.Rad / Edges;
             var startAngle = CenterDir.Rad - HalfAngle.Rad;
             var vertices = new List<WDir>(Edges + 1);
-
             for (var i = 0; i < Edges + 1; ++i)
             {
                 var (sin, cos) = ((float, float))Math.SinCos(startAngle + i * angleIncrement);
-                vertices.Add(new(Center.X + Radius * cos, Center.Z + Radius * sin));
+                vertices.Add(new(Center.X + Radius * sin, Center.Z + Radius * cos));
             }
             vertices.Add(Center - new WPos());
             Points = [.. vertices];
@@ -342,17 +341,15 @@ public sealed record class DonutSegmentV(WPos Center, float InnerRadius, float O
             var angleIncrement = 2 * HalfAngle.Rad / Edges;
             var startAngle = CenterDir.Rad - HalfAngle.Rad;
             var vertices = new List<WDir>(2 * (Edges + 1));
-
-            for (var i = Edges; i >= 0; --i)
-            {
-                var (sin, cos) = ((float, float))Math.SinCos(startAngle + i * angleIncrement);
-                vertices.Add(new(Center.X + OuterRadius * cos, Center.Z + OuterRadius * sin));
-            }
-
             for (var i = 0; i < Edges + 1; ++i)
             {
                 var (sin, cos) = ((float, float))Math.SinCos(startAngle + i * angleIncrement);
-                vertices.Add(new(Center.X + InnerRadius * cos, Center.Z + InnerRadius * sin));
+                vertices.Add(new(Center.X + OuterRadius * sin, Center.Z + OuterRadius * cos));
+            }
+            for (var i = Edges; i >= 0; --i)
+            {
+                var (sin, cos) = ((float, float))Math.SinCos(startAngle + i * angleIncrement);
+                vertices.Add(new(Center.X + InnerRadius * sin, Center.Z + InnerRadius * cos));
             }
             Points = [.. vertices];
         }
@@ -366,6 +363,7 @@ public sealed record class DonutSegmentV(WPos Center, float InnerRadius, float O
     public override string ToString() => $"DonutSegmentV:{Center.X},{Center.Z},{InnerRadius},{OuterRadius},{CenterDir},{HalfAngle},{Edges}";
 }
 
+// Approximates a donut with a customizable number of edges per circle arc
 public sealed record class DonutV(WPos Center, float InnerRadius, float OuterRadius, int Edges) : Shape
 {
     public override List<WDir> Contour(WPos center)
@@ -378,13 +376,13 @@ public sealed record class DonutV(WPos Center, float InnerRadius, float OuterRad
             for (var i = 0; i <= Edges; ++i)
             {
                 var (sin, cos) = ((float, float))Math.SinCos(i * angleIncrement);
-                vertices.Add(new(Center.X + OuterRadius * cos, Center.Z + OuterRadius * sin));
+                vertices.Add(new(Center.X + OuterRadius * sin, Center.Z + OuterRadius * cos));
             }
 
             for (var i = Edges; i >= 0; --i)
             {
                 var (sin, cos) = ((float, float))Math.SinCos(i * angleIncrement);
-                vertices.Add(new(Center.X + InnerRadius * cos, Center.Z + InnerRadius * sin));
+                vertices.Add(new(Center.X + InnerRadius * sin, Center.Z + InnerRadius * cos));
             }
             Points = [.. vertices];
         }
