@@ -96,7 +96,7 @@ sealed class DebugObstacles(ObstacleMapManager obstacles, IDalamudPluginInterfac
                 var py = (int)playerOffset.Z;
                 var playerDeepInObstacle = px >= 0 && py >= 0 && px < Bitmap.Width && py < Bitmap.Height && Bitmap[px, py]
                     && (px == 0 || Bitmap[px - 1, py]) && (py == 0 || Bitmap[px, py - 1]) && (px == (Bitmap.Width - 1) || Bitmap[px + 1, py]) && (py == (Bitmap.Height - 1) || Bitmap[px, py + 1]);
-                using var color = ImRaii.PushColor(ImGuiCol.Text, 0xff0000ff, playerDeepInObstacle);
+                using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor3, playerDeepInObstacle);
                 ImGui.TextUnformatted($"Player cell: {px}x{py}");
                 if (playerDeepInObstacle)
                 {
@@ -110,10 +110,10 @@ sealed class DebugObstacles(ObstacleMapManager obstacles, IDalamudPluginInterfac
                 var y = player?.PosRot.Y ?? 0;
                 var tl = e.Origin + new WDir(HoveredPixel.x, HoveredPixel.y) * Bitmap.PixelSize;
                 var br = tl + new WDir(Bitmap.PixelSize, Bitmap.PixelSize);
-                Camera.Instance?.DrawWorldLine(new(tl.X, y, tl.Z), new(tl.X, y, br.Z), 0xff00ffff);
-                Camera.Instance?.DrawWorldLine(new(tl.X, y, br.Z), new(br.X, y, br.Z), 0xff00ffff);
-                Camera.Instance?.DrawWorldLine(new(br.X, y, br.Z), new(br.X, y, tl.Z), 0xff00ffff);
-                Camera.Instance?.DrawWorldLine(new(br.X, y, tl.Z), new(tl.X, y, tl.Z), 0xff00ffff);
+                Camera.Instance?.DrawWorldLine(new(tl.X, y, tl.Z), new(tl.X, y, br.Z), Colors.TextColor2);
+                Camera.Instance?.DrawWorldLine(new(tl.X, y, br.Z), new(br.X, y, br.Z), Colors.TextColor2);
+                Camera.Instance?.DrawWorldLine(new(br.X, y, br.Z), new(br.X, y, tl.Z), Colors.TextColor2);
+                Camera.Instance?.DrawWorldLine(new(br.X, y, tl.Z), new(tl.X, y, tl.Z), Colors.TextColor2);
             }
         }
 
@@ -123,7 +123,7 @@ sealed class DebugObstacles(ObstacleMapManager obstacles, IDalamudPluginInterfac
             if (player != null)
             {
                 var playerOffset = ((player.Position - e.Origin) / Bitmap.PixelSize).Floor();
-                yield return ((int)playerOffset.X, (int)playerOffset.Z, new(0xff00ff00));
+                yield return ((int)playerOffset.X, (int)playerOffset.Z, new(Colors.Safe));
             }
         }
     }
