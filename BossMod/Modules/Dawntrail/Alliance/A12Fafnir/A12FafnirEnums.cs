@@ -2,12 +2,12 @@
 
 public enum OID : uint
 {
-    Boss = 0x41E5, // R17.000, x1
-    Helper = 0x233C, // R0.500, x43, Helper type
-    DragonBreath = 0x1EBCCB, // R0.500, x4, EventObj type
-    RavagingWind = 0x41E7, // R3.000, x3
-    BitingWind = 0x41E8, // R1.000, x6
-    Darter = 0x41E9, // R2.250, x0 (spawn during fight)
+    Boss = 0x41E5, // R17.0
+    FireVoidzone = 0x1EBCCB, // R0.5
+    RavagingWind = 0x41E7, // R3.0
+    BitingWind = 0x41E8, // R1.0
+    Darter = 0x41E9, // R2.25
+    Helper = 0x233C
 }
 
 public enum AID : uint

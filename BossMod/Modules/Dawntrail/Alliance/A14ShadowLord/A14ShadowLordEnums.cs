@@ -82,7 +82,7 @@ public enum AID : uint
     DamningStrikesImpact2 = 41110, // Helper->self, 13.0s cast, range 3 circle, tower 2
     DamningStrikesImpact3 = 41111, // Helper->self, 15.7s cast, range 3 circle, tower 3
     DamningStrikesShockwave = 41112, // Helper->self, no cast, range 100 circle, raidwide with dot if tower is not soaked
-    DoomArc = 40806, // Boss->self, 15.0s cast, range 100 circle, raidwide with bleed + damage up
+    DoomArc = 40806 // Boss->self, 15.0s cast, range 100 circle, raidwide with bleed + damage up
 }
 
 public enum IconID : uint

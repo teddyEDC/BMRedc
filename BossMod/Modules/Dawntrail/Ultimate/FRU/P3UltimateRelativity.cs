@@ -378,8 +378,8 @@ class P3UltimateRelativityShadoweye(BossModule module) : BossComponent(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         var pos = _rel?.States[pcSlot].ReturnPos ?? pc.Position;
-        Arena.Actor(pos, pc.Rotation, ArenaColor.Object);
-        Arena.AddLine(pos, pc.Position, ArenaColor.Safe);
+        Arena.Actor(pos, pc.Rotation, Colors.Object);
+        Arena.AddLine(pos, pc.Position, Colors.Safe);
         foreach (var eye in _eyes)
         {
             if (eye == pos)
@@ -391,7 +391,7 @@ class P3UltimateRelativityShadoweye(BossModule module) : BossComponent(module)
 
             var (min, max) = (-45, 45);
             Arena.PathArcTo(pos, 1, (pc.Rotation + min.Degrees()).Rad, (pc.Rotation + max.Degrees()).Rad);
-            Arena.PathStroke(false, ArenaColor.Enemy);
+            MiniArena.PathStroke(false, Colors.Enemy);
         }
     }
 
