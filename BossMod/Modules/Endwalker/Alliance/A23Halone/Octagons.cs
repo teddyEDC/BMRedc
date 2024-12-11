@@ -16,11 +16,10 @@ class Octagons(BossModule module) : Components.GenericAOEs(module)
     new Polygon(spears[1], OuterRadius, Vertices, angle[1]), new Polygon(spears[2], InnerRadius, Vertices, angle[2]),
     new Polygon(spears[2], OuterRadius, Vertices, angle[2])];
     private static readonly Shape[] baseArena = [new Circle(A23Halone.ArenaCenter, 29.5f)];
-    private readonly List<Shape> octagonsInner = [];
-    private readonly List<Shape> octagonsOuter = [];
+    private readonly List<Shape> octagonsInner = [], octagonsOuter = [];
 
     private AOEInstance? _aoe;
-    private static readonly AOEShapeCustom customShape = new(baseArena, [shapes[0], shapes[2], shapes[4]]);
+    private static readonly AOEShapeCustom customShape = new([new Square(A23Halone.ArenaCenter, 29.5f)], [shapes[0], shapes[2], shapes[4]]); // using a square should be less cpu intensive, gets clipped with arena border anyway
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
