@@ -2,19 +2,19 @@ namespace BossMod.Dawntrail.Alliance.A14ShadowLord;
 
 class GigaSlash(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<AOEInstance> _aoes = [];
+    public readonly List<AOEInstance> AOEs = [];
     private static readonly HashSet<AID> castEnds = [AID.GigaSlashLAOE1, AID.GigaSlashRAOE2, AID.GigaSlashRAOE1, AID.GigaSlashLAOE2, AID.GigaSlashNightfallFAOE3,
     AID.GigaSlashNightfallBAOE3, AID.GigaSlashNightfallLAOE1, AID.GigaSlashNightfallRAOE2, AID.GigaSlashNightfallRAOE1, AID.GigaSlashNightfallLAOE2];
     private static readonly AOEShapeCone[] _shapes = [new(60, 112.5f.Degrees()), new(60, 135.Degrees()), new(60, 105.Degrees())];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes.Take(1);
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => AOEs.Take(1);
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
         // stay close to the middle if there is next imminent aoe from same origin
-        if (_aoes.Count > 1 && _aoes[0].Origin == _aoes[1].Origin)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(_aoes[0].Origin, 3), _aoes[0].Activation);
+        if (AOEs.Count > 1 && AOEs[0].Origin == AOEs[1].Origin)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(AOEs[0].Origin, 3), AOEs[0].Activation);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -23,7 +23,7 @@ class GigaSlash(BossModule module) : Components.GenericAOEs(module)
         var position = caster.Position;
 
         void AddAOE(AOEShapeCone shape, float rotationOffset, float finishOffset)
-        => _aoes.Add(new(shape, position, rotation + rotationOffset.Degrees(), Module.CastFinishAt(spell, finishOffset)));
+        => AOEs.Add(new(shape, position, rotation + rotationOffset.Degrees(), Module.CastFinishAt(spell, finishOffset)));
 
         switch ((AID)spell.Action.ID)
         {
@@ -63,8 +63,8 @@ class GigaSlash(BossModule module) : Components.GenericAOEs(module)
         if (castEnds.Contains((AID)spell.Action.ID))
         {
             ++NumCasts;
-            if (_aoes.Count != 0)
-                _aoes.RemoveAt(0);
+            if (AOEs.Count != 0)
+                AOEs.RemoveAt(0);
         }
     }
 }

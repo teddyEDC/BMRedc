@@ -8,11 +8,10 @@ class SpikeFlail(BossModule module) : Components.SelfTargetedAOEs(module, Action
 class Touchdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Touchdown), new AOEShapeCircle(24))
 {
     public override bool KeepOnPhaseChange => true;
-    private readonly DragonBreath? _aoe = module.FindComponent<DragonBreath>();
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        return _aoe?.AOE == null || Arena.Bounds != A12Fafnir.FireArena
+        return Module.FindComponent<DragonBreath>()?.AOE == null || Arena.Bounds != A12Fafnir.FireArena
             ? ActiveCasters.Select(c => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo))) : [];
     }
 }

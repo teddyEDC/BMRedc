@@ -17,7 +17,7 @@ class PestilentSphere(BossModule module) : Components.SingleTargetCast(module, A
 
 class ShudderingEarth(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.ShudderingEarth));
 
-class Darter(BossModule module) : Components.Adds(module, (uint)OID.Darter)
+class Darter(BossModule module) : Components.Adds(module, (uint)OID.Darter, 1)
 {
     public override bool KeepOnPhaseChange => true;
 }

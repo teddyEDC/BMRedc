@@ -129,7 +129,7 @@ class Whirlwinds(BossModule module) : Components.GenericAOEs(module)
             var w = _smallWhirldwinds[i];
             forbidden.Add(ShapeDistance.Capsule(w.Position, !moving ? w.Rotation + a180 : w.Rotation, length, 5));
         }
-        hints.AddForbiddenZone(p => forbidden.Min(f => f(p)));
+        hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), WorldState.FutureTime(1.1f));
     }
 }
 
