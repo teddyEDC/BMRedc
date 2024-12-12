@@ -8,6 +8,8 @@ class A13ArkAngelsStates : StateMachineBuilder
     {
         _module = module;
         DeathPhase(0, SinglePhase)
+            .ActivateOnEnter<DecisiveBattle>()
+            .ActivateOnEnter<ArenaChange>()
             .ActivateOnEnter<Cloudsplitter>()
             .ActivateOnEnter<TachiYukikaze>()
             .ActivateOnEnter<TachiGekko>()
@@ -66,9 +68,7 @@ class A13ArkAngelsStates : StateMachineBuilder
 
     private void DecisiveBattle(uint id, float delay)
     {
-        ActorCast(id, _module.BossMR, AID.DecisiveBattleMR, delay, 4, true, "Assign target")
-            .ActivateOnEnter<ArenaChange>()
-            .ActivateOnEnter<DecisiveBattle>();
+        ActorCast(id, _module.BossMR, AID.DecisiveBattleMR, delay, 4, true, "Assign target");
     }
 
     private void Cloudsplitter(uint id, float delay)
@@ -105,7 +105,8 @@ class A13ArkAngelsStates : StateMachineBuilder
 
     private void Meteor(uint id, float delay)
     {
-        ActorCast(id, _module.BossTT, AID.Meteor, delay, 11, true, "Interrupt", true);
+        ActorCast(id, _module.BossTT, AID.Meteor, delay, 11, true, "Interrupt", true)
+            .OnExit(() => _module.Arena.Bounds = A13ArkAngels.DefaultBounds); // fall back for people who joined fight late
     }
 
     private State HavocSpiral(uint id, float delay)
