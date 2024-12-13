@@ -13,10 +13,10 @@ public class A14ShadowLord(WorldState ws, Actor primary) : BossModule(ws, primar
     private const float HalfWidth = 1.9f;
     public static readonly WPos ArenaCenter = new(150, 800);
     public static readonly ArenaBoundsCircle DefaultBounds = new(30);
-    private static readonly Circle[] circles = [new(new(166, 800), RadiusSmall), new(new(134, 800), RadiusSmall),
+    public static readonly Circle[] Circles = [new(new(166, 800), RadiusSmall), new(new(134, 800), RadiusSmall),
     new(new(150, 816), RadiusSmall), new(new(150, 784), RadiusSmall)];
-    private static readonly RectangleSE[] rects = [new(circles[1].Center, circles[2].Center, HalfWidth), new(circles[1].Center, circles[3].Center, HalfWidth),
-    new(circles[3].Center, circles[0].Center, HalfWidth), new(circles[0].Center, circles[2].Center, HalfWidth)];
-    public static readonly Shape[] Combined = [.. circles, .. rects];
+    private static readonly RectangleSE[] rects = [new(Circles[1].Center, Circles[2].Center, HalfWidth), new(Circles[1].Center, Circles[3].Center, HalfWidth),
+    new(Circles[3].Center, Circles[0].Center, HalfWidth), new(Circles[0].Center, Circles[2].Center, HalfWidth)];
+    public static readonly Shape[] Combined = [.. Circles, .. rects];
     public static readonly ArenaBoundsComplex ComplexBounds = new(Combined);
 }
