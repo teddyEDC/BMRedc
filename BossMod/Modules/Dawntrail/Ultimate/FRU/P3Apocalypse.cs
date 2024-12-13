@@ -42,8 +42,8 @@ class P3Apocalypse(BossModule module) : Components.GenericAOEs(module)
         if (_aoes.Count > 0 && NumCasts < 16 && _starting != null)
         {
             var safeOff = 10 * (_starting.Value - _rotation).ToDirection();
-            Arena.AddCircle(Module.Center + safeOff, 1, ArenaColor.Safe);
-            Arena.AddCircle(Module.Center - safeOff, 1, ArenaColor.Safe);
+            Arena.AddCircle(Module.Center + safeOff, 1, Colors.Safe);
+            Arena.AddCircle(Module.Center - safeOff, 1, Colors.Safe);
         }
     }
 
