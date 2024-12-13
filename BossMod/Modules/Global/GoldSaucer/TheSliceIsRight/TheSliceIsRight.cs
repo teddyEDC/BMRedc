@@ -109,6 +109,6 @@ class TheSliceIsRightStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.GoldSaucer, GroupID = 181, NameID = 9066)]
 public class TheSliceIsRight(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(70.5f, -36), 15, 28)]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(70.5f, -36), 15 * CosPI.Pi28th, 28)]);
     protected override bool CheckPull() => PrimaryActor != null;
 }

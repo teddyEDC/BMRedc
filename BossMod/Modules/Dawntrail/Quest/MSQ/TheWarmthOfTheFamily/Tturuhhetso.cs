@@ -111,7 +111,7 @@ class OrbCollecting(BossModule module) : BossComponent(module)
         var orbs = new List<Func<WPos, float>>();
         if (ActiveOrbs.Any())
             foreach (var o in ActiveOrbs)
-                orbs.Add(ShapeDistance.InvertedCircle(o.Position + 0.5f * o.Rotation.ToDirection(), 0.75f));
+                orbs.Add(ShapeDistance.InvertedCircle(o.Position + 0.55f * o.Rotation.ToDirection(), 0.75f));
         if (orbs.Count > 0)
             hints.AddForbiddenZone(p => orbs.Max(f => f(p)));
     }

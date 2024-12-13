@@ -86,7 +86,7 @@ class AuraSphere(BossModule module) : BossComponent(module)
             for (var i = 0; i < len; ++i)
             {
                 var o = sph[i];
-                orbs.Add(ShapeDistance.InvertedCircle(o.Position + 0.5f * o.Rotation.ToDirection(), 0.5f));
+                orbs.Add(ShapeDistance.InvertedCircle(o.Position + 0.5f * o.Rotation.ToDirection(), 0.55f));
             }
         }
         if (orbs.Count != 0)
