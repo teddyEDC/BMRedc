@@ -1,6 +1,5 @@
 ﻿using BossMod.AI;
 using BossMod.Autorotation;
-using BossMod.Pathfinding;
 
 namespace BossMod.Dawntrail.Ultimate.FRU;
 
@@ -8,7 +7,7 @@ namespace BossMod.Dawntrail.Ultimate.FRU;
 sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModule(manager, player)
 {
     public enum Track { Movement }
-    public enum MovementStrategy { None, Pathfind, Prepull, DragToCenter, MaxMeleeNearest, ClockSpot }
+    public enum MovementStrategy { None, Prepull, DragToCenter, MaxMeleeNearest, ClockSpot }
 
     public static RotationModuleDefinition Definition()
     {
