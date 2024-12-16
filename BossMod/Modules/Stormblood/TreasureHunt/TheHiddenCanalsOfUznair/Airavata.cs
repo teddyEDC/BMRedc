@@ -108,12 +108,13 @@ public class Airavata(WorldState ws, Actor primary) : FinalRoomArena(ws, primary
 {
     private static readonly uint[] bonusAdds = [(uint)OID.CanalEgg, (uint)OID.CanalGarlic, (uint)OID.CanalOnion, (uint)OID.CanalTomato,
     (uint)OID.CanalQueen, (uint)OID.Abharamu, (uint)OID.NamazuStickywhisker];
-    public static readonly uint[] All = [(uint)OID.Boss, (uint)OID.CanalLightningHomunculus, (uint)OID.CanalIceHomunculus, (uint)OID.CanalFireHomunculus, (uint)OID.CanalWindHomunculus,
-    (uint)OID.CanalAnala, (uint)OID.CanalAnila, (uint)OID.GoldenApa, (uint)OID.GoldenDhara, .. bonusAdds];
+    private static readonly uint[] rest = [(uint)OID.Boss, (uint)OID.CanalLightningHomunculus, (uint)OID.CanalIceHomunculus, (uint)OID.CanalFireHomunculus, (uint)OID.CanalWindHomunculus,
+    (uint)OID.CanalAnala, (uint)OID.CanalAnila, (uint)OID.GoldenApa, (uint)OID.GoldenDhara];
+    public static readonly uint[] All = [.. rest, .. bonusAdds];
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actors(Enemies(All));
+        Arena.Actors(Enemies(rest));
         Arena.Actors(Enemies(bonusAdds), Colors.Vulnerable);
     }
 

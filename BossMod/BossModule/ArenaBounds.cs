@@ -103,7 +103,7 @@ public abstract record class ArenaBounds(float Radius, float MapResolution, floa
 
     public void AddToInstanceCache(object key, object value)
     {
-        if (Cache.Count > 2500)
+        if (Cache.Count > 500)
             Cache.Clear();
         Cache[key] = value;
     }
