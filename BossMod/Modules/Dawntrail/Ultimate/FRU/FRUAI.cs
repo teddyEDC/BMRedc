@@ -15,7 +15,6 @@ sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModu
         var res = new RotationModuleDefinition("AI Experiment", "Experimental encounter-specific rotation", "Encounter AI", "veyn", RotationModuleQuality.WIP, new(~1ul), 100, 1, typeof(FRU));
         res.Define(Track.Movement).As<MovementStrategy>("Movement", "Movement")
             .AddOption(MovementStrategy.None, "None", "No automatic movement")
-            .AddOption(MovementStrategy.Pathfind, "Pathfind", "Use standard pathfinding to move")
             .AddOption(MovementStrategy.Prepull, "Prepull", "Pre-pull position: as close to the clock-spot as possible")
             .AddOption(MovementStrategy.DragToCenter, "DragToCenter", "Drag boss to the arena center")
             .AddOption(MovementStrategy.MaxMeleeNearest, "MaxMeleeNearest", "Move to nearest spot in max-melee")
@@ -35,20 +34,12 @@ sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModu
 
     private WPos CalculateDestination(FRU module, Actor? primaryTarget, MovementStrategy strategy, PartyRolesConfig.Assignment assignment) => strategy switch
     {
-        MovementStrategy.Pathfind => PathfindPosition(),
         MovementStrategy.Prepull => PrepullPosition(module, assignment),
         MovementStrategy.DragToCenter => DragToCenterPosition(module),
         MovementStrategy.MaxMeleeNearest => primaryTarget != null ? primaryTarget.Position + 7.5f * (Player.Position - primaryTarget.Position).Normalized() : Player.Position,
         MovementStrategy.ClockSpot => ClockSpotPosition(module, assignment, 6),
         _ => Player.Position
     };
-
-    // TODO: account for leeway for casters
-    private WPos PathfindPosition()
-    {
-        var res = NavigationDecision.Build(NavigationContext, World, Hints, Player, Speed());
-        return res.Destination ?? Player.Position;
-    }
 
     // assumption: pull range is 12; hitbox is 5, so maxmelee is 8, meaning we have approx 4m to move during pull - with sprint, speed is 7.8, accel is 30 => over 0.26s accel period we move 1.014m, then need another 0.38s to reach boss (but it also moves)
     private WPos PrepullPosition(FRU module, PartyRolesConfig.Assignment assignment)
