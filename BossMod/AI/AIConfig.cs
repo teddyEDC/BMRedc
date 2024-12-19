@@ -21,6 +21,9 @@ sealed class AIConfig : ConfigNode
     [PropertyDisplay("Forbid actions")]
     public bool ForbidActions = false;
 
+    [PropertyDisplay("Manual targeting")]
+    public bool ManualTarget = false;
+
     [PropertyDisplay("Forbid movement")]
     public bool ForbidMovement = false;
 
