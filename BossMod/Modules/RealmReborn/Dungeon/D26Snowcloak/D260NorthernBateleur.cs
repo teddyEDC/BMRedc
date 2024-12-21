@@ -95,7 +95,7 @@ class D260NorthernBateleurStates : StateMachineBuilder
             .ActivateOnEnter<WingCutter>()
             .ActivateOnEnter<DoubleSmash>()
             .ActivateOnEnter<SicklySneeze>()
-            .Raw.Update = () => Module.Enemies(D260NorthernBateleur.Trash).All(x => x.IsDeadOrDestroyed && x.Position.AlmostEqual(module.Arena.Center, module.Bounds.Radius))
+            .Raw.Update = () => module.Enemies(D260NorthernBateleur.Trash).Where(x => x.Position.AlmostEqual(module.Arena.Center, module.Bounds.Radius)).All(x => x.IsDeadOrDestroyed)
             || module.Enemies(OID.Yeti).Any(x => x.InCombat);
     }
 }
@@ -181,6 +181,6 @@ public class D260NorthernBateleur(WorldState ws, Actor primary) : BossModule(ws,
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actors(Enemies(Trash));
+        Arena.Actors(Enemies(Trash).Where(x => x.Position.AlmostEqual(Arena.Center, Bounds.Radius)));
     }
 }
