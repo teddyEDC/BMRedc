@@ -90,14 +90,14 @@ class Antipathy(BossModule module) : Components.ConcentricAOEs(module, _shapes)
     }
 }
 
-class AhkMorn(BossModule module) : Components.UniformStackSpread(module, 6, 0, 4, 4)
+class AkhMorn(BossModule module) : Components.UniformStackSpread(module, 6, 0, 4, 4)
 {
     private int numCasts;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.AkhMornFirst)
-            AddStack(WorldState.Actors.Find(spell.TargetID)!);
+            AddStack(WorldState.Actors.Find(spell.TargetID)!, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -129,7 +129,7 @@ class D293MidgardsormrStates : StateMachineBuilder
             .ActivateOnEnter<MirageAdmonishment>()
             .ActivateOnEnter<PhantomAdmonishment>()
             .ActivateOnEnter<Antipathy>()
-            .ActivateOnEnter<AhkMorn>();
+            .ActivateOnEnter<AkhMorn>();
     }
 }
 
