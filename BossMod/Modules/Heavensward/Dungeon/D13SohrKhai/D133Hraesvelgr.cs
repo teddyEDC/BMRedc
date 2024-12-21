@@ -104,6 +104,12 @@ class ThinIce(BossModule module) : Components.ThinIce(module, stopAtWall: true)
 {
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<FrostedOrb>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) ||
     (Module.FindComponent<FrigidDive>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false);
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (actor.FindStatus(StatusID) != null)
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonut(actor.Position, Distance, Distance + 0.5f));
+    }
 }
 
 class D133HraesvelgrStates : StateMachineBuilder

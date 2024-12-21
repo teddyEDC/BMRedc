@@ -2,14 +2,15 @@ namespace BossMod.RealmReborn.Dungeon.D26Snowcloak.D260NorthernBateleur;
 
 public enum OID : uint
 {
-    IceSprite = 0xD31, // R0.9
     Boss = 0xD1E, // R0.8
+    IceSprite = 0xD31, // R0.9
     Hrimthurs = 0xD1F, // R1.69
     SnowcloakGoobbue = 0xD1B, // R1.9
     WallController1 = 0x1E94F1,
     WindController1 = 0x1E96D4,
     WindController2 = 0x1E94F0,
     WindController3 = 0x1E94F2,
+    Yeti = 0x3977 // R3.8
 }
 
 public enum AID : uint
@@ -94,7 +95,8 @@ class D260NorthernBateleurStates : StateMachineBuilder
             .ActivateOnEnter<WingCutter>()
             .ActivateOnEnter<DoubleSmash>()
             .ActivateOnEnter<SicklySneeze>()
-            .Raw.Update = () => Module.Enemies(OID.IceSprite).Concat(Module.Enemies(OID.Boss)).Concat(Module.Enemies(OID.SnowcloakGoobbue)).All(x => x.IsDeadOrDestroyed);
+            .Raw.Update = () => Module.Enemies(D260NorthernBateleur.Trash).All(x => x.IsDeadOrDestroyed && x.Position.AlmostEqual(module.Arena.Center, module.Bounds.Radius))
+            || module.Enemies(OID.Yeti).Any(x => x.InCombat);
     }
 }
 
@@ -174,12 +176,11 @@ public class D260NorthernBateleur(WorldState ws, Actor primary) : BossModule(ws,
 
     public static readonly ArenaBoundsComplex Arena1 = new([new PolygonCustom(vertices1)]);
     public static readonly ArenaBoundsComplex Arena2 = new([new PolygonCustom(vertices1), new PolygonCustom(vertices2)]);
-
-    protected override bool CheckPull() => Enemies(OID.IceSprite).Concat(Enemies(OID.Boss))
-    .Concat(Enemies(OID.Hrimthurs)).Concat(Enemies(OID.SnowcloakGoobbue)).Any(x => x.InCombat);
+    public static readonly uint[] Trash = [(uint)OID.IceSprite, (uint)OID.Boss, (uint)OID.Hrimthurs, (uint)OID.SnowcloakGoobbue];
+    protected override bool CheckPull() => Enemies(Trash).Any(x => x.InCombat && x.Position.AlmostEqual(Arena.Center, Bounds.Radius));
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actors(Enemies(OID.Hrimthurs).Concat(Enemies(OID.Boss)).Concat(Enemies(OID.SnowcloakGoobbue)).Concat(Enemies(OID.IceSprite)));
+        Arena.Actors(Enemies(Trash));
     }
 }
