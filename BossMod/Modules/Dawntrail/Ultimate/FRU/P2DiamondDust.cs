@@ -194,8 +194,6 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         Arena.Actor(_source, Colors.Object, true);
-        if (AOEs.Count > 0)
-            Arena.AddCircle(pc.Position, 32, Colors.Safe);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -222,4 +220,10 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
                 AOEs.RemoveAt(0);
         }
     }
+}
+
+class P2ThinIce(BossModule module) : Components.ThinIce(module, distance: 32)
+{
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<P2TwinStillnessSilence>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) ||
+    !Module.InBounds(pos);
 }

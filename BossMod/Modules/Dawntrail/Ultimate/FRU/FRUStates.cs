@@ -223,6 +223,7 @@ class FRUStates : StateMachineBuilder
             .ActivateOnEnter<P2FrigidNeedleCross>()
             .ActivateOnEnter<P2SinboundHoly>()
             .ActivateOnEnter<P2HeavenlyStrike>()
+            .ActivateOnEnter<P2ThinIce>()
             .ActivateOnEnter<P2TwinStillnessSilence>() // show the cone caster early, to simplify finding movement direction...
             .DeactivateOnExit<P2HeavenlyStrike>();
         ComponentCondition<P2FrigidNeedleCross>(id + 0x50, 2.8f, comp => comp.NumCasts > 0, "Stars")
@@ -251,6 +252,7 @@ class FRUStates : StateMachineBuilder
             .ActivateOnEnter<P2HallowedRay>();
         ActorCastEnd(id + 1, _module.BossP2, 5, true);
         ComponentCondition<P2HallowedRay>(id + 2, 0.6f, comp => comp.NumCasts > 0, "Line stack")
+            .DeactivateOnExit<P2ThinIce>()
             .DeactivateOnExit<P2HallowedRay>();
     }
 
