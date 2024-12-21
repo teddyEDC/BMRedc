@@ -90,7 +90,7 @@ class GallopKB(BossModule module) : Components.Knockback(module)
 {
     public static readonly float[] xPositions = [395.5f, 404.5f];
     private static readonly AOEShapeRect rect = new(4.5f, 20);
-    public readonly List<Source> sources = [];
+    private readonly List<Source> _sources = [];
     public readonly List<SafeWall> safeWalls = GenerateSafeWalls();
 
     private static List<SafeWall> GenerateSafeWalls()
@@ -106,18 +106,18 @@ class GallopKB(BossModule module) : Components.Knockback(module)
         return list;
     }
 
-    public override IEnumerable<Source> Sources(int slot, Actor actor) => sources;
+    public override IEnumerable<Source> Sources(int slot, Actor actor) => _sources;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.GallopKB)
-            sources.Add(new(spell.LocXZ, 30, Module.CastFinishAt(spell), rect, spell.Rotation, Kind.DirForward, default, safeWalls));
+            _sources.Add(new(spell.LocXZ, 30, Module.CastFinishAt(spell), rect, spell.Rotation, Kind.DirForward, default, safeWalls));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.GallopKB)
-            sources.Clear();
+            _sources.Clear();
     }
 }
 
