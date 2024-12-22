@@ -22,7 +22,7 @@ public class BossModuleHintsWindow : UIWindow
             Flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs;
         if (_mgr.Config.HintsInSeparateWindowTransparent)
             Flags |= ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground;
-        // ForceMainWindow = _mgr.Config.HintsInSeparateWindowTransparent; // NoBackground flag without ForceMainWindow works incorrectly for whatever reason
+        ForceMainWindow = _mgr.Config.HintsInSeparateWindowTransparent; // NoBackground flag without ForceMainWindow works incorrectly for whatever reason
     }
 
     public override void Draw()
