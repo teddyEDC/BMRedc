@@ -34,7 +34,7 @@ class DD30HirukoStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "Malediktus, LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 542, NameID = 7482)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus, LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 542, NameID = 7482)]
 public class DD30Hiruko(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-300, -300), 24.5f * CosPI.Pi48th, 48, 3.75f.Degrees())], [new Rectangle(new(-300, -325), 20, 1.25f)]);

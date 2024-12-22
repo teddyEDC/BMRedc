@@ -29,7 +29,7 @@ public class BossModuleMainWindow : UIWindow
             Flags |= ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground;
         if (_mgr.Config.Lock)
             Flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs;
-        // ForceMainWindow = _mgr.Config.TrishaMode; // NoBackground flag without ForceMainWindow works incorrectly for whatever reason
+        ForceMainWindow = _mgr.Config.TrishaMode; // NoBackground flag without ForceMainWindow works incorrectly for whatever reason
 
         if (_mgr.Config.ShowWorldArrows && _mgr.ActiveModule != null && _mgr.WorldState.Party[PartyState.PlayerSlot] is var pc && pc != null)
             DrawMovementHints(_mgr.ActiveModule.CalculateMovementHintsForRaidMember(PartyState.PlayerSlot, pc), pc.PosRot.Y);
