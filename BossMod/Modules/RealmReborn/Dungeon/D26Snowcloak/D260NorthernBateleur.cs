@@ -101,7 +101,7 @@ class D260NorthernBateleurStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 27, NameID = 3220, SortOrder = 2)]
-public class D260NorthernBateleur(WorldState ws, Actor primary) : BossModule(ws, primary, Arena1.Center, Arena1)
+public class D260NorthernBateleur(WorldState ws, Actor primary) : BossModule(ws, primary, arena1.Center, arena1)
 {
     private static readonly WPos[] vertices1 = [new(-31.24f, -185.2f), new(-30.26f, -184.84f), new(-29.79f, -184.64f), new(-29.32f, -184.42f), new(-28.88f, -184.17f),
     new(-28.44f, -183.9f), new(-24.36f, -180.74f), new(-21.94f, -179.18f), new(-21.43f, -179.14f), new(-19.93f, -179.49f),
@@ -174,7 +174,7 @@ public class D260NorthernBateleur(WorldState ws, Actor primary) : BossModule(ws,
     new(-45.05f, -153.96f), new(-45.32f, -154.4f), new(-48.66f, -156.18f), new(-48.98f, -156.6f), new(-49.53f, -157.66f),
     new(-49.02f, -157.71f), new(-48.47f, -157.89f), new(-47.9f, -158.01f)];
 
-    public static readonly ArenaBoundsComplex Arena1 = new([new PolygonCustom(vertices1)]);
+    private static readonly ArenaBoundsComplex arena1 = new([new PolygonCustom(vertices1)]);
     public static readonly ArenaBoundsComplex Arena2 = new([new PolygonCustom(vertices1), new PolygonCustom(vertices2)]);
     public static readonly uint[] Trash = [(uint)OID.IceSprite, (uint)OID.Boss, (uint)OID.Hrimthurs, (uint)OID.SnowcloakGoobbue];
     protected override bool CheckPull() => Enemies(Trash).Any(x => x.InCombat && x.Position.AlmostEqual(Arena.Center, Bounds.Radius));

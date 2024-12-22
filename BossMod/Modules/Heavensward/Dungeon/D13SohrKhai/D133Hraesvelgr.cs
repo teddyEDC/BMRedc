@@ -31,11 +31,6 @@ public enum IconID : uint
     Spreadmarker = 311 // player->self
 }
 
-public enum SID : uint
-{
-    ThinIce = 911 // none->player, extra=0x6E
-}
-
 abstract class HallowedWings(BossModule module, AID aid) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(50, 11));
 class HallowedWings1(BossModule module) : HallowedWings(module, AID.HallowedWings1);
 class HallowedWings2(BossModule module) : HallowedWings(module, AID.HallowedWings2);
@@ -100,16 +95,10 @@ class HolyOrb(BossModule module) : Components.Exaflare(module, new AOEShapeCircl
 
 class HolyBreath(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Spreadmarker, ActionID.MakeSpell(AID.HolyBreath), 6, 6);
 
-class ThinIce(BossModule module) : Components.ThinIce(module, stopAtWall: true)
+class ThinIce(BossModule module) : Components.ThinIce(module, true, stopAtWall: true)
 {
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<FrostedOrb>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) ||
     (Module.FindComponent<FrigidDive>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false);
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (actor.FindStatus(StatusID) != null)
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonut(actor.Position, Distance, Distance + 0.5f));
-    }
 }
 
 class D133HraesvelgrStates : StateMachineBuilder
@@ -132,7 +121,7 @@ class D133HraesvelgrStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 171, NameID = 4954)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 171, NameID = 4954, SortOrder = 6)]
 public class D133Hraesvelgr(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly ArenaBoundsComplex arena = new([new Polygon(new(400, -400), 19.5f, 36)]);
