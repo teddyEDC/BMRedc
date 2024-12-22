@@ -168,7 +168,51 @@ class GallopKBHint(BossModule module) : Components.GenericAOEs(module)
 }
 
 class Touchdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TouchdownVisual), new AOEShapeCircle(25));
-class BurningBright(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.BurningBright), new AOEShapeRect(28.5f, 3), endsOnCastEvent: true);
+
+class BurningBright(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.BurningBright), new AOEShapeRect(28.5f, 3), endsOnCastEvent: true)
+{
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
+    {
+        base.DrawArenaForeground(pcSlot, pc);
+        if (!ActiveBaits.Any(x => x.Target == pc))
+            return;
+        var walls = Module.Enemies(OID.PrayerWall);
+        for (var i = 0; i < walls.Count; ++i)
+        {
+            var a = walls[i];
+            Arena.AddCircle(a.Position, a.HitboxRadius, Colors.Danger);
+        }
+    }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        if (CurrentBaits.Any(x => x.Target != actor))
+            base.AddHints(slot, actor, hints);
+        else if (CurrentBaits.Any(x => x.Target == actor))
+            hints.Add("Bait away, avoid intersecting wall hitboxes!");
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.AddAIHints(slot, actor, assignment, hints);
+        var bait = ActiveBaitsOn(actor).FirstOrDefault();
+        if (bait == default)
+            return;
+        var walls = Module.Enemies(OID.PrayerWall);
+        var count = walls.Count;
+        if (count <= 4) // don't care if most walls are up plus most of the arena would likely be forbidden anyway depending on player positioning
+        {
+            var forbidden = new List<Func<WPos, float>>();
+            for (var i = 0; i < count; ++i)
+            {
+                var a = walls[i];
+                forbidden.Add(ShapeDistance.Cone(bait.Source.Position, 100, bait.Source.AngleTo(a), Angle.Asin(8 / (a.Position - bait.Source.Position).Length())));
+            }
+            if (forbidden.Count != 0)
+                hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), bait.Activation);
+        }
+    }
+}
 
 class RearHoof(BossModule module) : Components.SingleTargetInstant(module, ActionID.MakeSpell(AID.RearHoof), 4)
 {
@@ -233,7 +277,20 @@ class CloudCall(BossModule module) : Components.GenericBaitAway(module)
         if (CurrentBaits.Any(x => x.Target != actor))
             base.AddHints(slot, actor, hints);
         else if (CurrentBaits.Any(x => x.Target == actor))
-            hints.Add("Bait cloud away!");
+            hints.Add("Bait cloud away, avoid intersecting wall hitboxes!");
+    }
+
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
+    {
+        base.DrawArenaForeground(pcSlot, pc);
+        if (!ActiveBaits.Any(x => x.Target == pc))
+            return;
+        var walls = Module.Enemies(OID.PrayerWall);
+        for (var i = 0; i < walls.Count; ++i)
+        {
+            var a = walls[i];
+            Arena.AddCircle(a.Position, a.HitboxRadius, Colors.Danger);
+        }
     }
 }
 
@@ -273,7 +330,7 @@ class D132PoqhirajStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 171, NameID = 4952)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 171, NameID = 4952, SortOrder = 4)]
 public class D132Poqhiraj(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, new ArenaBoundsRect(4.5f, 19.75f))
 {
     public static readonly WPos ArenaCenter = new(400, 104.166f);

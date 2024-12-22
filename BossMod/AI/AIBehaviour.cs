@@ -45,7 +45,6 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         if (!forbidActions && (AIPreset != null || autorot.Preset != null))
         {
             target = SelectPrimaryTarget(player, master);
-            AdjustTargetPositional(player, ref target);
             if (_config.ManualTarget)
             {
                 var t = autorot.WorldState.Actors.Find(player.TargetID);
@@ -56,6 +55,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             }
             if (target.Target != null || TargetIsForbidden(player.TargetID))
                 autorot.Hints.ForcedTarget ??= target.Target?.Actor;
+            AdjustTargetPositional(player, ref target);
         }
 
         var followTarget = _config.FollowTarget;
@@ -177,11 +177,10 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
                 return (decision, targeting);
             }
         }
-
         var adjRotation = targeting.PreferTanking ? targeting.Target.DesiredRotation : targeting.Target.Actor.Rotation;
-
+        var pos = autorot.Hints.RecommendedPositional.Target?.Position;
         var fdecision = await Task.Run(() =>
-            NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, autorot.Hints.RecommendedPositional.Target?.Position, adjRange, adjRotation, autorot.Hints.RecommendedPositional.Pos)
+            NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player, pos == null ? autorot.WorldState.Actors.Find(player.TargetID)?.Position : pos, adjRange, adjRotation, autorot.Hints.RecommendedPositional.Pos)
         ).ConfigureAwait(true);
 
         return (fdecision, targeting);
