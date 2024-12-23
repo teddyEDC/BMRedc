@@ -39,7 +39,7 @@ public enum AID : uint
     MarrowDrain1 = 3342, // CulturedChimera->self, 3.0s cast, range 6+R 120-degree cone
     MarrowDrain2 = 3341, // CulturedChimera->self, 3.0s cast, range 6+R 120-degree cone
     MarrowDrain3 = 3340, // CulturedChimera->self, 3.0s cast, range 6+R 120-degree cone
-    TheRamsVoice = 3343, // CulturedChimera->self, 3.0s cast, range 6+R circle
+    TheRamsVoice = 3343 // CulturedChimera->self, 3.0s cast, range 6+R circle
 }
 
 class Hole(BossModule module) : BossComponent(module)

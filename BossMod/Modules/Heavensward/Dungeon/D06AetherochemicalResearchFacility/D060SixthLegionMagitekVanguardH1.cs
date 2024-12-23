@@ -25,7 +25,7 @@ public enum AID : uint
     Feint = 76, // SixthLegionTesserarius->player, no cast, single-target
     ShieldBash = 718, // SixthLegionOptio->player, no cast, single-target
     Cure = 120, // SixthLegionMedicus->self, 1.5s cast, single-target
-    FightOrFlight = 20, // SixthLegionOptio->self, no cast, single-target
+    FightOrFlight = 20 // SixthLegionOptio->self, no cast, single-target
 }
 
 class CermetDrill(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.CermetDrill), new AOEShapeRect(8.8f, 2.5f));

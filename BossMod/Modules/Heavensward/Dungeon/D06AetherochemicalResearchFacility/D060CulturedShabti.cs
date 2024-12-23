@@ -2,7 +2,7 @@ namespace BossMod.Heavensward.Dungeon.D06AetherochemicalResearchFacility.D060Cul
 
 public enum OID : uint
 {
-    Boss = 0xF58, // R2.2
+    Boss = 0xF58 // R2.2
 }
 
 public enum AID : uint
@@ -10,7 +10,7 @@ public enum AID : uint
     AutoAttack = 870, // Boss->player, no cast, single-target
 
     Spellsword = 1259, // Boss->self, 3.0s cast, range 6+R 120-degree cone
-    DeathsDoor = 1260, // Boss->self, 2.0s cast, range 20+R width 2 rect
+    DeathsDoor = 1260 // Boss->self, 2.0s cast, range 20+R width 2 rect
 }
 
 class Spellsword(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Spellsword), new AOEShapeCone(8.2f, 60.Degrees()));
@@ -27,7 +27,7 @@ class D060CulturedShabtiStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 3838, SortOrder = 10)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 3838, SortOrder = 9)]
 public class D060CulturedShabti(WorldState ws, Actor primary) : BossModule(ws, primary, IsArena1(primary) ? arena1.Center : ShabtiConjurer2Bounds.Arena.Center, IsArena1(primary) ? arena1 : ShabtiConjurer2Bounds.Arena)
 {
     private static bool IsArena1(Actor primary) => primary.Position.Z > 200;
