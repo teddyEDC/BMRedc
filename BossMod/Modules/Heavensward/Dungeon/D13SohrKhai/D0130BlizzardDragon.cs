@@ -66,7 +66,7 @@ class D130BlizzardDragonStates : StateMachineBuilder
             .ActivateOnEnter<Fireball>()
             .ActivateOnEnter<SheetOfIce>()
             .ActivateOnEnter<Touchdown>()
-            .Raw.Update = () => module.Enemies(D130BlizzardDragon.Trash).All(x => x.IsDeadOrDestroyed);
+            .Raw.Update = () => module.Enemies(OID.BlizzardDragon1).Any(x => x.IsDead) || module.PrimaryActor.IsDestroyed;
     }
 }
 

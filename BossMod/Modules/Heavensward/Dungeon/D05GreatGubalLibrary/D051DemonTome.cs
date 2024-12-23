@@ -58,11 +58,14 @@ class Disclosure(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
+class ThinIce(BossModule module) : Components.ThinIce(module, 15, stopAtWall: true);
+
 class D051DemonTomeStates : StateMachineBuilder
 {
     public D051DemonTomeStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<ThinIce>()
             .ActivateOnEnter<LiquefyCenter>()
             .ActivateOnEnter<LiquefySides>()
             .ActivateOnEnter<Repel>()
