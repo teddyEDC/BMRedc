@@ -8,7 +8,7 @@ public enum OID : uint
     ScrambledEngineer = 0xF59, // R1.225
     ScrambledPaladin = 0xF5A, // R1.225
     ScrambledIronClaw = 0xFA4, // R1.5
-    ScrambledIronGiant = 0xFA3, // R2.3
+    ScrambledIronGiant = 0xFA3 // R2.3
 }
 
 public enum AID : uint
@@ -24,7 +24,7 @@ public enum AID : uint
     Headspin2 = 4664, // ScrambledEngineer->self, no cast, range 4+R circle
     GrandSword = 33030, // ScrambledIronGiant->self, 3.0s cast, range 16 120-degree cone
     TheHand = 609, // ScrambledIronClaw->self, 3.0s cast, range 6+R 120-degree cone
-    DefensiveManeuvers = 607, // ScrambledIronClaw->self, 3.0s cast, single-target, apply stoneskin
+    DefensiveManeuvers = 607 // ScrambledIronClaw->self, 3.0s cast, single-target, apply stoneskin
 }
 
 class PassiveInfraredGuidanceSystem(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.PassiveInfraredGuidanceSystem), new AOEShapeCircle(6), (uint)OID.Boss, originAtTarget: true);

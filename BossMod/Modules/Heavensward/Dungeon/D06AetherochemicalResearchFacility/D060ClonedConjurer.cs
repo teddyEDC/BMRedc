@@ -3,7 +3,7 @@ namespace BossMod.Heavensward.Dungeon.D06AetherochemicalResearchFacility.D060Clo
 public enum OID : uint
 {
     Boss = 0xF56, // R0.6
-    ClonedThaumaturge = 0xF57, // R0.6
+    ClonedThaumaturge = 0xF57 // R0.6
 }
 
 public enum AID : uint
@@ -12,7 +12,7 @@ public enum AID : uint
     Aero = 969, // Boss->player, 1.0s cast, single-target
     Tornado = 900, // Boss->player, 5.0s cast, range 6 circle
     Breakga = 2340, // ClonedThaumaturge->player, 4.0s cast, range 5 circle
-    Drain = 2339, // ClonedThaumaturge->player, 4.0s cast, single-target
+    Drain = 2339 // ClonedThaumaturge->player, 4.0s cast, single-target
 }
 
 class Tornado(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.Tornado), 6);
@@ -27,7 +27,7 @@ class D060ClonedConjurerStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 3838, SortOrder = 9)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 3838, SortOrder = 8)]
 public class D060ClonedConjurer(WorldState ws, Actor primary) : BossModule(ws, primary, IsArena1(primary) ? arena1.Center : ShabtiConjurer2Bounds.Arena.Center, IsArena1(primary) ? arena1 : ShabtiConjurer2Bounds.Arena)
 {
     private static bool IsArena1(Actor primary) => primary.Position.Z > 200;

@@ -12,7 +12,7 @@ public enum AID : uint
 
     AutoCannons = 4825, // MonitoringDrone->self, 3.0s cast, range 40+R width 5 rect
     Rotoswipe = 4556, // Boss->self, 3.0s cast, range 8+R 120-degree cone
-    WreckingBall = 4557, // Boss->location, 4.0s cast, range 8 circle
+    WreckingBall = 4557 // Boss->location, 4.0s cast, range 8 circle
 }
 
 class Rotoswipe(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Rotoswipe), new AOEShapeCone(11, 60.Degrees()));
@@ -31,7 +31,7 @@ class D060FacilityDreadnaughtStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 3836, SortOrder = 8)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 38, NameID = 3836, SortOrder = 7)]
 public class D060FacilityDreadnaught(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-360, -250), 9, 6)]);
