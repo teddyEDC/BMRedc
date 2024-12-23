@@ -95,7 +95,7 @@ class HolyOrb(BossModule module) : Components.Exaflare(module, new AOEShapeCircl
 
 class HolyBreath(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Spreadmarker, ActionID.MakeSpell(AID.HolyBreath), 6, 6);
 
-class ThinIce(BossModule module) : Components.ThinIce(module, true, stopAtWall: true)
+class ThinIce(BossModule module) : Components.ThinIce(module, 11, true, stopAtWall: true)
 {
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<FrostedOrb>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) ||
     (Module.FindComponent<FrigidDive>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false);

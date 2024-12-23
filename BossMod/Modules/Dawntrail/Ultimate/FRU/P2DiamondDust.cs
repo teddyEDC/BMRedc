@@ -222,7 +222,7 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class P2ThinIce(BossModule module) : Components.ThinIce(module, true, distance: 32)
+class P2ThinIce(BossModule module) : Components.ThinIce(module, 32, true)
 {
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<P2TwinStillnessSilence>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) ||
     !Module.InBounds(pos);

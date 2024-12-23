@@ -19,6 +19,7 @@ public enum AID : uint
     AdventitiousLash = 4502, // GardenSankchinni->player, no cast, single-target
     TightTornado = 6237, // EnchantedFan->self, 3.0s cast, range 15+R width 4 rect
     Venom = 1911, // SanctuarySkipper->player, no cast, range 10+R 120-degree cone
+    CursedSphere = 1912, // SanctuarySkipper->players, no cast, range 3 circle, targets seemingly random players
     DarkBlizzardIII = 6236, // Boss->location, 3.0s cast, range 5 circle
 }
 
