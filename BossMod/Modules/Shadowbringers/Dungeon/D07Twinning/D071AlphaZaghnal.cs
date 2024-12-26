@@ -50,12 +50,14 @@ class PounceErrant(BossModule module) : Components.SpreadFromIcon(module, (uint)
         if (IsSpreadTarget(actor))
         {
             var spread = Spreads.FirstOrDefault();
-            var forbidden = new List<Func<WPos, float>>();
-            var adjustedRadius = spread.Radius + 1;
-            for (var i = 0; i < Module.Enemies(OID.IronCage).Count; ++i)
-                forbidden.Add(ShapeDistance.Circle(Module.Enemies(OID.IronCage)[i].Position, adjustedRadius));
-            if (forbidden.Count != 0)
-                hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), spread.Activation);
+            var cages = Module.Enemies(OID.IronCage);
+            var count = cages.Count;
+            if (count == 0)
+                return;
+            var forbidden = new List<Func<WPos, float>>(count);
+            for (var i = 0; i < count; ++i)
+                forbidden.Add(ShapeDistance.Circle(Module.Enemies(OID.IronCage)[i].Position, 11));
+            hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), spread.Activation);
         }
     }
 
@@ -104,15 +106,17 @@ class ForlornImpact(BossModule module) : Components.GenericBaitAway(module)
         var bait = ActiveBaitsOn(actor).FirstOrDefault();
         if (bait != default)
         {
-            var forbidden = new List<Func<WPos, float>>();
             var cages = Module.Enemies(OID.IronCage);
+            var count = cages.Count;
+            if (count == 0)
+                return;
+            var forbidden = new List<Func<WPos, float>>(count);
             for (var i = 0; i < cages.Count; ++i)
             {
                 var a = cages[i];
                 forbidden.Add(ShapeDistance.Cone(bait.Source.Position, 100, bait.Source.AngleTo(a), Angle.Asin(3.5f / (a.Position - bait.Source.Position).Length())));
             }
-            if (forbidden.Count != 0)
-                hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), bait.Activation);
+            hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), bait.Activation);
         }
     }
 

@@ -2,7 +2,7 @@ namespace BossMod.Dawntrail.Trial.T03QueenEternal;
 
 class RoyalBanishment(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<AOEInstance> _aoes = [];
+    private readonly List<AOEInstance> _aoes = new(7);
     private static readonly AOEShapeCone cone = new(100, 15.Degrees());
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
@@ -25,7 +25,7 @@ class RoyalBanishment(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count > 0 && (AID)spell.Action.ID == AID.RoyalBanishment)
+        if (_aoes.Count != 0 && (AID)spell.Action.ID == AID.RoyalBanishment)
             _aoes.RemoveAt(0);
     }
 }

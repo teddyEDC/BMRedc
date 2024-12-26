@@ -52,7 +52,7 @@ public abstract class ThinIce(BossModule module, float distance, bool createforb
                 ShapeDistance.InvertedDonut(pos, ddistance, ddistance + 0.5f),
                 ShapeDistance.InvertedRect(pos, offset, 0.5f, 0.5f, 0.5f)
             };
-            hints.AddForbiddenZone(p => forbidden.Max(f => f(p)), WorldState.FutureTime(1.1f));
+            hints.AddForbiddenZone(p => forbidden.Max(f => f(p)), DateTime.MaxValue);
         }
     }
 }

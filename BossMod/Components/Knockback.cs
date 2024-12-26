@@ -45,15 +45,15 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
         public readonly bool ImmuneAt(DateTime time) => RoleBuffExpire > time || JobBuffExpire > time || DutyBuffExpire > time;
     }
 
-    public List<SafeWall> SafeWalls = safeWalls ?? [];
-    public bool IgnoreImmunes = ignoreImmunes;
-    public bool StopAtWall = stopAtWall; // use if wall is solid rather than deadly
-    public bool StopAfterWall = stopAfterWall; // use if the wall is a polygon where you need to check for intersections
-    public int MaxCasts = maxCasts; // use to limit number of drawn knockbacks
+    public readonly List<SafeWall> SafeWalls = safeWalls ?? [];
+    public readonly bool IgnoreImmunes = ignoreImmunes;
+    public readonly bool StopAtWall = stopAtWall; // use if wall is solid rather than deadly
+    public readonly bool StopAfterWall = stopAfterWall; // use if the wall is a polygon where you need to check for intersections
+    public readonly int MaxCasts = maxCasts; // use to limit number of drawn knockbacks
     private const float approxHitBoxRadius = 0.499f; // calculated because due to floating point errors this does not result in 0.001
     private const float maxIntersectionError = 0.5f - approxHitBoxRadius; // calculated because due to floating point errors this does not result in 0.001
 
-    protected PlayerImmuneState[] PlayerImmunes = new PlayerImmuneState[PartyState.MaxAllies];
+    protected readonly PlayerImmuneState[] PlayerImmunes = new PlayerImmuneState[PartyState.MaxAllies];
 
     public bool IsImmune(int slot, DateTime time) => !IgnoreImmunes && PlayerImmunes[slot].ImmuneAt(time);
 
@@ -225,11 +225,11 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
 public class KnockbackFromCastTarget(BossModule module, ActionID aid, float distance, bool ignoreImmunes = false, int maxCasts = int.MaxValue, AOEShape? shape = null, Kind kind = Kind.AwayFromOrigin, float minDistance = 0, bool minDistanceBetweenHitboxes = false, bool stopAtWall = false, bool stopAfterWall = false, List<SafeWall>? safeWalls = null)
     : Knockback(module, aid, ignoreImmunes, maxCasts, stopAtWall, stopAfterWall, safeWalls)
 {
-    public float Distance = distance;
-    public AOEShape? Shape = shape;
-    public Kind KnockbackKind = kind;
-    public float MinDistance = minDistance;
-    public bool MinDistanceBetweenHitboxes = minDistanceBetweenHitboxes;
+    public readonly float Distance = distance;
+    public readonly AOEShape? Shape = shape;
+    public readonly Kind KnockbackKind = kind;
+    public readonly float MinDistance = minDistance;
+    public readonly bool MinDistanceBetweenHitboxes = minDistanceBetweenHitboxes;
     public readonly List<Actor> Casters = [];
 
     public override IEnumerable<Source> Sources(int slot, Actor actor)
