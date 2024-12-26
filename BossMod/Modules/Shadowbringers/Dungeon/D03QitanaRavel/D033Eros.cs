@@ -81,10 +81,11 @@ class Inhale(BossModule module) : Components.KnockbackFromCastTarget(module, Act
         var source = Sources(slot, actor).FirstOrDefault();
         if (source != default)
         {
-            var component = _aoe.ActiveAOEs(slot, actor);
-            var forbidden = new List<Func<WPos, float>>(component.Count());
-            foreach (var c in component)
-                forbidden.Add(ShapeDistance.Rect(c.Origin, Module.PrimaryActor.Rotation, 40, 0, 6));
+            Components.GenericAOEs.AOEInstance[] component = [.. _aoe.ActiveAOEs(slot, actor)];
+            var len = component.Length;
+            var forbidden = new List<Func<WPos, float>>(len);
+            for (var i = 0; i < len; ++i)
+                forbidden.Add(ShapeDistance.Rect(component[i].Origin, Module.PrimaryActor.Rotation, 40, 0, 6));
             if (forbidden.Count != 0)
                 hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), source.Activation);
         }
@@ -102,10 +103,11 @@ class HeavingBreath(BossModule module) : Components.KnockbackFromCastTarget(modu
         var source = Sources(slot, actor).FirstOrDefault();
         if (source != default)
         {
-            var component = _aoe.ActiveAOEs(slot, actor);
-            var forbidden = new List<Func<WPos, float>>(component.Count());
-            foreach (var c in component)
-                forbidden.Add(ShapeDistance.Rect(c.Origin, new Angle(), 40, 40, 6));
+            Components.GenericAOEs.AOEInstance[] component = [.. _aoe.ActiveAOEs(slot, actor)];
+            var len = component.Length;
+            var forbidden = new List<Func<WPos, float>>(len);
+            for (var i = 0; i < len; ++i)
+                forbidden.Add(ShapeDistance.Rect(component[i].Origin, new Angle(), 40, 40, 6));
             if (forbidden.Count != 0)
                 hints.AddForbiddenZone(p => forbidden.Min(f => f(p)), source.Activation);
         }
