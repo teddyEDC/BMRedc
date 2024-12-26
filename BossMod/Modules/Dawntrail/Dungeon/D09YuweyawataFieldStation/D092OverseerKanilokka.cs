@@ -123,9 +123,16 @@ class Necrohazard(BossModule module) : Components.SelfTargetedAOEs(module, Actio
 class DarkII(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCone cone = new(35, 15.Degrees());
-    private readonly List<AOEInstance> _aoes = [];
+    private readonly List<AOEInstance> _aoes = new(12);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes.Take(6);
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        var count = _aoes.Count;
+        if (count == 0)
+            yield break;
+        for (var i = 0; i < (count > 6 ? 6 : count); ++i)
+            yield return _aoes[i];
+    }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
