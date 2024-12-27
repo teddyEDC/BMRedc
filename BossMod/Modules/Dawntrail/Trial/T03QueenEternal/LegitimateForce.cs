@@ -66,9 +66,9 @@ class LegitimateForce(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         var besiegeCount = besiege.Count;
         var gravityBounds = Arena.Bounds == T03QueenEternal.SplitGravityBounds;
-        if (count > 0 && Arena.Center != T03QueenEternal.SplitArena.Center || besiegeCount == 0 && count == 2 && gravityBounds)
+        if (count != 0 && Arena.Center != T03QueenEternal.SplitArena.Center || besiegeCount == 0 && count == 2 && gravityBounds)
             hints.AddForbiddenZone(ShapeDistance.InvertedRect(Arena.Center + offset1, Arena.Center - offset1, 3), _aoes[0].Activation);
         else if (count != 2 && besiegeCount == 0 && gravityBounds)
-            hints.AddForbiddenZone(stayInBounds, count > 0 ? _aoes[0].Activation : besiegeCount > 0 ? besiege[0].Activation : default);
+            hints.AddForbiddenZone(stayInBounds, count != 0 ? _aoes[0].Activation : besiegeCount != 0 ? besiege[0].Activation : default);
     }
 }
