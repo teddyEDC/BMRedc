@@ -7,7 +7,7 @@ class EndeathVortex(BossModule module) : Components.Knockback(module)
 
     public override IEnumerable<Source> Sources(int slot, Actor actor) => Utils.ZeroOrOne(_source);
 
-    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (pos - Ch01CloudOfDarkness.Phase1Midpoint).LengthSq() <= 36;
+    public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (pos - Ch01CloudOfDarkness.Phase1BoundsCenter).LengthSq() <= 36;
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
@@ -61,7 +61,7 @@ class EndeathVortex(BossModule module) : Components.Knockback(module)
         }
     }
 
-    private void Start(DateTime activation) => _source = new(Ch01CloudOfDarkness.Phase1Midpoint, 15, activation, Kind: Kind.TowardsOrigin);
+    private void Start(DateTime activation) => _source = new(Ch01CloudOfDarkness.Phase1BoundsCenter, 15, activation, Kind: Kind.TowardsOrigin);
 }
 
 class EndeathAOE(BossModule module) : Components.GenericAOEs(module)
@@ -109,8 +109,8 @@ class EndeathAOE(BossModule module) : Components.GenericAOEs(module)
 
     private void Start(DateTime activation)
     {
-        _aoes.Add(new(_shapeOut, Ch01CloudOfDarkness.Phase1Midpoint, default, activation.AddSeconds(2)));
-        _aoes.Add(new(_shapeIn, Ch01CloudOfDarkness.Phase1Midpoint, default, activation.AddSeconds(4)));
+        _aoes.Add(new(_shapeOut, Ch01CloudOfDarkness.Phase1BoundsCenter, default, activation.AddSeconds(2)));
+        _aoes.Add(new(_shapeIn, Ch01CloudOfDarkness.Phase1BoundsCenter, default, activation.AddSeconds(4)));
         _delayed = false;
     }
 }

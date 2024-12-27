@@ -19,7 +19,7 @@ class P4DarklitDragonsong(BossModule module) : BossComponent(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var t in _tethers)
-            Arena.AddLine(t.from.Position, t.to.Position, ArenaColor.Safe); // TODO: min/max break distance
+            Arena.AddLine(t.from.Position, t.to.Position, Colors.Safe); // TODO: min/max break distance
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)

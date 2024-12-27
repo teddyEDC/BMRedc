@@ -219,14 +219,14 @@ class P2HeavenlyStrike(BossModule module) : Components.Knockback(module, ActionI
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (_safeDirs[slot] != default)
-            hints.AddForbiddenZone(ShapeDistance.PrecisePosition(Module.Center + 6 * _safeDirs[slot], new(1, 0), Module.Bounds.MapResolution, actor.Position, 0.25f), _activation);
+            hints.AddForbiddenZone(ShapeDistance.PrecisePosition(Arena.Center + 6 * _safeDirs[slot], new(1, 0), Arena.Bounds.MapResolution, actor.Position, 0.25f), _activation);
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         base.DrawArenaForeground(pcSlot, pc);
         if (_safeDirs[pcSlot] != default)
-            Arena.AddCircle(Module.Center + 18 * _safeDirs[pcSlot], 1, ArenaColor.Safe);
+            Arena.AddCircle(Arena.Center + 18 * _safeDirs[pcSlot], 1, Colors.Safe);
     }
 
     private static WDir[] BuildSafeDirs(BossModule module)
@@ -346,7 +346,6 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
     private BitMask _thinIce;
     private P2SinboundHolyVoidzone? _voidzones; // used for hints only
 
-    private const float SlideDistance = 32;
     private readonly AOEShapeCone _shapeFront = new(30, 135.Degrees());
     private readonly AOEShapeCone _shapeBack = new(30, 45.Degrees());
 
@@ -371,7 +370,7 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
             // first, find a set of allowed angles along the border
             var zoneList = new ArcList(Arena.Center, 17);
             foreach (var z in _voidzones.Sources(Module))
-                zoneList.ForbidCircle(z.Position, _voidzones.Shape.Radius);
+                zoneList.ForbidCircle(z.Position, 6);
 
             // now find closest allowed zone
             var actorDir = Angle.FromDirection(actor.Position - Module.Center);
@@ -384,20 +383,16 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
                 {
                     // destination is very wide, narrow it down a bit to be in line with the boss
                     halfWidth = 5.Degrees();
-                    var sourceDir = Angle.FromDirection(_source.Position - Module.Center);
+                    var sourceDir = Angle.FromDirection(_source.Position - Arena.Center);
                     var sourceDist = sourceDir.DistanceToRange(closest.min + halfWidth, closest.max - halfWidth);
                     var oppositeDist = (sourceDir + 180.Degrees()).DistanceToRange(closest.min + halfWidth, closest.max - halfWidth);
                     desiredDir = oppositeDist.Abs().Rad < sourceDist.Abs().Rad ? (sourceDir + 180.Degrees() + oppositeDist) : (sourceDir + sourceDist);
                 }
-                hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center, 16), WorldState.FutureTime(50));
-                hints.AddForbiddenZone(ShapeDistance.InvertedCone(Module.Center, 100, desiredDir, halfWidth), DateTime.MaxValue);
+                hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center, 16), WorldState.FutureTime(50));
+                hints.AddForbiddenZone(ShapeDistance.InvertedCone(Arena.Center, 100, desiredDir, halfWidth), DateTime.MaxValue);
             }
             return;
         }
-
-        // at this point, we have thin ice, so we can either stay or move fixed distance
-        hints.AddForbiddenZone(ShapeDistance.Donut(actor.Position, 1, 31));
-        hints.AddForbiddenZone(ShapeDistance.InvertedCircle(actor.Position, 33));
 
         if (AOEs.Count == 0)
         {
@@ -416,8 +411,8 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
         {
             var offset = z.Position - actor.Position;
             var dist = offset.Length();
-            if (dist > _voidzones.Shape.Radius)
-                hints.AddForbiddenZone(ShapeDistance.Cone(actor.Position, 100, Angle.FromDirection(offset), Angle.Asin(dist / _voidzones.Shape.Radius)));
+            if (dist > 6)
+                hints.AddForbiddenZone(ShapeDistance.Cone(actor.Position, 100, Angle.FromDirection(offset), Angle.Asin(dist / 6)));
         }
     }
 

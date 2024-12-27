@@ -128,7 +128,12 @@ public enum AID : uint
     LoomingChaosBoss = 41674, // Boss->self, 7.0s cast, single-target, visual (position swaps)
     LoomingChaosAOE = 41675, // Helper->self, 7.7s cast, range 50 circle, raidwide + position swaps
 
-    //_Weaponskill_FeintParticleBeam = 40477, // Boss->self, 6.0+0.7s cast, single-target
+    FeintParticleBeamVisual = 40477, // Boss->self, 6.0+0,7s cast, single-target, chasing AOE
+    FeintParticleBeamFirst = 40478, // Helper->location, 4.0s cast, range 3 circle
+    FeintParticleBeamRest = 40479, // Helper->location, no cast, range 3 circle
+    FloodOfDarkness2 = 40455, // Boss->location, 7.0s cast, range 60 circle
+    Evaporation = 40454, // StygianShadow->Boss, 2.0s cast, single-target
+    DelugeOfDarknessEnrage = 40533, // Boss->location, 12.0s cast, range 100 circle
 }
 
 public enum SID : uint

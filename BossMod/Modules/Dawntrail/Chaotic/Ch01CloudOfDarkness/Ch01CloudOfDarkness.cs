@@ -17,7 +17,8 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
 {
     public Ch01CloudOfDarknessStates(BossModule module) : base(module)
     {
-        DeathPhase(0, SinglePhase);
+        DeathPhase(0, SinglePhase)
+            .ActivateOnEnter<ArenaChanges>();
     }
 
     private void SinglePhase(uint id)
@@ -58,65 +59,25 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
     }
 }
 
-// TODO: mechanic phase bounds
 // TODO: flood bounds & squares
 // TODO: particle concentration towers
 // TODO: evil seed
 // TODO: chaser beam
 // TODO: tankswap hints?
-[ModuleInfo(BossModuleInfo.Maturity.WIP, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1010, NameID = 13624)]
-public class Ch01CloudOfDarkness(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultCenter, InitialBounds)
+[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1010, NameID = 13624)]
+public class Ch01CloudOfDarkness(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultCenter, DefaultArena)
 {
     public static readonly WPos DefaultCenter = new(100, 100);
-    public static readonly ArenaBoundsCircle InitialBounds = new(40);
-    public static readonly ArenaBoundsCustom Phase1Bounds = new(InitialBounds.Radius, new(BuildPhase1BoundsContour()));
-    public static readonly ArenaBoundsCustom Phase2Bounds = new(InitialBounds.Radius, BuildPhase2BoundsPoly());
-    public static readonly WPos Phase1Midpoint = DefaultCenter + Phase1Bounds.Poly.Parts[0].Vertices[1] + Phase1Bounds.Poly.Parts[0].Vertices[3];
-
-    public static List<WDir> BuildPhase1BoundsContour()
-    {
-        // north 'diagonal' is at [+/-15, -37] (it almost intersects the initial circle - at x=15 z is ~37.08)
-        // the main diagonal is 20, rotated by 45 degrees, which means that side corners are at x=+/- 40/sqrt(2), z = -37 + 40/sqrt(2) - 15
-        var nz = -37;
-        var nx = 15;
-        var halfDiag = 40 / MathF.Sqrt(2);
-        var cz = nz + halfDiag - nx;
-        return [new(nx, nz), new(halfDiag, cz), new(0, cz + halfDiag), new(-halfDiag, cz), new(-nx, nz)];
-    }
-
-    public static RelSimplifiedComplexPolygon BuildPhase2BoundsPoly()
-    {
-        // mid is union of 4 rects
-        var midHalfWidth = 3;
-        var midHalfLength = 24;
-        var midOffset = 15;
-        var op1 = new PolygonClipper.Operand();
-        var op2 = new PolygonClipper.Operand();
-        op1.AddContour(CurveApprox.Rect(new WDir(0, +midOffset), new(1, 0), midHalfWidth, midHalfLength));
-        op1.AddContour(CurveApprox.Rect(new WDir(0, -midOffset), new(1, 0), midHalfWidth, midHalfLength));
-        op2.AddContour(CurveApprox.Rect(new WDir(+midOffset, 0), new(0, 1), midHalfWidth, midHalfLength));
-        op2.AddContour(CurveApprox.Rect(new WDir(-midOffset, 0), new(0, 1), midHalfWidth, midHalfLength));
-        var mid = InitialBounds.Clipper.Union(op1, op2);
-
-        // sides is union of two platforms and the outside ring
-        var sideHalfWidth = 7.5f;
-        var sideHalfLength = 10;
-        var sideOffset = 19 + sideHalfLength;
-        var sideRingWidth = 6;
-        op1.Clear();
-        op2.Clear();
-        op1.AddContour(CurveApprox.Rect(new WDir(+sideOffset, 0), new(1, 0), sideHalfWidth, sideHalfLength));
-        op1.AddContour(CurveApprox.Rect(new WDir(-sideOffset, 0), new(1, 0), sideHalfWidth, sideHalfLength));
-        op2.AddContour(CurveApprox.Circle(InitialBounds.Radius, 0.1f));
-        op2.AddContour(CurveApprox.Circle(InitialBounds.Radius - sideRingWidth, 0.1f));
-        var side = InitialBounds.Clipper.Union(op1, op2);
-
-        op1.Clear();
-        op2.Clear();
-        op1.AddPolygon(mid);
-        op2.AddPolygon(side);
-        return InitialBounds.Clipper.Union(op1, op2);
-    }
+    public static readonly WPos Phase1BoundsCenter = new(100, 76.28427f);
+    public static readonly PolygonCustom[] Diamond = [new([new(115, 63), new(128.28427f, 76.28427f), new(100, 104.56854f), new(71.71573f, 76.28427f), new(85, 63)])];
+    private static readonly DonutV[] donut = [new(DefaultCenter, 34, 40, 80)];
+    public static readonly Shape[] Phase2ShapesND = [new Rectangle(new(100, 115), 24, 3), new Rectangle(new(100, 85), 24, 3), new Rectangle(new(115, 100), 3, 24),
+    new Rectangle(new(85, 100), 3, 24), new Square(new(126.5f, 100), 7.5f), new Square(new(73.5f, 100), 7.5f)];
+    public static readonly Shape[] Phase2ShapesWD = [.. donut, .. Phase2ShapesND];
+    public static readonly ArenaBoundsCircle DefaultArena = new(40);
+    public static readonly ArenaBoundsComplex Phase1Bounds = new(Diamond);
+    public static readonly ArenaBoundsComplex Phase2BoundsWD = new(Phase2ShapesWD);
+    public static readonly ArenaBoundsComplex Phase2BoundsND = new(Phase2ShapesND, donut);
 }
 
 // envcontrols:

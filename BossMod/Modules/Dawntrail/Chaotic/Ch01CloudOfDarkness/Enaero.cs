@@ -59,7 +59,7 @@ class EnaeroKnockback(BossModule module) : Components.Knockback(module)
         }
     }
 
-    private void Start(DateTime activation) => _source = new(Ch01CloudOfDarkness.Phase1Midpoint, 15, activation);
+    private void Start(DateTime activation) => _source = new(Ch01CloudOfDarkness.Phase1BoundsCenter, 15, activation);
 }
 
 class EnaeroAOE(BossModule module) : Components.GenericAOEs(module)
@@ -103,7 +103,7 @@ class EnaeroAOE(BossModule module) : Components.GenericAOEs(module)
 
     private void Start(DateTime activation)
     {
-        _aoe = new(_shape, Ch01CloudOfDarkness.Phase1Midpoint, default, activation);
+        _aoe = new(_shape, Ch01CloudOfDarkness.Phase1BoundsCenter, default, activation);
         _delayed = false;
     }
 }

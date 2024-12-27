@@ -37,13 +37,6 @@ sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModu
         _ => Player.Position
     };
 
-    // TODO: account for leeway for casters
-    private WPos PathfindPosition(Actor? meleeGreedTarget)
-    {
-        var res = NavigationDecision.Build(NavigationContext, World, Hints, Player, Speed());
-        return meleeGreedTarget != null && res.Destination != null ? ClosestInMelee(res.Destination.Value, meleeGreedTarget) : (res.Destination ?? Player.Position);
-    }
-
     // assumption: pull range is 12; hitbox is 5, so maxmelee is 8, meaning we have approx 4m to move during pull - with sprint, speed is 7.8, accel is 30 => over 0.26s accel period we move 1.014m, then need another 0.38s to reach boss (but it also moves)
     private WPos PrepullPosition(FRU module, PartyRolesConfig.Assignment assignment)
     {

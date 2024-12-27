@@ -62,17 +62,6 @@ public record struct Angle(float Rad)
         return midDist.Rad > width.Rad ? midDist - width : midDist.Rad < -width.Rad ? midDist + width : default;
     }
 
-    // closest distance to move from this angle to destination (== 0 if equal, >0 if moving in positive/CCW dir, <0 if moving in negative/CW dir)
-    public readonly Angle DistanceToAngle(Angle other) => (other - this).Normalized();
-
-    // returns 0 if angle is within range, positive value if min is closest, negative if max is closest
-    public readonly Angle DistanceToRange(Angle min, Angle max)
-    {
-        var width = (max - min) * 0.5f;
-        var midDist = DistanceToAngle((min + max) * 0.5f);
-        return midDist.Rad > width.Rad ? midDist - width : midDist.Rad < -width.Rad ? midDist + width : default;
-    }
-
     public override readonly string ToString() => Deg.ToString("f3");
 }
 
