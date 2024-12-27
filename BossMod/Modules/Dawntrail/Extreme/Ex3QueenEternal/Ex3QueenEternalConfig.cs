@@ -6,7 +6,7 @@ class Ex3QueenEternalConfig() : ConfigNode()
     [PropertyDisplay("Absolute Authority: ignore flares, stack together")]
     public bool AbsoluteAuthorityIgnoreFlares = true;
 
-    [PropertyDisplay("Fixed bridge tether spots", tooltip: "Side tethers stretch without crossing is typically used on EU/NA partyfinder, the other option is usually used by JP")]
-    [PropertyCombo("Side tethers stretch without crossing", "Side tethers stretch cross (JP)")]
-    public bool SideTethersNoCrossing = true;
+    [PropertyDisplay("Fixed bridge spots for West/East tethers", tooltip: "West/East stretch tethers without crossing is typically used on EU/NA partyfinder, the other option is usually used by JP")]
+    [PropertyCombo("No crossing", "Cross (JP)")]
+    public bool SideTethersCrossStrategy = false;
 }

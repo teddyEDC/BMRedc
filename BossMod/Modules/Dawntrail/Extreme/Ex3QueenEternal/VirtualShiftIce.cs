@@ -157,7 +157,7 @@ class Rush(BossModule module) : Components.GenericBaitAway(module)
         {
             // second order
             var central = source.Position.Z < 96;
-            var strat = !config.SideTethersNoCrossing ? (central ? -2 : 9) : (central ? 9 : -9);
+            var strat = !config.SideTethersCrossStrategy ? (central ? -2 : 9) : (central ? 9 : -9);
             return center + new WDir(safeSide * 15, strat);
         }
     }
