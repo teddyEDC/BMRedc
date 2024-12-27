@@ -108,6 +108,7 @@ class P1UtopianSkyAIInitial(BossModule module) : BossComponent(module)
 
         if (assignment == PartyRolesConfig.Assignment.Unassigned)
             return;
+
         var clockspot = _config.P1UtopianSkyInitialSpots[assignment];
         if (clockspot >= 0)
         {
@@ -154,7 +155,6 @@ class P1UtopianSkyAIResolve(BossModule module) : BossComponent(module)
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         if (assignment == PartyRolesConfig.Assignment.Unassigned)
-
             return;
 
         var clockSpot = _config.P1UtopianSkyInitialSpots[assignment];

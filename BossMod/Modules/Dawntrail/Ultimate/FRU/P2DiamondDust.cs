@@ -445,6 +445,12 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
                 AOEs.RemoveAt(0);
         }
     }
+
+    public override void OnStatusGain(Actor actor, ActorStatus status)
+    {
+        if ((SID)status.ID == SID.ThinIce)
+            _thinIce.Set(Raid.FindSlot(actor.InstanceID));
+    }
 }
 
 class P2ThinIce(BossModule module) : Components.ThinIce(module, 32, true)
