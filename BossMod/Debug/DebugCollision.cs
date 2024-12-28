@@ -9,7 +9,7 @@ using Vector4 = System.Numerics.Vector4;
 
 namespace BossMod;
 
-public unsafe class DebugCollision() : IDisposable
+public sealed unsafe class DebugCollision() : IDisposable
 {
     private readonly UITree _tree = new();
     private BitMask _shownLayers = new(1);
@@ -46,7 +46,6 @@ public unsafe class DebugCollision() : IDisposable
 
     public void Dispose()
     {
-
     }
 
     public void Draw()

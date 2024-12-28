@@ -32,8 +32,6 @@ public class UITree
         }
     }
 
-    private uint _selectedID;
-
     // contains 0 elements (if node is closed) or single null (if node is opened)
     // expected usage is 'foreach (_ in Node(...)) { draw subnodes... }'
     public IEnumerable<object?> Node(string text, bool leaf = false, uint color = 0, Action? contextMenu = null, Action? doubleClick = null, Action? select = null)
@@ -84,7 +82,7 @@ public class UITree
     {
         var id = ImGui.GetID(text);
         var flags = ImGuiTreeNodeFlags.None;
-        if (id == _selectedID)
+        if (id == _selectedId)
             flags |= ImGuiTreeNodeFlags.Selected;
         if (leaf)
             flags |= ImGuiTreeNodeFlags.Leaf;
@@ -95,7 +93,7 @@ public class UITree
         ImGui.PopStyleColor();
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            _selectedID = id;
+            _selectedId = id;
             select?.Invoke();
         }
         if (doubleClick != null && ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
