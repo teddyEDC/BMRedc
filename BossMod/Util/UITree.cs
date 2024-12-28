@@ -4,9 +4,32 @@ namespace BossMod;
 
 public class UITree
 {
+    private uint _selectedId;
+
     public record struct NodeProperties(string Text, bool Leaf = false, uint Color = 0)
     {
         public uint Colors = Color == 0 ? BossMod.Colors.TextColor1 : Color;
+    }
+
+    public struct NodeRaii(bool selected, bool opened, bool hovered, bool realOpened) : IDisposable
+    {
+        public bool Selected = selected;
+        public bool Opened = opened;
+        public bool Hovered = hovered;
+        private bool _disposed;
+        private readonly bool _realOpened = realOpened;
+
+        public readonly bool SelectedOrHovered => Selected || Hovered;
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+            if (_realOpened)
+                ImGui.TreePop();
+            ImGui.PopID();
+            _disposed = true;
+        }
     }
 
     private uint _selectedID;
@@ -83,5 +106,33 @@ public class UITree
             ImGui.EndPopup();
         }
         return open;
+    }
+
+    public NodeRaii Node2(string text, bool leaf = false, uint color = 0)
+    {
+        var id = ImGui.GetID(text);
+        var flags = ImGuiTreeNodeFlags.None;
+        if (id == _selectedId)
+            flags |= ImGuiTreeNodeFlags.Selected;
+        if (leaf)
+            flags |= ImGuiTreeNodeFlags.Leaf;
+
+        ImGui.PushID((int)id);
+        ImGui.PushStyleColor(ImGuiCol.Text, color == 0 ? Colors.TextColor1 : color);
+        bool open = ImGui.TreeNodeEx(text, flags);
+        ImGui.PopStyleColor();
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+            _selectedId = id;
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+            ImGui.SetClipboardText(text);
+        return new(id == _selectedId, open && !leaf, ImGui.IsItemHovered(), open);
+    }
+
+    // returned node is auto disposed
+    public NodeRaii LeafNode2(string text, uint color = 0)
+    {
+        var n = Node2(text, true, color == 0 ? Colors.TextColor1 : color);
+        n.Dispose();
+        return n;
     }
 }

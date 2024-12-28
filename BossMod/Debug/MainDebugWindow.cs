@@ -23,17 +23,15 @@ class MainDebugWindow(WorldState ws, RotationModuleManager autorot, ZoneModuleMa
     private readonly DebugAddon _debugAddon = new();
     private readonly DebugTiming _debugTiming = new();
     private readonly DebugTeleport _debugTeleport = new();
-    // private readonly DebugCollision _debugCollision = new();
+    private readonly DebugCollision _debugCollision = new();
     private readonly DebugQuests _debugQuests = new();
-    //private readonly DebugVfx _debugVfx = new();
 
     protected override void Dispose(bool disposing)
     {
         _debugAction.Dispose();
         _debugInput.Dispose();
         _debugAddon.Dispose();
-        // _debugCollision.Dispose();
-        // _debugVfx.Dispose();
+        _debugCollision.Dispose();
         base.Dispose(disposing);
     }
 
@@ -160,14 +158,10 @@ class MainDebugWindow(WorldState ws, RotationModuleManager autorot, ZoneModuleMa
         {
             DrawWindowSystem();
         }
-        // if (ImGui.CollapsingHeader("Collision"))
-        // {
-        //     _debugCollision.Draw();
-        // }
-        //if (ImGui.CollapsingHeader("VFX"))
-        //{
-        //    _debugVfx.Draw();
-        //}
+        if (ImGui.CollapsingHeader("Collision"))
+        {
+            _debugCollision.Draw();
+        }
         if (ImGui.CollapsingHeader("Limit break"))
         {
             DrawLimitBreak();
