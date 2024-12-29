@@ -4,7 +4,8 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
 {
     public Ch01CloudOfDarknessStates(BossModule module) : base(module)
     {
-        DeathPhase(0, SinglePhase);
+        DeathPhase(0, SinglePhase)
+            .ActivateOnEnter<ArenaChanges>();
     }
 
     private void SinglePhase(uint id)
@@ -33,7 +34,7 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         ComponentCondition<RazingVolleyParticleBeam>(id + 0x410000, 4, comp => comp.Casters.Count > 0);
         Subphase1Variant2End(id + 0x410000, 8);
 
-        Cast(id + 0x500000, AID.Enrage, 8.1f, 12, "Enrage"); // TODO: check delay
+        Cast(id + 0x500000, AID.Enrage, 8.1f, 18.2f, "Enrage");
     }
 
     private void Fork2(uint id)
@@ -46,7 +47,7 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         ComponentCondition<RazingVolleyParticleBeam>(id + 0x410000, 4, comp => comp.Casters.Count > 0);
         Subphase1Variant1End(id + 0x410000, 6.1f);
 
-        Cast(id + 0x500000, AID.Enrage, 8.1f, 12, "Enrage");
+        Cast(id + 0x500000, AID.Enrage, 8.7f, 18.2f, "Enrage");
     }
 
     private void Subphase1Variant1End(uint id, float delay)
@@ -102,9 +103,6 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
     private void DelugeOfDarkness1(uint id, float delay)
     {
         Cast(id, AID.DelugeOfDarkness1, delay, 8, "Raidwide + arena transition")
-            .ActivateOnEnter<DelugeOfDarkness1>()
-            .DeactivateOnExit<DelugeOfDarkness1>()
-            .OnExit(() => Module.Arena.Bounds = Ch01CloudOfDarkness.Phase1Bounds)
             .SetHint(StateMachine.StateHint.Raidwide);
         CastMulti(id + 0x100, [AID.GrimEmbraceForward, AID.GrimEmbraceBackward], 9.2f, 5, "Debuffs 1")
             .ActivateOnEnter<GrimEmbraceBait>()
@@ -209,16 +207,12 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
             .DeactivateOnExit<EndeathAOE>()
             .DeactivateOnExit<EnaeroKnockback>()
             .DeactivateOnExit<EnaeroAOE>()
-            .OnExit(() => Module.Arena.Bounds = Ch01CloudOfDarkness.InitialBounds)
             .SetHint(StateMachine.StateHint.Raidwide);
     }
 
     private void DelugeOfDarkness2(uint id, float delay)
     {
         Cast(id, AID.DelugeOfDarkness2, delay, 8, "Raidwide + arena transition")
-            .ActivateOnEnter<DelugeOfDarkness2>()
-            .DeactivateOnExit<DelugeOfDarkness2>()
-            .OnExit(() => Module.Arena.Bounds = Ch01CloudOfDarkness.Phase2Bounds)
             .SetHint(StateMachine.StateHint.Raidwide);
         ComponentCondition<StygianShadow>(id + 0x10, 4.2f, comp => comp.ActiveActors.Any(), "Platform adds")
             .ActivateOnEnter<StygianShadow>()
@@ -388,7 +382,6 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
             .DeactivateOnExit<Atomos>()
             .DeactivateOnExit<DarkEnergyParticleBeam>();
         CastEnd(id + 1, 7, "Raidwide + arena transition")
-            .OnExit(() => Module.Arena.Bounds = Ch01CloudOfDarkness.InitialBounds)
             .SetHint(StateMachine.StateHint.Raidwide);
     }
 }
