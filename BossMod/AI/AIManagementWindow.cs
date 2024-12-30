@@ -104,6 +104,21 @@ sealed class AIManagementWindow : UIWindow
                 _config.Modified.Fire();
             }
         }
+
+        ImGui.Text("Movement decision delay");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(100);
+        var movementDelayStr = _config.MoveDelay.ToString(CultureInfo.InvariantCulture);
+        if (ImGui.InputText("##MovementDelay", ref movementDelayStr, 64))
+        {
+            movementDelayStr = movementDelayStr.Replace(',', '.');
+            if (float.TryParse(movementDelayStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var delay))
+            {
+                _config.MoveDelay = delay;
+                _config.Modified.Fire();
+            }
+        }
+        ImGui.SameLine();
         ImGui.Text("Autorotation AI preset");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(250);

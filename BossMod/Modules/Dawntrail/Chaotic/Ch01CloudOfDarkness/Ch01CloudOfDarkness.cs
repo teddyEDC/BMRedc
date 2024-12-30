@@ -12,7 +12,7 @@ class LoomingChaos(BossModule module) : Components.CastCounter(module, ActionID.
 // TODO: tankswap hints component for phase1
 // TODO: phase 2 squares, break timer, teleport zones
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1010, NameID = 13624)]
+[ModuleInfo(BossModuleInfo.Maturity.WIP, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1010, NameID = 13624, PlanLevel = 100)]
 public class Ch01CloudOfDarkness(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultCenter, DefaultArena)
 {
     public static readonly WPos DefaultCenter = new(100, 100);

@@ -61,5 +61,8 @@ sealed class AIConfig : ConfigNode
     [PropertyDisplay("Allow AI to be out of pathfinding map bounds")]
     public bool AllowAIToBeOutsideBounds = false;
 
+    [PropertyDisplay("Movement decision delay", tooltip: "Only change this at your own risk and keep this value low! Too high and it won't move in time for some mechanics. Make sure to readjust the value for different content.")]
+    public float MoveDelay = 0;
+
     public string? AIAutorotPresetName;
 }
