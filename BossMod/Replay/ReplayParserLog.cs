@@ -528,6 +528,7 @@ public sealed class ReplayParserLog : IDisposable
             _input.ReadUInt(true);
         return new(_input.ReadByte(true), _input.ReadUInt(true));
     }
+
     private WorldState.OpSystemLogMessage ParseSystemLog()
     {
         var id = _input.ReadUInt(false);
