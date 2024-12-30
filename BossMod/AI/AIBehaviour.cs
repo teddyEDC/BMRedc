@@ -275,29 +275,6 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
     public void DrawDebug()
     {
-        var configModified = false;
-
-        configModified |= ImGui.Checkbox("Forbid actions", ref _config.ForbidActions);
-        ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Forbid movement", ref _config.ForbidMovement);
-        ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Follow during combat", ref _config.FollowDuringCombat);
-        ImGui.Spacing();
-        configModified |= ImGui.Checkbox("Follow during active boss module", ref _config.FollowDuringActiveBossModule);
-        ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Follow out of combat", ref _config.FollowOutOfCombat);
-        ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Follow target", ref _config.FollowTarget);
-        ImGui.Spacing();
-        configModified |= ImGui.Checkbox("Manual targeting", ref _config.ManualTarget);
-        ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Override autorotation values", ref _config.OverrideAutorotation);
-        ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Allow outside bounds", ref _config.AllowAIToBeOutsideBounds);
-
-        if (configModified)
-            _config.Modified.Fire();
-
         var player = autorot.WorldState.Party.Player();
         var dist = _naviDecision.Destination != null && player != null ? (_naviDecision.Destination.Value - player.Position).Length() : 0;
         var algo = WorldState.CurrentTime <= _navStartTime ? _naviDecision.DecisionType = NavigationDecision.Decision.Waiting : _naviDecision.DecisionType;

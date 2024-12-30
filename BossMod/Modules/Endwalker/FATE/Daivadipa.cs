@@ -60,7 +60,7 @@ class LitPath(BossModule module) : Components.GenericAOEs(module)
         var count = AOEs.Count;
         if (count == 0)
             yield break;
-        for (var i = 0; i < count; ++i)
+        for (var i = 0; i < (count > 3 ? 3 : count); ++i) // either 2 or 3 AOEs in a wave, no need to iterate on all 5
         {
             var aoe = AOEs[i];
             if ((aoe.Activation - AOEs[0].Activation).TotalSeconds <= 1)
@@ -106,12 +106,8 @@ class Burn(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         if (count == 0)
             yield break;
-        for (var i = 0; i < count; ++i)
-        {
-            var aoe = _aoes[i];
-            if ((aoe.Activation - _aoes[0].Activation).TotalSeconds <= 1)
-                yield return aoe;
-        }
+        for (var i = 0; i < (count > 8 ? 8 : count); ++i) // 8 AOEs in a wave, no need to iterate on all 16
+            yield return _aoes[i];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
