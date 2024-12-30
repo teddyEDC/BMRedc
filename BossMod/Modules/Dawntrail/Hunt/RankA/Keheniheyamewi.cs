@@ -86,12 +86,12 @@ class SlipperyScatterscourge(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action.ID == (uint)AID.SlipperyScatterscourge)
+        if (_caster != null && spell.Action.ID == (uint)AID.SlipperyScatterscourge)
         {
             var finalPos = GetRectEndPosition(_caster.Position, _caster.Rotation, _shapeRect.LengthFront);
             var futureActivation = WorldState.FutureTime(10);
 
-            for (int i = 0; i < _activeAOEs.Count; i++)
+            for (int i = 0; i < _activeAOEs.Count; ++i)
             {
                 var aoe = _activeAOEs[i];
                 if (aoe.Shape == _shapeDonut)

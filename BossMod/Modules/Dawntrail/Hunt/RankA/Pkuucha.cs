@@ -22,7 +22,7 @@ class PeckingFlurry(BossModule module) : Components.RaidwideCast(module, ActionI
 
 class MarchingSamba(BossModule module) : Components.GenericAOEs(module)
 {
-    private List<AOEInstance> _aoes = new();
+    private readonly List<AOEInstance> _aoes = [];
     private Actor? _caster;
     private static readonly AOEShapeCircle _circle = new(12);
     private static readonly AOEShapeCone _cone = new(40, 90.Degrees());
@@ -49,8 +49,8 @@ class MarchingSamba(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.MarchingSamba or AID.MesmerizingMarch)
         {
             _caster = caster;
-            _aoes.Add(new(_circle, caster.Position, caster.Rotation, WorldState.CurrentTime.AddSeconds(6.5f), Colors.Danger, true));
-            _aoes.Add(new(_cone, caster.Position, caster.Rotation, WorldState.CurrentTime.AddSeconds(8), Colors.AOE, true));
+            _aoes.Add(new(_circle, caster.Position, caster.Rotation, WorldState.CurrentTime.AddSeconds(6.5f), Colors.Danger));
+            _aoes.Add(new(_cone, caster.Position, caster.Rotation, WorldState.CurrentTime.AddSeconds(8)));
         }
     }
 
