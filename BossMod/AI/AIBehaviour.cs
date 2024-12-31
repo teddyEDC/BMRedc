@@ -143,7 +143,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
     private async Task<(NavigationDecision decision, Targeting updatedTargeting)> BuildNavigationDecision(Actor player, Actor master, Targeting targeting)
     {
-        if (_config.ForbidMovement)
+        if (_config.ForbidMovement || _config.ForbidAIMovementMounted && player.MountId != 0)
             return (new NavigationDecision { LeewaySeconds = float.MaxValue }, targeting);
 
         if (_followMaster && (AIPreset == null || _config.OverrideAutorotation))
