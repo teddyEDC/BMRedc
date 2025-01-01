@@ -104,7 +104,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
         stampede.Rotation = position.Item2;
         stampede.Count = 0;
         stampede.Reset = default;
-        stampede.Beasts = [];
+        stampede.Beasts.Clear();
         return stampede;
     }
 
@@ -147,7 +147,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
             if (b.Position.InRect(stampede.Position, stampede.Rotation, 0, 10, 5) && !updatedBeasts.Contains(b) && stampede.Active)
                 updatedBeasts.Add(b);
         }
-        stampede = new Stampede(stampede.Active, stampede.Position, stampede.Rotation, updatedBeasts);
+        stampede = new(stampede.Active, stampede.Position, stampede.Rotation, updatedBeasts);
     }
 
     private void ResetStampede(ref Stampede stampede)
@@ -185,6 +185,7 @@ public record struct Stampede(bool Active, WPos Position, Angle Rotation, List<A
 {
     public int Count;
     public DateTime Reset;
+    public List<Actor> Beasts { get; } = Beasts;
 }
 
 class Icebreaker(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Icebreaker), 17, targetIsLocation: true);
