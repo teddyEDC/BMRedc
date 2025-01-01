@@ -109,21 +109,25 @@ class P4CrystallizeTimeDragonHead(BossModule module) : BossComponent(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        foreach (var h in _heads)
+        for (var i = 0; i < _heads.Count; ++i)
         {
-            Arena.Actor(h.head, ArenaColor.Object, true);
+            var h = _heads[i];
+            Arena.Actor(h.head, Colors.Object, true);
             var interceptor = _ct?.FindPlayerByAssignment(NumHeadHits(h.head) > 0 ? P4CrystallizeTime.Mechanic.ClawAir : P4CrystallizeTime.Mechanic.ClawBlizzard, h.side);
             if (interceptor != null)
-                Arena.AddCircle(interceptor.Position, 12, ArenaColor.Danger);
+                Arena.AddCircle(interceptor.Position, 12, Colors.Danger);
 
         }
 
         if (ShowPuddles && _ct != null && !_ct.Cleansed[pcSlot])
         {
             var pcAssignment = _ct.PlayerMechanics[pcSlot];
-            foreach (var p in _puddles)
+            for (var i = 0; i < _puddles.Count; ++i)
+            {
+                var p = _puddles[i];
                 if (p.puddle.EventState != 7)
-                    Arena.AddCircle(p.puddle.Position, 1, p.soaker == pcAssignment ? ArenaColor.Safe : ArenaColor.Danger);
+                    Arena.AddCircle(p.puddle.Position, 1, p.soaker == pcAssignment ? Colors.Safe : Colors.Danger);
+            }
         }
     }
 
@@ -136,7 +140,7 @@ class P4CrystallizeTimeDragonHead(BossModule module) : BossComponent(module)
                 break;
             case OID.DragonPuddle:
                 // TODO: this is very arbitrary
-                var mechanic = actor.Position.X < Module.Center.X
+                var mechanic = actor.Position.X < Arena.Center.X
                     ? AssignPuddle(P4CrystallizeTime.Mechanic.FangEruption, P4CrystallizeTime.Mechanic.FangBlizzard)
                     : AssignPuddle(P4CrystallizeTime.Mechanic.FangDarkness, P4CrystallizeTime.Mechanic.FangWater);
                 _puddles.Add((actor, mechanic));
@@ -298,7 +302,7 @@ class P4CrystallizeTimeTidalLight : Components.Exaflare
 
     public P4CrystallizeTimeTidalLight(BossModule module) : base(module, new AOEShapeRect(10, 20))
     {
-        ImminentColor = ArenaColor.AOE;
+        ImminentColor = Colors.AOE;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -306,7 +310,7 @@ class P4CrystallizeTimeTidalLight : Components.Exaflare
         if ((AID)spell.Action.ID is AID.TidalLightAOEFirst)
         {
             Lines.Add(new() { Next = caster.Position, Advance = 10 * spell.Rotation.ToDirection(), Rotation = spell.Rotation, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2.1f, ExplosionsLeft = 4, MaxShownExplosions = 1 });
-            StartingOffset += caster.Position - Module.Center;
+            StartingOffset += caster.Position - Arena.Center;
         }
     }
 
@@ -343,7 +347,7 @@ class P4CrystallizeTimeHints(BossModule module) : BossComponent(module)
     {
         var safeOffset = SafeOffset(pcSlot);
         if (safeOffset != default)
-            Arena.AddCircle(Module.Center + safeOffset, 1, ArenaColor.Safe);
+            Arena.AddCircle(Arena.Center + safeOffset, 1, Colors.Safe);
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -426,7 +430,7 @@ class P4CrystallizeTimeRewind(BossModule module) : BossComponent(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         if (_ct != null && _exalines != null && _ct.Cleansed[pcSlot])
-            Arena.AddCircle(Module.Center + 0.5f * _exalines.StartingOffset, 1, ArenaColor.Safe); // TODO: better hints...
+            Arena.AddCircle(Arena.Center + 0.5f * _exalines.StartingOffset, 1, Colors.Safe); // TODO: better hints...
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)

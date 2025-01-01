@@ -45,7 +45,7 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
         var assignedDir = States[pcSlot].AssignedDir;
         if (assignedDir != default && NumCasts < 6)
         {
-            Arena.AddLine(Module.Center, Module.Center + Module.Bounds.Radius * assignedDir, ArenaColor.Safe);
+            Arena.AddLine(Arena.Center, Arena.Center + Arena.Bounds.Radius * assignedDir, Colors.Safe);
 
             var safespot = Module.Center + RangeHint(States[pcSlot], pc.Class.IsSupport(), NumCasts) * assignedDir;
             if (IsBaitingLaser(States[pcSlot], NumCasts) && LaserRotationAt(safespot) is var rot && rot != default)
