@@ -41,7 +41,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
     private static readonly Angle Rot90 = 90.Degrees();
     private static readonly Angle RotM90 = -90.Degrees();
     private Queue<Stampede> stampedes = new();
-    private static readonly HashSet<OID> animals = [OID.WildBeasts4, OID.WildBeasts3, OID.WildBeasts2, OID.WildBeasts1];
+    private static readonly uint[] animals = [(uint)OID.WildBeasts1, (uint)OID.WildBeasts2, (uint)OID.WildBeasts3, (uint)OID.WildBeasts4];
 
     private static readonly (WPos, Angle)[] stampedePositions =
     [
@@ -67,7 +67,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
         return new(new AOEShapeRect(length, 5), position, stampede.Rotation);
     }
 
-    private static float CalculateStampedeLength(IReadOnlyList<Actor> beasts) => (beasts[0].Position - beasts[^1].Position).Length();
+    private static float CalculateStampedeLength(List<Actor> beasts) => (beasts[0].Position - beasts[^1].Position).Length();
 
     public override void OnEventEnvControl(byte index, uint state)
     {
@@ -139,15 +139,15 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
 
     private void UpdateStampede(ref Stampede stampede)
     {
-        foreach (var oid in animals)
+        var beasts = Module.Enemies(animals);
+        var updatedBeasts = stampede.Beasts.ToList();
+        for (var i = 0; i < beasts.Count; ++i)
         {
-            var beasts = Module.Enemies(oid);
-            var updatedBeasts = stampede.Beasts.ToList();
-            foreach (var b in beasts)
-                if (b.Position.InRect(stampede.Position, stampede.Rotation, 0, 10, 5) && !updatedBeasts.Contains(b) && stampede.Active)
-                    updatedBeasts.Add(b);
-            stampede = new Stampede(stampede.Active, stampede.Position, stampede.Rotation, updatedBeasts);
+            var b = beasts[i];
+            if (b.Position.InRect(stampede.Position, stampede.Rotation, 0, 10, 5) && !updatedBeasts.Contains(b) && stampede.Active)
+                updatedBeasts.Add(b);
         }
+        stampede = new Stampede(stampede.Active, stampede.Position, stampede.Rotation, updatedBeasts);
     }
 
     private void ResetStampede(ref Stampede stampede)
@@ -181,7 +181,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-public record struct Stampede(bool Active, WPos Position, Angle Rotation, IReadOnlyList<Actor> Beasts)
+public record struct Stampede(bool Active, WPos Position, Angle Rotation, List<Actor> Beasts)
 {
     public int Count;
     public DateTime Reset;
