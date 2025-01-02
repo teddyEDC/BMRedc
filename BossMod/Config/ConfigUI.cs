@@ -42,8 +42,10 @@ public sealed class ConfigUI : IDisposable
         _tabs.Add("About", _about.Draw);
 
         Dictionary<Type, UINode> nodes = [];
-        foreach (var n in config.Nodes)
+        ConfigNode[] nodes2 = [.. ConfigRoot.Nodes.Values];
+        for (var i = 0; i < nodes2.Length; ++i)
         {
+            var n = nodes2[i];
             nodes[n.GetType()] = new(n);
         }
 

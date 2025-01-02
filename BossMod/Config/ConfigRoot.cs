@@ -10,10 +10,8 @@ public class ConfigRoot
     private const int _version = 10;
 
     public Event Modified = new();
-    public Version AssemblyVersion = new(); // we use this to show newly added config options
-    private readonly Dictionary<Type, ConfigNode> _nodes = [];
 
-    public IEnumerable<ConfigNode> Nodes => _nodes.Values;
+    public static readonly Dictionary<Type, ConfigNode> Nodes = [];
 
     public void Initialize()
     {
@@ -25,12 +23,12 @@ public class ConfigRoot
                 continue;
             }
             inst.Modified.Subscribe(Modified.Fire);
-            _nodes[t] = inst;
+            Nodes[t] = inst;
         }
     }
 
-    public T Get<T>() where T : ConfigNode => (T)_nodes[typeof(T)];
-    public T Get<T>(Type derived) where T : ConfigNode => (T)_nodes[derived];
+    public T Get<T>() where T : ConfigNode => (T)Nodes[typeof(T)];
+    public T Get<T>(Type derived) where T : ConfigNode => (T)Nodes[derived];
 
     public ConfigListener<T> GetAndSubscribe<T>(Action<T> modified) where T : ConfigNode => new(Get<T>(), modified);
 
@@ -43,10 +41,9 @@ public class ConfigRoot
             foreach (var jconfig in json.RootElement.GetProperty("Payload").EnumerateObject())
             {
                 var type = Type.GetType(jconfig.Name);
-                var node = type != null ? _nodes.GetValueOrDefault(type) : null;
+                var node = type != null ? Nodes.GetValueOrDefault(type) : null;
                 node?.Deserialize(jconfig.Value, ser);
             }
-            AssemblyVersion = json.RootElement.TryGetProperty(nameof(AssemblyVersion), out var jver) ? new(jver.GetString() ?? "") : new();
         }
         catch (Exception e)
         {
@@ -58,18 +55,33 @@ public class ConfigRoot
     {
         try
         {
-            WriteFile(file, jwriter =>
+            var ser = Serialization.BuildSerializationOptions();
+            var serializedNodes = new ConcurrentDictionary<Type, string>();
+
+            Parallel.ForEach(Nodes, entry =>
             {
-                jwriter.WriteStartObject();
-                var ser = Serialization.BuildSerializationOptions();
-                foreach (var (t, n) in _nodes)
-                {
-                    jwriter.WritePropertyName(t.FullName!);
-                    n.Serialize(jwriter, ser);
-                }
-                jwriter.WriteEndObject();
-                jwriter.WriteString(nameof(AssemblyVersion), AssemblyVersion.ToString());
+                using var ms = new MemoryStream();
+                using var tempWriter = new Utf8JsonWriter(ms);
+                entry.Value.Serialize(tempWriter, ser);
+                tempWriter.Flush();
+                serializedNodes[entry.Key] = Encoding.UTF8.GetString(ms.ToArray());
             });
+
+            using var stream = new FileStream(file.FullName, FileMode.Create, FileAccess.Write, FileShare.None);
+            using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
+
+            writer.WriteStartObject();
+            writer.WriteNumber("Version", _version);
+            writer.WritePropertyName("Payload");
+            writer.WriteStartObject();
+
+            foreach (var (t, jsonStr) in serializedNodes)
+            {
+                writer.WritePropertyName(t.FullName!);
+                writer.WriteRawValue(jsonStr);
+            }
+
+            writer.WriteEndObject();
         }
         catch (Exception e)
         {
@@ -84,19 +96,19 @@ public class ConfigRoot
         {
             result.Add("Usage: /vbm cfg <config-type> <field> <value>");
             result.Add("Both config-type and field can be shortened. Valid config-types:");
-            foreach (var t in _nodes.Keys)
+            foreach (var t in Nodes.Keys)
                 result.Add($"- {t.Name}");
         }
         else
         {
             List<ConfigNode> matchingNodes = [];
-            foreach (var (t, n) in _nodes)
+            foreach (var (t, n) in Nodes)
                 if (t.Name.Contains(args[0], StringComparison.CurrentCultureIgnoreCase))
                     matchingNodes.Add(n);
             if (matchingNodes.Count == 0)
             {
                 result.Add("Config type not found. Valid types:");
-                foreach (var t in _nodes.Keys)
+                foreach (var t in Nodes.Keys)
                     result.Add($"- {t.Name}");
             }
             else if (matchingNodes.Count > 1)
