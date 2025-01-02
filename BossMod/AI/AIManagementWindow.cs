@@ -40,11 +40,7 @@ sealed class AIManagementWindow : UIWindow
         }
     }
 
-    public void DrawDebug()
-    {
-
-    }
-    private Task UIAsync()
+    public override void Draw()
     {
         var configModified = false;
 
@@ -192,12 +188,6 @@ sealed class AIManagementWindow : UIWindow
             _config.Modified.Fire();
             saveConfigIn = null;
         }
-        return Task.CompletedTask;
-    }
-
-    public override async void Draw()
-    {
-        await UIAsync().ConfigureAwait(true);
     }
 
     public override void OnClose() => SetVisible(false);
