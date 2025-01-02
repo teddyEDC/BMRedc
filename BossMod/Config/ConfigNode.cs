@@ -55,7 +55,7 @@ public abstract class ConfigNode
     // draw custom contents; override this for complex config nodes
     public virtual void DrawCustom(UITree tree, WorldState ws) { }
 
-    private static readonly Dictionary<Type, FieldInfo[]> _fieldsCache = [];
+    private static readonly ConcurrentDictionary<Type, FieldInfo[]> _fieldsCache = [];
 
     private static FieldInfo[] GetSerializableFields(Type t)
     {

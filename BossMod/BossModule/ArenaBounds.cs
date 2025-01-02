@@ -180,8 +180,8 @@ public record class ArenaBoundsCustom : ArenaBounds
     private readonly float offset;
     public float HalfWidth, HalfHeight;
 
-    public ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon Poly, float MapResolution = Half, float Offset = 0)
-        : base(Radius, MapResolution)
+    public ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon Poly, float MapResolution = Half, float Offset = 0, float ScaleFactor = 1)
+        : base(Radius, MapResolution, ScaleFactor)
     {
         offset = Offset;
         poly = Poly;
@@ -337,21 +337,21 @@ public record class ArenaBoundsCustom : ArenaBounds
 public sealed record class ArenaBoundsComplex : ArenaBoundsCustom
 {
     public readonly WPos Center;
-    public ArenaBoundsComplex(Shape[] UnionShapes, Shape[]? DifferenceShapes = null, Shape[]? AdditionalShapes = null, float MapResolution = Half, float Offset = 0)
-        : base(BuildBounds(UnionShapes, DifferenceShapes, AdditionalShapes, MapResolution, Offset, out var center, out var halfWidth, out var halfHeight))
+    public ArenaBoundsComplex(Shape[] UnionShapes, Shape[]? DifferenceShapes = null, Shape[]? AdditionalShapes = null, float MapResolution = Half, float Offset = 0, float ScaleFactor = 1)
+        : base(BuildBounds(UnionShapes, DifferenceShapes, AdditionalShapes, MapResolution, Offset, ScaleFactor, out var center, out var halfWidth, out var halfHeight))
     {
         Center = center;
         HalfWidth = halfWidth + Offset;
         HalfHeight = halfHeight + Offset;
     }
 
-    private static ArenaBoundsCustom BuildBounds(Shape[] unionShapes, Shape[]? differenceShapes, Shape[]? additionalShapes, float mapResolution, float offset, out WPos center, out float halfWidth, out float halfHeight)
+    private static ArenaBoundsCustom BuildBounds(Shape[] unionShapes, Shape[]? differenceShapes, Shape[]? additionalShapes, float mapResolution, float offset, float scalefactor, out WPos center, out float halfWidth, out float halfHeight)
     {
         var properties = CalculatePolygonProperties(unionShapes, differenceShapes ?? [], additionalShapes ?? []);
         center = properties.Center;
         halfWidth = properties.HalfWidth;
         halfHeight = properties.HalfHeight;
-        return new(properties.Radius, properties.Poly, mapResolution, offset);
+        return new(scalefactor == 1 ? properties.Radius : properties.Radius / scalefactor, properties.Poly, mapResolution, offset, scalefactor);
     }
 
     private static (WPos Center, float HalfWidth, float HalfHeight, float Radius, RelSimplifiedComplexPolygon Poly) CalculatePolygonProperties(Shape[] unionShapes, Shape[] differenceShapes, Shape[] additionalShapes)

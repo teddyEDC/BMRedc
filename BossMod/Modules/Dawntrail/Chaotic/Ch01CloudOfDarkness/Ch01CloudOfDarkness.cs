@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Dawntrail.Chaotic.Ch01CloudOfDarkness;
 
-class Flare(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(25), (uint)IconID.Flare, ActionID.MakeSpell(AID.FlareAOE), 8.1f, true);
+class Flare(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Flare, ActionID.MakeSpell(AID.FlareAOE), 25, 8.1f);
 class StygianShadow(BossModule module) : Components.Adds(module, (uint)OID.StygianShadow);
 class Atomos(BossModule module) : Components.Adds(module, (uint)OID.Atomos);
 class GhastlyGloomCross(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GhastlyGloomCrossAOE), new AOEShapeCross(40, 15));
@@ -10,7 +10,7 @@ class Excruciate(BossModule module) : Components.BaitAwayCast(module, ActionID.M
 class LoomingChaos(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.LoomingChaosAOE));
 
 // TODO: tankswap hints component for phase1
-// TODO: phase 2 squares, break timer, teleport zones, outer ring safety
+// TODO: phase 2 teleport zones?
 // TODO: grim embrace / curse of darkness prevent turning
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1010, NameID = 13624, PlanLevel = 100)]
@@ -24,7 +24,7 @@ public class Ch01CloudOfDarkness(WorldState ws, Actor primary) : BossModule(ws, 
     new Rectangle(new(85, 100), 3, 24), new Square(new(126.5f, 100), 7.5f), new Square(new(73.5f, 100), 7.5f)];
     public static readonly Shape[] Phase2ShapesWD = [.. donut, .. Phase2ShapesND];
     public static readonly ArenaBoundsCircle DefaultArena = new(40);
-    public static readonly ArenaBoundsComplex Phase1Bounds = new(Diamond);
+    public static readonly ArenaBoundsComplex Phase1Bounds = new(Diamond, ScaleFactor: 1.414f);
     public static readonly ArenaBoundsComplex Phase2BoundsWD = new(Phase2ShapesWD);
     public static readonly ArenaBoundsComplex Phase2BoundsND = new(Phase2ShapesND, donut);
 }

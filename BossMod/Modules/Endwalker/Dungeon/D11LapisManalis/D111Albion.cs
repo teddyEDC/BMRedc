@@ -144,7 +144,7 @@ class WildlifeCrossing(BossModule module) : Components.GenericAOEs(module)
             if (b.Position.InRect(stampede.Position, stampede.Rotation, 0, 10, 5) && stampede.Active)
                 updatedBeasts.Add(b);
         }
-        stampede = stampede with { Beasts = [.. updatedBeasts] };
+        stampede.Beasts = [.. updatedBeasts];
     }
 
     private void ResetStampede(ref Stampede stampede)

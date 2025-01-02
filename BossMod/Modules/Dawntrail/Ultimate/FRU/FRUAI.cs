@@ -40,9 +40,6 @@ sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModu
     // assumption: pull range is 12; hitbox is 5, so maxmelee is 8, meaning we have approx 4m to move during pull - with sprint, speed is 7.8, accel is 30 => over 0.26s accel period we move 1.014m, then need another 0.38s to reach boss (but it also moves)
     private WPos PrepullPosition(FRU module, PartyRolesConfig.Assignment assignment)
     {
-        if (assignment == PartyRolesConfig.Assignment.Unassigned)
-            return default;
-
         var safeRange = 12.5f;
         var desiredRange = assignment is PartyRolesConfig.Assignment.MT or PartyRolesConfig.Assignment.MT or PartyRolesConfig.Assignment.M1 or PartyRolesConfig.Assignment.M2 ? 5 : 10;
         var dir = _config.P1CyclonicBreakSpots[assignment];
