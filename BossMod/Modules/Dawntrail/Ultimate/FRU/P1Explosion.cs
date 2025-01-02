@@ -15,8 +15,6 @@ class P1Explosion(BossModule module) : Components.GenericTowers(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (assignment == PartyRolesConfig.Assignment.Unassigned)
-            return;
         var role = _config.P1ExplosionsAssignment[assignment];
         if (role < 0 || TowerDir == default)
             return;
