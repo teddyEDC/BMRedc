@@ -10,7 +10,7 @@ class Excruciate(BossModule module) : Components.BaitAwayCast(module, ActionID.M
 class LoomingChaos(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.LoomingChaosAOE));
 
 // TODO: tankswap hints component for phase1
-// TODO: phase 2 squares, break timer, teleport zones, outer ring safety
+// TODO: phase 2 teleport zones?
 // TODO: grim embrace / curse of darkness prevent turning
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1010, NameID = 13624, PlanLevel = 100)]
