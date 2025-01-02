@@ -11,7 +11,8 @@ public class ConfigRoot
 
     public Event Modified = new();
 
-    public static readonly Dictionary<Type, ConfigNode> Nodes = [];
+    public readonly Dictionary<Type, ConfigNode> _nodes = [];
+    public List<ConfigNode> Nodes => [.. _nodes.Values];
 
     public void Initialize()
     {
@@ -23,12 +24,12 @@ public class ConfigRoot
                 continue;
             }
             inst.Modified.Subscribe(Modified.Fire);
-            Nodes[t] = inst;
+            _nodes[t] = inst;
         }
     }
 
-    public T Get<T>() where T : ConfigNode => (T)Nodes[typeof(T)];
-    public T Get<T>(Type derived) where T : ConfigNode => (T)Nodes[derived];
+    public T Get<T>() where T : ConfigNode => (T)_nodes[typeof(T)];
+    public T Get<T>(Type derived) where T : ConfigNode => (T)_nodes[derived];
 
     public ConfigListener<T> GetAndSubscribe<T>(Action<T> modified) where T : ConfigNode => new(Get<T>(), modified);
 
@@ -41,7 +42,7 @@ public class ConfigRoot
             foreach (var jconfig in json.RootElement.GetProperty("Payload").EnumerateObject())
             {
                 var type = Type.GetType(jconfig.Name);
-                var node = type != null ? Nodes.GetValueOrDefault(type) : null;
+                var node = type != null ? _nodes.GetValueOrDefault(type) : null;
                 node?.Deserialize(jconfig.Value, ser);
             }
         }
@@ -58,7 +59,7 @@ public class ConfigRoot
             var ser = Serialization.BuildSerializationOptions();
             var serializedNodes = new ConcurrentDictionary<Type, string>();
 
-            Parallel.ForEach(Nodes, entry =>
+            Parallel.ForEach(_nodes, entry =>
             {
                 using var ms = new MemoryStream();
                 using var tempWriter = new Utf8JsonWriter(ms);
@@ -82,6 +83,7 @@ public class ConfigRoot
             }
 
             writer.WriteEndObject();
+            writer.WriteEndObject();
         }
         catch (Exception e)
         {
@@ -96,19 +98,19 @@ public class ConfigRoot
         {
             result.Add("Usage: /vbm cfg <config-type> <field> <value>");
             result.Add("Both config-type and field can be shortened. Valid config-types:");
-            foreach (var t in Nodes.Keys)
+            foreach (var t in _nodes.Keys)
                 result.Add($"- {t.Name}");
         }
         else
         {
             List<ConfigNode> matchingNodes = [];
-            foreach (var (t, n) in Nodes)
+            foreach (var (t, n) in _nodes)
                 if (t.Name.Contains(args[0], StringComparison.CurrentCultureIgnoreCase))
                     matchingNodes.Add(n);
             if (matchingNodes.Count == 0)
             {
                 result.Add("Config type not found. Valid types:");
-                foreach (var t in Nodes.Keys)
+                foreach (var t in _nodes.Keys)
                     result.Add($"- {t.Name}");
             }
             else if (matchingNodes.Count > 1)

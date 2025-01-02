@@ -165,9 +165,9 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
     private void Flare(uint id, float delay)
     {
         Cast(id, AID.Flare, delay, 4);
-        ComponentCondition<Flare>(id + 0x10, 1, comp => comp.CurrentBaits.Count > 0)
+        ComponentCondition<Flare>(id + 0x10, 1, comp => comp.Spreads.Count != 0)
             .ActivateOnEnter<Flare>();
-        ComponentCondition<Flare>(id + 0x20, 8.1f, comp => comp.NumCasts > 0, "Flares")
+        ComponentCondition<Flare>(id + 0x20, 8.1f, comp => comp.NumFinishedSpreads > 0, "Flares")
             .DeactivateOnExit<Flare>();
     }
 
@@ -177,7 +177,7 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         ComponentCondition<RazingVolleyParticleBeam>(id + 1, 1.9f, comp => comp.NumCasts > 0, "Criss-cross start");
         ComponentCondition<RazingVolleyParticleBeam>(id + 2, 2, comp => comp.NumCasts > 1);
         CastEnd(id + 3, 0.1f);
-        ComponentCondition<Flare>(id + 0x10, 1, comp => comp.CurrentBaits.Count > 0)
+        ComponentCondition<Flare>(id + 0x10, 1, comp => comp.Spreads.Count != 0)
             .ActivateOnEnter<Flare>();
         ComponentCondition<RazingVolleyParticleBeam>(id + 0x11, 0.9f, comp => comp.NumCasts > 2);
         CastStart(id + 0x20, AID.UnholyDarkness, 1.2f);
@@ -185,7 +185,7 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         CastEnd(id + 0x22, 4.2f);
         ComponentCondition<UnholyDarkness>(id + 0x30, 0.7f, comp => comp.Stacks.Count > 0)
             .ActivateOnEnter<UnholyDarkness>();
-        ComponentCondition<Flare>(id + 0x40, 0.3f, comp => comp.NumCasts > 0, "Flares")
+        ComponentCondition<Flare>(id + 0x40, 0.3f, comp => comp.NumFinishedSpreads != 0, "Flares")
             .DeactivateOnExit<Flare>();
         CastStartMulti(id + 0x50, [AID.BladeOfDarknessL, AID.BladeOfDarknessR, AID.BladeOfDarknessC], 7.1f);
         ComponentCondition<UnholyDarkness>(id + 0x51, 0.7f, comp => comp.NumFinishedStacks > 0, "Stacks")
@@ -216,7 +216,6 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         ComponentCondition<StygianShadow>(id + 0x10, 4.2f, comp => comp.ActiveActors.Any(), "Platform adds")
             .ActivateOnEnter<StygianShadow>()
             .ActivateOnEnter<Atomos>()
-            .ActivateOnEnter<Phase2OuterRing>()
             .ActivateOnEnter<Phase2InnerCells>()
             .ActivateOnEnter<DarkEnergyParticleBeam>(); // overlaps with multiple mechanics
     }
@@ -383,7 +382,6 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         CastStart(id, AID.FloodOfDarkness2, delay, "Adds disappear")
             .DeactivateOnExit<StygianShadow>()
             .DeactivateOnExit<Atomos>()
-            .DeactivateOnExit<Phase2OuterRing>()
             .DeactivateOnExit<Phase2InnerCells>()
             .DeactivateOnExit<DarkEnergyParticleBeam>();
         CastEnd(id + 1, 7, "Raidwide + arena transition")
