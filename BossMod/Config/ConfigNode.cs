@@ -8,26 +8,26 @@ namespace BossMod;
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class ConfigDisplayAttribute : Attribute
 {
-    public string? Name;
-    public int Order;
-    public Type? Parent;
+    public string? Name { get; set; }
+    public int Order { get; set; }
+    public Type? Parent { get; set; }
 }
 
 // attribute that specifies how config node field or enumeration value is shown in the UI
 [AttributeUsage(AttributeTargets.Field)]
 public sealed class PropertyDisplayAttribute(string label, uint color = 0, string tooltip = "", bool separator = false) : Attribute
 {
-    public string Label = label;
-    public uint Color = color == 0 ? Colors.TextColor1 : color;
-    public string Tooltip = tooltip;
-    public bool Separator = separator;
+    public string Label { get; } = label;
+    public uint Color { get; } = color == 0 ? Colors.TextColor1 : color;
+    public string Tooltip { get; } = tooltip;
+    public bool Separator { get; } = separator;
 }
 
 // attribute that specifies combobox should be used for displaying int/bool property
 [AttributeUsage(AttributeTargets.Field)]
 public sealed class PropertyComboAttribute(string[] values) : Attribute
 {
-    public string[] Values = values;
+    public string[] Values { get; } = values;
 
 #pragma warning disable CA1019 // this is just a shorthand
     public PropertyComboAttribute(string falseText, string trueText) : this([falseText, trueText]) { }
@@ -38,10 +38,10 @@ public sealed class PropertyComboAttribute(string[] values) : Attribute
 [AttributeUsage(AttributeTargets.Field)]
 public sealed class PropertySliderAttribute(float min, float max) : Attribute
 {
-    public float Speed = 1;
-    public float Min = min;
-    public float Max = max;
-    public bool Logarithmic;
+    public float Speed { get; set; } = 1;
+    public float Min { get; } = min;
+    public float Max { get; } = max;
+    public bool Logarithmic { get; set; }
 }
 
 // base class for configuration nodes
