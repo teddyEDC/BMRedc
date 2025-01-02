@@ -55,6 +55,28 @@ public abstract class ConfigNode
     // draw custom contents; override this for complex config nodes
     public virtual void DrawCustom(UITree tree, WorldState ws) { }
 
+    private static readonly Dictionary<Type, FieldInfo[]> _fieldsCache = [];
+
+    private static FieldInfo[] GetSerializableFields(Type t)
+    {
+        if (_fieldsCache.TryGetValue(t, out var cachedFields))
+            return cachedFields;
+
+        var fields = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        var len = fields.Length;
+        var discoveredFields = new List<FieldInfo>(len);
+        for (var i = 0; i < len; ++i)
+        {
+            var field = fields[i];
+            if (!field.IsStatic && !field.IsDefined(typeof(JsonIgnoreAttribute), false))
+            {
+                discoveredFields.Add(field);
+            }
+        }
+
+        return _fieldsCache[t] = [.. discoveredFields];
+    }
+
     // deserialize fields from json; default implementation should work fine for most cases
     public virtual void Deserialize(JsonElement j, JsonSerializerOptions ser)
     {
@@ -78,31 +100,25 @@ public abstract class ConfigNode
         }
     }
 
-    // serialize node to json; default implementation should work fine for most cases
+    // serialize node to json;
     public virtual void Serialize(Utf8JsonWriter writer, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
 
-        var fields = GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        var fields = GetSerializableFields(GetType());
         for (var i = 0; i < fields.Length; ++i)
         {
             var field = fields[i];
-            if (field.IsStatic)
-                continue;
-            if (field.GetCustomAttribute<JsonIgnoreAttribute>() != null)
-                continue;
-
             var fieldValue = field.GetValue(this);
 
             writer.WritePropertyName(field.Name);
-
             if (fieldValue is ConfigNode subNode)
             {
                 subNode.Serialize(writer, options);
             }
             else
             {
-                JsonSerializer.Serialize(writer, fieldValue, fieldValue?.GetType() ?? typeof(object), options);
+                JsonSerializer.Serialize(writer, fieldValue, field.FieldType, options);
             }
         }
 
