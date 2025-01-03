@@ -339,8 +339,7 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
     public override Func<WPos, float> Distance(WPos origin, Angle rotation)
     {
         shapeDistance ??= new PolygonWithHolesDistanceFunction(origin, Polygon ?? GetCombinedPolygon(origin));
-        var dis = shapeDistance.Value.Distance;
-        return InvertForbiddenZone ? p => -dis(p) : dis;
+        return InvertForbiddenZone ? shapeDistance.Value.InvertedDistance : shapeDistance.Value.Distance;
     }
 }
 
@@ -352,7 +351,7 @@ public sealed record class AOEShapeCustomAlt(RelSimplifiedComplexPolygon Poly, A
     public override void Outline(MiniArena arena, WPos origin, Angle rotation, uint color = 0) => arena.AddComplexPolygon(origin, (rotation + DirectionOffset).ToDirection(), Poly, color);
     public override Func<WPos, float> Distance(WPos origin, Angle rotation)
     {
-        var shapeDistance = new PolygonWithHolesDistanceFunction(origin, Poly.Transform(default, (-rotation - DirectionOffset).ToDirection())).Distance;
-        return InvertForbiddenZone ? p => -shapeDistance(p) : shapeDistance;
+        return InvertForbiddenZone ? new PolygonWithHolesDistanceFunction(origin, Poly.Transform(default, (-rotation - DirectionOffset).ToDirection())).InvertedDistance
+        : new PolygonWithHolesDistanceFunction(origin, Poly.Transform(default, (-rotation - DirectionOffset).ToDirection())).Distance;
     }
 }

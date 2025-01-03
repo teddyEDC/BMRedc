@@ -7,4 +7,7 @@ class BigCrunchPuddle(BossModule module) : Components.LocationTargetedAOEs(modul
 class BigCrunchSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.BigCrunchSpread), 5);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 965, NameID = 12586, PlanLevel = 90)]
-public class Ex7Zeromus(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20));
+public class Ex7Zeromus(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, new ArenaBoundsSquare(20))
+{
+    public static readonly WPos ArenaCenter = new(100, 100);
+}

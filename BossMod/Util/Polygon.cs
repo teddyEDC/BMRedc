@@ -575,10 +575,15 @@ public readonly struct PolygonWithHolesDistanceFunction
             var edges = new Edge[count];
 
             var prev = vertices[count - 1];
+            var originX = origin.X;
+            var originZ = origin.Z;
+
             for (var i = 0; i < count; ++i)
             {
                 var curr = vertices[i];
-                edges[i] = new(origin.X + prev.X, origin.Z + prev.Z, curr.X - prev.X, curr.Z - prev.Z);
+                var prevX = prev.X;
+                var prevZ = prev.Z;
+                edges[i] = new(originX + prevX, originZ + prevZ, curr.X - prevX, curr.Z - prevZ);
                 prev = curr;
             }
 
@@ -588,22 +593,47 @@ public readonly struct PolygonWithHolesDistanceFunction
 
     public readonly float Distance(WPos p)
     {
-        var localPoint = new WDir(p.X - _origin.X, p.Z - _origin.Z);
+        var pX = p.X;
+        var pZ = p.Z;
+        var localPoint = new WDir(pX - _origin.X, pZ - _origin.Z);
         var isInside = _polygon.Contains(localPoint);
-
         var minDistanceSq = float.MaxValue;
-        var indices = _spatialIndex.Query(p.X, p.Z);
+
+        var indices = _spatialIndex.Query(pX, pZ);
         for (var i = 0; i < indices.Length; ++i)
         {
             var edge = _edges[indices[i]];
-            var t = Math.Clamp(((p.X - edge.Ax) * edge.Dx + (p.Z - edge.Ay) * edge.Dy) * edge.InvLengthSq, 0, 1);
-            var distX = p.X - (edge.Ax + t * edge.Dx);
-            var distY = p.Z - (edge.Ay + t * edge.Dy);
+            var t = Math.Clamp(((pX - edge.Ax) * edge.Dx + (pZ - edge.Ay) * edge.Dy) * edge.InvLengthSq, 0, 1);
+            var distX = pX - (edge.Ax + t * edge.Dx);
+            var distY = pZ - (edge.Ay + t * edge.Dy);
 
             minDistanceSq = Math.Min(minDistanceSq, distX * distX + distY * distY);
         }
 
         var minDistance = MathF.Sqrt(minDistanceSq);
         return isInside ? -minDistance : minDistance;
+    }
+
+    public readonly float InvertedDistance(WPos p)
+    {
+        var pX = p.X;
+        var pZ = p.Z;
+        var localPoint = new WDir(pX - _origin.X, pZ - _origin.Z);
+        var isInside = _polygon.Contains(localPoint);
+        var minDistanceSq = float.MaxValue;
+
+        var indices = _spatialIndex.Query(pX, pZ);
+        for (var i = 0; i < indices.Length; ++i)
+        {
+            var edge = _edges[indices[i]];
+            var t = Math.Clamp(((pX - edge.Ax) * edge.Dx + (pZ - edge.Ay) * edge.Dy) * edge.InvLengthSq, 0, 1);
+            var distX = pX - (edge.Ax + t * edge.Dx);
+            var distY = pZ - (edge.Ay + t * edge.Dy);
+
+            minDistanceSq = Math.Min(minDistanceSq, distX * distX + distY * distY);
+        }
+
+        var minDistance = MathF.Sqrt(minDistanceSq);
+        return isInside ? minDistance : -minDistance;
     }
 }
