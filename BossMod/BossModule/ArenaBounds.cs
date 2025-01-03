@@ -7,9 +7,9 @@ public abstract record class ArenaBounds(float Radius, float MapResolution, floa
     // fields below are used for clipping & drawing borders
     public const float Half = 0.5f;
     public readonly PolygonClipper Clipper = new();
-    public float MaxApproxError { get; private set; }
-    public RelSimplifiedComplexPolygon ShapeSimplified { get; private set; } = new();
-    public List<RelTriangle> ShapeTriangulation { get; private set; } = [];
+    public float MaxApproxError;
+    public RelSimplifiedComplexPolygon ShapeSimplified = new();
+    public List<RelTriangle> ShapeTriangulation = [];
     private readonly PolygonClipper.Operand _clipOperand = new();
     public readonly Dictionary<object, object> Cache = [];
 
@@ -40,7 +40,7 @@ public abstract record class ArenaBounds(float Radius, float MapResolution, floa
     public abstract WDir ClampToBounds(WDir offset);
 
     // functions for clipping various shapes to bounds; all shapes are expected to be defined relative to bounds center
-    public List<RelTriangle> ClipAndTriangulate(IEnumerable<WDir> poly) => Clipper.Intersect(new(poly), _clipOperand).Triangulate();
+    public List<RelTriangle> ClipAndTriangulate(WDir[] poly) => Clipper.Intersect(new PolygonClipper.Operand((ReadOnlySpan<WDir>)poly), _clipOperand).Triangulate();
     public List<RelTriangle> ClipAndTriangulate(RelSimplifiedComplexPolygon poly) => Clipper.Intersect(new(poly), _clipOperand).Triangulate();
 
     public List<RelTriangle> ClipAndTriangulateCone(WDir centerOffset, float innerRadius, float outerRadius, Angle centerDirection, Angle halfAngle)
@@ -50,7 +50,7 @@ public abstract record class ArenaBounds(float Radius, float MapResolution, floa
             return [];
 
         var fullCircle = halfAngle.Rad >= MathF.PI;
-        var donut = innerRadius > 0;
+        var donut = innerRadius != 0;
         var points = (donut, fullCircle) switch
         {
             (false, false) => CurveApprox.CircleSector(outerRadius, centerDirection - halfAngle, centerDirection + halfAngle, MaxApproxError),
@@ -58,17 +58,46 @@ public abstract record class ArenaBounds(float Radius, float MapResolution, floa
             (true, false) => CurveApprox.DonutSector(innerRadius, outerRadius, centerDirection - halfAngle, centerDirection + halfAngle, MaxApproxError),
             (true, true) => CurveApprox.Donut(innerRadius, outerRadius, MaxApproxError),
         };
-        return ClipAndTriangulate(points.Select(p => p + centerOffset));
+        for (var i = 0; i < points.Length; ++i)
+        {
+            points[i] += centerOffset;
+        }
+        return ClipAndTriangulate(points);
     }
 
     public List<RelTriangle> ClipAndTriangulateCircle(WDir centerOffset, float radius)
-        => ClipAndTriangulate(CurveApprox.Circle(radius, MaxApproxError).Select(p => p + centerOffset));
+    {
+        var points = CurveApprox.Circle(radius, MaxApproxError);
+        for (var i = 0; i < points.Length; ++i)
+        {
+            points[i] += centerOffset;
+        }
+        return ClipAndTriangulate(points);
+    }
+
     public List<RelTriangle> ClipAndTriangulateCapsule(WDir centerOffset, WDir direction, float radius, float length)
-        => ClipAndTriangulate(CurveApprox.Capsule(direction, length, radius, CurveApprox.ScreenError).Select(p => p + centerOffset));
+    {
+        var points = CurveApprox.Capsule(direction, length, radius, MaxApproxError);
+        for (var i = 0; i < points.Length; ++i)
+        {
+            points[i] += centerOffset;
+        }
+        return ClipAndTriangulate(points);
+    }
+
     public List<RelTriangle> ClipAndTriangulateDonut(WDir centerOffset, float innerRadius, float outerRadius)
-        => innerRadius < outerRadius && innerRadius >= 0
-            ? ClipAndTriangulate(CurveApprox.Donut(innerRadius, outerRadius, MaxApproxError).Select(p => p + centerOffset))
-            : [];
+    {
+        if (innerRadius < outerRadius && innerRadius >= 0)
+        {
+            var points = CurveApprox.Donut(innerRadius, outerRadius, MaxApproxError);
+            for (var i = 0; i < points.Length; ++i)
+            {
+                points[i] += centerOffset;
+            }
+            return ClipAndTriangulate(points);
+        }
+        return [];
+    }
 
     public List<RelTriangle> ClipAndTriangulateTri(WDir oa, WDir ob, WDir oc)
         => ClipAndTriangulate([oa, ob, oc]);
@@ -128,7 +157,7 @@ public sealed record class ArenaBoundsCircle(float Radius, float MapResolution =
     private Pathfinding.Map BuildMap()
     {
         var map = new Pathfinding.Map(MapResolution, default, Radius, Radius);
-        map.BlockPixelsInsideConvex(p => -ShapeDistance.Circle(default, Radius)(p), -1, 0);
+        map.BlockPixelsInsideConvex(ShapeDistance.InvertedCircle(default, Radius), -1, 0);
         return map;
     }
 }
@@ -149,7 +178,7 @@ public record class ArenaBoundsRect(float HalfWidth, float HalfHeight, Angle Rot
     private Pathfinding.Map BuildMap()
     {
         var map = new Pathfinding.Map(MapResolution, default, HalfWidth, HalfHeight, Rotation);
-        map.BlockPixelsInsideConvex(p => -ShapeDistance.Rect(default, Rotation, HalfHeight, HalfHeight, HalfWidth)(p), -1, 0);
+        map.BlockPixelsInsideConvex(ShapeDistance.InvertedRect(default, Rotation, HalfHeight, HalfHeight, HalfWidth), -1, 0);
         return map;
     }
 
