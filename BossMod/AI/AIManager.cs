@@ -135,10 +135,10 @@ sealed class AIManager : IDisposable
                 ToggleForbidMovement(messageData);
                 configModified = cfgForbidMovement != _config.ForbidMovement;
                 break;
-            case "FORBIDMOUNTEDMOVEMENT":
-                var cfgForbidMMovement = _config.ForbidAIMovementMounted;
-                ToggleForbidMovement(messageData);
-                configModified = cfgForbidMMovement != _config.ForbidAIMovementMounted;
+            case "IDLEWHILEMOUNTED":
+                var cfgMountedIdle = _config.ForbidAIMovementMounted;
+                ToggleIdleWhileMounted(messageData);
+                configModified = cfgMountedIdle != _config.ForbidAIMovementMounted;
                 break;
             case "FOLLOWOUTOFCOMBAT":
                 var cfgFollowOOC = _config.FollowOutOfCombat;
@@ -278,7 +278,7 @@ sealed class AIManager : IDisposable
         Service.Log($"[AI] Following targets is now {(_config.AllowAIToBeOutsideBounds ? "enabled" : "disabled")}");
     }
 
-    private void ToggleMountedMovement(string[] messageData)
+    private void ToggleIdleWhileMounted(string[] messageData)
     {
         if (messageData.Length == 1)
             _config.ForbidAIMovementMounted = !_config.ForbidAIMovementMounted;
@@ -293,11 +293,11 @@ sealed class AIManager : IDisposable
                     _config.ForbidAIMovementMounted = false;
                     break;
                 default:
-                    Service.ChatGui.Print($"[AI] Unknown forbid mounted movement command: {messageData[1]}");
+                    Service.ChatGui.Print($"[AI] Unknown idle while mounted command: {messageData[1]}");
                     return;
             }
         }
-        Service.Log($"[AI] Forbid mounted movement is now {(_config.ForbidAIMovementMounted ? "enabled" : "disabled")}");
+        Service.Log($"[AI] Idle while mounted is now {(_config.ForbidAIMovementMounted ? "enabled" : "disabled")}");
     }
 
     private void HandleFollowCommand(string[] messageData)

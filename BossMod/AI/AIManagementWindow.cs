@@ -50,7 +50,7 @@ sealed class AIManagementWindow : UIWindow
         ImGui.SameLine();
         configModified |= ImGui.Checkbox("Forbid movement", ref _config.ForbidMovement);
         ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Forbid mounted movement", ref _config.ForbidAIMovementMounted);
+        configModified |= ImGui.Checkbox("Idle while mounted", ref _config.ForbidAIMovementMounted);
         ImGui.SameLine();
         configModified |= ImGui.Checkbox("Follow during combat", ref _config.FollowDuringCombat);
         ImGui.Spacing();
