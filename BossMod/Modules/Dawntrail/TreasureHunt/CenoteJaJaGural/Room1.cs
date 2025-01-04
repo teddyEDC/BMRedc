@@ -58,7 +58,7 @@ class NepenthicPlunge(BossModule module) : Components.SelfTargetedAOEs(module, A
 class CreepingHush(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.CreepingHush), new AOEShapeCone(12, 60.Degrees()));
 class Ovation(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Ovation), new AOEShapeRect(14, 2));
 class BestialFire(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.BestialFire), 5);
-class HeadButt(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.CreepingHush), new AOEShapeCone(6, 60.Degrees()));
+class HeadButt(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.HeadButt), new AOEShapeCone(6, 60.Degrees()));
 class AetherialBlast(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AetherialBlast), new AOEShapeRect(20, 2));
 class Envenomate(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.Envenomate), 1.5f);
 class SyrupSpout(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SyrupSpout), new AOEShapeCone(10, 60.Degrees()));
