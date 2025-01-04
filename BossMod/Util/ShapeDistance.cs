@@ -5,6 +5,8 @@
 
 public static class ShapeDistance
 {
+    private static readonly Angle a90 = 90.Degrees();
+
     public static Func<WPos, float> HalfPlane(WPos point, WDir normal)
     {
         var normalX = normal.X;
@@ -156,8 +158,8 @@ public static class ShapeDistance
             return Cone(origin, outerRadius, centerDir, halfAngle);
 
         float coneFactor = halfAngle.Rad > Angle.HalfPi ? -1 : 1;
-        var nl = coneFactor * (centerDir + halfAngle + 90.Degrees()).ToDirection();
-        var nr = coneFactor * (centerDir - halfAngle - 90.Degrees()).ToDirection();
+        var nl = coneFactor * (centerDir + halfAngle + a90).ToDirection();
+        var nr = coneFactor * (centerDir - halfAngle - a90).ToDirection();
         var innerSq = innerRadius * innerRadius;
         var outerSq = outerRadius * outerRadius;
         var originX = origin.X;
@@ -172,7 +174,7 @@ public static class ShapeDistance
             var pXoriginX = p.X - originX;
             var pZoriginZ = p.Z - originZ;
             var distSqOrigin = pXoriginX * pXoriginX + pZoriginZ * pZoriginZ;
-            var distOuter = outerSq - outerRadius;
+            var distOuter = distSqOrigin - outerSq;
             var distInner = innerSq - distSqOrigin;
             var distLeft = pXoriginX * nlX + pZoriginZ * nlZ;
             var distRight = pXoriginX * nrX + pZoriginZ * nrZ;
@@ -196,8 +198,8 @@ public static class ShapeDistance
             return Cone(origin, outerRadius, centerDir, halfAngle);
 
         float coneFactor = halfAngle.Rad > Angle.HalfPi ? -1 : 1;
-        var nl = coneFactor * (centerDir + halfAngle + 90.Degrees()).ToDirection();
-        var nr = coneFactor * (centerDir - halfAngle - 90.Degrees()).ToDirection();
+        var nl = coneFactor * (centerDir + halfAngle + a90).ToDirection();
+        var nr = coneFactor * (centerDir - halfAngle - a90).ToDirection();
         var innerSq = innerRadius * innerRadius;
         var outerSq = outerRadius * outerRadius;
         var originX = origin.X;
@@ -212,7 +214,7 @@ public static class ShapeDistance
             var pXoriginX = p.X - originX;
             var pZoriginZ = p.Z - originZ;
             var distSqOrigin = pXoriginX * pXoriginX + pZoriginZ * pZoriginZ;
-            var distOuter = outerSq - outerRadius;
+            var distOuter = distSqOrigin - outerSq;
             var distInner = innerSq - distSqOrigin;
             var distLeft = pXoriginX * nlX + pZoriginZ * nlZ;
             var distRight = pXoriginX * nrX + pZoriginZ * nrZ;
