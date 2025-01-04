@@ -44,7 +44,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         var hadNavi = _naviDecision.Destination != null;
 
         Targeting target = new();
-        if (!forbidActions && (AIPreset != null || autorot.Preset != null))
+        if (!forbidActions && AIPreset != null && (!_config.ForbidAIMovementMounted || _config.ForbidAIMovementMounted && player.MountId == 0))
         {
             target = SelectPrimaryTarget(player, master);
             if (_config.ManualTarget)

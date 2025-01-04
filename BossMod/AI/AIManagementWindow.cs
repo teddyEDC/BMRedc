@@ -11,7 +11,6 @@ sealed class AIManagementWindow : UIWindow
     private readonly EventSubscriptions _subscriptions;
     private const string _title = $"AI: off{_windowID}";
     private const string _windowID = "###AI debug window";
-    DateTime? saveConfigIn;
 
     public AIManagementWindow(AIManager manager) : base(_windowID, false, new(100, 100))
     {
@@ -79,11 +78,9 @@ sealed class AIManagementWindow : UIWindow
             {
                 if (ImGui.Selectable(p.Name, _manager.MasterSlot == i))
                 {
-                    var cfg = _config.FollowSlot;
                     _manager.SwitchToFollow(i);
                     _config.FollowSlot = i;
-                    if (cfg != _config.FollowSlot)
-                        configModified = true;
+                    configModified = true;
                 }
             }
             ImGui.EndCombo();
@@ -96,10 +93,8 @@ sealed class AIManagementWindow : UIWindow
         var positionalIndex = (int)_config.DesiredPositional;
         if (ImGui.Combo("##DesiredPositional", ref positionalIndex, positionalOptions, positionalOptions.Length))
         {
-            var cfg = _config.DesiredPositional;
             _config.DesiredPositional = (Positional)positionalIndex;
-            if (cfg != _config.DesiredPositional)
-                configModified = true;
+            configModified = true;
         }
         ImGui.SameLine();
         ImGui.Text("Max distance - to targets");
@@ -111,10 +106,8 @@ sealed class AIManagementWindow : UIWindow
             maxDistanceTargetStr = maxDistanceTargetStr.Replace(',', '.');
             if (float.TryParse(maxDistanceTargetStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxDistance))
             {
-                var cfg = _config.MaxDistanceToTarget;
                 _config.MaxDistanceToTarget = maxDistance;
-                if (cfg != _config.MaxDistanceToTarget)
-                    configModified = true;
+                configModified = true;
             }
         }
         ImGui.SameLine();
@@ -127,10 +120,8 @@ sealed class AIManagementWindow : UIWindow
             maxDistanceSlotStr = maxDistanceSlotStr.Replace(',', '.');
             if (float.TryParse(maxDistanceSlotStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxDistance))
             {
-                var cfg = _config.MaxDistanceToSlot;
                 _config.MaxDistanceToSlot = maxDistance;
-                if (cfg != _config.MaxDistanceToTarget)
-                    configModified = true;
+                configModified = true;
             }
         }
 
@@ -143,10 +134,8 @@ sealed class AIManagementWindow : UIWindow
             movementDelayStr = movementDelayStr.Replace(',', '.');
             if (float.TryParse(movementDelayStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var delay))
             {
-                var cfg = _config.MoveDelay;
                 _config.MoveDelay = delay;
-                if (cfg != _config.MoveDelay)
-                    configModified = true;
+                configModified = true;
             }
         }
         ImGui.SameLine();
@@ -156,38 +145,38 @@ sealed class AIManagementWindow : UIWindow
         ImGui.SetNextWindowSizeConstraints(default, new Vector2(float.MaxValue, ImGui.GetTextLineHeightWithSpacing() * 50));
         var aipreset = _config.AIAutorotPresetName;
         var presets = _manager.Autorot.Database.Presets.VisiblePresets;
-        var presetNames = presets.Select(p => p.Name).ToList();
+
+        var count = presets.Count;
+        List<string> presetNames = new(count + 1);
+        for (var i = 0; i < count; ++i)
+        {
+            presetNames.Add(presets[i].Name);
+        }
+
         if (aipreset != null)
             presetNames.Add("Deactivate");
-
+        var countnames = presetNames.Count;
         var selectedIndex = presetNames.IndexOf(aipreset ?? "");
-        if (selectedIndex == -1 && _manager.AiPreset == null)
-            selectedIndex = -1;
-        if (ImGui.Combo("##AI preset", ref selectedIndex, [.. presetNames], presetNames.Count))
+
+        if (ImGui.Combo("##AI preset", ref selectedIndex, [.. presetNames], countnames))
         {
-            var cfg = _config.AIAutorotPresetName;
-            if (selectedIndex == presetNames.Count - 1 && aipreset != null)
+            if (selectedIndex == countnames - 1 && aipreset != null)
             {
                 _manager.SetAIPreset(null);
                 _config.AIAutorotPresetName = null;
+                configModified = true;
                 selectedIndex = -1;
             }
-            else if (selectedIndex >= 0 && selectedIndex < presets.Count())
+            else if (selectedIndex >= 0 && selectedIndex < count)
             {
-                var selectedPreset = presets.ElementAt(selectedIndex);
+                var selectedPreset = presets[selectedIndex];
                 _manager.SetAIPreset(selectedPreset);
                 _config.AIAutorotPresetName = selectedPreset.Name;
-            }
-            if (cfg != _config.AIAutorotPresetName)
                 configModified = true;
+            }
         }
         if (configModified)
-            saveConfigIn = DateTime.Now.AddSeconds(10); // delay config saving to potentially save multiple setting changes in a batch
-        if (saveConfigIn <= DateTime.Now)
-        {
             _config.Modified.Fire();
-            saveConfigIn = null;
-        }
     }
 
     public override void OnClose() => SetVisible(false);
