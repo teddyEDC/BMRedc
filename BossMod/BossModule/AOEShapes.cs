@@ -190,7 +190,7 @@ public enum OperandType
 // shapes1 for unions, shapes 2 for shapes for XOR/intersection with shapes1, differences for shapes that get subtracted after previous operations
 // always create a new instance of AOEShapeCustom if something other than the invertforbiddenzone changes
 // if the origin of the AOE can change, edit the origin default value to prevent cache issues
-public sealed record class AOEShapeCustom(Shape[] Shapes1, Shape[]? DifferenceShapes = null, Shape[]? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union, WPos Origin = default) : AOEShape
+public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnlyList<Shape>? DifferenceShapes = null, IReadOnlyList<Shape>? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union, WPos Origin = default) : AOEShape
 {
     public RelSimplifiedComplexPolygon? Polygon;
     private PolygonWithHolesDistanceFunction? shapeDistance;
@@ -247,7 +247,7 @@ public sealed record class AOEShapeCustom(Shape[] Shapes1, Shape[]? DifferenceSh
         if (Shapes2 != null)
         {
             Polygon = clipper.Simplify(shapes1);
-            for (var i = 0; i < Shapes2.Length; ++i)
+            for (var i = 0; i < Shapes2.Count; ++i)
             {
                 var shape = Shapes2[i];
                 var singleShapeOperand = CreateOperandFromShape(shape, origin);
@@ -276,11 +276,11 @@ public sealed record class AOEShapeCustom(Shape[] Shapes1, Shape[]? DifferenceSh
         return operand;
     }
 
-    private static PolygonClipper.Operand CreateOperandFromShapes(Shape[]? shapes, WPos origin)
+    private static PolygonClipper.Operand CreateOperandFromShapes(IReadOnlyList<Shape>? shapes, WPos origin)
     {
         var operand = new PolygonClipper.Operand();
         if (shapes != null)
-            for (var i = 0; i < shapes.Length; ++i)
+            for (var i = 0; i < shapes.Count; ++i)
                 operand.AddPolygon(shapes[i].ToPolygon(origin));
         return operand;
     }
@@ -290,14 +290,14 @@ public sealed record class AOEShapeCustom(Shape[] Shapes1, Shape[]? DifferenceSh
         return (Polygon ?? GetCombinedPolygon(origin)).Contains(position - origin);
     }
 
-    private static int CreateCacheKey(Shape[] shapes1, Shape[] shapes2, Shape[] differenceShapes, OperandType operand, WPos origin)
+    private static int CreateCacheKey(IReadOnlyList<Shape> shapes1, IReadOnlyList<Shape> shapes2, IReadOnlyList<Shape> differenceShapes, OperandType operand, WPos origin)
     {
         var hashCode = new HashCode();
-        for (var i = 0; i < shapes1.Length; ++i)
+        for (var i = 0; i < shapes1.Count; ++i)
             hashCode.Add(shapes1[i].GetHashCode());
-        for (var i = 0; i < shapes2.Length; ++i)
+        for (var i = 0; i < shapes2.Count; ++i)
             hashCode.Add(shapes2[i].GetHashCode());
-        for (var i = 0; i < differenceShapes.Length; ++i)
+        for (var i = 0; i < differenceShapes.Count; ++i)
             hashCode.Add(differenceShapes[i].GetHashCode());
         hashCode.Add(operand);
         hashCode.Add(origin);

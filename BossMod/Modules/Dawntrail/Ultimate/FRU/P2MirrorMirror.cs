@@ -111,7 +111,6 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
                 if (dirVec.Dot(boss.Position - origin.source.Position) > 2 && (origin.source.Position - 4 * dirVec - boss.Position).Length() > boss.HitboxRadius + 3)
                     dir += 180.Degrees();
             }
-
         }
         hints.AddForbiddenZone(ShapeDistance.InvertedCone(origin.source.Position, 4, dir, 15.Degrees()), origin.activation);
     }
