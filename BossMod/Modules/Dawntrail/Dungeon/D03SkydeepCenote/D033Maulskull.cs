@@ -210,7 +210,7 @@ class DestructiveHeat(BossModule module) : Components.SpreadFromCastTargets(modu
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ActiveSpreads.Any())
+        if (ActiveSpreads.Count != 0)
         {
             var source1 = _kb1.Sources(slot, actor).FirstOrDefault();
             var source2 = _kb2.Sources(slot, actor).FirstOrDefault();

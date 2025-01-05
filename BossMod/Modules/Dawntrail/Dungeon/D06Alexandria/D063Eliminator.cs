@@ -114,7 +114,7 @@ class Electray(BossModule module) : Components.SpreadFromCastTargets(module, Act
         else
         {
             base.AddAIHints(slot, actor, assignment, hints);
-            if (ActiveSpreads.Any())
+            if (ActiveSpreads.Count != 0)
                 hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center - new WDir(0, 15), 15), ActiveSpreads.FirstOrDefault().Activation);
         }
     }

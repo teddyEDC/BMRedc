@@ -566,7 +566,7 @@ public class DonutStack(BossModule module, ActionID aid, uint icon, float innerR
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!ActiveStacks.Any())
+        if (ActiveStacks.Count == 0)
             return;
         var forbidden = new List<Func<WPos, float>>();
         foreach (var c in Raid.WithoutSlot().Where(x => ActiveStacks.Any(y => y.Target == x)).Exclude(actor))

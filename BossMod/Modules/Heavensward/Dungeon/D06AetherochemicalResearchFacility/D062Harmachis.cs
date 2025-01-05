@@ -71,19 +71,19 @@ class ChthonicHush(BossModule module) : Components.Cleave(module, ActionID.MakeS
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (!_stack1.ActiveStacks.Any() && !_stack2.ActiveStacks.Any())
+        if (_stack1.ActiveStacks.Count == 0 && _stack2.ActiveStacks.Count == 0)
             base.AddHints(slot, actor, hints);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!_stack1.ActiveStacks.Any() && !_stack2.ActiveStacks.Any())
+        if (_stack1.ActiveStacks.Count == 0 && _stack2.ActiveStacks.Count == 0)
             base.AddAIHints(slot, actor, assignment, hints);
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        if (!_stack1.ActiveStacks.Any() && !_stack2.ActiveStacks.Any())
+        if (_stack1.ActiveStacks.Count == 0 && _stack2.ActiveStacks.Count == 0)
             base.DrawArenaForeground(pcSlot, pc);
     }
 }
