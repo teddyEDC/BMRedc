@@ -13,12 +13,15 @@ class Border(BossModule module) : Components.GenericAOEs(module)
 
     private static List<Rectangle> GenerateAlcoves(WPos basePosition, Angle start = default)
     {
+        var a45 = 45.Degrees();
+
         List<Rectangle> rects = new(8)
         {
             new(basePosition, 2, 4, start)
         };
+
         for (var i = 1; i < 8; ++i)
-            rects.Add(new(WPos.RotateAroundOrigin(i * 45, ArenaCenter, basePosition), 2, 4, start + 45.Degrees() * i));
+            rects.Add(new(WPos.RotateAroundOrigin(i * 45, ArenaCenter, basePosition), 2, 4, start + a45 * i));
         return rects;
     }
 
