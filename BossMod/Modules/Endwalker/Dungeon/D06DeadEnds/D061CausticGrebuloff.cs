@@ -193,7 +193,7 @@ class WaveOfNausea(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = [];
     private static readonly AOEShapeDonut donut = new(6, 40);
-    private static readonly List<Shape> differenceShapes = [new Circle(new(271.5f, -178), 6), new Circle(new(261.5f, -178), 6)];
+    private static readonly Shape[] differenceShapes = [new Circle(new(271.5f, -178), 6), new Circle(new(261.5f, -178), 6)];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
 

@@ -141,7 +141,7 @@ class OnHighHint(BossModule module) : Components.GenericAOEs(module)
             if (!Module.Enemies(OID.Whirlwind).Any(x => x.Position.InCone(D152DotoliCiloc.ArenaCenter, deg, angle)))
                 cones.Add(new(D152DotoliCiloc.ArenaCenter, 20, deg, angle));
         }
-        _aoe = new(new AOEShapeCustom(cones, InvertForbiddenZone: true), D152DotoliCiloc.ArenaCenter, default, activation, Colors.SafeFromAOE);
+        _aoe = new(new AOEShapeCustom([.. cones], InvertForbiddenZone: true), D152DotoliCiloc.ArenaCenter, default, activation, Colors.SafeFromAOE);
     }
 
     public override void OnActorCreated(Actor actor)

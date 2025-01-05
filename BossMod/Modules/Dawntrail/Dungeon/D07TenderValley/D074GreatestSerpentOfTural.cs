@@ -112,7 +112,7 @@ class GreatestLabyrinth(BossModule module) : Components.GenericAOEs(module)
         (new(new(-132, -548), Radius), new(new(-120, -564), Radius)),
         (new(new(-136, -556), Radius), new(new(-140, -544), Radius))];
 
-    private static readonly List<Shape> wholeArena = [new Square(center, 12)];
+    private static readonly Shape[] wholeArena = [new Square(center, 12)];
     private static readonly AOEShapeCustom[] forbiddenShapes = [.. tilePairs.Select(tp => new AOEShapeCustom(wholeArena, [middle, tp.correctTile, tp.goalTile]))];
     private static readonly AOEShapeCustom[] safeShapes = [.. tilePairs.Select(tp => new AOEShapeCustom([tp.correctTile, tp.goalTile], InvertForbiddenZone: true))];
 

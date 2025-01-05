@@ -2,7 +2,6 @@ namespace BossMod.Shadowbringers.Dungeon.D11HeroesGauntlet.D111SpectralThief;
 
 public enum OID : uint
 {
-
     Boss = 0x2DEC, // R0.875
     SpectralThief = 0x2DED, // R0.875
     Marker = 0x1EAED9,
