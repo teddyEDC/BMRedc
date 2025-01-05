@@ -69,8 +69,14 @@ class GoldenBeam(BossModule module) : Components.GenericAOEs(module)
                 cones.Add(new(caster.Position, cone.Radius, spell.Rotation, cone.HalfAngle, 2));
                 if (cones.Count == 4)
                 {
-                    AOEShapeCustom intersect = new([cones[0]], Shapes2: cones.Skip(1), Operand: OperandType.Intersection);
-                    AOEShapeCustom xor = new([cones[0]], Shapes2: cones.Skip(1), Operand: OperandType.Xor);
+                    var coneskip1 = new List<ConeV>(3);
+                    for (var i = 1; i < 4; ++i)
+                    {
+                        coneskip1.Add(cones[i]);
+                    }
+                    ConeV[] conesA = [.. coneskip1];
+                    AOEShapeCustom intersect = new([cones[0]], Shapes2: conesA, Operand: OperandType.Intersection);
+                    AOEShapeCustom xor = new([cones[0]], Shapes2: conesA, Operand: OperandType.Xor);
                     var clipper = new PolygonClipper();
                     var combinedShapes = clipper.Union(new PolygonClipper.Operand(intersect.GetCombinedPolygon(Arena.Center)),
                     new PolygonClipper.Operand(xor.GetCombinedPolygon(Arena.Center)));

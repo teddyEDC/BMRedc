@@ -164,7 +164,7 @@ class CratersWildRampage(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (Circles.Count != 0)
-            yield return new(new AOEShapeCustom(Circles) with { InvertForbiddenZone = invert }, Arena.Center, default, activation, invert ? Colors.SafeFromAOE : Colors.AOE);
+            yield return new(new AOEShapeCustom([.. Circles]) with { InvertForbiddenZone = invert }, Arena.Center, default, activation, invert ? Colors.SafeFromAOE : Colors.AOE);
     }
 
     public override void OnActorEAnim(Actor actor, uint state)

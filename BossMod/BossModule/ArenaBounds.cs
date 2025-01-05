@@ -392,8 +392,8 @@ public sealed record class ArenaBoundsComplex : ArenaBoundsCustom
         var combinedPoly = CombinePolygons(unionPolygons, differencePolygons, additionalPolygons);
 
         float minX = float.MaxValue, maxX = float.MinValue, minZ = float.MaxValue, maxZ = float.MinValue;
-        var count = combinedPoly.Parts.Count;
-        for (var i = 0; i < count; ++i)
+
+        for (var i = 0; i < combinedPoly.Parts.Count; ++i)
         {
             var part = combinedPoly.Parts[i];
             for (var j = 0; j < part.Exterior.Length; ++j)

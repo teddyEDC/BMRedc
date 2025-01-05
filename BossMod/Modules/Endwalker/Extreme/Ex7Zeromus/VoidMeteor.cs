@@ -51,7 +51,7 @@ class MeteorImpactCharge(BossModule module) : Components.GenericAOEs(module)
                 {
                     polygons.Add(new PolygonCustom(BuildShadowPolygon(source.Position - Arena.Center, _meteors[i] - Arena.Center, Arena.Bounds.MaxApproxError)));
                 }
-                _aoe = new(new AOEShapeCustom(polygons), Arena.Center);
+                _aoe = new(new AOEShapeCustom([.. polygons]), Arena.Center);
             }
         }
         base.DrawArenaBackground(pcSlot, pc);

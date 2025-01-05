@@ -190,13 +190,14 @@ public enum OperandType
 // shapes1 for unions, shapes 2 for shapes for XOR/intersection with shapes1, differences for shapes that get subtracted after previous operations
 // always create a new instance of AOEShapeCustom if something other than the invertforbiddenzone changes
 // if the origin of the AOE can change, edit the origin default value to prevent cache issues
-public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerable<Shape>? DifferenceShapes = null, IEnumerable<Shape>? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union, WPos Origin = default) : AOEShape
+public sealed record class AOEShapeCustom(Shape[] Shapes1, Shape[]? DifferenceShapes = null, Shape[]? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union, WPos Origin = default) : AOEShape
 {
     public RelSimplifiedComplexPolygon? Polygon;
     private PolygonWithHolesDistanceFunction? shapeDistance;
     private readonly int hashkey = CreateCacheKey(Shapes1, Shapes2 ?? [], DifferenceShapes ?? [], Operand, Origin);
     private static readonly Dictionary<int, RelSimplifiedComplexPolygon> cache = [];
     private static readonly LinkedList<int> cacheOrder = new();
+
     public void AddToCache(RelSimplifiedComplexPolygon value)
     {
         if (cache.Count >= 50)
@@ -246,8 +247,9 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
         if (Shapes2 != null)
         {
             Polygon = clipper.Simplify(shapes1);
-            foreach (var shape in Shapes2)
+            for (var i = 0; i < Shapes2.Length; ++i)
             {
+                var shape = Shapes2[i];
                 var singleShapeOperand = CreateOperandFromShape(shape, origin);
 
                 switch (Operand)
@@ -274,27 +276,29 @@ public sealed record class AOEShapeCustom(IEnumerable<Shape> Shapes1, IEnumerabl
         return operand;
     }
 
-    private static PolygonClipper.Operand CreateOperandFromShapes(IEnumerable<Shape>? shapes, WPos origin)
+    private static PolygonClipper.Operand CreateOperandFromShapes(Shape[]? shapes, WPos origin)
     {
         var operand = new PolygonClipper.Operand();
         if (shapes != null)
-            foreach (var shape in shapes)
-                operand.AddPolygon(shape.ToPolygon(origin));
+            for (var i = 0; i < shapes.Length; ++i)
+                operand.AddPolygon(shapes[i].ToPolygon(origin));
         return operand;
     }
 
     public override bool Check(WPos position, WPos origin, Angle rotation)
     {
-        var (x, z) = position - origin;
-        var result = (Polygon ?? GetCombinedPolygon(origin)).Contains(new(x, z));
-        return result;
+        return (Polygon ?? GetCombinedPolygon(origin)).Contains(position - origin);
     }
 
-    private static int CreateCacheKey(IEnumerable<Shape> shapes1, IEnumerable<Shape> shapes2, IEnumerable<Shape> differenceShapes, OperandType operand, WPos origin)
+    private static int CreateCacheKey(Shape[] shapes1, Shape[] shapes2, Shape[] differenceShapes, OperandType operand, WPos origin)
     {
         var hashCode = new HashCode();
-        foreach (var shape in shapes1.Concat(shapes2).Concat(differenceShapes))
-            hashCode.Add(shape.GetHashCode());
+        for (var i = 0; i < shapes1.Length; ++i)
+            hashCode.Add(shapes1[i].GetHashCode());
+        for (var i = 0; i < shapes2.Length; ++i)
+            hashCode.Add(shapes2[i].GetHashCode());
+        for (var i = 0; i < differenceShapes.Length; ++i)
+            hashCode.Add(differenceShapes[i].GetHashCode());
         hashCode.Add(operand);
         hashCode.Add(origin);
         return hashCode.ToHashCode();

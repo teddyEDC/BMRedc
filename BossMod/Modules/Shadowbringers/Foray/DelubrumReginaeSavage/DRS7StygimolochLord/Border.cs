@@ -55,7 +55,7 @@ class Border(BossModule module) : Components.GenericAOEs(module)
 
     private static List<WPos> MidDanger()
     {
-        var outerRing = RingBorder(0.Degrees(), _outerRingRadius, true);
+        var outerRing = RingBorder(default, _outerRingRadius, true);
         var innerRing = RingBorder(22.5f.Degrees(), _innerRingRadius, false);
         innerRing.Reverse();
         outerRing.AddRange(innerRing);
@@ -66,7 +66,7 @@ class Border(BossModule module) : Components.GenericAOEs(module)
     {
         var outerBoundary = CurveApprox.Rect(BoundsCenter, new(0, 1), 34.5f, 34.5f).ToList(); // using a square instead of circle to have less vertices. polygon will get clipped with circle border anyway
         outerBoundary.Add(outerBoundary[0]);
-        var innerRing = RingBorder(0.Degrees(), _outerRingRadius, false);
+        var innerRing = RingBorder(default, _outerRingRadius, false);
         outerBoundary.AddRange(innerRing);
         return outerBoundary;
     }
