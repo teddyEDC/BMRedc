@@ -2,8 +2,7 @@ namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA01Art;
 
 public enum OID : uint
 {
-    // Boss = 0x265A, // R2.7
-    Boss = 0x197, // R2.7
+    Boss = 0x265A, // R2.7
     Orlasrach = 0x265B, // R2.7
     Owain = 0x2662, // R2.7
     ShadowLinksHelper = 0x1EA1A1, // R2.0 (if pos -134.917, 750.44)
