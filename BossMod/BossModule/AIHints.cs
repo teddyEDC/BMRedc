@@ -28,6 +28,7 @@ public sealed class AIHints
     {
         Normal,
         Pyretic, // pyretic/acceleration bomb type of effects - no movement, no actions, no casting allowed at activation time
+        NoMovement, // no movement allowed
         Freezing, // should be moving at activation time
         Misdirection, // temporary misdirection - if current time is greater than activation, use special pathfinding codepath
     }

@@ -220,7 +220,7 @@ public record class ArenaBoundsCustom : ArenaBounds
         {
             var part = Poly.Parts[i];
             edgeList.AddRange(part.ExteriorEdges);
-            for (var j = 0; j < part.Holes.Count(); ++j)
+            for (var j = 0; j < part.Holes.Length; ++j)
             {
                 edgeList.AddRange(part.InteriorEdges(j));
             }
@@ -258,7 +258,10 @@ public record class ArenaBoundsCustom : ArenaBounds
         for (var i = 0; i < edges.Length; ++i)
         {
             var edge = edges[i];
-            var nearest = NearestPointOnSegment(offset, edge.Item1, edge.Item2);
+            var segmentVector = edge.Item2 - edge.Item1;
+            var segmentLengthSq = segmentVector.LengthSq();
+            var t = Math.Max(0, Math.Min(1, (offset - edge.Item1).Dot(segmentVector) / segmentLengthSq));
+            var nearest = edge.Item1 + t * segmentVector;
             var distance = (nearest - offset).LengthSq();
 
             if (distance < minDistance)
@@ -267,16 +270,9 @@ public record class ArenaBoundsCustom : ArenaBounds
                 nearestPoint = nearest;
             }
         }
+
         AddToInstanceCache(cacheKey, nearestPoint);
         return nearestPoint;
-    }
-
-    private static WDir NearestPointOnSegment(WDir point, WDir segmentStart, WDir segmentEnd)
-    {
-        var segmentVector = segmentEnd - segmentStart;
-        var segmentLengthSq = segmentVector.LengthSq();
-        var t = Math.Max(0, Math.Min(1, (point - segmentStart).Dot(segmentVector) / segmentLengthSq));
-        return segmentStart + t * segmentVector;
     }
 
     private Pathfinding.Map BuildMap()
