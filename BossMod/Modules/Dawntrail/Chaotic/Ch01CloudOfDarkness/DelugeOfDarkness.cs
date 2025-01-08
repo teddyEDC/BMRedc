@@ -5,13 +5,31 @@
 // - 00200010 - phase 1
 // - 00020001 - phase 2
 // - 00040004 - remove telegraph (note that actual bounds are controlled by something else!)
-class Phase2InnerCells(BossModule module) : BossComponent(module)
+class Phase2InnerCells(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly DateTime[] _breakTime = new DateTime[28];
+    private static readonly AOEShapeRect square = new(3, 3, 3);
+    private static readonly Dictionary<int, (int x, int y)> _cellIndexToCoordinates = GenerateCellIndexToCoordinates();
+
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        var cell = CellIndex(actor.Position - Arena.Center) - 3;
+        for (var i = 0; i < 28; ++i)
+        {
+            if (i == cell)
+            {
+                if (Math.Max(0, (_breakTime[i] - WorldState.CurrentTime).TotalSeconds) < 10)
+                    yield return new(square, CellCenter(i));
+                continue;
+            }
+            else if (_breakTime[i] != default)
+                yield return new(square, CellCenter(i), Color: Colors.FutureVulnerable);
+        }
+    }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        var cell = CellIndex(actor.Position - Module.Center) - 3;
+        var cell = CellIndex(actor.Position - Arena.Center) - 3;
         var breakTime = cell >= 0 && cell < _breakTime.Length ? _breakTime[cell] : default;
         if (breakTime != default)
         {
@@ -38,7 +56,7 @@ class Phase2InnerCells(BossModule module) : BossComponent(module)
         //      16             1D
         //   11 13 14 15 1C 1B 1A 18
         //      12             19
-        if (index is < 3 or > 30)
+        if (index is < 0x03 or > 0x1E)
             return;
         _breakTime[index - 3] = state switch
         {
@@ -48,38 +66,66 @@ class Phase2InnerCells(BossModule module) : BossComponent(module)
         };
     }
 
-    private int CoordinateToCell(float c) => (int)Math.Floor(c / 6);
-    private int CellIndex(WDir offset) => CellIndex(CoordinateToCell(offset.X), CoordinateToCell(offset.Z));
-    private int CellIndex(int x, int y) => (x, y) switch
+    private static int CoordinateToCell(float c) => (int)Math.Floor(c / 6);
+    private static int CellIndex(WDir offset) => CellIndex(CoordinateToCell(offset.X), CoordinateToCell(offset.Z));
+    private static int CellIndex(int x, int y) => (x, y) switch
     {
-        (-4, -3) => 3,
-        (-3, -4) => 4,
-        (-3, -3) => 5,
-        (-2, -3) => 6,
-        (-1, -3) => 7,
-        (-3, -2) => 8,
-        (-3, -1) => 9,
-        (+3, -3) => 10,
-        (+2, -4) => 11,
-        (+2, -3) => 12,
-        (+1, -3) => 13,
-        (+0, -3) => 14,
-        (+2, -2) => 15,
-        (+2, -1) => 16,
-        (-4, +2) => 17,
-        (-3, +3) => 18,
-        (-3, +2) => 19,
-        (-2, +2) => 20,
-        (-1, +2) => 21,
-        (-3, +1) => 22,
-        (-3, +0) => 23,
-        (+3, +2) => 24,
-        (+2, +3) => 25,
-        (+2, +2) => 26,
-        (+1, +2) => 27,
-        (+0, +2) => 28,
-        (+2, +1) => 29,
-        (+2, +0) => 30,
-        _ => -1
+        (-4, -3) => 0x03,
+        (-3, -4) => 0x04,
+        (-3, -3) => 0x05,
+        (-2, -3) => 0x06,
+        (-1, -3) => 0x07,
+        (-3, -2) => 0x08,
+        (-3, -1) => 0x09,
+        (+3, -3) => 0x0A,
+        (+2, -4) => 0x0B,
+        (+2, -3) => 0x0C,
+        (+1, -3) => 0x0D,
+        (+0, -3) => 0x0E,
+        (+2, -2) => 0x0F,
+        (+2, -1) => 0x10,
+        (-4, +2) => 0x11,
+        (-3, +3) => 0x12,
+        (-3, +2) => 0x13,
+        (-2, +2) => 0x14,
+        (-1, +2) => 0x15,
+        (-3, +1) => 0x16,
+        (-3, +0) => 0x17,
+        (+3, +2) => 0x18,
+        (+2, +3) => 0x19,
+        (+2, +2) => 0x1A,
+        (+1, +2) => 0x1B,
+        (+0, +2) => 0x1C,
+        (+2, +1) => 0x1D,
+        (+2, +0) => 0x1E,
+        _ => 0
     };
+
+    private static Dictionary<int, (int x, int y)> GenerateCellIndexToCoordinates()
+    {
+        var map = new Dictionary<int, (int x, int y)>();
+        for (var x = -4; x <= 3; ++x)
+        {
+            for (var y = -4; y <= 3; ++y)
+            {
+                var index = CellIndex(x, y);
+                if (index >= 0)
+                    map[index] = (x, y);
+            }
+        }
+        return map;
+    }
+
+    public static WPos CellCenter(int breakTimeIndex)
+    {
+        var cellIndex = breakTimeIndex + 3;
+        if (_cellIndexToCoordinates.TryGetValue(cellIndex, out var coordinates))
+        {
+            var worldX = (coordinates.x + 0.5f) * 6;
+            var worldZ = (coordinates.y + 0.5f) * 6;
+            return Ch01CloudOfDarkness.DefaultCenter + new WDir(worldX, worldZ);
+        }
+        else
+            return default;
+    }
 }

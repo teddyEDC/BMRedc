@@ -20,11 +20,28 @@ public class Ch01CloudOfDarkness(WorldState ws, Actor primary) : BossModule(ws, 
     public static readonly WPos Phase1BoundsCenter = new(100, 76.28427f);
     public static readonly PolygonCustom[] Diamond = [new([new(115, 63), new(128.28427f, 76.28427f), new(100, 104.56854f), new(71.71573f, 76.28427f), new(85, 63)])];
     private static readonly DonutV[] donut = [new(DefaultCenter, 34, 40, 80)];
+    public static readonly Square[] IntersectionBlockers = [.. GenerateIntersectionBlockers()];
     public static readonly Shape[] Phase2ShapesND = [new Rectangle(new(100, 115), 24, 3), new Rectangle(new(100, 85), 24, 3), new Rectangle(new(115, 100), 3, 24),
     new Rectangle(new(85, 100), 3, 24), new Square(new(126.5f, 100), 7.5f), new Square(new(73.5f, 100), 7.5f)];
     public static readonly Shape[] Phase2ShapesWD = [.. donut, .. Phase2ShapesND];
     public static readonly ArenaBoundsCircle DefaultArena = new(40);
     public static readonly ArenaBoundsComplex Phase1Bounds = new(Diamond, ScaleFactor: 1.414f);
-    public static readonly ArenaBoundsComplex Phase2BoundsWD = new(Phase2ShapesWD);
-    public static readonly ArenaBoundsComplex Phase2BoundsND = new(Phase2ShapesND, donut);
+    public static readonly ArenaBoundsComplex Phase2BoundsWD = new(Phase2ShapesWD, IntersectionBlockers);
+    public static readonly ArenaBoundsComplex Phase2BoundsND = new(Phase2ShapesND, [.. IntersectionBlockers, .. donut]);
+
+    private static List<Square> GenerateIntersectionBlockers() // at intersections there are small blockers to prevent players from skipping tiles
+    {
+        var a45 = 45.Degrees();
+        var a135 = 135.Degrees();
+        WDir[] dirs = [a45.ToDirection(), a135.ToDirection(), (-a45).ToDirection(), (-a135).ToDirection()];
+        WPos[] pos = [new(85, 85), new(115, 85), new(115, 115), new(85, 115)];
+        var distance = 3 * MathF.Sqrt(2);
+
+        List<Square> squares = new(16);
+
+        for (var i = 0; i < 4; ++i)
+            for (var j = 0; j < 4; ++j)
+                squares.Add(new(pos[i] + distance * dirs[j], 1, a45));
+        return squares;
+    }
 }
