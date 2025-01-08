@@ -1,8 +1,8 @@
-namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA01Art;
+namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA1Art;
 
-class BA01ArtStates : StateMachineBuilder
+class BA1ArtStates : StateMachineBuilder
 {
-    public BA01ArtStates(BossModule module) : base(module)
+    public BA1ArtStates(BossModule module) : base(module)
     {
         DeathPhase(0, SinglePhase)
             .ActivateOnEnter<Thricecull>()
@@ -62,22 +62,18 @@ class BA01ArtStates : StateMachineBuilder
 
     private void Mythcall(uint id, float delay)
     {
-        Cast(id, AID.Mythcall, delay, 2, "Spawn spears")
-            .ActivateOnEnter<Mythcounter>();
+        Cast(id, AID.Mythcall, delay, 2, "Spawn spears");
         CastMulti(id + 0x10, [AID.Legendcarver, AID.Legendspinner], 6, 4.5f, "In/Out AOE");
-        ComponentCondition<Mythcounter>(id + 0x20, 3, comp => comp.NumCasts != 0, "Spears repeat AOE")
-            .DeactivateOnExit<Mythcounter>();
+        ComponentCondition<LegendMythSpinnerCarver>(id + 0x20, 3, comp => comp.AOEs.Count == 0, "Spears repeat AOE");
     }
 
     private void Mythcall2(uint id, float delay)
     {
-        Cast(id, AID.Mythcall, delay, 2, "Spawn spears")
-            .ActivateOnEnter<Mythcounter>();
+        Cast(id, AID.Mythcall, delay, 2, "Spawn spears");
         Cast(id + 0x10, AID.PiercingDarkVisual, 6.1f, 2.5f, "Spreads");
         CastMulti(id + 0x20, [AID.Legendcarver, AID.Legendspinner], 1.6f, 4.5f, "In/Out AOE");
         ComponentCondition<PiercingDark>(id + 0x30, 0.4f, comp => comp.ActiveSpreads.Count == 0, "Spreads resolve");
-        ComponentCondition<Mythcounter>(id + 0x40, 3, comp => comp.NumCasts != 0, "Spears repeat AOE")
-            .DeactivateOnExit<Mythcounter>();
+        ComponentCondition<LegendMythSpinnerCarver>(id + 0x40, 3, comp => comp.AOEs.Count == 0, "Spears repeat AOE");
     }
 
     private void LegendaryGeas(uint id, float delay)

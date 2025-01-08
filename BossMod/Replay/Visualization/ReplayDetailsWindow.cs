@@ -326,11 +326,11 @@ class ReplayDetailsWindow : UIWindow
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("Rot", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("HP", ImGuiTableColumnFlags.WidthFixed, 200);
-        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.None, 100);
-        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.None, 100);
-        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.None, 100);
-        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.None, 100);
-        ImGui.TableSetupColumn("Hints", ImGuiTableColumnFlags.None, 250);
+        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch, 100);
+        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.WidthStretch, 100);
+        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.WidthStretch, 100);
+        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.WidthStretch, 100);
+        ImGui.TableSetupColumn("Hints", ImGuiTableColumnFlags.WidthStretch, 250);
         ImGui.TableHeadersRow();
         foreach ((var slot, var player) in _player.WorldState.Party.WithSlot(true))
         {
@@ -396,10 +396,10 @@ class ReplayDetailsWindow : UIWindow
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("Rot", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("HP", ImGuiTableColumnFlags.WidthFixed, 200);
-        ImGui.TableSetupColumn("Name");
-        ImGui.TableSetupColumn("Target");
-        ImGui.TableSetupColumn("Cast");
-        ImGui.TableSetupColumn("Statuses");
+        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.WidthStretch, 200);
         ImGui.TableHeadersRow();
         foreach (var enemy in actors)
         {
@@ -421,10 +421,10 @@ class ReplayDetailsWindow : UIWindow
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("Rot", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("HP", ImGuiTableColumnFlags.WidthFixed, 200);
-        ImGui.TableSetupColumn("Name");
-        ImGui.TableSetupColumn("Target");
-        ImGui.TableSetupColumn("Cast");
-        ImGui.TableSetupColumn("Statuses");
+        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.WidthStretch, 200);
         ImGui.TableHeadersRow();
         foreach (var actor in _player.WorldState.Actors)
         {
