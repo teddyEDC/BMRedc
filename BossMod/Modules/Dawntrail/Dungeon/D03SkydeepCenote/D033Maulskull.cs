@@ -234,7 +234,7 @@ class DestructiveHeat(BossModule module) : Components.SpreadFromCastTargets(modu
     }
 }
 
-class Landing(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Landing), 8);
+class Landing(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Landing), 8);
 
 abstract class DeepThunder(BossModule module, AID aid) : Components.CastTowers(module, ActionID.MakeSpell(aid), 6, 4, 4);
 class DeepThunder1(BossModule module) : DeepThunder(module, AID.DeepThunderTower1);

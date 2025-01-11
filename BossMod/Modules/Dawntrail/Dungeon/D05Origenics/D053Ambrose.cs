@@ -231,7 +231,7 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Electrolance(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Electrolance), 22);
+class Electrolance(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Electrolance), 22);
 class WhorlOfTheMind(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.WhorlOfTheMind), 5);
 
 class Rush(BossModule module) : Components.GenericAOEs(module)

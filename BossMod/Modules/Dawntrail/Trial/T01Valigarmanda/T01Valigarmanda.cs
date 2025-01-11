@@ -48,7 +48,7 @@ class Tulidisaster1(BossModule module) : Tulidisaster(module, AID.Tulidisaster1,
 class Tulidisaster2(BossModule module) : Tulidisaster(module, AID.Tulidisaster2, 11.6f);
 class Tulidisaster3(BossModule module) : Tulidisaster(module, AID.Tulidisaster3, 19.6f);
 
-class Eruption(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Eruption), 6);
+class Eruption(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Eruption), 6);
 class IceTalon(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(6), (uint)IconID.Tankbuster, ActionID.MakeSpell(AID.IceTalon), 5, true)
 {
     public override void AddGlobalHints(GlobalHints hints)

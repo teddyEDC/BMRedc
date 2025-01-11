@@ -86,7 +86,7 @@ class VacuumBladePapercutter(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_aoe.ActiveCasters.Any())
+        if (_aoe.ActiveCasters.Count != 0)
         { }
         else
             base.AddAIHints(slot, actor, assignment, hints);

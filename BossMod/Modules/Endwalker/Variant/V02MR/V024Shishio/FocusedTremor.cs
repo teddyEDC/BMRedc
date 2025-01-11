@@ -14,7 +14,7 @@ class FocusedTremor(BossModule module) : Components.GenericAOEs(module)
         if (_aoe == default)
             yield break;
 
-        var isCasterActive = _yokiUzu.ActiveCasters.Any();
+        var isCasterActive = _yokiUzu.ActiveCasters.Count != 0;
         var firstAOEActivation = _yokiUzu.ActiveAOEs(slot, actor).FirstOrDefault().Activation;
         var sixFulmsUnderStatus = actor.FindStatus(SID.SixFulmsUnder);
         var expireAt = sixFulmsUnderStatus?.ExpireAt ?? DateTime.MaxValue;
