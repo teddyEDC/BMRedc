@@ -27,7 +27,7 @@ public enum AID : uint
     Scoop = 21768 // KeeperOfKeys->self, 4.0s cast, range 15 120-degree cone
 }
 
-class Gust(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Gust), 6);
+class Gust(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Gust), 6);
 class ChangelessWinds(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ChangelessWinds), new AOEShapeRect(40, 4));
 class ChangelessWindsKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.ChangelessWinds), 10, shape: new AOEShapeRect(40, 4), kind: Kind.DirForward, stopAtWall: true);
 class Whipwind(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Whipwind), new AOEShapeRect(54, 20, 0.5f));

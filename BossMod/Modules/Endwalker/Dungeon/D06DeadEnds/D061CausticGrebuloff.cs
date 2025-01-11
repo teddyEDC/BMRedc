@@ -187,7 +187,7 @@ class NecroticFluidMist(BossModule module) : Components.Exaflare(module, 6)
 
 class Befoulment(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.Befoulment), 6);
 class BlightedWater(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BlightedWater), 6, 4, 4);
-class CoughUpAOE(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CoughUpAOE), 6);
+class CoughUpAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.CoughUpAOE), 6);
 
 class WaveOfNausea(BossModule module) : Components.GenericAOEs(module)
 {

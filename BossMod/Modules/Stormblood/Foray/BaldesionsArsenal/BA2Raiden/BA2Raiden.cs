@@ -20,13 +20,13 @@ class WhirlingZantetsuken(BossModule module) : Components.SelfTargetedAOEs(modul
 class Shock(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Shock), new AOEShapeCircle(8));
 class ForHonor(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ForHonor), new AOEShapeCircle(11.4f));
 
-abstract class LateralZantetsuken(BossModule module, AID aid) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(75.4f, 19.5f));
+abstract class LateralZantetsuken(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(75.4f, 19.5f));
 class LateralZantetsuken1(BossModule module) : LateralZantetsuken(module, AID.LateralZantetsuken1);
 class LateralZantetsuken2(BossModule module) : LateralZantetsuken(module, AID.LateralZantetsuken2);
 
 class BitterBarbs(BossModule module) : Components.Chains(module, (uint)TetherID.Chains, ActionID.MakeSpell(AID.BitterBarbs));
-class BoomingLament(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.BoomingLament), 10);
-class SilentLevin(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.SilentLevin), 5);
+class BoomingLament(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BoomingLament), 10);
+class SilentLevin(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SilentLevin), 5);
 
 class UltimateZantetsuken(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.UltimateZantetsuken), "Enrage, kill the adds!", true);
 

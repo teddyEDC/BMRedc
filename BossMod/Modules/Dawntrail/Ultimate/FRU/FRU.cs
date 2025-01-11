@@ -5,7 +5,7 @@ class P2CrystalOfLight(BossModule module) : Components.Adds(module, (uint)OID.Cr
 class P3Junction(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.Junction));
 class P3BlackHalo(BossModule module) : Components.CastSharedTankbuster(module, ActionID.MakeSpell(AID.BlackHalo), new AOEShapeCone(60, 45.Degrees())); // TODO: verify angle
 
-abstract class P4HallowedWings(BossModule module, AID aid) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(80, 20));
+abstract class P4HallowedWings(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(80, 20));
 class P4HallowedWingsL(BossModule module) : P4HallowedWings(module, AID.HallowedWingsL);
 class P4HallowedWingsR(BossModule module) : P4HallowedWings(module, AID.HallowedWingsR);
 

@@ -46,7 +46,7 @@ public enum SID : uint
     MagicResistance = 3621 // none->Boss, extra=0x0
 }
 
-class GoldorFireIII(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GoldorFireIII), 8);
+class GoldorFireIII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GoldorFireIII), 8);
 class GoldorBlast(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GoldorBlast), new AOEShapeRect(60, 5));
 class GoldenCross(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GoldenCross), new AOEShapeCross(100, 3.5f));
 
@@ -142,7 +142,7 @@ class GoldorRushRaidwide(BossModule module) : Components.RaidwideCast(module, Ac
 class TwentyFourCaratInhale(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.TwentyFourCaratInhale), 30, kind: Kind.TowardsOrigin);
 class GoldorGravity(BossModule module) : Components.RaidwideCastDelay(module, ActionID.MakeSpell(AID.GoldorGravity), ActionID.MakeSpell(AID.GoldorGravity2), 0.8f, "Dmg + Heavy debuff");
 class GoldorThunderIII(BossModule module) : Components.RaidwideCastDelay(module, ActionID.MakeSpell(AID.GoldorThunderIIIVisual), ActionID.MakeSpell(AID.GoldorThunderIII1), 0.8f, "Prepare to cleanse Electrocution");
-class GoldorThunderIII2(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GoldorThunderIII2), 6);
+class GoldorThunderIII2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GoldorThunderIII2), 6);
 class GoldorBlizzardIII(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.GoldorBlizzardIIIVisual));
 
 class Hints(BossModule module) : BossComponent(module)

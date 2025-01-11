@@ -3,7 +3,7 @@ namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA1Owain;
 class Thricecull(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Thricecull));
 class AcallamNaSenorach(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AcallamNaSenorach));
 class LegendaryImbas(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.LegendaryImbas)); // applies dorito stacks, seems to get skipped if less than 4 people alive?
-class Pitfall(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Pitfall), 20);
+class Pitfall(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Pitfall), 20);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.BaldesionArsenal, GroupID = 639, NameID = 7970, PlanLevel = 70, SortOrder = 2)]
 public class BA1Owain(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)

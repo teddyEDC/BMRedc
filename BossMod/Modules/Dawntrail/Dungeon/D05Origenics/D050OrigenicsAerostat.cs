@@ -21,7 +21,7 @@ public enum AID : uint
 }
 
 class IncendiaryCircle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.IncendiaryCircle), new AOEShapeDonut(3, 12));
-class GrenadoShot(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.GrenadoShot), 5);
+class GrenadoShot(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GrenadoShot), 5);
 
 class D050OrigenicsAerostatStates : StateMachineBuilder
 {

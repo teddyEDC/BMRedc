@@ -150,7 +150,7 @@ class RollingThunder(BossModule module) : Components.SelfTargetedAOEs(module, Ac
     }
 }
 
-class RoaringBolt(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.RoaringBolt), 6);
+class RoaringBolt(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RoaringBolt), 6);
 class UntamedCurrentSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.UntamedCurrentSpread), 5);
 class UntamedCurrentStack(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.UntamedCurrentStack), 6);
 

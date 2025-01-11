@@ -128,7 +128,7 @@ class BA2RaidenStates : StateMachineBuilder
         Targetable(id + 0xB0, true, 4.7f);
         CastStart(id + 0xC0, AID.UltimateZantetsuken, 2.1f, "Enrage start");
         CastEnd(id + 0xD0, 18, "Enrage")
-            .ResetComp<LancingBlowAOE>()
+            .ResetComp<LancingBlowSpread>()
             .ResetComp<SilentLevin>();
     }
 
@@ -141,7 +141,7 @@ class BA2RaidenStates : StateMachineBuilder
         Targetable(id + 0x40, true, 4);
         CastStart(id + 0x50, AID.UltimateZantetsuken, 1.6f, "Enrage start");
         CastEnd(id + 0x60, 18, "Enrage")
-            .ResetComp<LancingBlowAOE>();
+            .ResetComp<LancingBlowSpread>();
     }
 
     private void BoomingLamentCloudToGround(uint id, float delay)
