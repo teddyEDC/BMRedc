@@ -1,4 +1,4 @@
-namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA1Art;
+namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA1Art;
 
 class BA1ArtStates : StateMachineBuilder
 {
@@ -40,6 +40,7 @@ class BA1ArtStates : StateMachineBuilder
             AcallamNaSenorach(id += 0xE0000 + pid, 3.2f);
             Mythcall2(id += 0xF0000 + pid, 6);
         }
+        SimpleState(id + 0xFF0000, 10, "???");
     }
 
     private void Thricecull(uint id, float delay)
@@ -86,8 +87,8 @@ class BA1ArtStates : StateMachineBuilder
     private void GloryUnearthedPitfall(uint id, float delay)
     {
         ComponentCondition<GloryUnearthed>(id, delay, comp => comp.Chasers.Count != 0, "Chasing AOE start");
-        Cast(id + 0x10, AID.Pitfall, 2.5f, 5, "Distance based AOE start");
-        CastEnd(id + 0x20, 5, "Distance AOE resolve");
+        CastStart(id + 0x10, AID.Pitfall, 2.5f, "Proximity AOE start");
+        CastEnd(id + 0x20, 5, "Proximity AOE resolve");
         ComponentCondition<GloryUnearthed>(id + 0x30, 3.7f, comp => comp.Chasers.Count == 0, "Chasing AOE ends");
     }
 }

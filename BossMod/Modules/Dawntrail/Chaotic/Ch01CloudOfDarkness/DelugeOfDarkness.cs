@@ -7,23 +7,28 @@
 // - 00040004 - remove telegraph (note that actual bounds are controlled by something else!)
 class Phase2InnerCells(BossModule module) : Components.GenericAOEs(module)
 {
+    private readonly Ch01CloudOfDarknessConfig _config = Service.Config.Get<Ch01CloudOfDarknessConfig>();
     private readonly DateTime[] _breakTime = new DateTime[28];
     private static readonly AOEShapeRect square = new(3, 3, 3);
     private static readonly Dictionary<int, (int x, int y)> _cellIndexToCoordinates = GenerateCellIndexToCoordinates();
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
+        if (!_config.ShowOccupiedTiles)
+            yield break;
         var cell = CellIndex(actor.Position - Arena.Center) - 3;
         for (var i = 0; i < 28; ++i)
         {
-            if (i == cell)
+            if (_breakTime[i] != default)
             {
-                if (Math.Max(0, (_breakTime[i] - WorldState.CurrentTime).TotalSeconds) < 10)
-                    yield return new(square, CellCenter(i));
-                continue;
+                if (i == cell)
+                {
+                    if (Math.Max(0, (_breakTime[i] - WorldState.CurrentTime).TotalSeconds) < 6)
+                        yield return new(square, CellCenter(i));
+                }
+                else
+                    yield return new(square, CellCenter(i), Color: Colors.FutureVulnerable);
             }
-            else if (_breakTime[i] != default)
-                yield return new(square, CellCenter(i), Color: Colors.FutureVulnerable);
         }
     }
 
@@ -62,6 +67,7 @@ class Phase2InnerCells(BossModule module) : Components.GenericAOEs(module)
         {
             0x00200010 => WorldState.FutureTime(44),
             0x00800040 => WorldState.FutureTime(6),
+            0x00080004 => WorldState.CurrentTime,
             _ => default,
         };
     }

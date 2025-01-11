@@ -1,4 +1,4 @@
-namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA1Owain;
+namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA1Owain;
 
 class IvoryPalm(BossModule module) : Components.GenericGaze(module, inverted: true)
 {

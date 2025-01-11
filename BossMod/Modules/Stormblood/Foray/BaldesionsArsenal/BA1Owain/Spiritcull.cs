@@ -1,4 +1,4 @@
-namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA1Owain;
+namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA1Owain;
 
 class PiercingLight1(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.PiercingLight1), 6);
 class PiercingLight2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.PiercingLight2), 6);

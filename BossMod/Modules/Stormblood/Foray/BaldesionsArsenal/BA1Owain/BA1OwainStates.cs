@@ -1,4 +1,4 @@
-namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA1Owain;
+namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA1Owain;
 
 class BA1OwainStates : StateMachineBuilder
 {
@@ -19,7 +19,7 @@ class BA1OwainStates : StateMachineBuilder
     // all timings seem to have upto 1s variation
     private void SinglePhase(uint id)
     {
-        Thricecull(id, 100);
+        Thricecull(id, 10);
         AcallamNaSenorach(id + 0x10000, 7.1f);
         Mythcall(id + 0x20000, 7.9f);
         Thricecull(id + 0x30000, 10);
@@ -27,30 +27,22 @@ class BA1OwainStates : StateMachineBuilder
         ElementalShift(id + 0x50000, 7.5f);
         Thricecull(id + 0x60000, 11);
         Spiritcull(id + 0x70000, 8.3f);
-        Thricecull(id + 0x60000, 5.1f);
-        AcallamNaSenorach(id + 0x70000, 6);
-        PiercingLight2(id + 0x80000, 6.1f);
-        AcallamNaSenorach(id + 0x90000, 9.7f);
-        AcallamNaSenorach(id + 0xA0000, 5.1f);
-        ElementalShiftSpiritcull(id + 0xB0000, 8.3f);
-        Thricecull(id + 0xC0000, 9.3f);
-        AcallamNaSenorach(id + 0xD0000, 17.2f);
-        IvoryPalmElementalMagicks(id + 0xE0000, 1.2f);
         // from now on repeats until wipe or victory, this extends timeline until up around 20min since its theoretically possible to solo it as long as Owain is pulled
-        for (var i = 0; i < 10; ++i)
+        for (var i = 0; i < 12; ++i)
         {
             var pid = (uint)(i * 0x10000);
-            Spiritcull(id += 0xF0000 + pid, 5.1f);
-            Thricecull(id += 0x100000 + pid, 5.1f);
-            AcallamNaSenorach(id += 0x11000 + pid, 6);
-            PiercingLight2(id += 0x120000 + pid, 6.1f);
-            AcallamNaSenorach(id += 0x130000 + pid, 9.7f);
-            AcallamNaSenorach(id += 0x140000 + pid, 5.1f);
-            ElementalShiftSpiritcull(id + 0x150000 + pid, 8.3f);
-            Thricecull(id += 0x160000 + pid, 9.3f);
-            AcallamNaSenorach(id += 0x170000 + pid, 17.2f);
-            IvoryPalmElementalMagicks(id += 0x180000 + pid, 1.2f);
+            Thricecull(id += 0x80000 + pid, 5.1f);
+            AcallamNaSenorach(id += 0x90000 + pid, 6);
+            PiercingLight2(id += 0xA0000 + pid, 6.1f);
+            AcallamNaSenorach(id += 0xB0000 + pid, 9.7f);
+            AcallamNaSenorach(id += 0xC0000 + pid, 5.1f);
+            ElementalShiftSpiritcull(id + 0xD0000 + pid, 8.3f);
+            Thricecull(id += 0xE0000 + pid, 9.3f);
+            AcallamNaSenorach(id += 0xF0000 + pid, 17.2f);
+            IvoryPalmElementalMagicks(id += 0x100000 + pid, 1.2f);
+            Spiritcull(id += 0x110000 + pid, 5.1f);
         }
+        SimpleState(id + 0xFF0000, 10, "???");
     }
 
     private void Thricecull(uint id, float delay)
@@ -104,7 +96,7 @@ class BA1OwainStates : StateMachineBuilder
         ComponentCondition<LegendaryImbas>(id + 0x20, 1.1f, comp => comp.Casters.Count != 0, "Spreads appear")
             .SetHint(StateMachine.StateHint.Raidwide)
             .DeactivateOnExit<LegendaryImbas>();
-        CastStartMulti(id + 030, [AID.ElementalMagicksIceBoss, AID.ElementalMagicksFireBoss], 2, "Circle AOEs start");
+        CastStartMulti(id + 0x30, [AID.ElementalMagicksIceBoss, AID.ElementalMagicksFireBoss], 2, "Circle AOEs start");
         ComponentCondition<PiercingLight1>(id + 0x40, 3, comp => comp.Spreads.Count == 0, "Spreads resolve");
         ComponentCondition<ElementalMagicks>(id + 0x50, 2, comp => comp.AOEs.Count == 0, "Circles resolve");
     }

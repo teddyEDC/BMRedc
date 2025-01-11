@@ -1,4 +1,4 @@
-namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA1Owain;
+namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA1Owain;
 
 public enum OID : uint
 {
@@ -17,13 +17,13 @@ public enum AID : uint
     ElementalShift1 = 14647, // Boss->self, 2.0s cast, single-target
     ElementalShift2 = 14649, // Boss->self, no cast, single-target
 
-    AcallamNaSenorach = 14662, // Boss->self, 5.0s cast, range 60 circle
+    AcallamNaSenorach = 14662, // Boss->self, 5.0s cast, range 60 circle, raidwide
     AcallamNaSenorachArt = 14628, // Boss->self, 7.0s cast, range 80 circle, enrage if Art side does not get pulled, Art teleports to Owain
     AcallamNaSenorachOwain = 14629, // Owain->self, 7.0s cast, range 80 circle
 
-    Thricecull = 14661, // Boss->player, 5.0s cast, single-target
-    Mythcall = 14646, // Boss->self, 2.0s cast, single-target
+    Thricecull = 14661, // Boss->player, 5.0s cast, single-target, tankbuster
 
+    Mythcall = 14646, // Boss->self, 2.0s cast, single-target
     ElementalMagicksVisual = 14648, // Helper3->self, no cast, single-target
     ElementalMagicksFireBoss = 14650, // Boss->self, 5.0s cast, range 13 circle
     ElementalMagicksFireSpears = 14652, // Munderg->self, no cast, range 13 circle

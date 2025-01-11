@@ -1,4 +1,4 @@
-namespace BossMod.Stormblood.Foray.BaldesionsArsenal.BA1Art;
+namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA1Art;
 
 public enum OID : uint
 {
@@ -17,7 +17,7 @@ public enum AID : uint
     Legendspinner = 14633, // Boss->self, 4.5s cast, range 7-22 donut
     Legendcarver = 14632, // Boss->self, 4.5s cast, range 15 circle
 
-    AcallamNaSenorach = 14645, // Boss->self, 4.0s cast, range 60 circle
+    AcallamNaSenorach = 14645, // Boss->self, 4.0s cast, range 60 circle, raidwide
     AcallamNaSenorachArt = 14628, // Boss->self, 7.0s cast, range 80 circle, enrage if Owain side does not get pulled, Owain teleports to Art
     AcallamNaSenorachOwain = 14629, // Owain->self, 7.0s cast, range 80 circle
 
