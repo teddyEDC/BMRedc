@@ -77,7 +77,7 @@ class EnaeroEndeath(BossModule module) : Components.Knockback(module)
     private void Start(DateTime activation, Kind kind)
     {
         NumCasts = 0;
-        _source = new(Ch01CloudOfDarkness.Phase1Midpoint, 15, activation, Kind: kind);
+        _source = new(Ch01CloudOfDarkness.Phase1BoundsCenter, 15, activation, Kind: kind);
     }
 }
 
@@ -123,14 +123,14 @@ class EnaeroAOE(BossModule module) : Components.GenericAOEs(module)
     private void Start(DateTime activation)
     {
         NumCasts = 0;
-        _aoe = new(_shape, Ch01CloudOfDarkness.Phase1Midpoint, default, activation);
+        _aoe = new(_shape, Ch01CloudOfDarkness.Phase1BoundsCenter, default, activation);
         _delayed = false;
     }
 }
 
 class EndeathAOE(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<AOEInstance> _aoes = [];
+    private readonly List<AOEInstance> _aoes = new(2);
     private bool _delayed;
 
     private static readonly AOEShapeCircle _shapeOut = new(6);
@@ -159,7 +159,7 @@ class EndeathAOE(BossModule module) : Components.GenericAOEs(module)
             case AID.DeathAOE2:
             case AID.EndeathAOE1:
             case AID.EndeathAOE2:
-                if (_aoes.Count > 0)
+                if (_aoes.Count != 0)
                     _aoes.RemoveAt(0);
                 break;
             case AID.BladeOfDarknessLAOE:
@@ -174,8 +174,8 @@ class EndeathAOE(BossModule module) : Components.GenericAOEs(module)
     private void Start(DateTime activation)
     {
         NumCasts = 0;
-        _aoes.Add(new(_shapeOut, Ch01CloudOfDarkness.Phase1Midpoint, default, activation.AddSeconds(2)));
-        _aoes.Add(new(_shapeIn, Ch01CloudOfDarkness.Phase1Midpoint, default, activation.AddSeconds(4)));
+        _aoes.Add(new(_shapeOut, Ch01CloudOfDarkness.Phase1BoundsCenter, default, activation.AddSeconds(2)));
+        _aoes.Add(new(_shapeIn, Ch01CloudOfDarkness.Phase1BoundsCenter, default, activation.AddSeconds(4)));
         _delayed = false;
     }
 }
