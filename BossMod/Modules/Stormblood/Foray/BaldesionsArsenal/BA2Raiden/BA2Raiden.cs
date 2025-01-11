@@ -25,8 +25,8 @@ class LateralZantetsuken1(BossModule module) : LateralZantetsuken(module, AID.La
 class LateralZantetsuken2(BossModule module) : LateralZantetsuken(module, AID.LateralZantetsuken2);
 
 class BitterBarbs(BossModule module) : Components.Chains(module, (uint)TetherID.Chains, ActionID.MakeSpell(AID.BitterBarbs));
-class BoomingLament(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.BoomingLament), new AOEShapeCircle(10));
-class SilentLevin(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.SilentLevin), new AOEShapeCircle(5));
+class BoomingLament(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.BoomingLament), 10);
+class SilentLevin(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.SilentLevin), 5);
 
 class UltimateZantetsuken(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.UltimateZantetsuken), "Enrage, kill the adds!", true);
 
