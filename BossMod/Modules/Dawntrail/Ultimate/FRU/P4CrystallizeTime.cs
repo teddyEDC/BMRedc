@@ -213,7 +213,7 @@ class P4CrystallizeTimeDarkWater(BossModule module) : Components.UniformStackSpr
             BitMask forbidden = default;
             if (Module.FindComponent<P4CrystallizeTime>() is var ct && ct != null)
             {
-                for (int i = 0; i < ct.PlayerMechanics.Length; ++i)
+                for (var i = 0; i < ct.PlayerMechanics.Length; ++i)
                 {
                     // should not be shared by eruption and all claws except air on slow side
                     forbidden[i] = ct.PlayerMechanics[i] switch
@@ -277,7 +277,7 @@ class P4CrystallizeTimeUnholyDarkness(BossModule module) : Components.UniformSta
             BitMask forbidden = default;
             if (Module.FindComponent<P4CrystallizeTime>() is var ct && ct != null)
             {
-                for (int i = 0; i < ct.PlayerMechanics.Length; ++i)
+                for (var i = 0; i < ct.PlayerMechanics.Length; ++i)
                 {
                     // should not be shared by all claws except blizzard on slow side
                     forbidden[i] = ct.PlayerMechanics[i] switch
@@ -420,8 +420,8 @@ class P4CrystallizeTimeHints(BossModule module) : BossComponent(module)
         return SafeOffsetFangEruption(northSlowX);
     }
 
-    private WDir SafeOffsetDarknessStack(float northSlowX) => 19 * (northSlowX > 0 ? 140 : -140).Degrees().ToDirection();
-    private WDir SafeOffsetFinalNonAir(float northSlowX) => 6 * (northSlowX > 0 ? -150 : 150).Degrees().ToDirection();
+    private static WDir SafeOffsetDarknessStack(float northSlowX) => 19 * (northSlowX > 0 ? 140 : -140).Degrees().ToDirection();
+    private static WDir SafeOffsetFinalNonAir(float northSlowX) => 6 * (northSlowX > 0 ? -150 : 150).Degrees().ToDirection();
 }
 
 // TODO: better positioning hints
@@ -467,7 +467,7 @@ class P4CrystallizeTimeRewind(BossModule module) : BossComponent(module)
     {
         if (!RewindDone && _ct != null && _exalines != null && _ct.Cleansed[pcSlot])
         {
-            var vertices = KnockbackSpots(pc.Position).ToList();
+            var vertices = KnockbackSpots(pc.Position);
             Arena.AddQuad(pc.Position, vertices[0], vertices[2], vertices[1], Colors.Danger);
             Arena.AddCircle(Arena.Center + 0.5f * _exalines.StartingOffset, 1, Colors.Safe);
         }
@@ -486,15 +486,17 @@ class P4CrystallizeTimeRewind(BossModule module) : BossComponent(module)
         }
     }
 
-    private IEnumerable<WPos> KnockbackSpots(WPos starting)
+    private List<WPos> KnockbackSpots(WPos starting)
     {
+        List<WPos> list = new(3);
         if (_exalines != null)
         {
             var dx = _exalines.StartingOffset.X > 0 ? -20 : +20;
             var dz = _exalines.StartingOffset.Z > 0 ? -20 : +20;
-            yield return starting + new WDir(dx, 0);
-            yield return starting + new WDir(0, dz);
-            yield return starting + new WDir(dx, dz);
+            list.Add(starting + new WDir(dx, 0));
+            list.Add(starting + new WDir(0, dz));
+            list.Add(starting + new WDir(dx, dz));
         }
+        return list;
     }
 }

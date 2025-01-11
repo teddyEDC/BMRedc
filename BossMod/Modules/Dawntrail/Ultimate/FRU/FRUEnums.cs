@@ -3,7 +3,6 @@
 public enum OID : uint
 {
     BossP1 = 0x459B, // R5.004, x1
-    Helper = 0x233C, // R0.500, x24, Helper type
     FatebreakersImage = 0x459C, // R5.004, x15
     FatebreakersImageHelper = 0x45B0, // R1.800, x8
     HaloOfFlame = 0x459D, // R1.000, x0 (spawn during fight)
@@ -37,6 +36,8 @@ public enum OID : uint
     VisionOfGaia = 0x45B5, // R1.500, x0 (spawn during fight)
     DragonPuddle = 0x1EBD41, // R0.500, x0 (spawn during fight), EventObj type, puddle appears when head is touched
     GuardianOfEden = 0x45AE, // R115.380, x0 (spawn during fight), p5 failure state tree
+
+    Helper = 0x233C
 }
 
 public enum AID : uint

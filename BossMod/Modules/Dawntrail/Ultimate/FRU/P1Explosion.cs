@@ -1,8 +1,8 @@
 ﻿namespace BossMod.Dawntrail.Ultimate.FRU;
 
-class P1ExplosionBurntStrikeFire(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ExplosionBurntStrikeFire), new AOEShapeRect(40, 5, 40));
-class P1ExplosionBurntStrikeLightning(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ExplosionBurntStrikeLightning), new AOEShapeRect(40, 5, 40));
-class P1ExplosionBurnout(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ExplosionBurnout), new AOEShapeRect(40, 10, 40));
+class P1ExplosionBurntStrikeFire(BossModule module) : BurntStrike(module, AID.ExplosionBurntStrikeFire);
+class P1ExplosionBurntStrikeLightning(BossModule module) : BurntStrike(module, AID.ExplosionBurntStrikeLightning);
+class P1ExplosionBurnout(BossModule module) : BurntOut(module, AID.ExplosionBurnout);
 
 // TODO: non-fixed conga?
 class P1Explosion(BossModule module) : Components.GenericTowers(module)
@@ -54,19 +54,19 @@ class P1Explosion(BossModule module) : Components.GenericTowers(module)
         {
             case AID.Explosion11:
             case AID.Explosion12:
-                AddTower(caster.Position, 1, Module.CastFinishAt(spell));
+                AddTower(caster.Position, 1, spell);
                 break;
             case AID.Explosion21:
             case AID.Explosion22:
-                AddTower(caster.Position, 2, Module.CastFinishAt(spell));
+                AddTower(caster.Position, 2, spell);
                 break;
             case AID.Explosion31:
             case AID.Explosion32:
-                AddTower(caster.Position, 3, Module.CastFinishAt(spell));
+                AddTower(caster.Position, 3, spell);
                 break;
             case AID.Explosion41:
             case AID.Explosion42:
-                AddTower(caster.Position, 4, Module.CastFinishAt(spell));
+                AddTower(caster.Position, 4, spell);
                 break;
             case AID.ExplosionBurnout:
                 _isWideLine = true;
@@ -87,7 +87,7 @@ class P1Explosion(BossModule module) : Components.GenericTowers(module)
             case AID.Explosion41:
             case AID.Explosion42:
                 ++NumCasts;
-                Towers.RemoveAll(t => t.Position.AlmostEqual(caster.Position, 1));
+                Towers.RemoveAll(t => t.Position == caster.Position);
                 break;
             case AID.ExplosionBurnout:
             case AID.ExplosionBlastburn:
@@ -96,10 +96,10 @@ class P1Explosion(BossModule module) : Components.GenericTowers(module)
         }
     }
 
-    private void AddTower(WPos pos, int numSoakers, DateTime activation)
+    private void AddTower(WPos pos, int numSoakers, ActorCastInfo spell)
     {
-        Activation = activation;
-        Towers.Add(new(pos, 4, numSoakers, numSoakers, default, activation));
+        Activation = Module.CastFinishAt(spell);
+        Towers.Add(new(pos, 4, numSoakers, numSoakers, default, Activation));
         if (Towers.Count != 3)
             return;
 
@@ -110,7 +110,7 @@ class P1Explosion(BossModule module) : Components.GenericTowers(module)
             return;
         }
         Towers.SortBy(t => t.Position.Z);
-        TowerDir.X = Towers.Sum(t => t.Position.X - Module.Center.X) > 0 ? 1 : -1;
+        TowerDir.X = Towers.Sum(t => t.Position.X - Arena.Center.X) > 0 ? 1 : -1;
 
         Span<int> slotByGroup = [-1, -1, -1, -1, -1, -1, -1, -1];
         foreach (var (slot, group) in _config.P1ExplosionsAssignment.Resolve(Raid))
@@ -118,7 +118,7 @@ class P1Explosion(BossModule module) : Components.GenericTowers(module)
         if (slotByGroup.Contains(-1))
             return;
         var nextFlex = 5;
-        for (int i = 0; i < 3; ++i)
+        for (var i = 0; i < 3; ++i)
         {
             ref var tower = ref Towers.Ref(i);
             tower.ForbiddenSoakers.Raw = 0xFF;
@@ -132,14 +132,14 @@ class P1Explosion(BossModule module) : Components.GenericTowers(module)
                 tower.ForbiddenSoakers.Clear(slotByGroup[i + 5]);
                 // if the tower requires >2 soakers, also assign each flex soaker that has natural 1-man tower (this works, because only patterns are 2-2-2, 1-2-3 and 1-1-4)
                 if (tower.MinSoakers > 2)
-                    for (int j = 0; j < 3; ++j)
+                    for (var j = 0; j < 3; ++j)
                         if (Towers[j].MinSoakers == 1)
                             tower.ForbiddenSoakers.Clear(slotByGroup[j + 5]);
             }
             else
             {
                 // conga fill strategy - grab next N flex soakers in priority order
-                for (int j = 1; j < tower.MinSoakers; ++j)
+                for (var j = 1; j < tower.MinSoakers; ++j)
                     tower.ForbiddenSoakers.Clear(slotByGroup[nextFlex++]);
             }
         }

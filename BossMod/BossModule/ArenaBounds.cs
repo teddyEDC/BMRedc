@@ -362,6 +362,8 @@ public record class ArenaBoundsCustom : ArenaBounds
 public sealed record class ArenaBoundsComplex : ArenaBoundsCustom
 {
     public readonly WPos Center;
+    public bool IsCircle; // can be used by gaze component for gazes outside of the arena
+
     public ArenaBoundsComplex(Shape[] UnionShapes, Shape[]? DifferenceShapes = null, Shape[]? AdditionalShapes = null, float MapResolution = Half, float Offset = 0, float ScaleFactor = 1)
         : base(BuildBounds(UnionShapes, DifferenceShapes, AdditionalShapes, MapResolution, Offset, ScaleFactor, out var center, out var halfWidth, out var halfHeight))
     {

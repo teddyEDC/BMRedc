@@ -34,7 +34,7 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         ComponentCondition<RazingVolleyParticleBeam>(id + 0x410000, 4, comp => comp.Casters.Count > 0);
         Subphase1Variant2End(id + 0x410000, 8);
 
-        Cast(id + 0x500000, AID.Enrage, 8.1f, 18.2f, "Enrage");
+        Cast(id + 0x500000, AID.Enrage, 8.1f, 12, "Enrage");
     }
 
     private void Fork2(uint id)
@@ -47,7 +47,7 @@ class Ch01CloudOfDarknessStates : StateMachineBuilder
         ComponentCondition<RazingVolleyParticleBeam>(id + 0x410000, 4, comp => comp.Casters.Count > 0);
         Subphase1Variant1End(id + 0x410000, 6.1f);
 
-        Cast(id + 0x500000, AID.Enrage, 8.7f, 18.2f, "Enrage");
+        Cast(id + 0x500000, AID.Enrage, 8.1f, 12, "Enrage");
     }
 
     private void Subphase1Variant1End(uint id, float delay)
