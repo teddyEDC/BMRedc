@@ -101,7 +101,7 @@ class ThirdArtOfDarknessHyperFocusedParticleBeam(BossModule module) : Components
         if (_main != null)
             foreach (var (a, m) in _main.Mechanics)
                 if (m.Count > 0 && m[0].mechanic == ThirdArtOfDarknessCleave.Mechanic.Spread)
-                    foreach (var p in Raid.WithoutSlot().SortedByRange(a.Position).Take(6))
+                    foreach (var p in Raid.WithoutSlot(false, true, true).SortedByRange(a.Position).Take(6))
                         CurrentBaits.Add(new(a, p, _shape, m[0].activation));
     }
 }
@@ -116,7 +116,7 @@ class ThirdArtOfDarknessMultiProngedParticleBeam(BossModule module) : Components
         if (_main != null)
             foreach (var (a, m) in _main.Mechanics)
                 if (m.Count > 0 && m[0].mechanic == ThirdArtOfDarknessCleave.Mechanic.Stack)
-                    foreach (var p in Raid.WithoutSlot().SortedByRange(a.Position).Take(3))
+                    foreach (var p in Raid.WithoutSlot(false, true, true).SortedByRange(a.Position).Take(3))
                         AddStack(p, m[0].activation, ~_main.PlatformPlayers);
         base.Update();
     }

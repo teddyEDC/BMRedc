@@ -33,13 +33,13 @@ class ThunderPlatform(BossModule module) : Components.GenericAOEs(module)
     {
         if ((AID)spell.Action.ID == AID.ThunderousBreath)
         {
-            foreach (var (i, _) in Raid.WithSlot(true))
+            foreach (var (i, _) in Raid.WithSlot(true, true, true))
                 requireHint[i] = requireLevitating[i] = true;
             activation = Module.CastFinishAt(spell);
         }
         else if ((AID)spell.Action.ID == AID.BlightedBoltVisual)
         {
-            foreach (var (i, _) in Raid.WithSlot(true))
+            foreach (var (i, _) in Raid.WithSlot(true, true, true))
             {
                 requireHint[i] = true;
                 requireLevitating[i] = false;
@@ -85,7 +85,7 @@ class BlightedBolt1(BossModule module) : Components.GenericAOEs(module)
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (active)
-            foreach (var p in Raid.WithSlot().Exclude(actor))
+            foreach (var p in Raid.WithSlot(false, true, true).Exclude(actor))
             {
                 var pos = p.Item2.Position;
                 if (_levitate.ActiveAOEs(slot, actor).Any(c => c.Check(pos)))

@@ -20,7 +20,7 @@ class HurricaneWingAOE(BossModule module) : Components.GenericAOEs(module)
         if (shape != null)
         {
             NumCasts = 0;
-            AOEs.Add(new(shape, caster.Position, default, Module.CastFinishAt(spell)));
+            AOEs.Add(new(shape, spell.LocXZ, default, Module.CastFinishAt(spell)));
             AOEs.SortBy(aoe => aoe.Activation);
         }
     }
@@ -45,12 +45,12 @@ class HurricaneWingAOE(BossModule module) : Components.GenericAOEs(module)
     };
 }
 
-class GreatWhirlwindLarge(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GreatWhirlwindLarge), new AOEShapeCircle(10))
+class GreatWhirlwindLarge(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GreatWhirlwindLarge), 10)
 {
     public override bool KeepOnPhaseChange => true;
 }
 
-class GreatWhirlwindSmall(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.GreatWhirlwindSmall), new AOEShapeCircle(3))
+class GreatWhirlwindSmall(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GreatWhirlwindSmall), 3)
 {
     public override bool KeepOnPhaseChange => true;
 }

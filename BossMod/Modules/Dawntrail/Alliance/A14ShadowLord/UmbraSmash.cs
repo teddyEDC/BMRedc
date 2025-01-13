@@ -15,7 +15,7 @@ class UmbraSmash(BossModule module) : Components.Exaflare(module, new AOEShapeRe
         if ((AID)spell.Action.ID is AID.UmbraSmashAOE1 or AID.UmbraSmashAOE2 or AID.UmbraSmashAOE3 or AID.UmbraSmashAOE4 or AID.UmbraSmashAOEClone)
         {
             var dir = spell.Rotation.ToDirection();
-            var origin = caster.Position + 30 * dir;
+            var origin = spell.LocXZ + 30 * dir;
             Lines.Add(new() { Next = origin, Advance = 5 * dir.OrthoL(), Rotation = spell.Rotation + 90.Degrees(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2.3f, ExplosionsLeft = 6, MaxShownExplosions = 2 });
             Lines.Add(new() { Next = origin, Advance = 5 * dir.OrthoR(), Rotation = spell.Rotation - 90.Degrees(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2.3f, ExplosionsLeft = 6, MaxShownExplosions = 2 });
         }

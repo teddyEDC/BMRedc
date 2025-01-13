@@ -47,11 +47,15 @@ class P2MirrorMirrorReflectedScytheKickBlue(BossModule module) : Components.Gene
     }
 }
 
-class P2MirrorMirrorReflectedScytheKickRed(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ReflectedScytheKickRed), new AOEShapeDonut(4, 20))
+class P2MirrorMirrorReflectedScytheKickRed(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ReflectedScytheKickRed), new AOEShapeDonut(4, 20))
 {
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actors(Casters, Colors.Object, true);
+        for (var i = 0; i < Casters.Count; ++i)
+        {
+            var caster = Casters[i];
+            Arena.ActorInsideBounds(caster.Origin, caster.Rotation, Colors.Object);
+        }
     }
 }
 
@@ -68,7 +72,7 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
     {
         CurrentBaits.Clear();
         foreach (var s in _sources.Take(2))
-            foreach (var p in Raid.WithoutSlot().SortedByRange(s.source.Position).Take(4))
+            foreach (var p in Raid.WithoutSlot(false, true, true).SortedByRange(s.source.Position).Take(4))
                 CurrentBaits.Add(new(s.source, p, _shape, s.activation));
     }
 

@@ -1,18 +1,20 @@
 namespace BossMod.Dawntrail.Alliance.A12Fafnir;
 
-class SpikeFlail(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.SpikeFlail), new AOEShapeCone(80, 135.Degrees()))
+class SpikeFlail(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SpikeFlail), new AOEShapeCone(80, 135.Degrees()))
 {
     public override bool KeepOnPhaseChange => true;
 }
 
-class Touchdown(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Touchdown), new AOEShapeCircle(24))
+class Touchdown(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Touchdown), 24)
 {
     public override bool KeepOnPhaseChange => true;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        return Module.FindComponent<DragonBreath>()?.AOE == null || Arena.Bounds != A12Fafnir.FireArena
-            ? ActiveCasters.Select(c => new AOEInstance(Shape, c.Position, c.CastInfo!.Rotation, Module.CastFinishAt(c.CastInfo))) : [];
+        if (Casters.Count == 0)
+            yield break;
+        if (Module.FindComponent<DragonBreath>()?.AOE == null || Arena.Bounds != A12Fafnir.FireArena)
+            yield return Casters[0];
     }
 }
 

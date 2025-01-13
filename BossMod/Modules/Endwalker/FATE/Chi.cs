@@ -8,7 +8,7 @@ public enum OID : uint
     Helper3 = 0x361E, //R=0.5
     Helper4 = 0x364C, //R=0.5
     Helper5 = 0x364D, //R=0.5
-    Helper6 = 0x3505, //R=0.5
+    Helper6 = 0x3505 //R=0.5
 }
 
 public enum AID : uint
@@ -32,10 +32,10 @@ public enum AID : uint
     ForeArmsRearGuns2dot0 = 25960, // Boss->self, 6.0s cast, range 45 180-degree cone
     Hellburner = 25971, // Boss->self, no cast, single-target, circle tankbuster
     Hellburner2 = 25972, // Helper1->players, 5.0s cast, range 5 circle
-    FreeFallBombs = 25967, // Boss->self, no cast, single-target
-    FreeFallBombs2 = 25968, // Helper1->location, 3.0s cast, range 6 circle
-    MissileShower = 25969, // Boss->self, 4.0s cast, single-target
-    MissileShower2 = 25970, // Helper2->self, no cast, range 30 circle
+    FreeFallBombsVisual = 25967, // Boss->self, no cast, single-target
+    FreeFallBombs = 25968, // Helper1->location, 3.0s cast, range 6 circle
+    MissileShowerVisual = 25969, // Boss->self, 4.0s cast, single-target
+    MissileShower = 25970, // Helper2->self, no cast, range 30 circle
     Teleport = 25155, // Boss->location, no cast, single-target, boss teleports mid
     BunkerBuster = 25975, // Boss->self, 3.0s cast, single-target
     BunkerBuster2 = 25101, // Helper3->self, 10.0s cast, range 20 width 20 rect
@@ -44,7 +44,7 @@ public enum AID : uint
     BouncingBomb2 = 27485, // Helper4->self, 5.0s cast, range 20 width 20 rect
     BouncingBomb3 = 27486, // Helper5->self, 1.0s cast, range 20 width 20 rect
     ThermobaricExplosive = 25965, // Boss->self, 3.0s cast, single-target
-    ThermobaricExplosive2 = 25966, // Helper1->location, 10.0s cast, range 55 circle, damage fall off AOE
+    ThermobaricExplosive2 = 25966 // Helper1->location, 10.0s cast, range 55 circle, damage fall off AOE
 }
 
 class Bunkerbuster(BossModule module) : Components.GenericAOEs(module)
@@ -261,27 +261,27 @@ class Hellburner(BossModule module) : Components.BaitAwayCast(module, ActionID.M
 {
     public override void AddGlobalHints(GlobalHints hints)
     {
-        if (CurrentBaits.Count > 0)
+        if (CurrentBaits.Count != 0)
             hints.Add("Tankbuster cleave");
     }
 }
 
-class MissileShower(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.MissileShower), "Raidwide x2");
+class MissileShower(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MissileShowerVisual), "Raidwide x2");
 class ThermobaricExplosive(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ThermobaricExplosive2), 25);
 
-abstract class AssaultCarapaceRect(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(60, 16, 60));
+abstract class AssaultCarapaceRect(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(120, 16));
 class AssaultCarapace1(BossModule module) : AssaultCarapaceRect(module, AID.AssaultCarapace1);
 class AssaultCarapace2(BossModule module) : AssaultCarapaceRect(module, AID.AssaultCarapace2);
 
-class AssaultCarapace3(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AssaultCarapace3), new AOEShapeDonut(16, 60));
+class AssaultCarapace3(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AssaultCarapace3), new AOEShapeDonut(16, 60));
 
-abstract class Cleave(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(45, 90.Degrees()));
+abstract class Cleave(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(45, 90.Degrees()));
 class ForeArms1(BossModule module) : Cleave(module, AID.ForeArms1);
 class ForeArms2(BossModule module) : Cleave(module, AID.ForeArms2);
 class RearGuns1(BossModule module) : Cleave(module, AID.RearGuns1);
 class RearGuns2(BossModule module) : Cleave(module, AID.RearGuns2);
 
-class FreeFallBombs(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FreeFallBombs2), 6);
+class FreeFallBombs(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FreeFallBombs), 6);
 
 class ChiStates : StateMachineBuilder
 {
