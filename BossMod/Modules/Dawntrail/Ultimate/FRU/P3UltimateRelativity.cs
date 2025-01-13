@@ -258,7 +258,7 @@ class P3UltimateRelativitySinboundMeltdownBait(BossModule module) : Components.G
         {
             for (int i = NumCasts; i < _rel.LaserRotations.Count; ++i)
             {
-                var closest = Raid.WithoutSlot().Closest(_rel.LaserRotations[i].origin.Position);
+                var closest = Raid.WithoutSlot(false, true, true).Closest(_rel.LaserRotations[i].origin.Position);
                 if (closest != null)
                 {
                     CurrentBaits.Add(new(_rel.LaserRotations[i].origin, closest, _shape, _rel.LaserRotations[i].activation));

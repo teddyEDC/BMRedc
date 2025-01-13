@@ -130,7 +130,7 @@ class P4DarklitDragonsongPathOfLight(BossModule module) : Components.GenericBait
     {
         CurrentBaits.Clear();
         if (_source != null && ForbiddenPlayers.Any())
-            foreach (var p in Raid.WithoutSlot().SortedByRange(_source.Position).Take(4))
+            foreach (var p in Raid.WithoutSlot(false, true, true).SortedByRange(_source.Position).Take(4))
                 CurrentBaits.Add(new(_source, p, _shape, _activation));
     }
 
@@ -219,7 +219,7 @@ class P4SomberDance(BossModule module) : Components.GenericBaitAway(module, cent
         CurrentBaits.Clear();
         if (_source == null)
             return;
-        var targets = Raid.WithoutSlot(excludeNPCs: true);
+        var targets = Raid.WithoutSlot(false, true, true);
         var target = NumCasts == 0 ? targets.Farthest(_source.Position) : targets.Closest(_source.Position);
         if (target != null)
             CurrentBaits.Add(new(_source, target, _shape, _activation));
@@ -229,7 +229,7 @@ class P4SomberDance(BossModule module) : Components.GenericBaitAway(module, cent
     {
         if ((AID)spell.Action.ID == AID.SomberDance)
         {
-            ForbiddenPlayers = Raid.WithSlot(true).WhereActor(p => p.Role != Role.Tank).Mask();
+            ForbiddenPlayers = Raid.WithSlot(true, true, true).WhereActor(p => p.Role != Role.Tank).Mask();
             _source = caster;
             _activation = Module.CastFinishAt(spell, 0.4f);
         }

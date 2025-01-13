@@ -16,9 +16,10 @@ class ChasmOfVollok(BossModule module) : Components.GenericAOEs(module)
                 AOEs.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
             else
             {
+                var pos = spell.LocXZ;
                 // the visual cast happens on one of the side platforms at intercardinals, offset by 30
-                var offset = new WDir(caster.Position.X > Arena.Center.X ? -platformOffset : +platformOffset, caster.Position.Z > Arena.Center.Z ? -platformOffset : +platformOffset);
-                AOEs.Add(new(rect, caster.Position + offset, spell.Rotation, Module.CastFinishAt(spell)));
+                var offset = new WDir(pos.X > Arena.Center.X ? -platformOffset : +platformOffset, pos.Z > Arena.Center.Z ? -platformOffset : +platformOffset);
+                AOEs.Add(new(rect, pos + offset, spell.Rotation, Module.CastFinishAt(spell)));
             }
         }
     }

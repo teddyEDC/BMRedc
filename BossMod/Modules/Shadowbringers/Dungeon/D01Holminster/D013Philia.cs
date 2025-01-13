@@ -40,18 +40,13 @@ public enum AID : uint
 
 public enum IconID : uint
 {
-    Tankbuster = 198, // player 
     SpreadFlare = 87, // player
-    ChainTarget = 92, // player
-    Spread = 139, // player
-    RotateCW = 167 // Boss
+    ChainTarget = 92 // player
 }
 
 public enum SID : uint
 {
-    Fetters = 1849, // none->player, extra=0xEC4
-    DownForTheCount = 783, // none->player, extra=0xEC7
-    Sludge = 287 // none->player, extra=0x0
+    Fetters = 1849 // none->player, extra=0xEC4
 }
 
 class SludgeVoidzone(BossModule module) : Components.PersistentVoidzone(module, 9.8f, m => m.Enemies(OID.SludgeVoidzone).Where(z => z.EventState != 7));
@@ -136,7 +131,7 @@ class Aethersup(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.AethersupFirst)
-            _aoe = new(cone, Module.PrimaryActor.Position, spell.Rotation, Module.CastFinishAt(spell));
+            _aoe = new(cone, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -174,7 +169,7 @@ class PendulumFlare(BossModule module) : Components.BaitAwayIcon(module, new AOE
 
 class PendulumAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PendulumAOE3), 15);
 
-class Knout(BossModule module, AID aid) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(24, 105.Degrees()));
+class Knout(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(24, 105.Degrees()));
 class LeftKnout(BossModule module) : Knout(module, AID.LeftKnout);
 class RightKnout(BossModule module) : Knout(module, AID.RightKnout);
 

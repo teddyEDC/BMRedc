@@ -1,7 +1,7 @@
 ﻿namespace BossMod.Dawntrail.Ultimate.FRU;
 
-class P2AxeKick(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AxeKick), new AOEShapeCircle(16));
-class P2ScytheKick(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.ScytheKick), new AOEShapeDonut(4, 20));
+class P2AxeKick(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AxeKick), 16);
+class P2ScytheKick(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ScytheKick), new AOEShapeDonut(4, 20));
 
 class P2IcicleImpact(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.IcicleImpact))
 {
@@ -45,8 +45,8 @@ class P2IcicleImpact(BossModule module) : Components.GenericAOEs(module, ActionI
     }
 }
 
-class P2FrigidNeedleCircle(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FrigidNeedleCircle), new AOEShapeCircle(5));
-class P2FrigidNeedleCross(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.FrigidNeedleCross), new AOEShapeCross(40, 2.5f));
+class P2FrigidNeedleCircle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FrigidNeedleCircle), 5);
+class P2FrigidNeedleCross(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FrigidNeedleCross), new AOEShapeCross(40, 2.5f));
 
 class P2FrigidStone : Components.BaitAwayIcon
 {
@@ -70,7 +70,7 @@ class P2DiamondDustHouseOfLight(BossModule module) : Components.GenericBaitAway(
     {
         CurrentBaits.Clear();
         if (_source != null && ForbiddenPlayers.Any())
-            foreach (var p in Raid.WithoutSlot().SortedByRange(_source.Position).Take(4))
+            foreach (var p in Raid.WithoutSlot(false, true, true).SortedByRange(_source.Position).Take(4))
                 CurrentBaits.Add(new(_source, p, _shape, _activation));
     }
 
@@ -163,13 +163,13 @@ class P2DiamondDustSafespots(BossModule module) : BossComponent(module)
         {
             case AID.AxeKick:
                 // out done => cone baiters go in, ice baiters stay
-                for (int i = 0; i < _safeOffs.Length; ++i)
+                for (var i = 0; i < _safeOffs.Length; ++i)
                     if (_safeOffs[i] != default && Raid[i]?.Class.IsSupport() == _supportsBaitCones)
                         _safeOffs[i] = 4 * _safeOffs[i].Normalized();
                 break;
             case AID.ScytheKick:
                 // in done => cone baiters stay, ice baiters go out
-                for (int i = 0; i < _safeOffs.Length; ++i)
+                for (var i = 0; i < _safeOffs.Length; ++i)
                     if (_safeOffs[i] != default && Raid[i]?.Class.IsSupport() != _supportsBaitCones)
                         _safeOffs[i] = 8 * _safeOffs[i].Normalized();
                 break;
@@ -308,18 +308,18 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
         var hintTime = WorldState.FutureTime(50);
 
         // stay near border
-        hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center, 16), hintTime);
+        hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center, 16), hintTime);
 
         // prefer moving towards safety (CW is arbitrary)
         var planeOffset = moveQuickly ? 2 : -2; // if we're moving quickly, mark our current spot as forbidden
-        hints.AddForbiddenZone(ShapeDistance.HalfPlane(Module.Center + planeOffset * preferredDir, preferredDir), hintTime);
+        hints.AddForbiddenZone(ShapeDistance.HalfPlane(Arena.Center + planeOffset * preferredDir, preferredDir), hintTime);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.SinboundHoly)
         {
-            AddStacks(Raid.WithoutSlot().Where(p => p.Role == Role.Healer), Module.CastFinishAt(spell, 0.9f));
+            AddStacks(Raid.WithoutSlot(false, true, true).Where(p => p.Role == Role.Healer), Module.CastFinishAt(spell, 0.9f));
         }
     }
 
@@ -328,7 +328,7 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
         if ((AID)spell.Action.ID == AID.SinboundHolyAOE && WorldState.CurrentTime > _nextExplosion)
         {
             if (NumCasts == 0)
-                foreach (var (i, p) in Raid.WithSlot())
+                foreach (var (i, p) in Raid.WithSlot(false, true, true))
                     _initialSpots[i] = p.Position;
 
             ++NumCasts;

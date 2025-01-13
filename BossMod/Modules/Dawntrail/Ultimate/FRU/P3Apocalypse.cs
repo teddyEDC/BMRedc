@@ -25,7 +25,7 @@ class P3Apocalypse(BossModule module) : Components.GenericAOEs(module)
         }
 
         var activation = WorldState.FutureTime(delay);
-        for (int i = -1; i < 6; ++i)
+        for (var i = -1; i < 6; ++i)
         {
             addAt(i + 1, activation);
             addAt(i, activation);
@@ -226,7 +226,7 @@ class P3SpiritTaker(BossModule module) : Components.UniformStackSpread(module, 0
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.SpiritTaker)
-            AddSpreads(Raid.WithoutSlot(true), Module.CastFinishAt(spell, 0.3f));
+            AddSpreads(Raid.WithoutSlot(true, true, true), Module.CastFinishAt(spell, 0.3f));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -248,7 +248,7 @@ class P3DarkestDanceBait(BossModule module) : Components.GenericBaitAway(module,
     public override void Update()
     {
         CurrentBaits.Clear();
-        if (_source != null && Raid.WithoutSlot().Farthest(_source.Position) is var target && target != null)
+        if (_source != null && Raid.WithoutSlot(false, true, true).Farthest(_source.Position) is var target && target != null)
         {
             CurrentBaits.Add(new(_source, target, _shape, _activation));
         }
@@ -258,7 +258,7 @@ class P3DarkestDanceBait(BossModule module) : Components.GenericBaitAway(module,
     {
         if ((AID)spell.Action.ID == AID.DarkestDance)
         {
-            ForbiddenPlayers = Raid.WithSlot(true).WhereActor(p => p.Role != Role.Tank).Mask();
+            ForbiddenPlayers = Raid.WithSlot(true, true, true).WhereActor(p => p.Role != Role.Tank).Mask();
             _source = caster;
             _activation = Module.CastFinishAt(spell, 0.4f);
         }

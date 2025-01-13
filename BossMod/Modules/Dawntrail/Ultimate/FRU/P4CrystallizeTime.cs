@@ -436,7 +436,7 @@ class P4CrystallizeTimeRewind(BossModule module) : BossComponent(module)
     {
         if (!RewindDone && _ct != null && _exalines != null && _ct.Cleansed[slot])
         {
-            var players = Raid.WithoutSlot(excludeNPCs: true).ToList();
+            var players = Raid.WithoutSlot(false, true, true).ToList();
             players.SortBy(p => p.Position.X);
             var xOrder = players.IndexOf(actor);
             players.SortBy(p => p.Position.Z);
@@ -458,7 +458,7 @@ class P4CrystallizeTimeRewind(BossModule module) : BossComponent(module)
                     hints.Add("Position in group properly!");
             }
 
-            if (KnockbackSpots(actor.Position).Any(p => !Module.Bounds.Contains(p - Module.Center)))
+            if (KnockbackSpots(actor.Position).Any(p => !Module.Bounds.Contains(p - Arena.Center)))
                 hints.Add("About to be knocked into wall!");
         }
     }
