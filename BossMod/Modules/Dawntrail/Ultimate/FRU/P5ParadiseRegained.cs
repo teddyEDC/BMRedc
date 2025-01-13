@@ -12,8 +12,8 @@ class P5ParadiseRegainedTowers(BossModule module) : Components.GenericTowers(mod
                 52 => 120.Degrees(),
                 _ => 0.Degrees()
             };
-            var forbidden = Raid.WithSlot(true).WhereActor(p => p.Role == Role.Tank).Mask(); // TODO: assignments
-            Towers.Add(new(Module.Center + 7 * dir.ToDirection(), 3, 2, 2, forbidden, WorldState.FutureTime(9.5f)));
+            var forbidden = Raid.WithSlot(true, true, true).WhereActor(p => p.Role == Role.Tank).Mask(); // TODO: assignments
+            Towers.Add(new(Arena.Center + 7 * dir.ToDirection(), 3, 2, 2, forbidden, WorldState.FutureTime(9.5f)));
         }
     }
 
@@ -57,7 +57,7 @@ class P5ParadiseRegainedBaits(BossModule module) : Components.GenericBaitAway(mo
             var cleaveTarget = NumCasts == 0 ? _firstTarget : WorldState.Actors.Find(_source.TargetID);
             if (cleaveTarget != null)
                 CurrentBaits.Add(new(_source, cleaveTarget, _curCleave, _activation));
-            var tetherTarget = _tetherClosest ? Raid.WithoutSlot().Closest(_source.Position) : Raid.WithoutSlot().Farthest(_source.Position);
+            var tetherTarget = _tetherClosest ? Raid.WithoutSlot(false, true, true).Closest(_source.Position) : Raid.WithoutSlot(false, true, true).Farthest(_source.Position);
             if (tetherTarget != null)
                 CurrentBaits.Add(new(tetherTarget, tetherTarget, _shapeTether, _activation)); // +0.7s?
         }
@@ -86,7 +86,7 @@ class P5ParadiseRegainedBaits(BossModule module) : Components.GenericBaitAway(mo
 
         var safeOffset = SafeOffset(pcSlot, pc);
         if (safeOffset != default)
-            Arena.AddCircle(Module.Center + safeOffset, 1, ArenaColor.Safe);
+            Arena.AddCircle(Arena.Center + safeOffset, 1, Colors.Safe);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -99,7 +99,7 @@ class P5ParadiseRegainedBaits(BossModule module) : Components.GenericBaitAway(mo
         };
         if (shape != null)
         {
-            ForbiddenPlayers = Raid.WithSlot(true).WhereActor(p => p.Role != Role.Tank).Mask();
+            ForbiddenPlayers = Raid.WithSlot(true, true, true).WhereActor(p => p.Role != Role.Tank).Mask();
             _source = caster;
             _firstTarget = WorldState.Actors.Find(caster.TargetID);
             _curCleave = shape;

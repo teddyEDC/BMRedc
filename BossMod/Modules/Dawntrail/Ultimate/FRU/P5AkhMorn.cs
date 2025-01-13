@@ -13,7 +13,7 @@ class P5AkhMorn(BossModule module) : Components.UniformStackSpread(module, 4, 0,
             var left = Source.Rotation.ToDirection().OrthoL();
             Actor? targetL = null, targetR = null;
             float distL = float.MaxValue, distR = float.MaxValue;
-            foreach (var p in Raid.WithoutSlot())
+            foreach (var p in Raid.WithoutSlot(false, true, true))
             {
                 var off = p.Position - Source.Position;
                 var side = left.Dot(off) > 0;

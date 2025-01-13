@@ -58,7 +58,7 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
                     {
                         // ok, out is imminent, gtfo - we need to avoid clipping people, avoid dark blizzard (if it's being resolved now), and avoid lasers (if any)
                         var avoidBlizzard = NumCasts == 2;
-                        foreach (var (i, p) in Raid.WithSlot().Exclude(slot))
+                        foreach (var (i, p) in Raid.WithSlot(false, true, true).Exclude(slot))
                         {
                             var avoidRadius = avoidBlizzard && States[i].HaveDarkBlizzard ? 12 : 8;
                             hints.AddForbiddenZone(ShapeDistance.Circle(p.Position, avoidRadius + 1));
@@ -73,11 +73,11 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
                 case RangeHintDarkEruption:
                 case RangeHintEye:
                     // go to exact safespot
-                    hints.AddForbiddenZone(ShapeDistance.PrecisePosition(SafeSpot(slot, range), new(0, 1), Module.Bounds.MapResolution, actor.Position, 0.1f), _nextImminent);
+                    hints.AddForbiddenZone(ShapeDistance.PrecisePosition(SafeSpot(slot, range), new(0, 1), Arena.Bounds.MapResolution, actor.Position, 0.1f), _nextImminent);
                     break;
                 default:
                     // go to mid
-                    hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center, 1), _nextImminent);
+                    hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 1), _nextImminent);
                     break;
             }
         }

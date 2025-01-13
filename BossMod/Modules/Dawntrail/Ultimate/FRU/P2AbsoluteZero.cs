@@ -50,7 +50,7 @@ class P2Intermission(BossModule module) : Components.GenericBaitAway(module)
             return;
         foreach (var c in _crystalsOfDarkness)
         {
-            var baiter = Raid.WithoutSlot().Closest(c.Position);
+            var baiter = Raid.WithoutSlot(false, true, true).Closest(c.Position);
             if (baiter != null)
                 CurrentBaits.Add(new(c, baiter, _cones.Shape));
         }
@@ -104,10 +104,10 @@ class P2Intermission(BossModule module) : Components.GenericBaitAway(module)
             // intercardinals - bait cones
             if (_cones?.Casters.Count == 0)
             {
-                var assignedPosition = Module.Center + 9 * (180 - 45 * clockSpot).Degrees().ToDirection(); // crystal is at R=8
+                var assignedPosition = Arena.Center + 9 * (180 - 45 * clockSpot).Degrees().ToDirection(); // crystal is at R=8
                 var assignedCrystal = CrystalsOfDarkness.FirstOrDefault(c => c.Position.AlmostEqual(assignedPosition, 2));
                 if (assignedCrystal != null)
-                    hints.AddForbiddenZone(ShapeDistance.PrecisePosition(assignedPosition, new WDir(0, 1), Module.Bounds.MapResolution, actor.Position, 0.1f));
+                    hints.AddForbiddenZone(ShapeDistance.PrecisePosition(assignedPosition, new WDir(0, 1), Arena.Bounds.MapResolution, actor.Position, 0.1f));
             }
             // else: just dodge cones etc...
         }
@@ -115,9 +115,9 @@ class P2Intermission(BossModule module) : Components.GenericBaitAway(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        Arena.Actors(CrystalsOfLight, ArenaColor.Enemy);
-        Arena.Actors(CrystalsOfDarkness, ArenaColor.Object);
-        Arena.Actor(IceVeil, _iceVeilInvincible ? ArenaColor.Object : ArenaColor.Enemy);
+        Arena.Actors(CrystalsOfLight, Colors.Enemy);
+        Arena.Actors(CrystalsOfDarkness, Colors.Object);
+        Arena.Actor(IceVeil, _iceVeilInvincible ? Colors.Object : Colors.Enemy);
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)

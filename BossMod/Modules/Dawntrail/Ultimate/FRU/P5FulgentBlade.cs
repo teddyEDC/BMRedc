@@ -7,7 +7,7 @@ class P5FulgentBlade : Components.Exaflare
 
     public P5FulgentBlade(BossModule module) : base(module, new AOEShapeRect(5, 40))
     {
-        ImminentColor = ArenaColor.AOE;
+        ImminentColor = Colors.AOE;
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
@@ -21,7 +21,7 @@ class P5FulgentBlade : Components.Exaflare
 
         var safespot = SafeSpots().FirstOrDefault();
         if (safespot != default)
-            Arena.AddCircle(safespot, 1, ArenaColor.Safe);
+            Arena.AddCircle(safespot, 1, Colors.Safe);
     }
 
     public override void OnActorCreated(Actor actor)
@@ -40,7 +40,7 @@ class P5FulgentBlade : Components.Exaflare
         {
             var dir = spell.Rotation.ToDirection();
             var distanceToBorder = Intersect.RayCircle(caster.Position - Module.Center, dir, 22);
-            Lines.Add(new() { Next = caster.Position, Advance = 5 * dir, Rotation = spell.Rotation, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = (int)(distanceToBorder / 5) + 1, MaxShownExplosions = 1 });
+            Lines.Add(new() { Next = spell.LocXZ, Advance = 5 * dir, Rotation = spell.Rotation, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = (int)(distanceToBorder / 5) + 1, MaxShownExplosions = 1 });
         }
     }
 
@@ -54,7 +54,7 @@ class P5FulgentBlade : Components.Exaflare
                 _nextBundle = WorldState.FutureTime(1);
             }
 
-            int index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1) && item.Rotation.AlmostEqual(spell.Rotation, 0.1f));
+            var index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1) && item.Rotation.AlmostEqual(spell.Rotation, 0.1f));
             if (index == -1)
             {
                 ReportError($"Failed to find entry for {caster.InstanceID:X}");
@@ -82,8 +82,8 @@ class P5FulgentBlade : Components.Exaflare
         {
             WDir avgOff = default;
             foreach (var l in _lines)
-                avgOff += (l.Position - Module.Center).Normalized();
-            yield return Module.Center - 5 * avgOff;
+                avgOff += (l.Position - Arena.Center).Normalized();
+            yield return Arena.Center - 5 * avgOff;
         }
     }
 

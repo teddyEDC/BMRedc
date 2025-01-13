@@ -11,7 +11,7 @@ abstract class SpiritTaker(BossModule module) : Components.UniformStackSpread(mo
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.SpiritTaker)
-            AddSpreads(Raid.WithoutSlot(true), Module.CastFinishAt(spell, 0.3f));
+            AddSpreads(Raid.WithoutSlot(true, true, true), Module.CastFinishAt(spell, 0.3f));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
