@@ -5,7 +5,7 @@ class Enkyo(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSp
 
 abstract class CloudToCloud : Components.SimpleAOEs
 {
-    public CloudToCloud(BossModule module, AID aid, int halfWidth, int dangerCount) : base(module, ActionID.MakeSpell(aid), new AOEShapeRect(100, halfWidth)) { MaxDangerColor = dangerCount; }
+    protected CloudToCloud(BossModule module, AID aid, int halfWidth, int dangerCount) : base(module, ActionID.MakeSpell(aid), new AOEShapeRect(100, halfWidth)) { MaxDangerColor = dangerCount; }
 }
 class CloudToCloud1(BossModule module) : CloudToCloud(module, AID.CloudToCloud1, 1, 6);
 class CloudToCloud2(BossModule module) : CloudToCloud(module, AID.CloudToCloud2, 3, 4);
