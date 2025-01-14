@@ -2,7 +2,7 @@
 
 class ActivePivotParticleBeam(BossModule module) : Components.GenericRotatingAOE(module)
 {
-    private static readonly AOEShapeRect _shape = new(80, 9);
+    private static readonly AOEShapeRect _shape = new(40, 9, 40);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

@@ -38,7 +38,7 @@ public abstract class GenericAOEs(BossModule module, ActionID aid = default, str
     }
 }
 
-// For simple AOEs, formerly known as SelfTargetedAOEs andLocationTargetedAOEs, that happens at the end of the cast
+// For simple AOEs, formerly known as SelfTargetedAOEs and LocationTargetedAOEs, that happens at the end of the cast
 public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int maxCasts = int.MaxValue, float riskyWithSecondsLeft = 0) : GenericAOEs(module, aid)
 {
     public SimpleAOEs(BossModule module, ActionID aid, float radius, int maxCasts = int.MaxValue, float riskyWithSecondsLeft = 0) : this(module, aid, new AOEShapeCircle(radius), maxCasts, riskyWithSecondsLeft) { }
@@ -59,12 +59,12 @@ public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int max
         {
             var count = Casters.Count;
             var max = count > MaxCasts ? MaxCasts : count;
-            List<AOEInstance> result = new(max);
+            List<AOEInstance> aoes = new(max);
             for (var i = 0; i < max; ++i)
             {
-                result.Add(Casters[i]);
+                aoes.Add(Casters[i]);
             }
-            return result;
+            return aoes;
         }
     }
 
@@ -75,16 +75,16 @@ public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int max
             return [];
         var time = WorldState.CurrentTime;
         var max = count > MaxCasts ? MaxCasts : count;
-        List<AOEInstance> result = new(max);
+        List<AOEInstance> aoes = new(max);
         for (var i = 0; i < max; ++i)
         {
             var caster = Casters[i];
             var color = i < MaxDangerColor && count > MaxDangerColor ? Colors.Danger : 0;
             var risky = Risky && (MaxRisky == null || i < MaxRisky);
-            result.Add(RiskyWithSecondsLeft == 0 ? caster with { Color = color, Risky = risky }
+            aoes.Add(RiskyWithSecondsLeft == 0 ? caster with { Color = color, Risky = risky }
             : caster with { Color = color, Risky = risky && caster.Activation.AddSeconds(-RiskyWithSecondsLeft) <= time });
         }
-        return result;
+        return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
