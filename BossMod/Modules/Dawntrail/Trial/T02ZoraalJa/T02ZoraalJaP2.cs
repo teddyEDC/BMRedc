@@ -18,7 +18,7 @@ class HalfFull(BossModule module) : HalfRect(module, AID.HalfFull)
     private readonly ChasmOfVollok _aoe = module.FindComponent<ChasmOfVollok>()!;
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        return Casters.Count != 0 && _aoe.AOEs.Count != 0 ? [Casters[0]] : [];
+        return Casters.Count != 0 && _aoe.AOEs.Count == 0 ? [Casters[0]] : [];
     }
 }
 
