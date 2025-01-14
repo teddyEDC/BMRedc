@@ -41,7 +41,7 @@ class Upwell(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID is AID.NUpwellFirst or AID.SUpwellFirst)
         {
             var advance = spell.Rotation.ToDirection().OrthoR() * 5;
-            var pos = spell.LocXZ;
+            var pos = caster.Position;
             var activation = Module.CastFinishAt(spell);
             _lines.Add(new() { NextOrigin = pos, Advance = advance, Rotation = spell.Rotation, NextActivation = activation, NextShape = _shapeWide });
             _lines.Add(new() { NextOrigin = pos, Advance = -advance, Rotation = (spell.Rotation + 180.Degrees()).Normalized(), NextActivation = activation });
