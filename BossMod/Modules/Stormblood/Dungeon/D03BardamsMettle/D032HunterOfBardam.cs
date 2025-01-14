@@ -146,7 +146,7 @@ class HeavyStrike(BossModule module) : Components.ConcentricAOEs(module, _shapes
                 AID.HeavyStrike3 => 2,
                 _ => -1
             };
-            AdvanceSequence(order, spell.LocXZ, WorldState.FutureTime(1.3f), caster.Rotation);
+            AdvanceSequence(order, spell.LocXZ, WorldState.FutureTime(1.3f), spell.Rotation);
         }
     }
 }

@@ -4,7 +4,7 @@ class ChasmOfVollok(BossModule module) : Components.GenericAOEs(module)
 {
     public readonly List<AOEInstance> AOEs = new(16);
     private static readonly float platformOffset = 30 / MathF.Sqrt(2);
-    private static readonly AOEShapeRect rect = new(2.5f, 2.5f, 2.5f);
+    private static readonly AOEShapeRect rect = new(5, 2.5f);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => AOEs;
 
@@ -13,7 +13,7 @@ class ChasmOfVollok(BossModule module) : Components.GenericAOEs(module)
         if ((AID)spell.Action.ID == AID.ChasmOfVollok1)
         {
             if (Arena.InBounds(caster.Position))
-                AOEs.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
+                AOEs.Add(new(rect, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell)));
             else
             {
                 var pos = spell.LocXZ;

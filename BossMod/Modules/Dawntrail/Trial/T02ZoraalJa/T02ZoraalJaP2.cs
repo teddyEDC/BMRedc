@@ -11,17 +11,19 @@ class HalfCircuitCircle(BossModule module) : Circles(module, AID.HalfCircuitCirc
 class DawnOfAnAge(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.DawnOfAnAge));
 class BitterReaping(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.BitterReaping));
 class Actualize(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Actualize));
-class HalfFull(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HalfFull), new AOEShapeRect(60, 30))
+
+abstract class HalfRect(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(60, 30));
+class HalfFull(BossModule module) : HalfRect(module, AID.HalfFull)
 {
     private readonly ChasmOfVollok _aoe = module.FindComponent<ChasmOfVollok>()!;
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (_aoe.AOEs.Count == 0)
-            yield return Casters[0];
+        return Casters.Count != 0 && _aoe.AOEs.Count != 0 ? [Casters[0]] : [];
     }
 }
 
-class HalfCircuitRect(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HalfCircuitRect), new AOEShapeRect(60, 30));
+class HalfCircuitRect(BossModule module) : HalfRect(module, AID.HalfCircuitRect);
+
 class FireIII(BossModule module) : Components.SpreadFromIcon(module, (uint)IconID.Spreadmarker, ActionID.MakeSpell(AID.FireIII), 6, 5.1f);
 class DutysEdge(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.DutysEdgeMarker), ActionID.MakeSpell(AID.DutysEdge), 5.4f, 100, minStackSize: 8, maxStackSize: 8, maxCasts: 4, markerIsFinalTarget: false);
 
