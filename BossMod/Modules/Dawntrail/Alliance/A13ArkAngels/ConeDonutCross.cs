@@ -26,13 +26,13 @@ class LightsChain(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (Casters.Count == 0)
-            yield break;
+            return [];
 
         var reaver = Module.FindComponent<CrossReaver>();
         var check = _aoe != null && _aoe.Casters.Count != 0;
         var check2 = reaver != null && reaver.Casters.Count != 0;
 
-        yield return Casters[0] with { Color = check2 ? Colors.Danger : Colors.AOE, Risky = !check };
+        return [Casters[0] with { Color = check2 ? Colors.Danger : Colors.AOE, Risky = !check }];
     }
 }
 
@@ -41,9 +41,9 @@ class CrossReaver(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (Casters.Count == 0)
-            yield break;
+            return [];
         var chain = Module.FindComponent<LightsChain>();
         var check = chain != null && chain.Casters.Count != 0;
-        yield return Casters[0] with { Risky = !check };
+        return [Casters[0] with { Risky = !check }];
     }
 }

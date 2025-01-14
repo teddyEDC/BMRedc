@@ -104,8 +104,9 @@ class FloodInBlueRest(BossModule module) : Components.Exaflare(module, new AOESh
         {
             var advance1 = spell.Rotation.ToDirection().OrthoR() * 7.5f;
             var advance2 = spell.Rotation.ToDirection().OrthoR() * 5;
-            Lines.Add(new() { Next = spell.LocXZ + advance1, Advance = advance2, Rotation = spell.Rotation, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = 5, MaxShownExplosions = 2 });
-            Lines.Add(new() { Next = spell.LocXZ - advance1, Advance = -advance2, Rotation = (spell.Rotation + 180.Degrees()).Normalized(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = 5, MaxShownExplosions = 2 });
+            var pos = caster.Position;
+            Lines.Add(new() { Next = pos + advance1, Advance = advance2, Rotation = spell.Rotation, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = 5, MaxShownExplosions = 2 });
+            Lines.Add(new() { Next = pos - advance1, Advance = -advance2, Rotation = (spell.Rotation + 180.Degrees()).Normalized(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = 5, MaxShownExplosions = 2 });
         }
     }
 

@@ -11,20 +11,37 @@ class UpwellRest(BossModule module) : Components.Exaflare(module, new AOEShapeRe
 {
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
+        var linesCount = Lines.Count;
+        if (linesCount == 0)
+            return [];
+        var futureAOEs = FutureAOEs(linesCount);
+        var imminentAOEs = ImminentAOEs(linesCount);
+        var futureCount = futureAOEs.Count;
+        var imminentCount = imminentAOEs.Count;
         var imminentDeadline = WorldState.FutureTime(5);
-        foreach (var (c, t, r) in FutureAOEs())
-            if (t <= imminentDeadline)
-                yield return new(Shape, c, r, t, FutureColor);
-        foreach (var (c, t, r) in ImminentAOEs())
-            if (t <= imminentDeadline)
-                yield return new(Shape, c, r, t, ImminentColor);
+
+        List<AOEInstance> aoes = new(futureCount + imminentCount);
+        for (var i = 0; i < futureCount; ++i)
+        {
+            var aoe = futureAOEs[i];
+            if (aoe.Item2 <= imminentDeadline)
+                aoes.Add(new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, FutureColor));
+        }
+
+        for (var i = 0; i < imminentCount; ++i)
+        {
+            var aoe = imminentAOEs[i];
+            if (aoe.Item2 <= imminentDeadline)
+                aoes.Add(new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, ImminentColor));
+        }
+        return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.UpwellFirst)
         {
-            var pos = spell.LocXZ;
+            var pos = caster.Position;
             var check = pos.AlmostEqual(Arena.Center, 1);
             var isNorth = pos.Z == 530;
             var isSouth = pos.Z == 550;

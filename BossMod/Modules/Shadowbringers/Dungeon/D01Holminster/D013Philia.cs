@@ -205,14 +205,31 @@ class FierceBeating(BossModule module) : Components.Exaflare(module, 4)
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        foreach (var (c, t, r) in FutureAOEs())
-            yield return new(Shape, c, r, t, FutureColor);
-        foreach (var (c, t, r) in ImminentAOEs())
-            yield return new(Shape, c, r, t, ImminentColor);
-        if (Lines.Count > 0 && linesstartedcount1 < 8)
-            yield return new(circle, WPos.RotateAroundOrigin(linesstartedcount1 * 45, D013Philia.ArenaCenter, _casters[0]), default, _activation.AddSeconds(linesstartedcount1 * 3.7f));
-        if (Lines.Count > 1 && linesstartedcount2 < 8)
-            yield return new(circle, WPos.RotateAroundOrigin(linesstartedcount2 * 45, D013Philia.ArenaCenter, _casters[1]), default, _activation.AddSeconds(linesstartedcount2 * 3.7f));
+        var linesCount = Lines.Count;
+        if (linesCount == 0)
+            return [];
+        var futureAOEs = FutureAOEs(linesCount);
+        var imminentAOEs = ImminentAOEs(linesCount);
+        var futureCount = futureAOEs.Count;
+        var imminentCount = imminentAOEs.Count;
+
+        List<AOEInstance> aoes = new(futureCount + imminentCount + 2);
+        for (var i = 0; i < futureCount; ++i)
+        {
+            var aoe = futureAOEs[i];
+            aoes.Add(new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, FutureColor));
+        }
+
+        for (var i = 0; i < imminentCount; ++i)
+        {
+            var aoe = imminentAOEs[i];
+            aoes.Add(new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, ImminentColor));
+        }
+        if (linesstartedcount1 < 8)
+            aoes.Add(new(circle, WPos.RotateAroundOrigin(linesstartedcount1 * 45, D013Philia.ArenaCenter, _casters[0]), default, _activation.AddSeconds(linesstartedcount1 * 3.7f)));
+        if (linesCount > 1 && linesstartedcount2 < 8)
+            aoes.Add(new(circle, WPos.RotateAroundOrigin(linesstartedcount2 * 45, D013Philia.ArenaCenter, _casters[1]), default, _activation.AddSeconds(linesstartedcount2 * 3.7f)));
+        return aoes;
     }
 
     public override void Update()
