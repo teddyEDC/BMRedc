@@ -36,7 +36,7 @@ public enum IconID : uint
     Icon1 = 336, // Helper2
     Icon2 = 337, // Helper2
     Icon3 = 338, // Helper2
-    Icon4 = 339, // Helper2
+    Icon4 = 339 // Helper2
 }
 
 public enum SID : uint
