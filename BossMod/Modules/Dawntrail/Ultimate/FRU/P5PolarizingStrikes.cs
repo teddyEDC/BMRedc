@@ -20,7 +20,7 @@ class P5PolarizingStrikes(BossModule module) : Components.GenericAOEs(module)
         {
             var left = _source.Rotation.ToDirection().OrthoL();
             float distL = float.MaxValue, distR = float.MaxValue;
-            foreach (var p in Raid.WithoutSlot())
+            foreach (var p in Raid.WithoutSlot(false, true, true))
             {
                 var off = p.Position - _source.Position;
                 var side = left.Dot(off) > 0;
@@ -90,7 +90,7 @@ class P5PolarizingStrikes(BossModule module) : Components.GenericAOEs(module)
             return;
         foreach (var (baiter, forbidden) in _baiters.Zip(_forbidden))
             if (baiter != null)
-                _shape.Outline(Arena, _source.Position, Angle.FromDirection(baiter.Position - _source.Position), forbidden[pcSlot] ? ArenaColor.Danger : ArenaColor.Safe);
+                _shape.Outline(Arena, _source.Position, Angle.FromDirection(baiter.Position - _source.Position), forbidden[pcSlot] ? Colors.Danger : Colors.Safe);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

@@ -366,6 +366,7 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
     private readonly Actor? _source = module.Enemies(OID.OraclesReflection).FirstOrDefault();
     private BitMask _thinIce;
     private P2SinboundHolyVoidzone? _voidzones; // used for hints only
+    private const float SlideDistance = 32;
 
     private readonly AOEShapeCone _shapeFront = new(30, 135.Degrees());
     private readonly AOEShapeCone _shapeBack = new(30, 45.Degrees());
@@ -431,12 +432,12 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
                 if (dist >= SlideDistance)
                 {
                     // voidzone center is outside slide distance => forbid voidzone itself
-                    zoneList.ForbidCircle(z.Position, _voidzones.Shape.Radius);
+                    zoneList.ForbidCircle(z.Position, 6);
                 }
-                else if (dist >= _voidzones.Shape.Radius)
+                else if (dist >= 6)
                 {
                     // forbid the voidzone's shadow
-                    zoneList.ForbidArcByLength(Angle.FromDirection(offset), Angle.Asin(_voidzones.Shape.Radius / dist));
+                    zoneList.ForbidArcByLength(Angle.FromDirection(offset), Angle.Asin(6 / dist));
                 }
                 // else: we're already in voidzone, oh well
             }

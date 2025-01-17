@@ -12,7 +12,7 @@ class P4CrystallizeTime(BossModule module) : BossComponent(module)
 
     public Actor? FindPlayerByAssignment(Mechanic mechanic, int side)
     {
-        for (int i = 0; i < PlayerMechanics.Length; ++i)
+        for (var i = 0; i < PlayerMechanics.Length; ++i)
             if (PlayerMechanics[i] == mechanic && ClawSides[i] == side)
                 return Raid[i];
         return null;
@@ -59,8 +59,8 @@ class P4CrystallizeTime(BossModule module) : BossComponent(module)
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
     {
-        if (tether.ID == (uint)TetherID.UltimateRelativitySlow && source.Position.Z < Module.Center.Z)
-            NorthSlowHourglass = source.Position - Module.Center;
+        if (tether.ID == (uint)TetherID.UltimateRelativitySlow && source.Position.Z < Arena.Center.Z)
+            NorthSlowHourglass = source.Position - Arena.Center;
     }
 
     private void AssignMechanic(Actor player, Mechanic mechanic, Mechanic lowerPrio = Mechanic.None, Mechanic higherPrio = Mechanic.None)
@@ -124,9 +124,8 @@ class P4CrystallizeTimeDragonHead(BossModule module) : BossComponent(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        for (var i = 0; i < Heads.Count; ++i)
+        foreach (var h in Heads)
         {
-            var h = _heads[i];
             Arena.Actor(h.head, Colors.Object, true);
             var interceptor = FindInterceptor(h.head, h.side);
             if (interceptor != null)
@@ -139,12 +138,9 @@ class P4CrystallizeTimeDragonHead(BossModule module) : BossComponent(module)
         if (_ct != null /*&& ShowPuddles && !_ct.Cleansed[pcSlot]*/)
         {
             var pcAssignment = _ct.PlayerMechanics[pcSlot];
-            for (var i = 0; i < _puddles.Count; ++i)
-            {
-                var p = _puddles[i];
+            foreach (var p in _puddles)
                 if (p.puddle.EventState != 7)
                     Arena.ZoneCircle(p.puddle.Position, 1, p.soaker == pcAssignment ? Colors.SafeFromAOE : Colors.AOE);
-            }
         }
     }
 
@@ -153,7 +149,7 @@ class P4CrystallizeTimeDragonHead(BossModule module) : BossComponent(module)
         switch ((OID)actor.OID)
         {
             case OID.DrachenWanderer:
-                Heads.Add((actor, actor.Position.X > Module.Center.X ? 1 : -1));
+                Heads.Add((actor, actor.Position.X > Arena.Center.X ? 1 : -1));
                 break;
             case OID.DragonPuddle:
                 // TODO: this is very arbitrary
@@ -420,7 +416,7 @@ class P4CrystallizeTimeHints(BossModule module) : BossComponent(module)
             {
                 var source = _ct.FindPlayerByAssignment(P4CrystallizeTime.Mechanic.ClawAir, _ct.NorthSlowHourglass.X > 0 ? -1 : 1);
                 var dest = Arena.Center + SafeOffsetDarknessStack(_ct.NorthSlowHourglass.X > 0 ? 1 : -1);
-                var pos = source != null ? source.Position + 2 * (dest - source.Position).Normalized() : Module.Center + hint.offset;
+                var pos = source != null ? source.Position + 2 * (dest - source.Position).Normalized() : Arena.Center + hint.offset;
                 hints.AddForbiddenZone(ShapeDistance.PrecisePosition(pos, new(0, 1), Arena.Bounds.MapResolution, actor.Position, 0.1f));
             }
             if (hint.hint.HasFlag(Hint.Mid) && _hourglass != null && !_hourglass.AOEs.Take(2).Any(aoe => aoe.Check(actor.Position)))
@@ -491,7 +487,7 @@ class P4CrystallizeTimeHints(BossModule module) : BossComponent(module)
         var head = _heads?.FindHead(clawSide);
         if (head != null)
         {
-            var headOff = head.Position - Module.Center;
+            var headOff = head.Position - Arena.Center;
             var headDir = Angle.FromDirection(headOff);
             return ((clawSide > 0 ? (headDir.Deg > 45) : (headDir.Deg < -45)) ? SafeOffsetSecondHeadBait(clawSide) : headOff, Hint.SafespotPrecise);
         }
@@ -551,15 +547,15 @@ class P4CrystallizeTimeRewind(BossModule module) : Components.Knockback(module)
         {
             var players = Raid.WithoutSlot(false, true, true);
             players.SortBy(p => p.Position.X);
-            var xOrder = players.IndexOf(actor);
+            var xOrder = Array.IndexOf(players, actor);
             players.SortBy(p => p.Position.Z);
-            var zOrder = players.IndexOf(actor);
+            var zOrder = Array.IndexOf(players, actor);
             if (xOrder >= 0 && zOrder >= 0)
             {
                 if (_exalines.StartingOffsetSum.X > 0)
-                    xOrder = players.Count - 1 - xOrder;
+                    xOrder = players.Length - 1 - xOrder;
                 if (_exalines.StartingOffsetSum.Z > 0)
-                    zOrder = players.Count - 1 - zOrder;
+                    zOrder = players.Length - 1 - zOrder;
 
                 var isFirst = xOrder == 0 || zOrder == 0;
                 var isTank = actor.Role == Role.Tank;
@@ -570,9 +566,17 @@ class P4CrystallizeTimeRewind(BossModule module) : Components.Knockback(module)
                 if (isFirstX == isFirstZ)
                     hints.Add("Position in group properly!");
             }
+        }
+    }
 
-            if (KnockbackSpots(actor.Position).Any(p => !Module.Bounds.Contains(p - Module.Center)))
-                hints.Add("About to be knocked into wall!");
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (!RewindDone && _ct != null && _exalines != null && _ct.Cleansed[slot])
+        {
+            var midpoint = SafeCorner();
+            hints.GoalZones.Add(hints.GoalProximity(midpoint, 6, 0.5f));
+            var destPoint = midpoint + AssignedPositionOffset(actor, assignment);
+            hints.GoalZones.Add(hints.GoalProximity(destPoint, 1, 1));
         }
     }
 
@@ -581,9 +585,11 @@ class P4CrystallizeTimeRewind(BossModule module) : Components.Knockback(module)
         base.DrawArenaForeground(pcSlot, pc);
         if (!RewindDone && _exalines != null)
         {
-            var vertices = KnockbackSpots(pc.Position).ToList();
-            Arena.AddQuad(pc.Position, vertices[0], vertices[2], vertices[1], Colors.Danger);
-            Arena.AddCircle(Arena.Center + 0.5f * _exalines.StartingOffset, 1, Colors.Safe);
+            var midpoint = SafeCorner();
+            Arena.AddCircle(midpoint, 1, Colors.Danger);
+            var offset = AssignedPositionOffset(pc, Service.Config.Get<PartyRolesConfig>()[Module.Raid.Members[pcSlot].ContentId]);
+            if (offset != default)
+                Arena.AddCircle(midpoint + offset, 1, Colors.Safe);
         }
     }
 
