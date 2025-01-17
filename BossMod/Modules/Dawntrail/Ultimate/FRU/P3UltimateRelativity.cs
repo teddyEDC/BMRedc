@@ -61,7 +61,7 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
                         foreach (var (i, p) in Raid.WithSlot(false, true, true).Exclude(slot))
                         {
                             var avoidRadius = avoidBlizzard && States[i].HaveDarkBlizzard ? 12 : 8;
-                            hints.AddForbiddenZone(ShapeDistance.Circle(p.Position, avoidRadius + 1));
+                            hints.AddForbiddenZone(ShapeDistance.Circle(p.Position, avoidRadius));
                         }
                         var lasers = Module.FindComponent<P3UltimateRelativitySinboundMeltdownAOE>();
                         if (lasers != null)
@@ -401,7 +401,7 @@ class P3UltimateRelativityDarkBlizzard(BossModule module) : Components.GenericAO
     private readonly List<Actor> _sources = [];
     private DateTime _activation;
 
-    private static readonly AOEShapeDonut _shape = new(4, 12); // TODO: verify inner radius
+    private static readonly AOEShapeDonut _shape = new(3, 12); // TODO: verify inner radius
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _sources.Select(s => new AOEInstance(_shape, s.Position, default, _activation));
 

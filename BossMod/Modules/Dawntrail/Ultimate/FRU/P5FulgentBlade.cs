@@ -2,7 +2,8 @@
 
 class P5FulgentBlade : Components.Exaflare
 {
-    private readonly List<Actor> _lines = [];
+    private readonly List<(Actor actor, WDir dir)> _lines = []; // before first line starts, it is sorted either in correct or reversed order - i don't think we can predict it?..
+    private WDir _initialSafespot;
     private DateTime _nextBundle;
 
     public P5FulgentBlade(BossModule module) : base(module, new AOEShapeRect(5, 40))
@@ -10,16 +11,28 @@ class P5FulgentBlade : Components.Exaflare
         ImminentColor = Colors.AOE;
     }
 
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.AddAIHints(slot, actor, assignment, hints);
+        // add an extra hint to move to safe spot (TODO: reconsider? this can fuck up positionals for melee etc)
+        if (Lines.Count != 0 && NumCasts <= 6 && SafeSpot() is var safespot && safespot != default)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(safespot, 1), DateTime.MaxValue);
+        //if (Lines.Count > 0 && NumCasts <= 6 && _lines.Count == 6)
+        //{
+        //    var shape = NumCasts switch
+        //    {
+        //        < 2 => ShapeDistance.InvertedCircle(SafeSpot(), 1),
+        //        < 4 => LineIntersection(0, 1),
+        //        < 6 => LineIntersection(2, 3),
+        //        _ => LineIntersection(4, 5),
+        //    };
+        //    hints.AddForbiddenZone(shape, DateTime.MaxValue);
+        //}
+    }
+
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        //// debug
-        //foreach (var l in _lines)
-        //{
-        //    var d = (Module.Center - l.Position).Normalized().OrthoL();
-        //    Arena.AddLine(l.Position - 50 * d, l.Position + 50 * d, ArenaColor.Object);
-        //}
-
-        var safespot = SafeSpots().FirstOrDefault();
+        var safespot = SafeSpot();
         if (safespot != default)
             Arena.AddCircle(safespot, 1, Colors.Safe);
     }
@@ -28,9 +41,14 @@ class P5FulgentBlade : Components.Exaflare
     {
         if ((OID)actor.OID == OID.FulgentBladeLine)
         {
-            _lines.Add(actor);
-            //if (_lines.Count == 6)
-            //    _lines.SortByReverse(l => (l.Position - Module.Center).LengthSq()); // TODO: this isn't right, there are lines with same distance...
+            var dir = (actor.Position - Arena.Center).Normalized();
+            _lines.Add((actor, dir));
+            _initialSafespot -= dir;
+            if (_lines.Count == 6)
+            {
+                // sort in arbitrary order (say, CW), until we know better
+                _lines.SortBy(l => l.dir.Cross(_initialSafespot));
+            }
         }
     }
 
@@ -38,9 +56,12 @@ class P5FulgentBlade : Components.Exaflare
     {
         if ((AID)spell.Action.ID is AID.PathOfLightFirst or AID.PathOfDarknessFirst)
         {
+            if (Lines.Count == 0)
+                UpdateOrder(caster.Position); // first line - we should have all 6 line actors already created, and it should match position of first or last two
+
             var dir = spell.Rotation.ToDirection();
-            var distanceToBorder = Intersect.RayCircle(caster.Position - Module.Center, dir, 22);
-            Lines.Add(new() { Next = spell.LocXZ, Advance = 5 * dir, Rotation = spell.Rotation, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = (int)(distanceToBorder / 5) + 1, MaxShownExplosions = 1 });
+            var distanceToBorder = Intersect.RayCircle(caster.Position - Arena.Center, dir, 22);
+            Lines.Add(new() { Next = spell.LoxXZ, Advance = 5 * dir, Rotation = spell.Rotation, NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2, ExplosionsLeft = (int)(distanceToBorder / 5) + 1, MaxShownExplosions = 1 });
         }
     }
 
@@ -54,7 +75,7 @@ class P5FulgentBlade : Components.Exaflare
                 _nextBundle = WorldState.FutureTime(1);
             }
 
-            var index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1) && item.Rotation.AlmostEqual(spell.Rotation, 0.1f));
+            int index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1) && item.Rotation.AlmostEqual(spell.Rotation, 0.1f));
             if (index == -1)
             {
                 ReportError($"Failed to find entry for {caster.InstanceID:X}");
@@ -67,35 +88,64 @@ class P5FulgentBlade : Components.Exaflare
         }
     }
 
-    private IEnumerable<WPos> SafeSpots()
+    private void UpdateOrder(WPos firstPos)
     {
         if (_lines.Count != 6)
-            yield break;
-        //if (NumCasts < 2)
-        //    yield return SafeSpot(_lines[0], _lines[1]);
-        //if (NumCasts < 4)
-        //    yield return SafeSpot(_lines[2], _lines[3]);
-        //if (NumCasts < 6)
-        //    yield return SafeSpot(_lines[4], _lines[5]);
-
-        if (NumCasts == 0)
         {
-            WDir avgOff = default;
-            foreach (var l in _lines)
-                avgOff += (l.Position - Arena.Center).Normalized();
-            yield return Arena.Center - 5 * avgOff;
+            ReportError($"Unexpected number of lines at cast start: {_lines.Count}");
+        }
+        else if (_lines[^1].actor.Position.AlmostEqual(firstPos, 1) || _lines[^2].actor.Position.AlmostEqual(firstPos, 1))
+        {
+            _lines.Reverse(); // we guessed incorrectly, update the order
+        }
+        else if (!_lines[0].actor.Position.AlmostEqual(firstPos, 1) && !_lines[1].actor.Position.AlmostEqual(firstPos, 1))
+        {
+            ReportError($"First cast at {firstPos} does not correspond to any of the first/last two lines");
         }
     }
 
-    //private WPos SafeSpot(Actor line1, Actor line2)
+    private WPos SafeSpot()
+    {
+        if (_lines.Count != 6)
+            return default; // not enough data
+
+        if (Lines.Count == 0)
+        {
+            // we don't yet know the direction, so just give the approximate safespot (average direction of missing lines)
+            return Module.Center + 5 * _initialSafespot;
+        }
+
+        return NumCasts switch
+        {
+            < 2 => SafeSpot(0, 1, 11), // prepare to dodge into third exaline of the first pair
+            2 => SafeSpot(0, 1, 9), // dodge into third exaline of the first pair
+            3 => SafeSpot(2, 3, 11), // prepare to dodge into third exaline of the second pair
+            4 => SafeSpot(2, 3, 9), // dodge into third exaline of the second pair
+            5 => SafeSpot(4, 5, 11), // prepare to dodge into third exaline of the third pair
+            _ => SafeSpot(4, 5, 9), // dodge into third exaline of the third pair
+        };
+    }
+
+    private WPos SafeSpot(int i1, int i2, float distance)
+    {
+        var l1 = _lines[i1];
+        var l2 = _lines[i2];
+        var p1 = l1.actor.Position - distance * l1.dir;
+        var p2 = l2.actor.Position - distance * l2.dir;
+        var d1 = l1.dir.OrthoL();
+        var d2 = l2.dir.OrthoL();
+        p1 -= 50 * d1; // rays are 0 to infinity, oh well
+        p2 -= 50 * d2;
+        var t = Intersect.RayLine(p1, d1, p2, d2);
+        return t is > 0 and < 100 ? p1 + t * d1 : default;
+    }
+
+    //private Func<WPos, float> LineIntersection(int i1, int i2, float distance = 5, float cushion = 1)
     //{
-    //    var d1 = (Module.Center - line1.Position).Normalized();
-    //    var d2 = (Module.Center - line2.Position).Normalized();
-    //    var n1 = d1.OrthoL();
-    //    var n2 = d2.OrthoL();
-    //    var p1 = line1.Position + 11 * d1 - 50 * n1;
-    //    var p2 = line2.Position + 11 * d2 - 50 * n2;
-    //    var t = Intersect.RayLine(p1, n1, p2, n2);
-    //    return t is > 0 and < 100 ? p1 + t * n1 : default;
+    //    var l1 = _lines[i1];
+    //    var l2 = _lines[i2];
+    //    var r1 = ShapeDistance.Rect(l1.actor.Position - distance * l1.dir, -l1.dir, 5 - cushion, -cushion, 40);
+    //    var r2 = ShapeDistance.Rect(l2.actor.Position - distance * l2.dir, -l2.dir, 5 - cushion, -cushion, 40);
+    //    return p => -Math.Max(r1(p), r2(p));
     //}
 }
