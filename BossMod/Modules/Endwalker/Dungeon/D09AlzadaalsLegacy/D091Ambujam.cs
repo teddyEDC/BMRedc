@@ -65,7 +65,7 @@ class ToxinShowerCorrosiveVenom(BossModule module) : Components.GenericAOEs(modu
 class ToxicCorrosiveFountain(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCircle circle = new(8);
-    private readonly List<AOEInstance> _aoes = [];
+    private readonly List<AOEInstance> _aoes = new(12);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -75,7 +75,7 @@ class ToxicCorrosiveFountain(BossModule module) : Components.GenericAOEs(module)
         var max = count > 10 ? 10 : count;
         List<AOEInstance> aoes = new(max);
         for (var i = 0; i < max; ++i)
-            aoes.Add(aoes[i]);
+            aoes.Add(_aoes[i]);
         return aoes;
     }
 

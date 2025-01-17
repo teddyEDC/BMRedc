@@ -156,7 +156,7 @@ class KeheniheyamewiStates : StateMachineBuilder
     public KeheniheyamewiStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<BodyPress>()
+            .ActivateOnEnter<BodyPress1>()
             .ActivateOnEnter<BodyPress2>()
             .ActivateOnEnter<Scatterscourge>()
             .ActivateOnEnter<SlipperyScatterscourge>()
