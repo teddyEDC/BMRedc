@@ -366,6 +366,7 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
     private readonly Actor? _source = module.Enemies(OID.OraclesReflection).FirstOrDefault();
     private BitMask _thinIce;
     private P2SinboundHolyVoidzone? _voidzones; // used for hints only
+    private const float SlideDistance = 32;
 
     private readonly AOEShapeCone _shapeFront = new(30, 135.Degrees());
     private readonly AOEShapeCone _shapeBack = new(30, 45.Degrees());
@@ -412,29 +413,56 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
                 hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center, 16), WorldState.FutureTime(50));
                 hints.AddForbiddenZone(ShapeDistance.InvertedCone(Arena.Center, 100, desiredDir, halfWidth), DateTime.MaxValue);
             }
-            return;
         }
+        else if (actor.LastFrameMovement == default)
+        {
+            // at this point, we have thin ice, so we can either stay or move fixed distance
+            var sourceOffset = _source.Position - Arena.Center;
+            var needToMove = AOEs.Count > 0 ? AOEs[0].Check(actor.Position) : NumCasts == 0 && sourceOffset.Dot(actor.Position - Arena.Center) > 0;
+            if (!needToMove)
+                return;
 
-        if (AOEs.Count == 0)
-        {
-            // if we're behind boss, slide over
-            hints.AddForbiddenZone(ShapeDistance.Rect(_source.Position, _source.Rotation, 20, 20, 20), DateTime.MaxValue);
-        }
-        else
-        {
-            // otherwise just dodge next aoe
-            ref var nextAOE = ref AOEs.Ref(0);
-            hints.AddForbiddenZone(nextAOE.Shape.Distance(nextAOE.Origin, nextAOE.Rotation), nextAOE.Activation);
-        }
+            var zoneList = new ArcList(actor.Position, SlideDistance);
+            zoneList.ForbidInverseCircle(Arena.Center, Arena.Bounds.Radius);
 
-        // ensure we don't slide over voidzones
-        foreach (var z in _voidzones.Sources(Module))
-        {
-            var offset = z.Position - actor.Position;
-            var dist = offset.Length();
-            if (dist > 6)
-                hints.AddForbiddenZone(ShapeDistance.Cone(actor.Position, 100, Angle.FromDirection(offset), Angle.Asin(dist / 6)));
+            foreach (var z in _voidzones.Sources(Module))
+            {
+                var offset = z.Position - actor.Position;
+                var dist = offset.Length();
+                if (dist >= SlideDistance)
+                {
+                    // voidzone center is outside slide distance => forbid voidzone itself
+                    zoneList.ForbidCircle(z.Position, 6);
+                }
+                else if (dist >= 6)
+                {
+                    // forbid the voidzone's shadow
+                    zoneList.ForbidArcByLength(Angle.FromDirection(offset), Angle.Asin(6 / dist));
+                }
+                // else: we're already in voidzone, oh well
+            }
+
+            if (AOEs.Count == 0)
+            {
+                // if we're behind boss, slide over
+                zoneList.ForbidInfiniteRect(Arena.Center, Angle.FromDirection(sourceOffset), Arena.Bounds.Radius);
+                //zoneList.ForbidCircle(_source.Position, 20);
+            }
+            else
+            {
+                // dodge next aoe
+                ref var nextAOE = ref AOEs.Ref(0);
+                zoneList.ForbidInfiniteCone(nextAOE.Origin, nextAOE.Rotation, ((AOEShapeCone)nextAOE.Shape).HalfAngle);
+            }
+
+            var best = zoneList.Allowed(1.Degrees()).MaxBy(r => (r.max - r.min).Rad);
+            if (best.max.Rad > best.min.Rad)
+            {
+                var dir = 0.5f * (best.min + best.max);
+                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(actor.Position + SlideDistance * dir.ToDirection(), 1), DateTime.MaxValue);
+            }
         }
+        // else: we are already sliding, nothing to do...
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
@@ -474,7 +502,7 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class P2ThinIce(BossModule module) : Components.ThinIce(module, 32, true)
+class P2ThinIce(BossModule module) : Components.ThinIce(module, 32)
 {
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => (Module.FindComponent<P2TwinStillnessSilence>()?.ActiveAOEs(slot, actor).Any(z => z.Shape.Check(pos, z.Origin, z.Rotation)) ?? false) ||
     !Module.InBounds(pos);
