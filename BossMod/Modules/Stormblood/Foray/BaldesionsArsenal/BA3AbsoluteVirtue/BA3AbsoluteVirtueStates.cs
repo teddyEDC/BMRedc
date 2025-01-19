@@ -13,7 +13,7 @@ class BA3AbsoluteVirtueStates : StateMachineBuilder
             .ActivateOnEnter<AernsWynavExplosion>()
             .ActivateOnEnter<BrightDarkAurora>()
             .ActivateOnEnter<AstralUmbralRays>()
-        ;
+            .ActivateOnEnter<BrightDarkAuroraTethers>();
     }
 
     private void SinglePhase(uint id)

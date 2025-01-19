@@ -110,7 +110,7 @@ public sealed class Actor(ulong instanceID, uint oid, int spawnIndex, string nam
     public bool Omnidirectional => Utils.CharacterIsOmnidirectional(OID);
     public bool IsDeadOrDestroyed => IsDead || IsDestroyed;
 
-    private static readonly HashSet<uint> ignoreNPC = [0xE19, 0xE18, 0xE1A, 0x2C11, 0x2C0F, 0x2C10, 0x2C0E, 0x2C12, 0x2EFE, 0x418F, 0x464E, 0x4697]; // friendly NPCs that should not count as party members
+    private static readonly HashSet<uint> ignoreNPC = [0xE19, 0xE18, 0xE1A, 0x2C11, 0x2C0F, 0x2C10, 0x2C0E, 0x2C12, 0x2EFE, 0x418F, 0x464E, 0x4697, 0x35BC, 0x3657, 0x3658]; // friendly NPCs that should not count as party members
     public bool IsFriendlyNPC => Type == ActorType.Enemy && IsAlly && IsTargetable && !ignoreNPC.Contains(OID);
 
     public ActorStatus? FindStatus(uint sid)

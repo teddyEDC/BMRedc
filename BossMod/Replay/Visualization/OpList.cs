@@ -16,7 +16,7 @@ class OpList(Replay replay, Replay.Encounter? enc, BossModuleRegistry.Info? modu
     0x428B, 0x44B8, 0x43D2, 0x43D1, 0x41FD, 0x42A4, 0x41C5, 0x30B7, 0x4021, 0x4019, 0x401C, 0x401B, 0x401F, 0x40FB, 0x4105, 0x401D, 0x4102, 0x4629, 0x4628, 0x4631,
     0x4630, 0x46D6, 0xF5B, 0xF5C, 0x2E20, 0x2E21, 0x318A, 0x2E1E, 0x3346, 0x3353, 0x31D4, 0x3345, 0x3355, 0x3326, 0x3344, 0x31B1, 0x3343, 0x1EB165, 0x1EB166,
     0x1EB167, 0x1EB168, 0x4339, 0x4144, 0x4146, 0x4348, 0x4339, 0x4337];
-    public static readonly HashSet<uint> BoringSIDs = [43, 44, 418, 364, 902, 1050, 368, 362, 1086, 1461, 1463, 365, 1778, 1755, 360, 1411];
+    public static readonly HashSet<uint> BoringSIDs = [43, 44, 418, 364, 902, 414, 1050, 368, 362, 1086, 1461, 1463, 365, 1778, 1755, 360, 1411, 2625, 2626, 2627, 2415, 2449, 361, 367, 2355, 413];
     private readonly HashSet<ActionID> _filteredActions = [];
     private readonly HashSet<uint> _filteredStatuses = [];
     private readonly HashSet<uint> _filteredDirectorUpdateTypes = [];
