@@ -47,7 +47,7 @@ public enum AID : uint
     ExplosionWyvern = 14676, // AernsWynav->self, 8.0s cast, range 60 circle, add soft enrage
 
     MeteorEnrage = 14700, // Boss->self, 10.0s cast, range 60 circle
-    MeteorRepeat = 14703, // Boss->self, no cast, range 60 circle, repeat until everyone is dead
+    MeteorEnrageRepeat = 14703, // Boss->self, no cast, range 60 circle, repeat until everyone is dead
 }
 
 public enum TetherID : uint
