@@ -4,12 +4,12 @@
 // TODO: consider indexing by spawnindex?..
 public sealed class ActorState : IEnumerable<Actor>
 {
-    private readonly Dictionary<ulong, Actor> _actors = [];
+    public readonly Dictionary<ulong, Actor> Actors = [];
 
-    public IEnumerator<Actor> GetEnumerator() => _actors.Values.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => _actors.Values.GetEnumerator();
+    public IEnumerator<Actor> GetEnumerator() => Actors.Values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Actors.Values.GetEnumerator();
 
-    public Actor? Find(ulong instanceID) => instanceID is not 0 and not 0xE0000000 ? _actors.GetValueOrDefault(instanceID) : null;
+    public Actor? Find(ulong instanceID) => instanceID is not 0 and not 0xE0000000 ? Actors.GetValueOrDefault(instanceID) : null;
 
     // all actor-related operations have instance ID to which they are applied
     // in addition to worldstate's modification event, extra event with actor pointer is dispatched for all actor events
@@ -18,16 +18,16 @@ public sealed class ActorState : IEnumerable<Actor>
         protected abstract void ExecActor(WorldState ws, Actor actor);
         protected override void Exec(WorldState ws)
         {
-            if (ws.Actors._actors.TryGetValue(InstanceID, out var actor))
+            if (ws.Actors.Actors.TryGetValue(InstanceID, out var actor))
                 ExecActor(ws, actor);
         }
     }
 
     public List<Operation> CompareToInitial()
     {
-        List<Operation> ops = new(_actors.Count * 2);
+        List<Operation> ops = new(Actors.Count * 2);
 
-        foreach (var act in _actors.Values)
+        foreach (var act in Actors.Values)
         {
             var instanceID = act.InstanceID;
             ops.Add(new OpCreate(instanceID, act.OID, act.SpawnIndex, act.Name, act.NameID, act.Type, act.Class, act.Level, act.PosRot, act.HitboxRadius, act.HPMP, act.IsTargetable, act.IsAlly, act.OwnerID, act.FateID));
@@ -59,7 +59,7 @@ public sealed class ActorState : IEnumerable<Actor>
 
     public void Tick(float dt)
     {
-        foreach (var act in _actors.Values)
+        foreach (var act in Actors.Values)
         {
             act.PrevPosRot = act.PosRot;
             if (act.CastInfo != null)
@@ -76,7 +76,7 @@ public sealed class ActorState : IEnumerable<Actor>
         protected override void ExecActor(WorldState ws, Actor actor) { }
         protected override void Exec(WorldState ws)
         {
-            var actor = ws.Actors._actors[InstanceID] = new Actor(InstanceID, OID, SpawnIndex, Name, NameID, Type, Class, Level, PosRot, HitboxRadius, HPMP, IsTargetable, IsAlly, OwnerID, FateID);
+            var actor = ws.Actors.Actors[InstanceID] = new Actor(InstanceID, OID, SpawnIndex, Name, NameID, Type, Class, Level, PosRot, HitboxRadius, HPMP, IsTargetable, IsAlly, OwnerID, FateID);
             ws.Actors.Added.Fire(actor);
         }
         public override void Write(ReplayRecorder.Output output) => output.EmitFourCC("ACT+"u8)
@@ -131,7 +131,7 @@ public sealed class ActorState : IEnumerable<Actor>
                 }
             }
             ws.Actors.Removed.Fire(actor);
-            ws.Actors._actors.Remove(InstanceID);
+            ws.Actors.Actors.Remove(InstanceID);
         }
         public override void Write(ReplayRecorder.Output output) => output.EmitFourCC("ACT-"u8).Emit(InstanceID, "X8");
     }

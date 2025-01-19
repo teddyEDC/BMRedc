@@ -91,19 +91,7 @@ class EclipsingExhaustKnockback(BossModule module) : Components.KnockbackFromCas
 
                 forbidden.Add(ShapeDistance.Cone(Arena.Center, 16, Angle.FromDirection(component[i].Origin - Arena.Center), a36));
             forbidden.Add(ShapeDistance.InvertedCircle(Arena.Center, 4));
-            hints.AddForbiddenZone(minDistanceFunc, source.Activation);
-
-            float minDistanceFunc(WPos pos)
-            {
-                var minDistance = float.MaxValue;
-                for (var i = 0; i < forbidden.Count; ++i)
-                {
-                    var distance = forbidden[i](pos);
-                    if (distance < minDistance)
-                        minDistance = distance;
-                }
-                return minDistance;
-            }
+            hints.AddForbiddenZone(ShapeDistance.Union(forbidden), source.Activation);
         }
     }
 }

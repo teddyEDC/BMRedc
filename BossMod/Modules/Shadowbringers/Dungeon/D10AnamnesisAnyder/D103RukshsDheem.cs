@@ -229,19 +229,9 @@ class Drains(BossModule module) : Components.GenericAOEs(module)
                 break; // can only block one drain at a time, no point to keep checking
             }
         }
-        float maxDistanceFunc(WPos pos)
-        {
-            var minDistance = float.MinValue;
-            for (var i = 0; i < forbidden.Count; ++i)
-            {
-                var distance = forbidden[i](pos);
-                if (distance > minDistance)
-                    minDistance = distance;
-            }
-            return minDistance;
-        }
-        if (forbidden.Count > 0)
-            hints.AddForbiddenZone(maxDistanceFunc, activation);
+
+        if (forbidden.Count != 0)
+            hints.AddForbiddenZone(ShapeDistance.Intersection(forbidden), activation);
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)

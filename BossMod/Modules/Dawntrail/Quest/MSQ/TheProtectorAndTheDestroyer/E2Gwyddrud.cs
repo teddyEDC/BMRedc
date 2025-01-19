@@ -116,19 +116,7 @@ class RoaringBoltKB(BossModule module) : Components.KnockbackFromCastTarget(modu
         {
             for (var i = 0; i < count; ++i)
                 forbidden.Add(ShapeDistance.Cone(Arena.Center, 20, Angle.FromDirection(aoes[i].Origin - Arena.Center), a25));
-            float minDistanceFunc(WPos pos)
-            {
-                var minDistance = float.MaxValue;
-                for (var i = 0; i < forbidden.Count; ++i)
-                {
-                    var distance = forbidden[i](pos);
-                    if (distance < minDistance)
-                        minDistance = distance;
-                }
-                return minDistance;
-            }
-
-            hints.AddForbiddenZone(minDistanceFunc, source.Activation);
+            hints.AddForbiddenZone(ShapeDistance.Union(forbidden), source.Activation);
         }
     }
 }
