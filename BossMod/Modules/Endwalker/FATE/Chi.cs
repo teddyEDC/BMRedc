@@ -208,7 +208,7 @@ class Combos(BossModule module) : Components.GenericAOEs(module)
             return;
         // make ai stay close to boss to ensure successfully dodging the combo
         var aoe = _aoes[0];
-        hints.AddForbiddenZone(ShapeDistance.InvertedRect(aoe.Origin, aoe.Rotation + a90, 20, 20, 5), aoe.Activation);
+        hints.AddForbiddenZone(ShapeDistance.InvertedRect(Module.PrimaryActor.Position, aoe.Rotation + a90, 20, 20, 3), aoe.Activation);
     }
 }
 
