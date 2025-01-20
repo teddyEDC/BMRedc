@@ -71,7 +71,6 @@ public enum AID : uint
 class RoarArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeDonut donut = new(20, 25);
-    private static readonly ArenaBoundsCircle smallerBounds = new(20);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
@@ -81,7 +80,7 @@ class RoarArenaChange(BossModule module) : Components.GenericAOEs(module)
         if ((OID)actor.OID == OID.Deathwall)
         {
             _aoe = null;
-            Arena.Bounds = smallerBounds;
+            Arena.Bounds = TakingAStand.DefaultArena;
         }
     }
 
@@ -214,7 +213,7 @@ class Fireflood(BossModule module) : Components.SimpleAOEs(module, ActionID.Make
 class TuraliStoneIII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TuraliStoneIII), 4);
 class TuraliQuake(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TuraliQuake), 9, maxCasts: 5);
 
-class AutoWuk(WorldState ws) : UnmanagedRotation(ws, 3)
+class AutoWukLamat(WorldState ws) : UnmanagedRotation(ws, 3)
 {
     protected override void Exec(Actor? primaryTarget)
     {
@@ -246,7 +245,7 @@ class AutoWuk(WorldState ws) : UnmanagedRotation(ws, 3)
     }
 }
 
-class WukAI(BossModule module) : RotationModule<AutoWuk>(module);
+class WukLamatAI(BossModule module) : RotationModule<AutoWukLamat>(module);
 
 class TakingAStandStates : StateMachineBuilder
 {
@@ -268,14 +267,17 @@ class TakingAStandStates : StateMachineBuilder
             .ActivateOnEnter<Fireflood>()
             .ActivateOnEnter<RunThrough1>()
             .ActivateOnEnter<RunThrough2>()
-            .ActivateOnEnter<WukAI>()
+            .ActivateOnEnter<WukLamatAI>()
             .Raw.Update = () => module.PrimaryActor.IsDestroyed || module.PrimaryActor.HPMP.CurHP == 1;
     }
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.Quest, GroupID = 70438, NameID = 12677)]
-public class TakingAStand(WorldState ws, Actor primary) : BossModule(ws, primary, new(500, -175), new ArenaBoundsCircle(24.5f))
+public class TakingAStand(WorldState ws, Actor primary) : BossModule(ws, primary, arenaCenter, startingArena)
 {
+    private static readonly WPos arenaCenter = new(500, -175);
+    private static readonly ArenaBoundsComplex startingArena = new([new Polygon(arenaCenter, 24.5f, 20)]);
+    public static readonly ArenaBoundsComplex DefaultArena = new([new Polygon(arenaCenter, 20, 20)]);
     private static readonly uint[] all = [(uint)OID.Boss, (uint)OID.HiredThug1, (uint)OID.HiredThug2, (uint)OID.HiredThug3, (uint)OID.HiredThug3, (uint)OID.HoobigoGuardian,
     (uint)OID.HoobigoLancer, (uint)OID.DopproIllusionist];
     protected override void DrawEnemies(int pcSlot, Actor pc)
