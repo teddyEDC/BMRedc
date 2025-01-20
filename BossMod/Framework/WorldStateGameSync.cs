@@ -36,9 +36,6 @@ sealed class WorldStateGameSync : IDisposable
     private readonly Dictionary<ulong, Vector3> _lastCastPositions = []; // unfortunately, game only saves cast location for area-targeted spells
     private readonly Actor?[] _actorsByIndex = new Actor?[ObjectTableSize];
 
-    private readonly List<(ulong Caster, ActorCastEvent Event)> _castEvents = [];
-    private readonly List<(uint Seq, ulong Target, int TargetIndex)> _confirms = [];
-
     private readonly Network.OpcodeMap _opcodeMap = new();
     private readonly Network.PacketInterceptor _interceptor = new();
     private readonly Network.PacketDecoderGame _decoder = new();
@@ -171,20 +168,7 @@ sealed class WorldStateGameSync : IDisposable
             _ws.Execute(new NetworkState.OpIDScramble(Network.IDScramble.Delta));
         }
 
-        for (var i = 0; i < _confirms.Count; ++i)
-        {
-            var c = _confirms[i];
-            _ws.PendingEffects.Confirm(_ws.CurrentTime, c.Seq, c.Target, c.TargetIndex);
-        }
-        _confirms.Clear();
-        _ws.PendingEffects.RemoveExpired(_ws.CurrentTime);
-        for (var i = 0; i < _castEvents.Count; ++i)
-        {
-            var c = _castEvents[i];
-            _ws.PendingEffects.AddEntry(_ws.CurrentTime, c.Caster, c.Event);
-        }
-        _castEvents.Clear();
-        for (var i = 0; i < _globalOps.Count; ++i)
+        foreach (var op in _globalOps)
         {
             _ws.Execute(_globalOps[i]);
         }
@@ -534,16 +518,18 @@ sealed class WorldStateGameSync : IDisposable
 
     private unsafe void UpdatePartyNPCs()
     {
+        if (_ws.CurrentCFCID != 0) // TODO: think more about it, do we ever care about allies in overworld?..
+            return;
         for (var i = PartyState.MaxAllianceSize; i < PartyState.MaxAllies; ++i)
         {
             ref var m = ref _ws.Party.Members[i];
             if (m.InstanceId != 0)
             {
-                var actor = _ws.Actors.Find(m.InstanceId);
-                if (!(actor?.IsFriendlyNPC ?? false))
+                if (!(_ws.Actors.Find(m.InstanceId)?.IsFriendlyNPC ?? false))
                     UpdatePartySlot(i, PartyState.EmptySlot);
             }
         }
+
         foreach (var actor in _ws.Actors)
         {
             if (!actor.IsFriendlyNPC)
@@ -735,13 +721,11 @@ sealed class WorldStateGameSync : IDisposable
     private void OnActionEffect(ulong casterID, ActorCastEvent info)
     {
         _actorOps.GetOrAdd(casterID).Add(new ActorState.OpCastEvent(casterID, info));
-        _castEvents.Add((casterID, info));
     }
 
     private void OnEffectResult(ulong targetID, uint seq, int targetIndex)
     {
         _actorOps.GetOrAdd(targetID).Add(new ActorState.OpEffectResult(targetID, seq, targetIndex));
-        _confirms.Add((seq, targetID, targetIndex));
     }
 
     private unsafe void ProcessPacketActorCastDetour(uint casterId, Network.ServerIPC.ActorCast* packet)
