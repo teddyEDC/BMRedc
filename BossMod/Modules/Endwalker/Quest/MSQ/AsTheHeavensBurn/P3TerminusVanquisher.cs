@@ -1,4 +1,6 @@
-﻿namespace BossMod.Endwalker.Quest.AsTheHeavensBurn.P3TerminusVanquisher;
+﻿using BossMod.Endwalker.Quest.MSQ.AsTheHeavensBurn.P2TerminusLacerator;
+
+namespace BossMod.Endwalker.Quest.MSQ.AsTheHeavensBurn.P3TerminusVanquisher;
 
 public enum OID : uint
 {
@@ -86,7 +88,7 @@ class TerminusVanquisherStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 804, NameID = 10935)]
-public class TerminusVanquisher(WorldState ws, Actor primary) : BossModule(ws, primary, new(-260.28f, 80.75f), new ArenaBoundsCircle(19.5f))
+public class TerminusVanquisher(WorldState ws, Actor primary) : BossModule(ws, primary, TerminusLacerator.ArenaBounds.Center, TerminusLacerator.ArenaBounds)
 {
     public Actor? BossP2 => Enemies(OID.TerminusVanquisher)[0];
 

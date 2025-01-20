@@ -265,7 +265,9 @@ public class WorthyOfHisBackStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.Quest, GroupID = 69968, NameID = 10586)]
-public class WorthyOfHisBack(WorldState ws, Actor primary) : BossModule(ws, primary, new(-630, 72), new ArenaBoundsCircle(24.5f))
+public class WorthyOfHisBack(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    public static readonly ArenaBoundsCircle DefaultBounds = new(20);
+    private static readonly WPos arenaCenter = new(-630, 72);
+    public static readonly ArenaBoundsComplex DefaultBounds = new([new Polygon(arenaCenter, 20, 20)]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(arenaCenter, 24.5f, 20)]);
 }

@@ -1,11 +1,10 @@
 ﻿using BossMod.QuestBattle.Endwalker.MSQ;
 
-namespace BossMod.Endwalker.Quest.AsTheHeavensBurn.P2TerminusLacerator;
+namespace BossMod.Endwalker.Quest.MSQ.AsTheHeavensBurn.P2TerminusLacerator;
 
 public enum OID : uint
 {
     Boss = 0x35EC, // R6.0
-
     Meteorite = 0x35ED, // R2.4
     MeteoriteHelper = 0x1EB291, // R0.5
     Helper = 0x233C
@@ -74,7 +73,7 @@ class Meteor(BossModule module) : Components.GenericLineOfSightAOE(module, defau
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.CosmicKiss)
+        if (casters.Count != 0 && (AID)spell.Action.ID == AID.CosmicKiss)
         {
             for (var i = 0; i < meteors.Count; ++i)
             {
@@ -113,4 +112,7 @@ class TerminusLaceratorStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 804, NameID = 10933)]
-public class TerminusLacerator(WorldState ws, Actor primary) : BossModule(ws, primary, new(-260.28f, 80.75f), new ArenaBoundsCircle(19.5f));
+public class TerminusLacerator(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaBounds.Center, ArenaBounds)
+{
+    public static readonly ArenaBoundsComplex ArenaBounds = new([new Polygon(new(-260.28f, 80.73f), 19.5f, 20)]);
+}

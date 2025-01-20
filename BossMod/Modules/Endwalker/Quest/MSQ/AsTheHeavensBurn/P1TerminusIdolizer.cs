@@ -1,6 +1,6 @@
 ﻿using BossMod.QuestBattle.Endwalker.MSQ;
 
-namespace BossMod.Endwalker.Quest.AsTheHeavensBurn.P1TerminusIdolizer;
+namespace BossMod.Endwalker.Quest.MSQ.AsTheHeavensBurn.P1TerminusIdolizer;
 
 public enum OID : uint
 {
@@ -93,7 +93,7 @@ class SelfDestruct(BossModule module) : Components.GenericStackSpread(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (spell.Action.ID == (uint)AID.SelfDestruct)
+        if ((AID)spell.Action.ID == AID.SelfDestruct)
         {
             if (++numCasts == 6)
                 Stacks.Clear();
@@ -122,4 +122,7 @@ class TerminusIdolizerStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 804, NameID = 10932)]
-public class TerminusIdolizer(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300.75f, 151.5f), new ArenaBoundsCircle(19.5f));
+public class TerminusIdolizer(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+{
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-300.75f, 151.46f), 19.5f, 20)]);
+}
