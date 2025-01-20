@@ -199,6 +199,7 @@ class Kickdown(BossModule module) : Components.Knockback(module)
         hints.AddForbiddenZone(kbdist, source.Activation);
     }
 }
+
 class RiotousRampage(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.RiotousRampage), 4);
 class Roar1(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Roar1));
 class Roar2(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Roar2));

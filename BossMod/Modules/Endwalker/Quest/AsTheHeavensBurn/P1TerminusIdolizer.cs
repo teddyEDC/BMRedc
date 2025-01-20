@@ -24,16 +24,12 @@ public enum AID : uint
     DeadlyTentaclesTB = 26997, // Boss->Estinien, 5.0s cast, single-target
     TentacleWhipLFirst = 27004, // Boss->self, 5.0s cast, range 60 180-degree cone
     TentacleWhipRSecond = 27006, // Helper->self, 7.0s cast, range 60 180-degree cone
-    SelfDestruct = 26991, // TerminusDetonator->self, no cast, range 6 circle
-    Petrifaction = 26999, // Boss->self, 4.0s cast, range 60 circle
     TentacleWhipRFirst = 27001, // Boss->self, 5.0s cast, range 60 180-degree cone
     TentacleWhipLSecond = 27003, // Helper->self, 7.0s cast, range 60 180-degree cone
-    Whack = 27007, // Boss->35F5, 5.0s cast, single-target
-}
+    SelfDestruct = 26991, // TerminusDetonator->self, no cast, range 6 circle
+    Petrifaction = 26999, // Boss->self, 4.0s cast, range 60 circle
 
-public enum IconID : uint
-{
-    Stack = 218 // Estinien
+    Whack = 27007, // Boss->Estinien, 5.0s cast, single-target
 }
 
 public enum TetherID : uint
