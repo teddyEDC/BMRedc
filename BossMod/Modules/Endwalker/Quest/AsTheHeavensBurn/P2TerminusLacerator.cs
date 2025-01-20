@@ -31,12 +31,12 @@ public enum AID : uint
     Explosion = 27026 // Meteorite->self, 3.0s cast, range 6 circle
 }
 
-class TheBlackDeath(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.TheBlackDeath), new AOEShapeCone(25, 60.Degrees()), activeWhileCasting: false);
+class TheBlackDeath(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.TheBlackDeath), new AOEShapeCone(25, 60.Degrees()), (uint)OID.Boss, activeWhileCasting: false);
 class Burst(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.Burst), 5);
 class DeadlyImpact(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DeadlyImpact), 10, 6);
 class BlackStar(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BlackStar));
 class DeadlyImpact1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DeadlyImpact1), 8);
-class DeadlyImpact2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DeadlyImpact), 10);
+class DeadlyImpact2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DeadlyImpact2), 10);
 class Explosion(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Explosion), 6);
 class Meteor(BossModule module) : Components.GenericLineOfSightAOE(module, default, 40, safeInsideHitbox: false)
 {
