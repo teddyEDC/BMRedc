@@ -1,4 +1,4 @@
-﻿namespace BossMod.Endwalker.Quest.AsTheHeavensBurn.P3TerminusLacerator;
+﻿namespace BossMod.Endwalker.Quest.AsTheHeavensBurn.P3TerminusVanquisher;
 
 public enum OID : uint
 {
@@ -59,11 +59,11 @@ class ForcefulImpact2(BossModule module) : Components.SimpleAOEs(module, ActionI
 class Shock(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Shock), 10, 6);
 class Depress(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Depress), 7);
 
-class TerminusLaceratorStates : StateMachineBuilder
+class TerminusVanquisherStates : StateMachineBuilder
 {
-    private readonly TerminusLacerator _module;
+    private readonly TerminusVanquisher _module;
 
-    public TerminusLaceratorStates(TerminusLacerator module) : base(module)
+    public TerminusVanquisherStates(TerminusVanquisher module) : base(module)
     {
         _module = module;
 
@@ -85,8 +85,8 @@ class TerminusLaceratorStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 804, NameID = 10933)]
-public class TerminusLacerator(WorldState ws, Actor primary) : BossModule(ws, primary, new(-260.28f, 80.75f), new ArenaBoundsCircle(19.5f))
+[ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 804, NameID = 10935)]
+public class TerminusVanquisher(WorldState ws, Actor primary) : BossModule(ws, primary, new(-260.28f, 80.75f), new ArenaBoundsCircle(19.5f))
 {
     public Actor? BossP2 => Enemies(OID.TerminusVanquisher)[0];
 
