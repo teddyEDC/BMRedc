@@ -183,7 +183,7 @@ class Kickdown(BossModule module) : Components.Knockback(module)
     }
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Sources(slot, actor).Count() == 0)
+        if (!Sources(slot, actor).Any())
             return;
 
         var source = Sources(slot, actor).First();
