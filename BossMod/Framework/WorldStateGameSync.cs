@@ -168,7 +168,7 @@ sealed class WorldStateGameSync : IDisposable
             _ws.Execute(new NetworkState.OpIDScramble(Network.IDScramble.Delta));
         }
 
-        foreach (var op in _globalOps)
+        for (var i = 0; i < _globalOps.Count; ++i)
         {
             _ws.Execute(_globalOps[i]);
         }
@@ -518,18 +518,19 @@ sealed class WorldStateGameSync : IDisposable
 
     private unsafe void UpdatePartyNPCs()
     {
-        if (_ws.CurrentCFCID != 0) // TODO: think more about it, do we ever care about allies in overworld?..
-            return;
-        for (var i = PartyState.MaxAllianceSize; i < PartyState.MaxAllies; ++i)
+        var treatAlliesAsParty = _ws.CurrentCFCID != 0; // TODO: think more about it, do we ever care about allies in overworld?..
+        for (int i = PartyState.MaxAllianceSize; i < PartyState.MaxAllies; ++i)
         {
             ref var m = ref _ws.Party.Members[i];
             if (m.InstanceId != 0)
             {
-                if (!(_ws.Actors.Find(m.InstanceId)?.IsFriendlyNPC ?? false))
+                var actor = treatAlliesAsParty ? _ws.Actors.Find(m.InstanceId) : null;
+                if (actor == null || !actor.IsFriendlyNPC)
                     UpdatePartySlot(i, PartyState.EmptySlot);
             }
         }
-
+        if (!treatAlliesAsParty)
+            return;
         foreach (var actor in _ws.Actors)
         {
             if (!actor.IsFriendlyNPC)

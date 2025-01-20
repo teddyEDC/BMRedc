@@ -23,10 +23,10 @@ public enum AID : uint
 
 class VoidVortex(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.VoidVortex), 6, minStackSize: 1);
 class RottenRampageSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.RottenRampageSpread), 6);
-class RottenRampage(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.RottenRampage), 6);
-class BlightedSwathe(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlightedSwathe), new AOEShapeCone(40, 90.Degrees()));
-class BlightedSweep(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlightedSweep), new AOEShapeCone(40, 90.Degrees()));
-class BlightedBuffet(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.BlightedBuffet), new AOEShapeCircle(9));
+class RottenRampage(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RottenRampage), 6);
+class BlightedSwathe(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BlightedSwathe), new AOEShapeCone(40, 90.Degrees()));
+class BlightedSweep(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BlightedSweep), new AOEShapeCone(40, 90.Degrees()));
+class BlightedBuffet(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BlightedBuffet), 9);
 class VacuumWave(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.VacuumWave), 5)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -35,15 +35,15 @@ class VacuumWave(BossModule module) : Components.KnockbackFromCastTarget(module,
             hints.AddForbiddenZone(new AOEShapeDonut(13, 60), c.Position, activation: Module.CastFinishAt(c.CastInfo));
     }
 }
-class VoidQuakeIII(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.VoidQuakeIII), new AOEShapeCross(40, 5));
+class VoidQuakeIII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidQuakeIII), new AOEShapeCross(40, 5));
 class DeathWall(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.CursedNoise))
 {
-    private DateTime? WallActivate;
+    private DateTime? wallActivate;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (WallActivate is DateTime dt)
-            yield return new AOEInstance(new AOEShapeDonut(18, 100), Arena.Center, Activation: dt);
+        if (wallActivate != null)
+            yield return new AOEInstance(new AOEShapeDonut(18, 100), Arena.Center, Activation: wallActivate.Value);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -52,20 +52,20 @@ class DeathWall(BossModule module) : Components.GenericAOEs(module, ActionID.Mak
         // 5.7 seconds
 
         if (spell.Action == WatchedAction && NumCasts == 0)
-            WallActivate = WorldState.FutureTime(5.7f);
+            wallActivate = WorldState.FutureTime(5.7f);
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (WallActivate != null)
+        if (wallActivate != null)
             hints.Add("Raidwide + poison wall spawn", false);
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
-        if (index == 1 && state == 0x00020001)
+        if (index == 0x01 && state == 0x00020001)
         {
-            WallActivate = null;
+            wallActivate = null;
             Arena.Bounds = new ArenaBoundsCircle(18);
         }
     }
@@ -91,7 +91,7 @@ class Shield(BossModule module) : BossComponent(module)
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
         if (ShieldObj is Actor obj)
-            Arena.AddCircleFilled(obj.Position, ShieldRadius, ArenaColor.SafeFromAOE);
+            Arena.AddCircleFilled(obj.Position, ShieldRadius, Colors.SafeFromAOE);
     }
 }
 
@@ -122,5 +122,5 @@ public class Scarmiglione(WorldState ws, Actor primary) : BossModule(ws, primary
             e.Priority = e.Actor.OID == (uint)OID.FilthyShackle ? 1 : 0;
     }
 
-    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly), ArenaColor.Enemy);
+    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly));
 }

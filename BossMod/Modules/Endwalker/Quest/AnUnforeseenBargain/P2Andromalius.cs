@@ -21,12 +21,12 @@ public enum AID : uint
     VoidSlash = 33173, // 3EE5->self, 11.0s cast, range 8+R 90-degree cone
 }
 
-class StraightSpindleAdds(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.StraightSpindleAdds), new AOEShapeRect(50, 2.5f));
-class Voidblood(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Voidblood), 6);
-class VoidSlash(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.VoidSlash), new AOEShapeCone(9.7f, 45.Degrees()));
+class StraightSpindleAdds(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.StraightSpindleAdds), new AOEShapeRect(50, 2.5f));
+class Voidblood(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Voidblood), 6);
+class VoidSlash(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidSlash), new AOEShapeCone(9.7f, 45.Degrees()));
 class EvilMist(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.EvilMist));
 class Explosion(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.Explosion), 5);
-class Dark(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Dark), 10);
+class Dark(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Dark), 10);
 class Hellsnap(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Hellsnap), 6);
 
 class StraightSpindle(BossModule module) : Components.GenericAOEs(module)
@@ -58,36 +58,36 @@ class Decay(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(
 }
 class ShieldHint(BossModule module) : BossComponent(module)
 {
-    private Actor? Shield;
+    private Actor? shield;
 
     public override void OnActorCreated(Actor actor)
     {
         if (actor.OID == (uint)OID.AlphiShield)
-            Shield = actor;
+            shield = actor;
     }
 
     public override void OnEventDirectorUpdate(uint updateID, uint param1, uint param2, uint param3, uint param4)
     {
         if (updateID == 0x8000000C && param1 == 0x46)
-            Shield = null;
+            shield = null;
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Shield is Actor s)
-            hints.GoalZones.Add(hints.GoalSingleTarget(s.Position, 5));
+        if (shield != null)
+            hints.GoalZones.Add(hints.GoalSingleTarget(shield.Position, 5));
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (Shield is Actor s && !actor.Position.InCircle(s.Position, 5))
+        if (shield != null && !actor.Position.InCircle(shield.Position, 5))
             hints.Add("Take cover!");
     }
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        if (Shield is Actor s)
-            Arena.ZoneCircle(s.Position, 5, ArenaColor.SafeFromAOE);
+        if (shield != null)
+            Arena.ZoneCircle(shield.Position, 5, Colors.SafeFromAOE);
     }
 }
 
@@ -128,5 +128,5 @@ class AndromaliusStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.Quest, GroupID = 70209, NameID = 12071)]
 public class Andromalius(WorldState ws, Actor primary) : BossModule(ws, primary, new(97.85f, 286), new ArenaBoundsCircle(19.5f))
 {
-    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly), ArenaColor.Enemy);
+    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly));
 }

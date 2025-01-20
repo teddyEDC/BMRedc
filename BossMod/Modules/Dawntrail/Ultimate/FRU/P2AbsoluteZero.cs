@@ -143,7 +143,7 @@ class P2Intermission(BossModule module) : Components.GenericBaitAway(module)
 
     private int CrystalPriority(Actor crystal, int clockSpot)
     {
-        var offset = crystal.Position - Module.Center;
+        var offset = crystal.Position - Arena.Center;
         var priority = clockSpot switch
         {
             0 => offset.Z < -10,

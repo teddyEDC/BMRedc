@@ -21,7 +21,7 @@ public enum AID : uint
 class PeckingFlurry(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.PeckingFlurry));
 class WindUnbound(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.WindUnbound));
 class SnatchMorsel(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.SnatchMorsel), "Wukbuster");
-class FallingRock(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.FallingRock), 6, maxCasts: 8);
+class FallingRock(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FallingRock), 6, 8);
 class StickySpit(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.StickySpit), 6);
 class Swoop(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.Swoop), 8);
 class FurlingFlapping(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.FurlingFlapping), 8);
@@ -29,7 +29,7 @@ class DeadlySwoop(BossModule module) : Components.ChargeAOEs(module, ActionID.Ma
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Raid.WithoutSlot().Count() == 3)
+        if (Raid.WithoutSlot().Length == 3)
             base.AddAIHints(slot, actor, assignment, hints);
     }
 }
@@ -46,8 +46,7 @@ class GiantColibriStates : StateMachineBuilder
             .ActivateOnEnter<StickySpit>()
             .ActivateOnEnter<Swoop>()
             .ActivateOnEnter<DeadlySwoop>()
-            .ActivateOnEnter<FurlingFlapping>()
-            ;
+            .ActivateOnEnter<FurlingFlapping>();
     }
 }
 

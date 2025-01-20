@@ -20,11 +20,11 @@ public enum AID : uint
 }
 
 class GigaTempest(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.GigaTempest));
-class Ruination(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Ruination1), new AOEShapeCross(40, 4));
-class Ruination2(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.Ruination2), new AOEShapeRect(30, 4));
+class Ruination(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Ruination1), new AOEShapeCross(40, 4));
+class Ruination2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Ruination2), new AOEShapeRect(30, 4));
 class ResinBomb(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.ResinBomb), 5);
 class MagitekCannon(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.MagitekCannon), 6);
-class Bombardment(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.Bombardment), 6);
+class Bombardment(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Bombardment), 6);
 
 class LockOn(BossModule module) : Components.GenericAOEs(module)
 {
@@ -79,6 +79,6 @@ class VergiliaVanCorculumStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.Quest, GroupID = 69919, NameID = 10572)]
 public class VergiliaVanCorculum(WorldState ws, Actor primary) : BossModule(ws, primary, new(0, -78), new ArenaBoundsCircle(19.5f))
 {
-    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly), ArenaColor.Enemy);
+    protected override void DrawEnemies(int pcSlot, Actor pc) => Arena.Actors(WorldState.Actors.Where(x => !x.IsAlly));
 }
 
