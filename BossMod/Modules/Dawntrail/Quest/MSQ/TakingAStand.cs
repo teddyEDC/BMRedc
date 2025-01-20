@@ -1,3 +1,5 @@
+using BossMod.QuestBattle;
+
 namespace BossMod.Dawntrail.Quest.MSQ.TakingAStand;
 
 public enum OID : uint
@@ -179,6 +181,23 @@ class Kickdown(BossModule module) : Components.Knockback(module)
         if ((AID)spell.Action.ID == AID.Kickdown)
             activation = default;
     }
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (Sources(slot, actor).Count() == 0)
+            return;
+
+        var source = Sources(slot, actor).First();
+        var arenaBounds = ShapeDistance.InvertedCircle(Arena.Center, 20);
+
+        float kbdist(WPos playerPos)
+        {
+            var dir = (playerPos - source.Origin).Normalized();
+            var expected = playerPos + 18 * dir;
+            return arenaBounds(expected);
+        }
+
+        hints.AddForbiddenZone(kbdist, source.Activation);
+    }
 }
 class RiotousRampage(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.RiotousRampage), 4);
 class Roar1(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Roar1));
@@ -193,6 +212,40 @@ class RunThrough2(BossModule module) : RunThrough(module, AID.RunThrough2);
 class Fireflood(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Fireflood), 18);
 class TuraliStoneIII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TuraliStoneIII), 4);
 class TuraliQuake(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TuraliQuake), 9, maxCasts: 5);
+
+class AutoWuk(WorldState ws) : UnmanagedRotation(ws, 3)
+{
+    protected override void Exec(Actor? primaryTarget)
+    {
+        if (primaryTarget == null)
+            return;
+
+        if (World.Party.LimitBreakCur == 10000)
+            UseAction(Roleplay.AID.DawnlitConviction, primaryTarget, 100);
+
+        var numAOETargets = Hints.PotentialTargets.Count(x => x.Actor.Position.InCircle(primaryTarget.Position, 8));
+
+        var gcd = ComboAction switch
+        {
+            Roleplay.AID.ClawOfTheBraax => Roleplay.AID.FangsOfTheBraax,
+            Roleplay.AID.FangsOfTheBraax => Roleplay.AID.TailOfTheBraax,
+            Roleplay.AID.TuraliFervor => Roleplay.AID.TuraliJudgment,
+            Roleplay.AID.TrialsOfTural => Roleplay.AID.TuraliFervor,
+            _ => numAOETargets > 1 ? Roleplay.AID.TrialsOfTural : Roleplay.AID.ClawOfTheBraax
+        };
+
+        UseAction(gcd, primaryTarget);
+        UseAction(Roleplay.AID.BeakOfTheLuwatena, primaryTarget, -5);
+
+        if (Player.DistanceToHitbox(primaryTarget) < 3)
+            UseAction(Roleplay.AID.RunOfTheRroneek, primaryTarget, -10);
+
+        if (Player.HPMP.CurHP * 2 < Player.HPMP.MaxHP)
+            UseAction(Roleplay.AID.LuwatenaPulse, Player, -10);
+    }
+}
+
+class WukAI(BossModule module) : RotationModule<AutoWuk>(module);
 
 class TakingAStandStates : StateMachineBuilder
 {
@@ -214,6 +267,7 @@ class TakingAStandStates : StateMachineBuilder
             .ActivateOnEnter<Fireflood>()
             .ActivateOnEnter<RunThrough1>()
             .ActivateOnEnter<RunThrough2>()
+            .ActivateOnEnter<WukAI>()
             .Raw.Update = () => module.PrimaryActor.IsDestroyed || module.PrimaryActor.HPMP.CurHP == 1;
     }
 }
@@ -235,7 +289,7 @@ public class TakingAStand(WorldState ws, Actor primary) : BossModule(ws, primary
             var e = hints.PotentialTargets[i];
             e.Priority = (OID)e.Actor.OID switch
             {
-                OID.BakoolJaJaShade => AIHints.Enemy.PriorityForbidFully,
+                OID.BakoolJaJaShade => AIHints.Enemy.PriorityInvincible,
                 _ => 0
             };
         }
