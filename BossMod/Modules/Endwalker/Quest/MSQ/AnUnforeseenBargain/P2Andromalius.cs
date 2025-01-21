@@ -82,7 +82,11 @@ class StraightSpindle(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID is AID.StraightSpindleFast or AID.StraightSpindleSlow or AID.StraightSpindleAdds)
+        {
             _aoes.Add(new(rect, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell), ActorID: caster.InstanceID));
+            if (_aoes.Count == 6)
+                _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+        }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

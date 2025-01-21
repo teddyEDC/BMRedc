@@ -51,6 +51,7 @@ public struct NavigationDecision
             targetRadius = 1; // ensure targetRadius is at least 1 to prevent game from freezing
 
         (Func<WPos, float> shapeDistance, DateTime activation)[] localForbiddenZones = [.. hints.ForbiddenZones];
+        Func<WPos, float>[] localGoalZones = [.. hints.GoalZones];
         var imminent = ImminentExplosionTime(ws.CurrentTime);
         var len = localForbiddenZones.Length;
         var numImminentZones = len;
