@@ -11,7 +11,7 @@ class P2HallowedRay(BossModule module) : Components.GenericWildCharge(module, 3,
             // stay at the average direction to the raid
             // TODO: for melees, allow doing positionals...
             WDir averageDir = default;
-            foreach (var p in Raid.WithoutSlot())
+            foreach (var p in Raid.WithoutSlot(false, true, true))
                 averageDir += (p.Position - Source.Position).Normalized();
             hints.AddForbiddenZone(ShapeDistance.InvertedRect(Source.Position, Angle.FromDirection(averageDir), 20, -6, 2), Activation);
         }
