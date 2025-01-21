@@ -44,7 +44,7 @@ class DeadlyTentaclesTB(BossModule module) : Components.SingleTargetCast(module,
 class TentacleWhip(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = new(2);
-    private static readonly HashSet<AID> casts = [AID.TentacleWhipRFirst, AID.TentacleWhipLSecond, AID.TentacleWhipLFirst, AID.TentacleWhipLSecond];
+    private static readonly HashSet<AID> casts = [AID.TentacleWhipRFirst, AID.TentacleWhipRSecond, AID.TentacleWhipLFirst, AID.TentacleWhipLSecond];
     private static readonly AOEShapeCone cone = new(60, 90.Degrees());
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
@@ -70,7 +70,7 @@ class TentacleWhip(BossModule module) : Components.GenericAOEs(module)
         {
             _aoes.Add(new(cone, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell)));
             if (_aoes.Count == 2)
-                _aoes.SortBy(aoe => aoe.Activation);
+                _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
         }
     }
 
@@ -78,6 +78,16 @@ class TentacleWhip(BossModule module) : Components.GenericAOEs(module)
     {
         if (_aoes.Count != 0 && casts.Contains((AID)spell.Action.ID))
             _aoes.RemoveAt(0);
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.AddAIHints(slot, actor, assignment, hints);
+        if (_aoes.Count != 2)
+            return;
+        // make ai stay close to boss to ensure successfully dodging the combo
+        var aoe = _aoes[0];
+        hints.AddForbiddenZone(ShapeDistance.InvertedRect(Module.PrimaryActor.Position, aoe.Rotation, 2, 2, 20), aoe.Activation);
     }
 }
 
