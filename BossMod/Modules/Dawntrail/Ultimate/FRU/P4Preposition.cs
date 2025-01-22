@@ -27,7 +27,7 @@ class P4FragmentOfFate(BossModule module) : BossComponent(module)
     {
         if (playerSlot >= PartyState.MaxPartySize)
         {
-            customColor = ArenaColor.Object;
+            customColor = Colors.Object;
             return PlayerPriority.Danger;
         }
         return PlayerPriority.Irrelevant;
@@ -36,6 +36,6 @@ class P4FragmentOfFate(BossModule module) : BossComponent(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var f in _fragment)
-            Arena.AddCircle(f.Position, f.HitboxRadius, ArenaColor.Object);
+            Arena.AddCircle(f.Position, f.HitboxRadius, Colors.Object);
     }
 }

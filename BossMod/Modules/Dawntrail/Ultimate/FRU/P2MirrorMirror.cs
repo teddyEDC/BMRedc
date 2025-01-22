@@ -24,7 +24,7 @@ class P2MirrorMirrorReflectedScytheKickBlue : Components.GenericAOEs
             // main tank should drag the boss away
             // note: before mirror appears, we want to stay near center (to minimize movement no matter where mirror appears), so this works fine if blue mirror is zero
             // TODO: verify distance calculation - we want boss to be at least 4m away from center
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center - 16 * _blueMirror, 1), DateTime.MaxValue);
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center - 16 * _blueMirror, 1), DateTime.MaxValue);
         }
     }
 
@@ -111,7 +111,7 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
         }
         else
         {
-            dir = Angle.FromDirection(origin.Actor.Position - Module.Center) + group switch
+            dir = Angle.FromDirection(origin.Actor.Position - Arena.Center) + group switch
             {
                 0 => (RedRangedLeftOfMelee ? -90 : 90).Degrees(),
                 1 => (RedRangedLeftOfMelee ? 90 : -90).Degrees(),
@@ -142,7 +142,7 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
             case AID.ScytheKick:
                 var activation = Module.CastFinishAt(spell, 0.7f);
                 FirstSources.Add(new(caster, activation));
-                var mirror = _blueMirror != null ? Module.Enemies(OID.FrozenMirror).Closest(Module.Center + 20 * _blueMirror.Value.ToDirection()) : null;
+                var mirror = _blueMirror != null ? Module.Enemies(OID.FrozenMirror).Closest(Arena.Center + 20 * _blueMirror.Value.ToDirection()) : null;
                 if (mirror != null)
                     FirstSources.Add(new(mirror, activation));
                 break;
@@ -151,8 +151,8 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
                 if (SecondSources.Count == 2 && _blueMirror != null)
                 {
                     // order two red mirrors so that first one is closer to boss and second one closer to blue mirror; if both are same distance, select CW ones (arbitrary)
-                    var d1 = (Angle.FromDirection(SecondSources[0].Actor.Position - Module.Center) - _blueMirror.Value).Normalized();
-                    var d2 = (Angle.FromDirection(SecondSources[1].Actor.Position - Module.Center) - _blueMirror.Value).Normalized();
+                    var d1 = (Angle.FromDirection(SecondSources[0].Actor.Position - Arena.Center) - _blueMirror.Value).Normalized();
+                    var d2 = (Angle.FromDirection(SecondSources[1].Actor.Position - Arena.Center) - _blueMirror.Value).Normalized();
                     var d1abs = d1.Abs();
                     var d2abs = d2.Abs();
                     var swap = d2abs.AlmostEqual(d1abs, 0.1f)
@@ -161,7 +161,7 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
                     if (swap)
                         (SecondSources[1], SecondSources[0]) = (SecondSources[0], SecondSources[1]);
 
-                    RedRangedLeftOfMelee = (SecondSources[0].Actor.Position - Module.Center).OrthoL().Dot(SecondSources[1].Actor.Position - Module.Center) > 0;
+                    RedRangedLeftOfMelee = (SecondSources[0].Actor.Position - Arena.Center).OrthoL().Dot(SecondSources[1].Actor.Position - Arena.Center) > 0;
                 }
                 break;
         }
@@ -182,7 +182,7 @@ class P2MirrorMirrorBanish : P2Banish
         if (proteans != null && proteans.FirstSources.Count == 2 && proteans.SecondSources.Count == 2)
         {
             _anchorMelee = proteans.FirstSources[0].Actor.Position;
-            _anchorRanged = module.Center + 0.5f * (proteans.SecondSources[1].Actor.Position - module.Center);
+            _anchorRanged = Arena.Center + 0.5f * (proteans.SecondSources[1].Actor.Position - Arena.Center);
             foreach (var (slot, group) in Service.Config.Get<FRUConfig>().P2MirrorMirror2SpreadSpots.Resolve(Raid))
             {
                 _aroundRanged[slot] = group >= 4;
@@ -220,7 +220,7 @@ class P2MirrorMirrorBanish : P2Banish
     private WPos CalculatePrepositionLocation(bool aroundRanged, bool leftSide, Angle angle)
     {
         var anchor = aroundRanged ? _anchorRanged : _anchorMelee;
-        var offset = Angle.FromDirection(anchor - Module.Center) + (leftSide ? angle : -angle);
+        var offset = Angle.FromDirection(anchor - Arena.Center) + (leftSide ? angle : -angle);
         return anchor + 6 * offset.ToDirection();
     }
 }

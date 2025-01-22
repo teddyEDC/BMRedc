@@ -354,8 +354,8 @@ class P3UltimateRelativitySinboundMeltdownBait(BossModule module) : Components.G
                     var dir = (bait.Rotation + i * rot).ToDirection();
                     var side = _shape.HalfWidth * dir.OrthoR();
                     var end = bait.Source.Position + _shape.LengthFront * dir;
-                    Arena.AddLine(bait.Source.Position + side, end + side, ArenaColor.Danger);
-                    Arena.AddLine(bait.Source.Position - side, end - side, ArenaColor.Danger);
+                    Arena.AddLine(bait.Source.Position + side, end + side, Colors.Danger);
+                    Arena.AddLine(bait.Source.Position - side, end - side, Colors.Danger);
                 }
             }
             else
