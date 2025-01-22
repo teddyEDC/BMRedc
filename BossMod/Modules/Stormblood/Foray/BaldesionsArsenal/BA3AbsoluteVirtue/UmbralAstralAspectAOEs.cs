@@ -9,7 +9,7 @@ class BrightDarkAurora(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        void AddAOE() => _aoes.Add(new(rect, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell)));
+        void AddAOE() => _aoes.Add(new(rect, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell), ActorID: caster.InstanceID));
         switch ((AID)spell.Action.ID)
         {
             case AID.DarkAurora1:
@@ -19,6 +19,7 @@ class BrightDarkAurora(BossModule module) : Components.GenericAOEs(module)
                 break;
             case AID.BrightAurora1:
             case AID.BrightAurora2:
+
                 if (caster.FindStatus(SID.AstralEssence) != null)
                     AddAOE();
                 break;
@@ -27,8 +28,17 @@ class BrightDarkAurora(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
+        var count = _aoes.Count;
         if (_aoes.Count != 0 && (AID)spell.Action.ID is AID.BrightAurora1 or AID.BrightAurora2 or AID.DarkAurora1 or AID.DarkAurora2)
-            _aoes.RemoveAt(0);
+            for (var i = 0; i < count; ++i)
+            {
+                var aoe = _aoes[i];
+                if (aoe.ActorID == caster.InstanceID)
+                {
+                    _aoes.Remove(aoe);
+                    break;
+                }
+            }
     }
 }
 
