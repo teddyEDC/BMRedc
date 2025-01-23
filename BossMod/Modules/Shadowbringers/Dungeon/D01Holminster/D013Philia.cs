@@ -213,24 +213,24 @@ class FierceBeating(BossModule module) : Components.Exaflare(module, 4)
         var futureCount = futureAOEs.Count;
         var imminentCount = imminentAOEs.Length;
         var total = futureCount + imminentCount;
-        var usedCount = 0;
+        var index = 0;
         var aoes = new AOEInstance[total + 2];
         for (var i = 0; i < futureCount; ++i)
         {
             var aoe = futureAOEs[i];
-            aoes[usedCount++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, FutureColor);
+            aoes[index++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, FutureColor);
         }
 
         for (var i = 0; i < imminentCount; ++i)
         {
             var aoe = imminentAOEs[i];
-            aoes[usedCount++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, ImminentColor);
+            aoes[index++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, ImminentColor);
         }
         if (linesstartedcount1 < 8)
-            aoes[usedCount++] = new(circle, WPos.RotateAroundOrigin(linesstartedcount1 * 45, D013Philia.ArenaCenter, _casters[0]), default, _activation.AddSeconds(linesstartedcount1 * 3.7f));
+            aoes[index++] = new(circle, WPos.RotateAroundOrigin(linesstartedcount1 * 45, D013Philia.ArenaCenter, _casters[0]), default, _activation.AddSeconds(linesstartedcount1 * 3.7f));
         if (linesCount > 1 && linesstartedcount2 < 8)
-            aoes[usedCount++] = new(circle, WPos.RotateAroundOrigin(linesstartedcount2 * 45, D013Philia.ArenaCenter, _casters[1]), default, _activation.AddSeconds(linesstartedcount2 * 3.7f));
-        return aoes[..usedCount];
+            aoes[index++] = new(circle, WPos.RotateAroundOrigin(linesstartedcount2 * 45, D013Philia.ArenaCenter, _casters[1]), default, _activation.AddSeconds(linesstartedcount2 * 3.7f));
+        return aoes[..index];
     }
 
     public override void Update()

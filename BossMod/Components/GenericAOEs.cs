@@ -62,7 +62,7 @@ public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int max
             List<AOEInstance> aoes = new(max);
             for (var i = 0; i < max; ++i)
             {
-                aoes[i] = Casters[i];
+                aoes.Add(Casters[i]);
             }
             return aoes;
         }

@@ -655,10 +655,11 @@ public static class ShapeDistance
 
     public static Func<WPos, float> Intersection(List<Func<WPos, float>> funcs) // max distance func
     {
+        var count = funcs.Count;
         return p =>
         {
             var maxDistance = float.MinValue;
-            for (var i = 0; i < funcs.Count; ++i)
+            for (var i = 0; i < count; ++i)
             {
                 var distance = funcs[i](p);
                 if (distance > maxDistance)
@@ -670,10 +671,27 @@ public static class ShapeDistance
 
     public static Func<WPos, float> Union(List<Func<WPos, float>> funcs) // min distance func
     {
+        var count = funcs.Count;
         return p =>
         {
             var minDistance = float.MaxValue;
-            for (var i = 0; i < funcs.Count; ++i)
+            for (var i = 0; i < count; ++i)
+            {
+                var distance = funcs[i](p);
+                if (distance < minDistance)
+                    minDistance = distance;
+            }
+            return minDistance;
+        };
+    }
+
+    public static Func<WPos, float> Union(Func<WPos, float>[] funcs) // min distance func
+    {
+        var len = funcs.Length;
+        return p =>
+        {
+            var minDistance = float.MaxValue;
+            for (var i = 0; i < len; ++i)
             {
                 var distance = funcs[i](p);
                 if (distance < minDistance)
@@ -685,10 +703,27 @@ public static class ShapeDistance
 
     public static Func<WPos, float> InvertedUnion(List<Func<WPos, float>> funcs) // min distance func
     {
+        var count = funcs.Count;
         return p =>
         {
             var minDistance = float.MaxValue;
-            for (var i = 0; i < funcs.Count; ++i)
+            for (var i = 0; i < count; ++i)
+            {
+                var distance = funcs[i](p);
+                if (distance < minDistance)
+                    minDistance = distance;
+            }
+            return -minDistance;
+        };
+    }
+
+    public static Func<WPos, float> InvertedUnion(Func<WPos, float>[] funcs) // min distance func
+    {
+        var len = funcs.Length;
+        return p =>
+        {
+            var minDistance = float.MaxValue;
+            for (var i = 0; i < len; ++i)
             {
                 var distance = funcs[i](p);
                 if (distance < minDistance)

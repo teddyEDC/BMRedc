@@ -19,22 +19,22 @@ class UpwellRest(BossModule module) : Components.Exaflare(module, new AOEShapeRe
         var futureCount = futureAOEs.Count;
         var imminentCount = imminentAOEs.Length;
         var imminentDeadline = WorldState.FutureTime(5);
-        var usedCount = 0;
+        var index = 0;
         var aoes = new AOEInstance[futureCount + imminentCount];
         for (var i = 0; i < futureCount; ++i)
         {
             var aoe = futureAOEs[i];
             if (aoe.Item2 <= imminentDeadline)
-                aoes[usedCount++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, FutureColor);
+                aoes[index++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, FutureColor);
         }
 
         for (var i = 0; i < imminentCount; ++i)
         {
             var aoe = imminentAOEs[i];
             if (aoe.Item2 <= imminentDeadline)
-                aoes[usedCount++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, ImminentColor);
+                aoes[index++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, ImminentColor);
         }
-        return aoes[..usedCount];
+        return aoes[..index];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
