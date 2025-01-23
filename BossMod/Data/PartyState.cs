@@ -105,14 +105,15 @@ public sealed class PartyState
 
                 result[count++] = (i, player);
             }
-            for (var i = MaxAllianceSize; i < limit; ++i)
-            {
-                ref var player = ref _actors[i];
-                if (player == null || !includeDead && player.IsDead)
-                    continue;
+            if (!excludeNPCs)
+                for (var i = MaxAllianceSize; i < limit; ++i)
+                {
+                    ref var player = ref _actors[i];
+                    if (player == null || !includeDead && player.IsDead)
+                        continue;
 
-                result[count++] = (i, player);
-            }
+                    result[count++] = (i, player);
+                }
         }
         else
         {
