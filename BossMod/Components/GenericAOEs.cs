@@ -62,7 +62,7 @@ public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int max
             List<AOEInstance> aoes = new(max);
             for (var i = 0; i < max; ++i)
             {
-                aoes.Add(Casters[i]);
+                aoes[i] = Casters[i];
             }
             return aoes;
         }
@@ -73,16 +73,19 @@ public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int max
         var count = Casters.Count;
         if (count == 0)
             return [];
+
         var time = WorldState.CurrentTime;
         var max = count > MaxCasts ? MaxCasts : count;
-        List<AOEInstance> aoes = new(max);
+
+        var aoes = new AOEInstance[max];
         for (var i = 0; i < max; ++i)
         {
             var caster = Casters[i];
             var color = i < MaxDangerColor && count > MaxDangerColor ? Colors.Danger : 0;
             var risky = Risky && (MaxRisky == null || i < MaxRisky);
-            aoes.Add(RiskyWithSecondsLeft == 0 ? caster with { Color = color, Risky = risky }
-            : caster with { Color = color, Risky = risky && caster.Activation.AddSeconds(-RiskyWithSecondsLeft) <= time });
+            aoes[i] = RiskyWithSecondsLeft == 0
+                ? caster with { Color = color, Risky = risky }
+                : caster with { Color = color, Risky = risky && caster.Activation.AddSeconds(-RiskyWithSecondsLeft) <= time };
         }
         return aoes;
     }

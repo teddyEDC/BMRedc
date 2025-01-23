@@ -384,16 +384,16 @@ class P2LightRampantAIOrbs(BossModule module) : BossComponent(module)
         if (_orbs == null || _orbs.Casters.Count == 0)
             return;
 
-        // actual orb aoes
+        // actual orb aoes; use slightly bigger radius to make dodges less sus
         foreach (var c in _orbs.ActiveCasters)
-            hints.AddForbiddenZone(_orbs.Shape.Distance(c.Origin, default), c.Activation);
+            hints.AddForbiddenZone(ShapeDistance.Circle(c.Origin, 12), c.Activation);
 
         if (_orbs.NumCasts == 0)
         {
             // dodge first orbs, while staying near edge
             hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center, 16));
             // ... and close to the aoes
-            var cushioned = ShapeDistance.Union([.. _orbs.ActiveCasters.Select(c => ShapeDistance.Circle(c.Origin, 13))]);
+            var cushioned = ShapeDistance.Union([.. _orbs.ActiveCasters.Select(c => ShapeDistance.Circle(c.Origin, 13.5f))]);
             hints.AddForbiddenZone(p => -cushioned(p), DateTime.MaxValue);
         }
         else if (_orbs.Casters.Any(c => _orbs.Shape.Check(actor.Position, c.Origin, default)))
