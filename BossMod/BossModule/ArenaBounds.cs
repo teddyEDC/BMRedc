@@ -206,13 +206,11 @@ public record class ArenaBoundsCustom : ArenaBounds
     private Pathfinding.Map? _cachedMap;
     public readonly RelSimplifiedComplexPolygon poly;
     private readonly (WDir, WDir)[] edges;
-    private readonly float offset;
     public float HalfWidth, HalfHeight;
 
-    public ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon Poly, float MapResolution = Half, float Offset = 0, float ScaleFactor = 1)
+    public ArenaBoundsCustom(float Radius, RelSimplifiedComplexPolygon Poly, float MapResolution = Half, float ScaleFactor = 1)
         : base(Radius, MapResolution, ScaleFactor)
     {
-        offset = Offset;
         poly = Poly;
 
         var edgeList = new List<(WDir, WDir)>();
@@ -257,7 +255,7 @@ public record class ArenaBoundsCustom : ArenaBounds
         var nearestPoint = offset;
         for (var i = 0; i < edges.Length; ++i)
         {
-            var edge = edges[i];
+            ref var edge = ref edges[i];
             var segmentVector = edge.Item2 - edge.Item1;
             var segmentLengthSq = segmentVector.LengthSq();
             var t = Math.Max(0, Math.Min(1, (offset - edge.Item1).Dot(segmentVector) / segmentLengthSq));
@@ -277,8 +275,7 @@ public record class ArenaBoundsCustom : ArenaBounds
 
     private Pathfinding.Map BuildMap()
     {
-        // faster than using the polygonwithholes distance method directly
-        var polygon = offset != 0 ? poly.Offset(offset) : poly;
+        var polygon = poly;
         if (HalfHeight == default) // calculate bounding box if not already done by ArenaBoundsComplex to reduce amount of point in polygon tests
         {
             float minX = float.MaxValue, maxX = float.MinValue, minZ = float.MaxValue, maxZ = float.MinValue;
@@ -307,9 +304,9 @@ public record class ArenaBoundsCustom : ArenaBounds
         var width = map.Width;
         var height = map.Height;
         var resolution = map.Resolution;
-        var center = map.Center;
+        ref var center = ref map.Center;
 
-        var halfSample = MapResolution * Half - Epsilon; // tiny offset to account for floating point inaccuracies
+        var halfSample = resolution * Half - Epsilon; // tiny offset to account for floating point inaccuracies
 
         WDir[] sampleOffsets =
         [
@@ -364,21 +361,21 @@ public sealed record class ArenaBoundsComplex : ArenaBoundsCustom
     public readonly WPos Center;
     public bool IsCircle; // can be used by gaze component for gazes outside of the arena
 
-    public ArenaBoundsComplex(Shape[] UnionShapes, Shape[]? DifferenceShapes = null, Shape[]? AdditionalShapes = null, float MapResolution = Half, float Offset = 0, float ScaleFactor = 1)
-        : base(BuildBounds(UnionShapes, DifferenceShapes, AdditionalShapes, MapResolution, Offset, ScaleFactor, out var center, out var halfWidth, out var halfHeight))
+    public ArenaBoundsComplex(Shape[] UnionShapes, Shape[]? DifferenceShapes = null, Shape[]? AdditionalShapes = null, float MapResolution = Half, float ScaleFactor = 1)
+        : base(BuildBounds(UnionShapes, DifferenceShapes, AdditionalShapes, MapResolution, ScaleFactor, out var center, out var halfWidth, out var halfHeight))
     {
         Center = center;
-        HalfWidth = halfWidth + Offset;
-        HalfHeight = halfHeight + Offset;
+        HalfWidth = halfWidth;
+        HalfHeight = halfHeight;
     }
 
-    private static ArenaBoundsCustom BuildBounds(Shape[] unionShapes, Shape[]? differenceShapes, Shape[]? additionalShapes, float mapResolution, float offset, float scalefactor, out WPos center, out float halfWidth, out float halfHeight)
+    private static ArenaBoundsCustom BuildBounds(Shape[] unionShapes, Shape[]? differenceShapes, Shape[]? additionalShapes, float mapResolution, float scalefactor, out WPos center, out float halfWidth, out float halfHeight)
     {
         var properties = CalculatePolygonProperties(unionShapes, differenceShapes ?? [], additionalShapes ?? []);
         center = properties.Center;
         halfWidth = properties.HalfWidth;
         halfHeight = properties.HalfHeight;
-        return new(scalefactor == 1 ? properties.Radius : properties.Radius / scalefactor, properties.Poly, mapResolution, offset, scalefactor);
+        return new(scalefactor == 1 ? properties.Radius : properties.Radius / scalefactor, properties.Poly, mapResolution, scalefactor);
     }
 
     private static (WPos Center, float HalfWidth, float HalfHeight, float Radius, RelSimplifiedComplexPolygon Poly) CalculatePolygonProperties(Shape[] unionShapes, Shape[] differenceShapes, Shape[] additionalShapes)
