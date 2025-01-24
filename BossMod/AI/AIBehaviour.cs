@@ -12,7 +12,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
     public WorldState WorldState => autorot.Bossmods.WorldState;
     public Preset? AIPreset = aiPreset;
     public float ForceMovementIn = float.MaxValue; // TODO: reconsider
-    private readonly AIConfig _config = Service.Config.Get<AIConfig>();
+    private static readonly AIConfig _config = Service.Config.Get<AIConfig>();
     private readonly NavigationDecision.Context _naviCtx = new();
     private NavigationDecision _naviDecision;
     private bool _afkMode;

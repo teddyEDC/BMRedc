@@ -157,7 +157,7 @@ public sealed record class ArenaBoundsCircle(float Radius, float MapResolution =
     private Pathfinding.Map BuildMap()
     {
         var map = new Pathfinding.Map(MapResolution, default, Radius, Radius);
-        map.BlockPixelsInsideConvex(ShapeDistance.InvertedCircle(default, Radius), -1, 0);
+        map.BlockPixelsInside2(ShapeDistance.InvertedCircle(default, Radius), -1);
         return map;
     }
 }
@@ -178,7 +178,7 @@ public record class ArenaBoundsRect(float HalfWidth, float HalfHeight, Angle Rot
     private Pathfinding.Map BuildMap()
     {
         var map = new Pathfinding.Map(MapResolution, default, HalfWidth, HalfHeight, Rotation);
-        map.BlockPixelsInsideConvex(ShapeDistance.InvertedRect(default, Rotation, HalfHeight, HalfHeight, HalfWidth), -1, 0);
+        map.BlockPixelsInside2(ShapeDistance.InvertedRect(default, Rotation, HalfHeight, HalfHeight, HalfWidth), -1);
         return map;
     }
 
@@ -256,10 +256,10 @@ public record class ArenaBoundsCustom : ArenaBounds
         for (var i = 0; i < edges.Length; ++i)
         {
             ref var edge = ref edges[i];
-            var segmentVector = edge.Item2 - edge.Item1;
-            var segmentLengthSq = segmentVector.LengthSq();
-            var t = Math.Max(0, Math.Min(1, (offset - edge.Item1).Dot(segmentVector) / segmentLengthSq));
-            var nearest = edge.Item1 + t * segmentVector;
+            var edge1 = edge.Item1;
+            var segmentVector = edge.Item2 - edge1;
+            var t = Math.Max(0, Math.Min(1, (offset - edge1).Dot(segmentVector) / segmentVector.LengthSq()));
+            var nearest = edge1 + t * segmentVector;
             var distance = (nearest - offset).LengthSq();
 
             if (distance < minDistance)
@@ -304,7 +304,6 @@ public record class ArenaBoundsCustom : ArenaBounds
         var width = map.Width;
         var height = map.Height;
         var resolution = map.Resolution;
-        ref var center = ref map.Center;
 
         var halfSample = resolution * Half - Epsilon; // tiny offset to account for floating point inaccuracies
 
@@ -323,7 +322,7 @@ public record class ArenaBoundsCustom : ArenaBounds
 
         var dx = new WDir(resolution, 0);
         var dy = new WDir(0, resolution);
-        var startPos = center - (width * Half - Half) * dx - (height * Half - Half) * dy;
+        var startPos = map.Center - (width * Half - Half) * dx - (height * Half - Half) * dy;
 
         Parallel.For(0, height, y =>
         {
