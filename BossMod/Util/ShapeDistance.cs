@@ -1,4 +1,6 @@
-﻿namespace BossMod;
+﻿using BossMod.Pathfinding;
+
+namespace BossMod;
 
 // shapes can be defined by distance from point to shape's border; distance is positive for points outside shape and negative for points inside shape
 // union is min, intersection is max
@@ -642,13 +644,21 @@ public static class ShapeDistance
     {
         Func<WPos, float> edge((WPos p1, WPos p2) e)
         {
-            if (e.p1 == e.p2)
+            if (e.p1.Equals(e.p2))
+            {
                 return _ => float.MinValue;
+            }
             var dir = (e.p2 - e.p1).Normalized();
             var normal = cw ? dir.OrthoL() : dir.OrthoR();
-            return p => normal.Dot(p - e.p1);
+            return (WPos p) => normal.Dot(p - e.p1);
         }
-        return Intersection([.. edges.Select(edge)]);
+
+        List<Func<WPos, float>> edgeFunctions = [];
+        foreach (var e in edges)
+        {
+            edgeFunctions.Add(edge(e));
+        }
+        return Intersection(edgeFunctions);
     }
 
     public static Func<WPos, float> ConvexPolygon(ReadOnlySpan<WPos> vertices, bool cw) => ConvexPolygon(PolygonUtil.EnumerateEdges(vertices), cw);
@@ -656,6 +666,22 @@ public static class ShapeDistance
     public static Func<WPos, float> Intersection(List<Func<WPos, float>> funcs) // max distance func
     {
         var count = funcs.Count;
+        return p =>
+        {
+            var maxDistance = float.MinValue;
+            for (var i = 0; i < count; ++i)
+            {
+                var distance = funcs[i](p);
+                if (distance > maxDistance)
+                    maxDistance = distance;
+            }
+            return maxDistance;
+        };
+    }
+
+    public static Func<WPos, float> Intersection(Func<WPos, float>[] funcs) // max distance func
+    {
+        var count = funcs.Length;
         return p =>
         {
             var maxDistance = float.MinValue;
@@ -735,22 +761,23 @@ public static class ShapeDistance
 
     // special distance function for precise positioning, finer than map resolution
     // it's an inverted rect of a size equal to one grid cell, with a special adjustment if starting position is in the same cell, but farther than tolerance
-    public static Func<WPos, float> PrecisePosition(WPos origin, WDir dir, float cellSize, WPos starting, float tolerance)
+    public static Func<WPos, float> PrecisePosition(WPos origin, WDir dir, float cellSize, WPos starting, float tolerance = 0)
     {
+        var cellSizeAdj = cellSize + NavigationDecision.DefaultForbiddenZoneCushion;
         var delta = starting - origin;
         var dparr = delta.Dot(dir);
-        if (dparr > tolerance && dparr <= cellSize)
-            origin -= cellSize * dir;
-        else if (dparr < -tolerance && dparr >= -cellSize)
-            origin += cellSize * dir;
+        if (dparr > tolerance && dparr <= cellSizeAdj)
+            origin -= cellSizeAdj * dir;
+        else if (dparr < -tolerance && dparr >= -cellSizeAdj)
+            origin += cellSizeAdj * dir;
 
         var normal = dir.OrthoL();
         var dortho = delta.Dot(normal);
-        if (dortho > tolerance && dortho <= cellSize)
-            origin -= cellSize * normal;
-        else if (dortho < -tolerance && dortho >= -cellSize)
-            origin += cellSize * normal;
+        if (dortho > tolerance && dortho <= cellSizeAdj)
+            origin -= cellSizeAdj * normal;
+        else if (dortho < -tolerance && dortho >= -cellSizeAdj)
+            origin += cellSizeAdj * normal;
 
-        return InvertedRect(origin, dir, cellSize, cellSize, cellSize);
+        return InvertedRect(origin, dir, cellSizeAdj, cellSizeAdj, cellSizeAdj);
     }
 }

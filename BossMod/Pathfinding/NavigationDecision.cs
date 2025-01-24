@@ -1,6 +1,4 @@
-﻿using BossMod.AI;
-
-namespace BossMod.Pathfinding;
+﻿namespace BossMod.Pathfinding;
 
 // utility for selecting player's navigation target
 // there are several goals that navigation has to meet, in following rough priority
@@ -44,9 +42,9 @@ public struct NavigationDecision
     public Map? Map;
     public int MapGoal;
     public Decision DecisionType;
-    private static readonly AIConfig _config = Service.Config.Get<AIConfig>();
+    private static readonly AI.AIConfig _config = Service.Config.Get<AI.AIConfig>();
 
-    public const float DefaultForbiddenZoneCushion = 0.19f;
+    public const float DefaultForbiddenZoneCushion = 0.354f; // 0.5 * sqrt(2)
 
     public static NavigationDecision Build(Context ctx, WorldState ws, AIHints hints, Actor player, WPos? targetPos, float targetRadius, Angle targetRot, Positional positional, float playerSpeed = 6, float forbiddenZoneCushion = DefaultForbiddenZoneCushion)
     {
