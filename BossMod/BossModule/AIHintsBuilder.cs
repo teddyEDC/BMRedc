@@ -14,6 +14,9 @@ public sealed class AIHintsBuilder : IDisposable
     private readonly Dictionary<ulong, (Actor Caster, Actor? Target, AOEShape Shape, bool IsCharge)> _activeAOEs = [];
     private ArenaBoundsCircle? _activeFateBounds;
     private static readonly HashSet<uint> ignore = [27503, 33626]; // action IDs that the AI should ignore
+    private static readonly PartyRolesConfig _config = Service.Config.Get<PartyRolesConfig>();
+    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Fate> _fateCache = [];
+    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Action> _spellCache = [];
 
     public AIHintsBuilder(WorldState ws, BossModuleManager bmm, ZoneModuleManager zmm)
     {
@@ -42,9 +45,9 @@ public sealed class AIHintsBuilder : IDisposable
         var player = _ws.Party[playerSlot];
         if (player != null)
         {
-            var playerAssignment = Service.Config.Get<PartyRolesConfig>()[_ws.Party.Members[playerSlot].ContentId];
+            var playerAssignment = _config[_ws.Party.Members[playerSlot].ContentId];
             var activeModule = _bmm.ActiveModule?.StateMachine.ActivePhase != null ? _bmm.ActiveModule : null;
-            FillEnemies(hints, playerAssignment == PartyRolesConfig.Assignment.MT || playerAssignment == PartyRolesConfig.Assignment.OT && !_ws.Party.WithoutSlot().Any(p => p != player && p.Role == Role.Tank));
+            FillEnemies(hints, playerAssignment == PartyRolesConfig.Assignment.MT || playerAssignment == PartyRolesConfig.Assignment.OT && !_ws.Party.WithoutSlot(false, false, true).Any(p => p != player && p.Role == Role.Tank));
             if (activeModule != null)
             {
                 activeModule.CalculateAIHints(playerSlot, player, playerAssignment, hints);
@@ -58,24 +61,41 @@ public sealed class AIHintsBuilder : IDisposable
         hints.Normalize();
     }
 
-    // fill list of potential targets from world state
+    // Fill list of potential targets from world state
     private void FillEnemies(AIHints hints, bool playerIsDefaultTank)
     {
-        var playerInFate = _ws.Client.ActiveFate.ID != 0 && (_ws.Party.Player()?.Level <= Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.ClassJobLevelMax
-        || Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.EurekaFate == 1); // TODO: find out how to get the current player elemental level
-        var allowedFateID = playerInFate ? _ws.Client.ActiveFate.ID : 0;
-        foreach (var actor in _ws.Actors.Where(a => a.IsTargetable && !a.IsAlly && !a.IsDead))
+        uint allowedFateID = 0;
+        var activeFateID = _ws.Client.ActiveFate.ID;
+        if (activeFateID != 0)
+        {
+            var activeFateRow = GetFateRow(activeFateID);
+            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= activeFateRow.Value.ClassJobLevelMax || activeFateRow.Value.EurekaFate == 1);
+            allowedFateID = playerInFate ? activeFateID : 0;
+        }
+        foreach (var actor in _ws.Actors.Actors.Values)
         {
             var index = actor.CharacterSpawnIndex;
             if (index < 0 || index >= hints.Enemies.Length)
                 continue;
+            if (!actor.IsTargetable || actor.IsAlly || actor.IsDead)
+                continue;
 
-            // determine default priority for the enemy
-            var priority = actor.FateID > 0 && actor.FateID != allowedFateID ? AIHints.Enemy.PriorityInvincible // fate mob in fate we are NOT a part of can't be damaged at all
-                : actor.PredictedDead ? AIHints.Enemy.PriorityPointless // this mob is about to be dead, any attacks will likely ghost
-                : actor.AggroPlayer ? 0 // enemies in our enmity list can be attacked, regardless of who they are targeting (since they are keeping us in combat)
-                : actor.InCombat && _ws.Party.FindSlot(actor.TargetID) >= 0 ? 0 // we generally want to assist our party members (note that it includes allied npcs in duties)
-                : AIHints.Enemy.PriorityUndesirable; // this enemy is either not pulled yet or fighting someone we don't care about - try not to aggro it by default
+            int priority;
+            if (actor.FateID != 0)
+            {
+                if (actor.FateID != allowedFateID)
+                    priority = AIHints.Enemy.PriorityInvincible; // Fate mob in an irrelevant fate
+                else
+                    priority = 0; // Relevant fate mob
+            }
+            else if (actor.PredictedDead)
+                priority = AIHints.Enemy.PriorityPointless; // Mob is about to die
+            else if (actor.AggroPlayer)
+                priority = 0; // Aggroed player
+            else if (actor.InCombat && _ws.Party.FindSlot(actor.TargetID) >= 0)
+                priority = 0; // Assisting party members
+            else
+                priority = AIHints.Enemy.PriorityUndesirable; // Default undesirable
 
             var enemy = hints.Enemies[index] = new(actor, priority, playerIsDefaultTank);
             hints.PotentialTargets.Add(enemy);
@@ -84,8 +104,15 @@ public sealed class AIHintsBuilder : IDisposable
 
     private void CalculateAutoHints(AIHints hints, Actor player)
     {
-        var inFate = _ws.Client.ActiveFate.ID != 0 && (_ws.Party.Player()?.Level <= Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.ClassJobLevelMax
-        || Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.EurekaFate == 1); // TODO: find out how to get the current player elemental level
+        var inFate = false;
+        var activeFateID = _ws.Client.ActiveFate.ID;
+        if (activeFateID != 0)
+        {
+            var activeFateRow = GetFateRow(activeFateID);
+            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= activeFateRow.Value.ClassJobLevelMax || activeFateRow.Value.EurekaFate == 1);
+            inFate = playerInFate;
+        }
+
         var center = inFate ? _ws.Client.ActiveFate.Center : player.PosRot.XYZ();
         var (e, bitmap) = Obstacles.Find(center);
         var resolution = bitmap?.PixelSize ?? 0.5f;
@@ -153,7 +180,7 @@ public sealed class AIHintsBuilder : IDisposable
     {
         if (actor.Type is not ActorType.Enemy and not ActorType.Helper || actor.IsAlly)
             return;
-        var data = actor.CastInfo!.IsSpell() ? Service.LuminaRow<Lumina.Excel.Sheets.Action>(actor.CastInfo.Action.ID) : null;
+        var data = actor.CastInfo!.IsSpell() ? GetSpellRow(actor.CastInfo.Action.ID) : null;
         var dat = data!.Value;
         if (data == null || dat.CastType == 1)
             return;
@@ -206,24 +233,17 @@ public sealed class AIHintsBuilder : IDisposable
         return angle.Degrees();
     }
 
-    // private float DetermineDonutInner(Lumina.Excel.Sheets.Action data)
-    // {
-    //     var omen = data.Omen.ValueNullable;
-    //     if (omen == null)
-    //     {
-    //         Service.Log($"[AutoHints] No omen data for {data.RowId} '{data.Name}'...");
-    //         return 0;
-    //     }
-    //     var path = omen.Value.Path.ToString();
-    //     var pos = path.IndexOf("sircle_", StringComparison.Ordinal);
-    //     if (pos >= 0 && pos + 11 <= path.Length && int.TryParse(path.AsSpan(pos + 9, 2), out var inner))
-    //         return inner;
+    private Lumina.Excel.Sheets.Fate? GetFateRow(uint fateID)
+    {
+        if (_fateCache.TryGetValue(fateID, out var fateRow))
+            return fateRow;
+        return _fateCache[fateID] = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(fateID) ?? new();
+    }
 
-    //     pos = path.IndexOf("circle", StringComparison.Ordinal);
-    //     if (pos >= 0 && pos + 10 <= path.Length && int.TryParse(path.AsSpan(pos + 8, 2), out inner))
-    //         return inner;
-
-    //     Service.Log($"[AutoHints] Can't determine inner radius from omen ({path}/{omen.Value.PathAlly}) for {data.RowId} '{data.Name}'...");
-    //     return 0;
-    // }
+    private Lumina.Excel.Sheets.Action? GetSpellRow(uint actionID)
+    {
+        if (_spellCache.TryGetValue(actionID, out var actionRow))
+            return actionRow;
+        return _spellCache[actionID] = Service.LuminaRow<Lumina.Excel.Sheets.Action>(actionID) ?? new();
+    }
 }
