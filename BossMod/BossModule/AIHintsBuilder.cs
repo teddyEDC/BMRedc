@@ -44,7 +44,7 @@ public sealed class AIHintsBuilder : IDisposable
         {
             var playerAssignment = Service.Config.Get<PartyRolesConfig>()[_ws.Party.Members[playerSlot].ContentId];
             var activeModule = _bmm.ActiveModule?.StateMachine.ActivePhase != null ? _bmm.ActiveModule : null;
-            FillEnemies(hints, playerAssignment == PartyRolesConfig.Assignment.MT || playerAssignment == PartyRolesConfig.Assignment.OT && !_ws.Party.WithoutSlot().Any(p => p != player && p.Role == Role.Tank));
+            FillEnemies(hints, playerAssignment == PartyRolesConfig.Assignment.MT || playerAssignment == PartyRolesConfig.Assignment.OT && !_ws.Party.WithoutSlot(false, false, true).Any(p => p != player && p.Role == Role.Tank));
             if (activeModule != null)
             {
                 activeModule.CalculateAIHints(playerSlot, player, playerAssignment, hints);
@@ -58,24 +58,54 @@ public sealed class AIHintsBuilder : IDisposable
         hints.Normalize();
     }
 
-    // fill list of potential targets from world state
+    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Fate> _fateCache = [];
+
+    private Lumina.Excel.Sheets.Fate? GetFateRow(uint fateID)
+    {
+        if (fateID == 0)
+            return null;
+        if (_fateCache.TryGetValue(fateID, out var fateRow))
+            return fateRow;
+        fateRow = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(fateID) ?? new();
+        _fateCache[fateID] = fateRow;
+        return fateRow;
+    }
+
+    // Fill list of potential targets from world state
     private void FillEnemies(AIHints hints, bool playerIsDefaultTank)
     {
-        var playerInFate = _ws.Client.ActiveFate.ID != 0 && (_ws.Party.Player()?.Level <= Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.ClassJobLevelMax
-        || Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.EurekaFate == 1); // TODO: find out how to get the current player elemental level
-        var allowedFateID = playerInFate ? _ws.Client.ActiveFate.ID : 0;
-        foreach (var actor in _ws.Actors.Where(a => a.IsTargetable && !a.IsAlly && !a.IsDead))
+        uint allowedFateID = 0;
+        var activeFateID = _ws.Client.ActiveFate.ID;
+        if (activeFateID != 0)
+        {
+            var activeFateRow = GetFateRow(activeFateID);
+            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= activeFateRow.Value.ClassJobLevelMax || activeFateRow.Value.EurekaFate == 1);
+            allowedFateID = playerInFate ? activeFateID : 0;
+        }
+        foreach (var actor in _ws.Actors.Actors.Values)
         {
             var index = actor.CharacterSpawnIndex;
             if (index < 0 || index >= hints.Enemies.Length)
                 continue;
+            if (!actor.IsTargetable || actor.IsAlly || actor.IsDead)
+                continue;
 
-            // determine default priority for the enemy
-            var priority = actor.FateID > 0 && actor.FateID != allowedFateID ? AIHints.Enemy.PriorityInvincible // fate mob in fate we are NOT a part of can't be damaged at all
-                : actor.PredictedDead ? AIHints.Enemy.PriorityPointless // this mob is about to be dead, any attacks will likely ghost
-                : actor.AggroPlayer ? 0 // enemies in our enmity list can be attacked, regardless of who they are targeting (since they are keeping us in combat)
-                : actor.InCombat && _ws.Party.FindSlot(actor.TargetID) >= 0 ? 0 // we generally want to assist our party members (note that it includes allied npcs in duties)
-                : AIHints.Enemy.PriorityUndesirable; // this enemy is either not pulled yet or fighting someone we don't care about - try not to aggro it by default
+            int priority;
+            if (actor.FateID != 0)
+            {
+                if (actor.FateID != allowedFateID)
+                    priority = AIHints.Enemy.PriorityInvincible; // Fate mob in an irrelevant fate
+                else
+                    priority = 0; // Relevant fate mob
+            }
+            else if (actor.PredictedDead)
+                priority = AIHints.Enemy.PriorityPointless; // Mob is about to die
+            else if (actor.AggroPlayer)
+                priority = 0; // Aggroed player
+            else if (actor.InCombat && _ws.Party.FindSlot(actor.TargetID) >= 0)
+                priority = 0; // Assisting party members
+            else
+                priority = AIHints.Enemy.PriorityUndesirable; // Default undesirable
 
             var enemy = hints.Enemies[index] = new(actor, priority, playerIsDefaultTank);
             hints.PotentialTargets.Add(enemy);
@@ -84,8 +114,15 @@ public sealed class AIHintsBuilder : IDisposable
 
     private void CalculateAutoHints(AIHints hints, Actor player)
     {
-        var inFate = _ws.Client.ActiveFate.ID != 0 && (_ws.Party.Player()?.Level <= Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.ClassJobLevelMax
-        || Service.LuminaRow<Lumina.Excel.Sheets.Fate>(_ws.Client.ActiveFate.ID)?.EurekaFate == 1); // TODO: find out how to get the current player elemental level
+        var inFate = false;
+        var activeFateID = _ws.Client.ActiveFate.ID;
+        if (activeFateID != 0)
+        {
+            var activeFateRow = GetFateRow(activeFateID);
+            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= activeFateRow.Value.ClassJobLevelMax || activeFateRow.Value.EurekaFate == 1);
+            inFate = playerInFate;
+        }
+
         var center = inFate ? _ws.Client.ActiveFate.Center : player.PosRot.XYZ();
         var (e, bitmap) = Obstacles.Find(center);
         var resolution = bitmap?.PixelSize ?? 0.5f;

@@ -48,6 +48,6 @@ class IntersectionTest : TestWindow
         else
             _arena.AddCone(default, _shapeExtentPrimary, _shapeDirDeg.Degrees(), _shapeExtentSecondary.Degrees(), Colors.Safe);
         _arena.AddCircle(circleCenter.ToWPos(), _circleRadius, Colors.Danger);
-        _arena.End();
+        MiniArena.End();
     }
 }
