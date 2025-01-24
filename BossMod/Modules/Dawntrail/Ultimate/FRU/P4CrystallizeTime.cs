@@ -399,10 +399,10 @@ class P4CrystallizeTimeHints(BossModule module) : BossComponent(module)
         if (hint.offset != default)
         {
             // we want to stay really close to border
-            if (hint.offset.LengthSq() > 18 * 18)
-                hint.offset *= 19.5f / 19;
+            if (hint.offset.LengthSq() > 324)
+                hint.offset *= 1.02632f;
 
-            if (hint.hint.HasFlag(Hint.KnockbackFrom) && Raid.WithoutSlot().Any(p => p.PendingKnockbacks.Count > 0))
+            if (hint.hint.HasFlag(Hint.KnockbackFrom) && Raid.WithoutSlot(false, true, true).Any(p => p.PendingKnockbacks.Count > 0))
             {
                 return; // don't even try moving until all knockbacks are resolved, that can fuck up others...
             }
@@ -412,6 +412,7 @@ class P4CrystallizeTimeHints(BossModule module) : BossComponent(module)
             }
             if (hint.hint.HasFlag(Hint.SafespotPrecise))
             {
+                hints.PathfindMapBounds = FRU.PathfindHugBorderBounds;
                 hints.AddForbiddenZone(ShapeDistance.PrecisePosition(Arena.Center + hint.offset, new(0, 1), Arena.Bounds.MapResolution, actor.Position, 0.1f));
             }
             if (hint.hint.HasFlag(Hint.Maelstrom) && _hourglass != null)
