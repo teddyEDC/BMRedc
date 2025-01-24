@@ -15,8 +15,8 @@ public sealed class AIHintsBuilder : IDisposable
     private ArenaBoundsCircle? _activeFateBounds;
     private static readonly HashSet<uint> ignore = [27503, 33626]; // action IDs that the AI should ignore
     private static readonly PartyRolesConfig _config = Service.Config.Get<PartyRolesConfig>();
-    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Fate> _fateCache = [];
-    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Action> _spellCache = [];
+    private static readonly Dictionary<uint, (byte, byte)?> _fateCache = [];
+    private static readonly Dictionary<uint, (byte, byte, byte, uint, string?, string?, string?, int?, bool)?> _spellCache = [];
 
     public AIHintsBuilder(WorldState ws, BossModuleManager bmm, ZoneModuleManager zmm)
     {
@@ -68,8 +68,9 @@ public sealed class AIHintsBuilder : IDisposable
         var activeFateID = _ws.Client.ActiveFate.ID;
         if (activeFateID != 0)
         {
-            var activeFateRow = GetFateRow(activeFateID);
-            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= activeFateRow.Value.ClassJobLevelMax || activeFateRow.Value.EurekaFate == 1);
+            var activeFateRow = GetFateData(activeFateID);
+            var fate = activeFateRow!.Value;
+            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= fate.ClassJobLevelMax || fate.EurekaFate == 1);
             allowedFateID = playerInFate ? activeFateID : 0;
         }
         foreach (var actor in _ws.Actors.Actors.Values)
@@ -108,8 +109,9 @@ public sealed class AIHintsBuilder : IDisposable
         var activeFateID = _ws.Client.ActiveFate.ID;
         if (activeFateID != 0)
         {
-            var activeFateRow = GetFateRow(activeFateID);
-            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= activeFateRow.Value.ClassJobLevelMax || activeFateRow.Value.EurekaFate == 1);
+            var activeFateRow = GetFateData(activeFateID);
+            var fate = activeFateRow!.Value;
+            var playerInFate = activeFateRow != null && (_ws.Party.Player()?.Level <= fate.ClassJobLevelMax || fate.EurekaFate == 1);
             inFate = playerInFate;
         }
 
@@ -180,13 +182,14 @@ public sealed class AIHintsBuilder : IDisposable
     {
         if (actor.Type is not ActorType.Enemy and not ActorType.Helper || actor.IsAlly)
             return;
-        var data = actor.CastInfo!.IsSpell() ? GetSpellRow(actor.CastInfo.Action.ID) : null;
+        var actionID = actor.CastInfo!.Action.ID;
+        if (ignore.Contains(actionID))
+            return;
+        var data = actor.CastInfo!.IsSpell() ? GetSpellData(actionID) : null;
         var dat = data!.Value;
         if (data == null || dat.CastType == 1)
             return;
         if (dat.CastType is 2 or 5 && dat.EffectRange >= RaidwideSize)
-            return;
-        if (ignore.Contains(actor.CastInfo!.Action.ID))
             return;
         AOEShape? shape = dat.CastType switch
         {
@@ -214,36 +217,45 @@ public sealed class AIHintsBuilder : IDisposable
 
     private void OnCastFinished(Actor actor) => _activeAOEs.Remove(actor.InstanceID);
 
-    private Angle DetermineConeAngle(Lumina.Excel.Sheets.Action data)
+    private static Angle DetermineConeAngle((byte, byte, byte, uint RowId, Lumina.Text.ReadOnly.ReadOnlySeString? Name, Lumina.Text.ReadOnly.ReadOnlySeString? PathAlly, string? Path, int? Pos, bool Omen) data)
     {
-        var omen = data.Omen.ValueNullable;
-        var om = omen!.Value;
-        if (omen == null)
+        if (!data.Omen)
         {
             Service.Log($"[AutoHints] No omen data for {data.RowId} '{data.Name}'...");
             return 180.Degrees();
         }
-        var path = om.Path.ToString();
-        var pos = path.IndexOf("fan", StringComparison.Ordinal);
+        var path = data.Path!;
+        var pos = data.Pos!.Value;
         if (pos < 0 || pos + 6 > path.Length || !int.TryParse(path.AsSpan(pos + 3, 3), out var angle))
         {
-            Service.Log($"[AutoHints] Can't determine angle from omen ({path}/{om.PathAlly}) for {data.RowId} '{data.Name}'...");
+            Service.Log($"[AutoHints] Can't determine angle from omen ({path}/{data.PathAlly}) for {data.RowId} '{data.Name}'...");
             return 180.Degrees();
         }
         return angle.Degrees();
     }
 
-    private Lumina.Excel.Sheets.Fate? GetFateRow(uint fateID)
+    private static (byte ClassJobLevelMax, byte EurekaFate)? GetFateData(uint fateID)
     {
         if (_fateCache.TryGetValue(fateID, out var fateRow))
             return fateRow;
-        return _fateCache[fateID] = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(fateID) ?? new();
+        var row = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(fateID);
+        (byte, byte)? data = null;
+        if (row != null)
+            data = (row.Value.ClassJobLevelMax, row.Value.EurekaFate);
+        return _fateCache[fateID] = data;
     }
 
-    private Lumina.Excel.Sheets.Action? GetSpellRow(uint actionID)
+    private static (byte CastType, byte EffectRange, byte XAxisModifier, uint RowId, string? Name, string? PathAlly, string? path, int? pos, bool Omen)? GetSpellData(uint actionID)
     {
         if (_spellCache.TryGetValue(actionID, out var actionRow))
             return actionRow;
-        return _spellCache[actionID] = Service.LuminaRow<Lumina.Excel.Sheets.Action>(actionID) ?? new();
+        var row = Service.LuminaRow<Lumina.Excel.Sheets.Action>(actionID);
+        (byte, byte, byte, uint, string?, string?, string?, int?, bool)? data = null;
+        if (row != null)
+        {
+            var omenPath = row.Value.Omen.Value.Path.ToString();
+            data = (row.Value.CastType, row.Value.EffectRange, row.Value.XAxisModifier, row.Value.RowId, row.Value.Name.ToString(), row.Value.Omen.Value.PathAlly.ToString(), omenPath, omenPath.IndexOf("fan", StringComparison.Ordinal), row.Value.Omen.ValueNullable != null);
+        }
+        return _spellCache[actionID] = data;
     }
 }
