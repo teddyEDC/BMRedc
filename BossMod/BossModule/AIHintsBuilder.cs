@@ -14,6 +14,9 @@ public sealed class AIHintsBuilder : IDisposable
     private readonly Dictionary<ulong, (Actor Caster, Actor? Target, AOEShape Shape, bool IsCharge)> _activeAOEs = [];
     private ArenaBoundsCircle? _activeFateBounds;
     private static readonly HashSet<uint> ignore = [27503, 33626]; // action IDs that the AI should ignore
+    private static readonly PartyRolesConfig _config = Service.Config.Get<PartyRolesConfig>();
+    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Fate> _fateCache = [];
+    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Action> _spellCache = [];
 
     public AIHintsBuilder(WorldState ws, BossModuleManager bmm, ZoneModuleManager zmm)
     {
@@ -42,7 +45,7 @@ public sealed class AIHintsBuilder : IDisposable
         var player = _ws.Party[playerSlot];
         if (player != null)
         {
-            var playerAssignment = Service.Config.Get<PartyRolesConfig>()[_ws.Party.Members[playerSlot].ContentId];
+            var playerAssignment = _config[_ws.Party.Members[playerSlot].ContentId];
             var activeModule = _bmm.ActiveModule?.StateMachine.ActivePhase != null ? _bmm.ActiveModule : null;
             FillEnemies(hints, playerAssignment == PartyRolesConfig.Assignment.MT || playerAssignment == PartyRolesConfig.Assignment.OT && !_ws.Party.WithoutSlot(false, false, true).Any(p => p != player && p.Role == Role.Tank));
             if (activeModule != null)
@@ -56,19 +59,6 @@ public sealed class AIHintsBuilder : IDisposable
             }
         }
         hints.Normalize();
-    }
-
-    private static readonly Dictionary<uint, Lumina.Excel.Sheets.Fate> _fateCache = [];
-
-    private Lumina.Excel.Sheets.Fate? GetFateRow(uint fateID)
-    {
-        if (fateID == 0)
-            return null;
-        if (_fateCache.TryGetValue(fateID, out var fateRow))
-            return fateRow;
-        fateRow = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(fateID) ?? new();
-        _fateCache[fateID] = fateRow;
-        return fateRow;
     }
 
     // Fill list of potential targets from world state
@@ -190,7 +180,7 @@ public sealed class AIHintsBuilder : IDisposable
     {
         if (actor.Type is not ActorType.Enemy and not ActorType.Helper || actor.IsAlly)
             return;
-        var data = actor.CastInfo!.IsSpell() ? Service.LuminaRow<Lumina.Excel.Sheets.Action>(actor.CastInfo.Action.ID) : null;
+        var data = actor.CastInfo!.IsSpell() ? GetSpellRow(actor.CastInfo.Action.ID) : null;
         var dat = data!.Value;
         if (data == null || dat.CastType == 1)
             return;
@@ -243,24 +233,17 @@ public sealed class AIHintsBuilder : IDisposable
         return angle.Degrees();
     }
 
-    // private float DetermineDonutInner(Lumina.Excel.Sheets.Action data)
-    // {
-    //     var omen = data.Omen.ValueNullable;
-    //     if (omen == null)
-    //     {
-    //         Service.Log($"[AutoHints] No omen data for {data.RowId} '{data.Name}'...");
-    //         return 0;
-    //     }
-    //     var path = omen.Value.Path.ToString();
-    //     var pos = path.IndexOf("sircle_", StringComparison.Ordinal);
-    //     if (pos >= 0 && pos + 11 <= path.Length && int.TryParse(path.AsSpan(pos + 9, 2), out var inner))
-    //         return inner;
+    private Lumina.Excel.Sheets.Fate? GetFateRow(uint fateID)
+    {
+        if (_fateCache.TryGetValue(fateID, out var fateRow))
+            return fateRow;
+        return _fateCache[fateID] = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(fateID) ?? new();
+    }
 
-    //     pos = path.IndexOf("circle", StringComparison.Ordinal);
-    //     if (pos >= 0 && pos + 10 <= path.Length && int.TryParse(path.AsSpan(pos + 8, 2), out inner))
-    //         return inner;
-
-    //     Service.Log($"[AutoHints] Can't determine inner radius from omen ({path}/{omen.Value.PathAlly}) for {data.RowId} '{data.Name}'...");
-    //     return 0;
-    // }
+    private Lumina.Excel.Sheets.Action? GetSpellRow(uint actionID)
+    {
+        if (_spellCache.TryGetValue(actionID, out var actionRow))
+            return actionRow;
+        return _spellCache[actionID] = Service.LuminaRow<Lumina.Excel.Sheets.Action>(actionID) ?? new();
+    }
 }
