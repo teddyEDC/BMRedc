@@ -44,7 +44,7 @@ public struct NavigationDecision
     public Decision DecisionType;
     private static readonly AI.AIConfig _config = Service.Config.Get<AI.AIConfig>();
 
-    public const float DefaultForbiddenZoneCushion = 0.354f; // 0.5 * sqrt(2)
+    public const float DefaultForbiddenZoneCushion = 0.354f; // 0.25 * sqrt(2) = distance from center to a corner for the standard 0.5 map resolution
 
     public static NavigationDecision Build(Context ctx, WorldState ws, AIHints hints, Actor player, WPos? targetPos, float targetRadius, Angle targetRot, Positional positional, float playerSpeed = 6, float forbiddenZoneCushion = DefaultForbiddenZoneCushion)
     {

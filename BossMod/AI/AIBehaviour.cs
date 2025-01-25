@@ -63,7 +63,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         var followTarget = _config.FollowTarget;
         _followMaster = (_config.FollowDuringCombat || !master.InCombat || (_masterPrevPos - _masterMovementStart).LengthSq() > 100) && (_config.FollowDuringActiveBossModule || autorot.Bossmods.ActiveModule?.StateMachine.ActiveState == null) && (_config.FollowOutOfCombat || master.InCombat);
         // note: if there are pending knockbacks, don't update navigation decision to avoid fucking up positioning
-        if (player.PendingKnockbacks.Count == 0)
+        if (player.PendingKnockbacks == 0)
         {
             var actorTarget = autorot.WorldState.Actors.Find(player.TargetID);
             (var naviDecision, target) = followTarget && actorTarget != null

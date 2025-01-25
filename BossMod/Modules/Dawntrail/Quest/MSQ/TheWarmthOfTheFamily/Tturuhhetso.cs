@@ -117,7 +117,7 @@ class OrbCollecting(BossModule module) : BossComponent(module)
             for (var i = 0; i < len; ++i)
             {
                 var o = orbz[i];
-                orbs[i] = ShapeDistance.InvertedRect(o.Position + 0.5f * o.Rotation.ToDirection(), new WDir(0, 1), 0.75f, 0.75f, 0.75f);
+                orbs[i] = ShapeDistance.InvertedRect(o.Position + 0.5f * o.Rotation.ToDirection(), new WDir(0, 1), 0.7f, 0.7f, 0.7f);
             }
             hints.AddForbiddenZone(ShapeDistance.Intersection(orbs));
         }
