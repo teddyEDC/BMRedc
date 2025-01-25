@@ -386,7 +386,7 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
     {
         if (AOEs.Count != 2)
             return;
-        foreach (var (i, p) in Raid.WithSlot().IncludedInMask(_thinIce))
+        foreach (var (i, p) in Raid.WithSlot(false, true, true).IncludedInMask(_thinIce))
             if (_slideBackPos[i] == default && p.LastFrameMovement != default)
                 _slideBackPos[i] = p.PrevPosition;
     }
