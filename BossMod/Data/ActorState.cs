@@ -25,7 +25,7 @@ public sealed class ActorState : IEnumerable<Actor>
 
     public List<Operation> CompareToInitial()
     {
-        List<Operation> ops = new(Actors.Count * 2);
+        List<Operation> ops = new(Actors.Count * 5);
 
         foreach (var act in Actors.Values)
         {
@@ -53,7 +53,7 @@ public sealed class ActorState : IEnumerable<Actor>
                 if (status.ID != 0)
                     ops.Add(new OpStatus(instanceID, j, status));
             }
-            for (int i = 0; i < act.IncomingEffects.Length; ++i)
+            for (var i = 0; i < act.IncomingEffects.Length; ++i)
                 if (act.IncomingEffects[i].GlobalSequence != 0)
                     ops.Add(new OpIncomingEffect(act.InstanceID, i, act.IncomingEffects[i]));
         }
