@@ -92,7 +92,7 @@ public struct NavigationDecision
 
         for (var i = 0; i < len; ++i)
         {
-            var inside = localForbiddenZones[i].shapeDistance(player.Position) <= forbiddenZoneCushion - 0.1f;
+            var inside = localForbiddenZones[i].shapeDistance(player.Position) <= 0.1f;
             inZone[i] = inside;
             if (inside)
             {
@@ -328,8 +328,11 @@ public struct NavigationDecision
     {
         WPos? closest = null;
         var closestDistance = float.MaxValue;
-        foreach (var p in ctx.Map.EnumeratePixels())
+        var map = ctx.Map.EnumeratePixels();
+        var len = map.Length;
+        for (var i = 0; i < len; ++i)
         {
+            var p = map[i];
             if (ctx.Map[p.x, p.y].MaxG > 0) // assume any pixel not marked as blocked is better than being outside of bounds
             {
                 var distance = (p.center - startPos).LengthSq();
