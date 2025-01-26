@@ -50,7 +50,18 @@ public abstract class BossModule : IDisposable
     // component management: at most one component of any given type can be active at any time
     public readonly List<BossComponent> Components = [];
 
-    public T? FindComponent<T>() where T : BossComponent => Components.OfType<T>().FirstOrDefault();
+    public T? FindComponent<T>() where T : BossComponent
+    {
+        var count = Components.Count;
+        for (var i = 0; i < count; ++i)
+        {
+            if (Components[i] is T matchingComponent)
+            {
+                return matchingComponent;
+            }
+        }
+        return null;
+    }
     private int componentCount;
 
     public void ActivateComponent<T>() where T : BossComponent

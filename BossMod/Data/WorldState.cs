@@ -36,11 +36,11 @@ public sealed class WorldState
 
         internal void Execute(WorldState ws)
         {
-            Exec(ws);
+            Exec(ref ws);
             Timestamp = ws.CurrentTime;
         }
 
-        protected abstract void Exec(WorldState ws);
+        protected abstract void Exec(ref WorldState ws);
         public abstract void Write(ReplayRecorder.Output output);
     }
 
@@ -78,7 +78,7 @@ public sealed class WorldState
     public Event<OpFrameStart> FrameStarted = new();
     public sealed record class OpFrameStart(FrameState Frame, TimeSpan PrevUpdateTime, ClientState.Gauge GaugePayload, Angle CameraAzimuth) : Operation
     {
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             ws.Frame = Frame;
             ws.Client.CameraAzimuth = CameraAzimuth;
@@ -103,14 +103,14 @@ public sealed class WorldState
     public Event<OpUserMarker> UserMarkerAdded = new();
     public sealed record class OpUserMarker(string Text) : Operation
     {
-        protected override void Exec(WorldState ws) => ws.UserMarkerAdded.Fire(this);
+        protected override void Exec(ref WorldState ws) => ws.UserMarkerAdded.Fire(this);
         public override void Write(ReplayRecorder.Output output) => output.EmitFourCC("UMRK"u8).Emit(Text);
     }
 
     public Event<OpRSVData> RSVDataReceived = new();
     public sealed record class OpRSVData(string Key, string Value) : Operation
     {
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             Service.LuminaRSV[Key] = Encoding.UTF8.GetBytes(Value); // TODO: reconsider...
             ws.RSVEntries[Key] = Value;
@@ -122,7 +122,7 @@ public sealed class WorldState
     public Event<OpZoneChange> CurrentZoneChanged = new();
     public sealed record class OpZoneChange(ushort Zone, ushort CFCID) : Operation
     {
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             ws.CurrentZone = Zone;
             ws.CurrentCFCID = CFCID;
@@ -135,14 +135,14 @@ public sealed class WorldState
     public Event<OpDirectorUpdate> DirectorUpdate = new();
     public sealed record class OpDirectorUpdate(uint DirectorID, uint UpdateID, uint Param1, uint Param2, uint Param3, uint Param4) : Operation
     {
-        protected override void Exec(WorldState ws) => ws.DirectorUpdate.Fire(this);
+        protected override void Exec(ref WorldState ws) => ws.DirectorUpdate.Fire(this);
         public override void Write(ReplayRecorder.Output output) => output.EmitFourCC("DIRU"u8).Emit(DirectorID, "X8").Emit(UpdateID, "X8").Emit(Param1, "X8").Emit(Param2, "X8").Emit(Param3, "X8").Emit(Param4, "X8");
     }
 
     public Event<OpEnvControl> EnvControl = new();
     public sealed record class OpEnvControl(byte Index, uint State) : Operation
     {
-        protected override void Exec(WorldState ws) => ws.EnvControl.Fire(this);
+        protected override void Exec(ref WorldState ws) => ws.EnvControl.Fire(this);
         public override void Write(ReplayRecorder.Output output) => output.EmitFourCC("ENVC"u8).Emit(Index, "X2").Emit(State, "X8");
     }
 
@@ -151,7 +151,7 @@ public sealed class WorldState
     {
         public readonly int[] Args = Args;
 
-        protected override void Exec(WorldState ws) => ws.SystemLogMessage.Fire(this);
+        protected override void Exec(ref WorldState ws) => ws.SystemLogMessage.Fire(this);
         public override void Write(ReplayRecorder.Output output)
         {
             output.EmitFourCC("SLOG"u8).Emit(MessageId);
