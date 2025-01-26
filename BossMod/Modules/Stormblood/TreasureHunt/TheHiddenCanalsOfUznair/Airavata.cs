@@ -51,10 +51,10 @@ public enum AID : uint
     Hurl = 5352, // Abharamu->location, 3.0s cast, range 6 circle
 
     PungentPirouette = 6450, // 1FCF->self, 3.5s cast, range 6+R circle
-    PluckAndPrune = 6449, // 1FCE->self, 3.5s cast, range 6+R circle
+    PluckAndPrune = 6449, // CanalEgg->self, 3.5s cast, range 6+R circle
     HeirloomScream = 6451, // 1FD0->self, 3.5s cast, range 6+R circle
-    Pollen = 6452, // 1FD1->self, 3.5s cast, range 6+R circle
-    TearyTwirl = 6448, // 1FCD->self, 3.5s cast, range 6+R circle
+    Pollen = 6452, // CanalQueen->self, 3.5s cast, range 6+R circle
+    TearyTwirl = 6448, // CanalOnion->self, 3.5s cast, range 6+R circle
 
     Telega = 9630 // Mandragoras/Abharamu/NamazuStickywhisker->self, no cast, single-target, bonus adds disappear
 }
@@ -72,7 +72,7 @@ class AncientAero(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 class RingOfFire(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RingOfFire), 5);
 class StoneII(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.StoneII));
 
-class RaucousScritch(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RaucousScritch), new AOEShapeCone(8.42f, 30.Degrees()));
+class RaucousScritch(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RaucousScritch), new AOEShapeCone(8.42f, 60.Degrees()));
 class Spin(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.Spin), new AOEShapeCone(9.42f, 60.Degrees()), (uint)OID.Abharamu);
 
 abstract class Mandragoras(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 6.84f);
