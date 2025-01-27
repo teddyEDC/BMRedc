@@ -174,7 +174,7 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.Allfire1 or AID.Allfire2 or AID.Allfire3)
+        if (AOEs.Count != 0 && (AID)spell.Action.ID is AID.Allfire1 or AID.Allfire2 or AID.Allfire3)
             AOEs.RemoveAt(0);
     }
 
