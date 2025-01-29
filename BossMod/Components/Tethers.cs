@@ -105,20 +105,126 @@ public class TankbusterTether(BossModule module, ActionID aid, uint tetherID, fl
         if (target == null)
             return null;
 
-        var (player, enemy) = source.Type is ActorType.Player or ActorType.Buddy ? (source, target) : (target, source);
-        if (player.Type is not ActorType.Player and not ActorType.Buddy || enemy.Type is ActorType.Player or ActorType.Buddy)
-        {
-            ReportError($"Unexpected tether pair: {source.InstanceID:X} -> {target.InstanceID:X}");
-            return null;
-        }
-
+        var (player, enemy) = Raid.WithoutSlot().Contains(source) ? (source, target) : (target, source);
         var playerSlot = Raid.FindSlot(player.InstanceID);
-        if (playerSlot < 0)
-        {
-            ReportError($"Non-party-member player is tethered: {source.InstanceID:X} -> {target.InstanceID:X}");
-            return null;
-        }
+        return (playerSlot, player, enemy);
+    }
+}
 
+// generic component for AOE at tethered targets; players are supposed to intercept tethers and gtfo from the raid
+public class InterceptTetherAOE(BossModule module, ActionID aid, uint tetherID, float radius) : CastCounter(module, aid)
+{
+    // TODO: add forbidden players/NPCs logic
+    public readonly uint TID = tetherID;
+    public readonly float Radius = radius;
+    public readonly List<(Actor Player, Actor Enemy)> Tethers = [];
+    private BitMask _tetheredPlayers;
+    private BitMask _inAnyAOE; // players hit by aoe, excluding selves
+    public DateTime Activation;
+
+    public bool Active => _tetheredPlayers.Any();
+
+    public override void Update()
+    {
+        _inAnyAOE = new();
+        foreach (var slot in _tetheredPlayers.SetBits())
+        {
+            var target = Raid[slot];
+            if (target != null)
+                _inAnyAOE |= Raid.WithSlot().InRadiusExcluding(target, Radius).Mask();
+        }
+    }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        if (!Active)
+            return;
+        if (!_tetheredPlayers[slot])
+        {
+            hints.Add("Grab the tether!");
+        }
+        else if (Raid.WithoutSlot().InRadiusExcluding(actor, Radius).Any())
+        {
+            hints.Add("GTFO from raid!");
+        }
+        else
+        {
+            if (_tetheredPlayers[slot])
+            {
+                hints.Add("Hit by baited AOE");
+            }
+            if (_inAnyAOE[slot])
+            {
+                hints.Add("GTFO from baited AOE!");
+            }
+        }
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        var count = Tethers.Count;
+        if (count == 0)
+            return;
+        var raid = Raid.WithoutSlot();
+        for (var i = 0; i < count; ++i)
+        {
+            var tether = Tethers[i];
+            if (tether.Player != actor)
+                hints.AddForbiddenZone(ShapeDistance.Circle(tether.Player.Position, Radius), Activation);
+            else
+                for (var j = 0; j < raid.Length; ++j)
+                {
+                    ref var member = ref raid[i];
+                    if (member != actor)
+                        hints.AddForbiddenZone(ShapeDistance.Circle(member.Position, Radius), Activation);
+                }
+        }
+    }
+
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
+    {
+        // show tethered targets with circles
+        var count = Tethers.Count;
+        if (count == 0)
+            return;
+        for (var i = 0; i < count; ++i)
+        {
+            var side = Tethers[i];
+            Arena.AddLine(side.Enemy.Position, side.Player.Position, side.Player.OID == 0 ? Colors.Safe : 0);
+            Arena.AddCircle(side.Player.Position, Radius);
+        }
+    }
+
+    public override void OnTethered(Actor source, ActorTetherInfo tether)
+    {
+        var sides = DetermineTetherSides(source, tether);
+        if (sides != null)
+        {
+            Tethers.Add((sides.Value.Player, sides.Value.Enemy));
+            _tetheredPlayers.Set(sides.Value.PlayerSlot);
+        }
+    }
+
+    public override void OnUntethered(Actor source, ActorTetherInfo tether)
+    {
+        var sides = DetermineTetherSides(source, tether);
+        if (sides != null)
+        {
+            Tethers.Remove((sides.Value.Player, sides.Value.Enemy));
+            _tetheredPlayers.Clear(sides.Value.PlayerSlot);
+        }
+    }
+
+    // we support both player->enemy and enemy->player tethers
+    private (int PlayerSlot, Actor Player, Actor Enemy)? DetermineTetherSides(Actor source, ActorTetherInfo tether)
+    {
+        if (tether.ID != TID)
+            return null;
+        var target = WorldState.Actors.Find(tether.Target);
+        if (target == null)
+            return null;
+        var (player, enemy) = Raid.WithoutSlot().Contains(source) ? (source, target) : (target, source);
+        var playerSlot = Raid.FindSlot(player.InstanceID);
         return (playerSlot, player, enemy);
     }
 }
