@@ -11,8 +11,8 @@ public enum OID : uint
 
 public enum AID : uint
 {
-
     AutoAttack = 26994, // Boss->Estinien, no cast, single-target
+
     DeadlyTentacles = 26998, // Boss->Estinien, no cast, single-target
     TentacleWhip = 27005, // Boss->self, no cast, single-target
     Shout = 27000, // Boss->self, no cast, single-target

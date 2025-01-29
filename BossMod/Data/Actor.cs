@@ -133,7 +133,8 @@ public sealed class Actor(ulong instanceID, uint oid, int spawnIndex, string nam
         get
         {
             var sum = 0;
-            for (var i = 0; i < PendingHPDifferences.Count; ++i)
+            var count = PendingHPDifferences.Count;
+            for (var i = 0; i < count; ++i)
             {
                 sum += PendingHPDifferences[i].Value;
             }
@@ -146,7 +147,8 @@ public sealed class Actor(ulong instanceID, uint oid, int spawnIndex, string nam
         get
         {
             var sum = 0;
-            for (var i = 0; i < PendingMPDifferences.Count; ++i)
+            var count = PendingMPDifferences.Count;
+            for (var i = 0; i < count; ++i)
             {
                 sum += PendingMPDifferences[i].Value;
             }

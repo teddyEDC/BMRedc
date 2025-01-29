@@ -59,8 +59,8 @@ public sealed class WorldState
         var party = Party.CompareToInitial();
         var client = Client.CompareToInitial();
         var network = Network.CompareToInitial();
-
-        List<Operation> ops = new(RSVEntries.Count + waymarks.Count + actors.Count + party.Count + client.Count + network.Count + 2);
+        var deepdungeon = DeepDungeon.CompareToInitial();
+        List<Operation> ops = new(RSVEntries.Count + waymarks.Count + actors.Count + party.Count + client.Count + network.Count + deepdungeon.Count + 2);
 
         if (CurrentTime != default)
             ops.Add(new OpFrameStart(Frame, default, Client.GaugePayload, Client.CameraAzimuth));
@@ -73,9 +73,8 @@ public sealed class WorldState
         ops.AddRange(party);
         ops.AddRange(client);
         ops.AddRange(network);
+        ops.AddRange(deepdungeon);
         return ops;
-        foreach (var o in DeepDungeon.CompareToInitial())
-            yield return o;
     }
     // implementation of operations
     public Event<OpFrameStart> FrameStarted = new();

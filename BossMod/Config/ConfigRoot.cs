@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using System.Reflection;
+using System.Text.Json;
 
 namespace BossMod;
 
 public class ConfigRoot
 {
     public Event Modified = new();
-
+    private const int _version = 10;
     public readonly Dictionary<Type, ConfigNode> _nodes = [];
     public List<ConfigNode> Nodes => [.. _nodes.Values];
 

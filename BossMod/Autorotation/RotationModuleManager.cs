@@ -132,7 +132,7 @@ public sealed class RotationModuleManager : IDisposable
         _ => (ResolveTargetOverride(strategy, param)?.Position + off1 * off2.Degrees().ToDirection()) ?? Player?.Position ?? default,
     };
 
-    public override string ToString() => string.Join(", ", _activeModules?.Select(m => m.Module.GetType().Name) ?? []);
+    public override string ToString() => string.Join(", ", ActiveModules?.Select(m => m.Module.GetType().Name) ?? []);
 
     private IEnumerable<Actor> FilteredPartyMembers(StrategyPartyFiltering filter)
     {

@@ -36,7 +36,8 @@ public abstract class BossModule : IDisposable
     public List<Actor> Enemies(ReadOnlySpan<uint> enemies)
     {
         List<Actor> relevantenemies = [];
-        for (var i = 0; i < enemies.Length; ++i)
+        var len = enemies.Length;
+        for (var i = 0; i < len; ++i)
         {
             var enemy = enemies[i];
             var entry = RelevantEnemies.GetValueOrDefault(enemy);

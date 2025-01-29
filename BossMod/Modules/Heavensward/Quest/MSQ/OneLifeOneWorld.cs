@@ -62,8 +62,9 @@ class TargetPriorityHandler(BossModule module) : BossComponent(module)
         {
             var playerIsAttacked = false;
 
-            foreach (var e in hints.PotentialTargets)
+            for (var i = 0; i < hints.PotentialTargets.Count; ++i)
             {
+                var e = hints.PotentialTargets[i];
                 if (e.Actor.TargetID == actor.InstanceID)
                 {
                     playerIsAttacked = true;
@@ -85,8 +86,9 @@ class TargetPriorityHandler(BossModule module) : BossComponent(module)
         }
         else
         {
-            foreach (var e in hints.PotentialTargets)
+            for (var i = 0; i < hints.PotentialTargets.Count; ++i)
             {
+                var e = hints.PotentialTargets[i];
                 if (e.Actor == Knight)
                     e.Priority = 2;
                 else if (e.Actor == Covered)

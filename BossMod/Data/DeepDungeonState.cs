@@ -45,23 +45,25 @@ public sealed class DeepDungeonState
     public PomanderState GetPomanderState(PomanderID pid) => GetPomanderSlot(pid) is var s && s >= 0 ? Pomanders[s] : default;
     public PomanderID GetPomanderID(int slot) => GetDungeonDefinition().PomanderSlot is var slots && slot >= 0 && slot < slots.Count ? (PomanderID)slots[slot].RowId : PomanderID.None;
 
-    public IEnumerable<WorldState.Operation> CompareToInitial()
+    public List<WorldState.Operation> CompareToInitial()
     {
+        var ops = new List<WorldState.Operation>(6);
         if (DungeonId != DungeonType.None)
         {
-            yield return new OpProgressChange(DungeonId, Progress);
-            yield return new OpMapDataChange(Rooms);
-            yield return new OpPartyStateChange(Party);
-            yield return new OpPomandersChange(Pomanders);
-            yield return new OpChestsChange(Chests);
-            yield return new OpMagiciteChange(Magicite);
+            ops.Add(new OpProgressChange(DungeonId, Progress));
+            ops.Add(new OpMapDataChange(Rooms));
+            ops.Add(new OpPartyStateChange(Party));
+            ops.Add(new OpPomandersChange(Pomanders));
+            ops.Add(new OpChestsChange(Chests));
+            ops.Add(new OpMagiciteChange(Magicite));
         }
+        return ops;
     }
 
     public Event<OpProgressChange> ProgressChanged = new();
     public sealed record class OpProgressChange(DungeonType DungeonId, DungeonProgress Value) : WorldState.Operation
     {
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             ws.DeepDungeon.DungeonId = DungeonId;
             ws.DeepDungeon.Progress = Value;
@@ -87,7 +89,7 @@ public sealed class DeepDungeonState
     {
         public readonly RoomFlags[] Rooms = Rooms;
 
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             Array.Copy(Rooms, ws.DeepDungeon.Rooms, NumRooms);
             ws.DeepDungeon.MapDataChanged.Fire(this);
@@ -105,7 +107,7 @@ public sealed class DeepDungeonState
     {
         public readonly PartyMember[] Value = Value;
 
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             Array.Copy(Value, ws.DeepDungeon.Party, NumPartyMembers);
             ws.DeepDungeon.PartyStateChanged.Fire(this);
@@ -123,7 +125,7 @@ public sealed class DeepDungeonState
     {
         public readonly PomanderState[] Value = Value;
 
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             Array.Copy(Value, ws.DeepDungeon.Pomanders, NumPomanderSlots);
             ws.DeepDungeon.PomandersChanged.Fire(this);
@@ -141,7 +143,7 @@ public sealed class DeepDungeonState
     {
         public readonly Chest[] Value = Value;
 
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             Array.Copy(Value, ws.DeepDungeon.Chests, NumChests);
             ws.DeepDungeon.ChestsChanged.Fire(this);
@@ -159,7 +161,7 @@ public sealed class DeepDungeonState
     {
         public readonly byte[] Value = Value;
 
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             Array.Copy(Value, ws.DeepDungeon.Magicite, NumMagicites);
             ws.DeepDungeon.MagiciteChanged.Fire(this);
