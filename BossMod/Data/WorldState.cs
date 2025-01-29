@@ -16,6 +16,7 @@ public sealed class WorldState
     public readonly ActorState Actors = new();
     public readonly PartyState Party;
     public readonly ClientState Client = new();
+    public readonly DeepDungeonState DeepDungeon = new();
     public readonly NetworkState Network = new();
 
     public DateTime CurrentTime => Frame.Timestamp;
@@ -73,6 +74,8 @@ public sealed class WorldState
         ops.AddRange(client);
         ops.AddRange(network);
         return ops;
+        foreach (var o in DeepDungeon.CompareToInitial())
+            yield return o;
     }
     // implementation of operations
     public Event<OpFrameStart> FrameStarted = new();
