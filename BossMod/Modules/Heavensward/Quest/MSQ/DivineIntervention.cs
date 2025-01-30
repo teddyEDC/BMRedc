@@ -2,21 +2,30 @@
 
 public enum OID : uint
 {
-    Boss = 0x1010,
+    Boss = 0x1010, // R0.5
     IshgardianSteelChain = 0x102C, // R1.0
     SerPaulecrainColdfire = 0x1011, // R0.5
     ThunderPicket = 0xEC4, // R1.0
-    Helper = 0x233C
+    Helper = 0xE0F
 }
 
 public enum AID : uint
 {
-    LightningBolt = 3993, // ThunderPicket->E0F, 2.0s cast, width 4 rect charge
+    AutoAttack1 = 870, // Boss->Alphinaud, no cast, single-target
+    AutoAttack2 = 871, // SerPaulecrainColdfire->player, no cast, single-target
+
+    Foresight = 32, // Boss->self, no cast, single-target
+    LightningBolt = 3993, // ThunderPicket->Helper, 2.0s cast, width 4 rect charge
     IronTempest = 1003, // Boss->self, 3.5s cast, range 5+R circle
     Overpower = 720, // Boss->self, 2.5s cast, range 6+R 90-degree cone
     RingOfFrost = 1316, // SerPaulecrainColdfire->self, 3.0s cast, range 6+R circle
     Rive = 1135, // Boss->self, 2.5s cast, range 30+R width 2 rect
     Heartstopper = 866, // SerPaulecrainColdfire->self, 2.5s cast, range 3+R width 3 rect
+    FirstLesson = 3991, // Boss->100F, no cast, single-target
+    Bloodbath = 34, // Boss->self, no cast, single-target
+    BarbaricSurge = 963, // Boss->self, no cast, single-target
+    ThunderThrust = 3992, // SerPaulecrainColdfire->self, 4.0s cast, range 40 circle
+    LifeSurge = 83 // SerPaulecrainColdfire->self, no cast, single-target
 }
 
 class LightningBolt(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.LightningBolt), 2);
@@ -25,7 +34,7 @@ class Overpower(BossModule module) : Components.SimpleAOEs(module, ActionID.Make
 class RingOfFrost(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RingOfFrost), 6.5f);
 class Rive(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Rive), new AOEShapeRect(30.5f, 1));
 class Heartstopper(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Heartstopper), new AOEShapeRect(3.5f, 1.5f));
-class Chain(BossModule module) : Components.Adds(module, (uint)OID.IshgardianSteelChain, 1);
+class ThunderThrust(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ThunderThrust));
 
 class SerGrinnauxStates : StateMachineBuilder
 {
@@ -38,7 +47,7 @@ class SerGrinnauxStates : StateMachineBuilder
             .ActivateOnEnter<RingOfFrost>()
             .ActivateOnEnter<Rive>()
             .ActivateOnEnter<Heartstopper>()
-            .ActivateOnEnter<Chain>()
+            .ActivateOnEnter<ThunderThrust>()
             .Raw.Update = () => module.Enemies(SerGrinnaux.Bosses).All(x => x.IsDeadOrDestroyed);
     }
 }

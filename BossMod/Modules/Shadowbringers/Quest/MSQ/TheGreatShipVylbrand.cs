@@ -61,6 +61,64 @@ class TenTrolleyTap(BossModule module) : Components.SimpleAOEs(module, ActionID.
 class TenTrolleyWallop(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TenTrolleyWallop), new AOEShapeCone(40, 30.Degrees()));
 class SelfDestruct2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SelfDestruct2), 10);
 
+class Breakthrough(BossModule module) : Components.GenericAOEs(module)
+{
+    private readonly List<AOEInstance> _aoes = new(2);
+    private const string Hint = "Share damage inside wildcharge!";
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
+
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    {
+        if ((AID)spell.Action.ID == AID.Breakthrough)
+        {
+            var dir = spell.LocXZ - caster.Position;
+            _aoes.Add(new(new AOEShapeRect(dir.Length(), 4), caster.Position, Angle.FromDirection(dir), Module.CastFinishAt(spell), Colors.SafeFromAOE));
+        }
+    }
+
+    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    {
+        if (_aoes.Count != 0 && (AID)spell.Action.ID == AID.Breakthrough)
+            _aoes.RemoveAt(0);
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        var count = _aoes.Count;
+        if (count != 0)
+        {
+            var forbidden = new Func<WPos, float>[count];
+            for (var i = 0; i < count; ++i)
+            {
+                var aoe = _aoes[i];
+                if (aoe.Shape is AOEShapeRect shape)
+                    forbidden[i] = (shape with { InvertForbiddenZone = true }).Distance(aoe.Origin, aoe.Rotation);
+            }
+            hints.AddForbiddenZone(ShapeDistance.Union(forbidden), _aoes[0].Activation);
+        }
+    }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        if (_aoes.Count == 0)
+            return;
+
+        var shouldAddHint = true;
+        foreach (var c in ActiveAOEs(slot, actor))
+        {
+            if (c.Check(actor.Position))
+            {
+                shouldAddHint = false;
+                break;
+            }
+        }
+        if (shouldAddHint)
+            hints.Add(Hint);
+        else
+            hints.Add(Hint, false);
+    }
+}
+
 class Bulldoze(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = new(4);
@@ -123,7 +181,7 @@ class Uplift(BossModule module) : Components.ConcentricAOEs(module, [new AOEShap
     }
 }
 
-class BombTether(BossModule module) : Components.InterceptTetherAOE(module, ActionID.MakeSpell(AID.SelfDestruct1), (uint)TetherID.BombTether, 6)
+class BombTether(BossModule module) : Components.InterceptTetherAOE(module, ActionID.MakeSpell(AID.SelfDestruct1), (uint)TetherID.BombTether, 6, [(uint)OID.Alphinaud])
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
@@ -159,6 +217,7 @@ public class SecondOrderRocksplitterStates : StateMachineBuilder
     public SecondOrderRocksplitterStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<Breakthrough>()
             .ActivateOnEnter<TenTrolleyTap>()
             .ActivateOnEnter<TenTrolleyTorque>()
             .ActivateOnEnter<TenTrolleyWallop>()
