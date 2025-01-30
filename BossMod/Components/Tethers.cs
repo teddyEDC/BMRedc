@@ -112,9 +112,9 @@ public class TankbusterTether(BossModule module, ActionID aid, uint tetherID, fl
 }
 
 // generic component for AOE at tethered targets; players are supposed to intercept tethers and gtfo from the raid
-public class InterceptTetherAOE(BossModule module, ActionID aid, uint tetherID, float radius) : CastCounter(module, aid)
+public class InterceptTetherAOE(BossModule module, ActionID aid, uint tetherID, float radius, uint[]? excludedAllies = null) : CastCounter(module, aid)
 {
-    // TODO: add forbidden players/NPCs logic
+    public readonly uint[]? ExcludedAllies = excludedAllies;
     public readonly uint TID = tetherID;
     public readonly float Radius = radius;
     public readonly List<(Actor Player, Actor Enemy)> Tethers = [];
@@ -122,7 +122,7 @@ public class InterceptTetherAOE(BossModule module, ActionID aid, uint tetherID, 
     private BitMask _inAnyAOE; // players hit by aoe, excluding selves
     public DateTime Activation;
 
-    public bool Active => _tetheredPlayers.Any();
+    public bool Active => Tethers.Count != 0;
 
     public override void Update()
     {
@@ -187,10 +187,15 @@ public class InterceptTetherAOE(BossModule module, ActionID aid, uint tetherID, 
         var count = Tethers.Count;
         if (count == 0)
             return;
+        var len = ExcludedAllies?.Length;
+        var exclude = new List<Actor>(len ?? 0);
+        if (ExcludedAllies != null)
+            for (var i = 0; i < len; ++i)
+                exclude.AddRange(Module.Enemies(ExcludedAllies[i]));
         for (var i = 0; i < count; ++i)
         {
             var side = Tethers[i];
-            Arena.AddLine(side.Enemy.Position, side.Player.Position, side.Player.OID == 0 ? Colors.Safe : 0);
+            Arena.AddLine(side.Enemy.Position, side.Player.Position, Raid.WithoutSlot().Exclude(exclude).Contains(side.Player) ? Colors.Safe : 0);
             Arena.AddCircle(side.Player.Position, Radius);
         }
     }
@@ -254,9 +259,10 @@ public class InterceptTether(BossModule module, ActionID aid, uint tetherIDBad =
     {
         if (!Active)
             return;
-        var exclude = new List<Actor> { };
+        var len = ExcludedAllies?.Length;
+        var exclude = new List<Actor>(len ?? 0);
         if (ExcludedAllies != null)
-            for (var i = 0; i < ExcludedAllies.Length; ++i)
+            for (var i = 0; i < len; ++i)
                 exclude.AddRange(Module.Enemies(ExcludedAllies[i]));
         for (var i = 0; i < _tethers.Count; ++i)
         {

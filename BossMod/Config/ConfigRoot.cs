@@ -7,7 +7,6 @@ namespace BossMod;
 public class ConfigRoot
 {
     public Event Modified = new();
-    private const int _version = 10;
     public readonly Dictionary<Type, ConfigNode> _nodes = [];
     public List<ConfigNode> Nodes => [.. _nodes.Values];
 
@@ -70,7 +69,7 @@ public class ConfigRoot
             using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
 
             writer.WriteStartObject();
-            writer.WriteNumber("Version", _version);
+            writer.WriteNumber("Version", ConfigConverter.Schema.CurrentVersion);
             writer.WritePropertyName("Payload");
             writer.WriteStartObject();
 
