@@ -8,7 +8,7 @@ public abstract class AIRotationModule(RotationModuleManager manager, Actor play
     protected NavigationDecision.Context NavigationContext = new();
 
     protected float Deadline(DateTime deadline) => Math.Max(0f, (float)(deadline - World.CurrentTime).TotalSeconds);
-    protected float Speed() => Player.FindStatus(50) != null ? 7.8f : 6f;
+    protected float Speed() => Player.FindStatus((uint)ClassShared.SID.Sprint) != null ? 7.8f : 6f;
 
     protected bool InMeleeRange(Actor target, WPos position)
     {

@@ -367,6 +367,7 @@ public struct NavigationDecision
     }
 
     private static (WPos? first, WPos? second) GetFirstWaypoints(ThetaStar pf, Map map, int cell, WPos startingPos)
+    private static (WPos? first, WPos? second) GetFirstWaypoints(ThetaStar pf, Map map, int cell, WPos startingPos)
     {
         ref var startingNode = ref pf.NodeByIndex(cell);
         var iterations = 0; // iteration counter to prevent rare cases of infinite loops
@@ -387,6 +388,7 @@ public struct NavigationDecision
                 var dest = map.GridToWorld(destCoord.x, destCoord.y, destCoord.x == playerCoord.x ? playerCoordFrac.X - playerCoord.x : 0.5f, destCoord.y == playerCoord.y ? playerCoordFrac.Y - playerCoord.y : 0.5f);
 
                 var next = pf.CellCenter(nextCell);
+                return (dest, next);
                 return (dest, next);
             }
             nextCell = cell;

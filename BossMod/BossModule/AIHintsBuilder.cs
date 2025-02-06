@@ -43,8 +43,8 @@ public sealed class AIHintsBuilder : IDisposable
         var player = _ws.Party[playerSlot];
 
         hints.Clear();
-        // if (moveImminent || player?.PendingKnockbacks.Count > 0)
-        //     hints.MaxCastTime = 0;
+        if (moveImminent || player?.PendingKnockbacks.Count > 0)
+            hints.MaxCastTime = 0;
         if (player != null)
         {
             var playerAssignment = _config[_ws.Party.Members[playerSlot].ContentId];

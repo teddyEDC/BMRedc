@@ -87,9 +87,10 @@ public sealed class AIHints
     // AI will attempt to shield & mitigate
     public readonly List<(BitMask players, DateTime activation)> PredictedDamage = [];
 
-    // estimate of the maximal time we can spend casting before we need to move
-    // TODO: reconsider...
-    public float MaxCastTimeEstimate = float.MaxValue;
+    // maximal time we can spend casting before we need to move
+    // this is used by the action queue to skip casts that we won't be able to finish and execute lower-priority fallback actions instead
+    public float MaxCastTime = float.MaxValue;
+    public bool ForceCancelCast;
 
     // actions that we want to be executed, gathered from various sources (manual input, autorotation, planner, ai, modules, etc.)
     public readonly ActionQueue ActionsToExecute = new();
@@ -119,7 +120,8 @@ public sealed class AIHints
         ImminentSpecialMode = default;
         MisdirectionThreshold = 15.Degrees();
         PredictedDamage.Clear();
-        MaxCastTimeEstimate = float.MaxValue;
+        MaxCastTime = float.MaxValue;
+        ForceCancelCast = false;
         ActionsToExecute.Clear();
         StatusesToCancel.Clear();
         WantJump = false;
