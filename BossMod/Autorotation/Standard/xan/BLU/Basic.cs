@@ -74,7 +74,7 @@ public sealed class BLU(RotationModuleManager manager, Actor player) : Castxan<A
         var haveModule = Bossmods.ActiveModule?.StateMachine.ActiveState != null;
 
         // mortal flame
-        if (primaryTarget is { } p && StatusDetails(p.Actor, 3643, Player.InstanceID).Left == 0 && Hints.PriorityTargets.Count() == 1 && haveModule)
+        if (primaryTarget is { } p && StatusDetails(p.Actor, 3643, Player.InstanceID).Left == 0 && Hints.PriorityTargets.Count == 1 && haveModule)
             PushGCD(AID.MortalFlame, p, GCDPriority.GCDWithCooldown);
 
         if (haveModule && currentHP * 2 < Player.HPMP.MaxHP)
