@@ -117,16 +117,16 @@ class OrbCollecting(BossModule module) : BossComponent(module)
             for (var i = 0; i < len; ++i)
             {
                 var o = orbz[i];
-                orbs[i] = ShapeDistance.InvertedRect(o.Position + 0.5f * o.Rotation.ToDirection(), new WDir(0, 1), 0.7f, 0.7f, 0.7f);
+                orbs[i] = ShapeDistance.InvertedRect(o.Position + 0.5f * o.Rotation.ToDirection(), new WDir(0f, 1f), 0.5f, 0.5f, 0.5f);
             }
-            hints.AddForbiddenZone(ShapeDistance.Intersection(orbs));
+            hints.AddForbiddenZone(ShapeDistance.Intersection(orbs), DateTime.MaxValue);
         }
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var orb in ActiveOrbs)
-            Arena.AddCircle(orb.Position, 1, Colors.Safe);
+            Arena.AddCircle(orb.Position, 1f, Colors.Safe);
     }
 }
 

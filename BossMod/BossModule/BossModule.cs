@@ -9,7 +9,7 @@ public abstract class BossModule : IDisposable
 {
     public readonly WorldState WorldState;
     public readonly Actor PrimaryActor;
-    public readonly BossModuleConfig WindowConfig = Service.Config.Get<BossModuleConfig>();
+    public static readonly BossModuleConfig WindowConfig = Service.Config.Get<BossModuleConfig>();
     public readonly MiniArena Arena;
     public readonly BossModuleRegistry.Info? Info;
     public readonly StateMachine StateMachine;
@@ -292,7 +292,7 @@ public abstract class BossModule : IDisposable
 
     // utility to calculate expected time when cast finishes (plus an optional delay); returns fallback value if argument is null
     // for whatever reason, npc spells have reported remaining cast time consistently 0.3s smaller than reality - this delta is added automatically, in addition to optional delay
-    public DateTime CastFinishAt(ActorCastInfo? cast, float extraDelay = 0, DateTime fallback = default) => cast != null ? WorldState.FutureTime(cast.NPCRemainingTime + extraDelay) : fallback;
+    public DateTime CastFinishAt(ActorCastInfo? cast, float extraDelay = 0f, DateTime fallback = default) => cast != null ? WorldState.FutureTime(cast.NPCRemainingTime + extraDelay) : fallback;
 
     // called during update if module is not yet active, should return true if it is to be activated
     // default implementation activates if primary target is both targetable and in combat
@@ -352,7 +352,7 @@ public abstract class BossModule : IDisposable
         if (pos != null)
         {
             if (WindowConfig.ShowOutlinesAndShadows)
-                Arena.TextWorld(new(pos.Value.XZ()), text, Colors.Shadows, WindowConfig.WaymarkFontSize + 3);
+                Arena.TextWorld(new(pos.Value.XZ()), text, Colors.Shadows, WindowConfig.WaymarkFontSize + 3f);
             Arena.TextWorld(new(pos.Value.XZ()), text, color, WindowConfig.WaymarkFontSize);
         }
     }

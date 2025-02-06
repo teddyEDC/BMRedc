@@ -2,11 +2,8 @@ namespace BossMod.Dawntrail.Alliance.A14ShadowLord;
 
 class GigaSlash(BossModule module) : Components.GenericAOEs(module)
 {
-    public readonly List<AOEInstance> AOEs = [];
-
-    private static readonly HashSet<AID> castEnds = [AID.GigaSlashLAOE1, AID.GigaSlashRAOE2, AID.GigaSlashRAOE1, AID.GigaSlashLAOE2, AID.GigaSlashNightfallFAOE3,
-    AID.GigaSlashNightfallBAOE3, AID.GigaSlashNightfallLAOE1, AID.GigaSlashNightfallRAOE2, AID.GigaSlashNightfallRAOE1, AID.GigaSlashNightfallLAOE2];
-    private static readonly AOEShapeCone[] _shapes = [new(60, 112.5f.Degrees()), new(60, 135.Degrees()), new(60, 105.Degrees())];
+    public readonly List<AOEInstance> AOEs = new(3);
+    private static readonly AOEShapeCone[] _shapes = [new(60f, 112.5f.Degrees()), new(60f, 135f.Degrees()), new(60f, 105f.Degrees())];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -28,46 +25,57 @@ class GigaSlash(BossModule module) : Components.GenericAOEs(module)
         void AddAOE(AOEShapeCone shape, float rotationOffset, float finishOffset)
         => AOEs.Add(new(shape, caster.Position, spell.Rotation + rotationOffset.Degrees(), Module.CastFinishAt(spell, finishOffset)));
 
-        switch ((AID)spell.Action.ID)
+        switch (spell.Action.ID)
         {
-            case AID.GigaSlashL:
-                AddAOE(_shapes[0], 67.5f, 1);
+            case (uint)AID.GigaSlashL:
+                AddAOE(_shapes[0], 67.5f, 1f);
+                AddAOE(_shapes[1], -90f, 3.1f);
+                break;
+            case (uint)AID.GigaSlashR:
+                AddAOE(_shapes[0], -67.5f, 1f);
+                AddAOE(_shapes[1], 90f, 3.1f);
+                break;
+            case (uint)AID.GigaSlashNightfallLRF:
+                AddAOE(_shapes[0], 67.5f, 1f);
                 AddAOE(_shapes[1], -90, 3.1f);
+                AddAOE(_shapes[2], 0f, 5.2f);
                 break;
-            case AID.GigaSlashR:
-                AddAOE(_shapes[0], -67.5f, 1);
-                AddAOE(_shapes[1], 90, 3.1f);
+            case (uint)AID.GigaSlashNightfallLRB:
+                AddAOE(_shapes[0], 67.5f, 1f);
+                AddAOE(_shapes[1], -90f, 3.1f);
+                AddAOE(_shapes[2], 180f, 5.2f);
                 break;
-            case AID.GigaSlashNightfallLRF:
-                AddAOE(_shapes[0], 67.5f, 1);
-                AddAOE(_shapes[1], -90, 3.1f);
-                AddAOE(_shapes[2], 0, 5.2f);
+            case (uint)AID.GigaSlashNightfallRLF:
+                AddAOE(_shapes[0], -67.5f, 1f);
+                AddAOE(_shapes[1], 90f, 3.1f);
+                AddAOE(_shapes[2], 0f, 5.2f);
                 break;
-            case AID.GigaSlashNightfallLRB:
-                AddAOE(_shapes[0], 67.5f, 1);
-                AddAOE(_shapes[1], -90, 3.1f);
-                AddAOE(_shapes[2], 180, 5.2f);
-                break;
-            case AID.GigaSlashNightfallRLF:
-                AddAOE(_shapes[0], -67.5f, 1);
-                AddAOE(_shapes[1], 90, 3.1f);
-                AddAOE(_shapes[2], 0, 5.2f);
-                break;
-            case AID.GigaSlashNightfallRLB:
-                AddAOE(_shapes[0], -67.5f, 1);
-                AddAOE(_shapes[1], 90, 3.1f);
-                AddAOE(_shapes[2], 180, 5.2f);
+            case (uint)AID.GigaSlashNightfallRLB:
+                AddAOE(_shapes[0], -67.5f, 1f);
+                AddAOE(_shapes[1], 90f, 3.1f);
+                AddAOE(_shapes[2], 180f, 5.2f);
                 break;
         }
     }
 
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (castEnds.Contains((AID)spell.Action.ID))
+        switch (spell.Action.ID)
         {
-            ++NumCasts;
-            if (AOEs.Count != 0)
-                AOEs.RemoveAt(0);
+            case (uint)AID.GigaSlashLAOE1:
+            case (uint)AID.GigaSlashRAOE2:
+            case (uint)AID.GigaSlashRAOE1:
+            case (uint)AID.GigaSlashLAOE2:
+            case (uint)AID.GigaSlashNightfallFAOE3:
+            case (uint)AID.GigaSlashNightfallBAOE3:
+            case (uint)AID.GigaSlashNightfallLAOE1:
+            case (uint)AID.GigaSlashNightfallRAOE2:
+            case (uint)AID.GigaSlashNightfallRAOE1:
+            case (uint)AID.GigaSlashNightfallLAOE2:
+                ++NumCasts;
+                if (AOEs.Count != 0)
+                    AOEs.RemoveAt(0);
+                break;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace BossMod.Autorotation;
 
-public sealed class StandardWAR(RotationModuleManager manager, Actor player) : RotationModule(manager, player)
+public sealed class VeynWAR(RotationModuleManager manager, Actor player) : RotationModule(manager, player)
 {
     public enum Track { AOE, Burst, Potion, PrimalRend, Tomahawk, InnerRelease, Infuriate, Upheaval, Wrath, Onslaught, Bozja }
     public enum AOEStrategy { SingleTarget, ForceAOE, Auto, AutoFinishCombo }
@@ -195,7 +195,7 @@ public sealed class StandardWAR(RotationModuleManager manager, Actor player) : R
     private bool InMeleeRange(Actor? target) => Player.DistanceToHitbox(target) <= 3;
     private bool IsFirstGCD() => !Player.InCombat || (World.CurrentTime - Manager.CombatStart).TotalSeconds < 0.1f;
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         Gauge = World.Client.GetGauge<WarriorGauge>().BeastGauge;
         GCDLength = ActionSpeed.GCDRounded(World.Client.PlayerStats.SkillSpeed, World.Client.PlayerStats.Haste, Player.Level);

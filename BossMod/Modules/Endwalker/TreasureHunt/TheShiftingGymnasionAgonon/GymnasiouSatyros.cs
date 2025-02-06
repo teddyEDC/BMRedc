@@ -68,14 +68,15 @@ public class GymnasiouSatyros(WorldState ws, Actor primary) : THTemplate(ws, pri
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        for (var i = 0; i < hints.PotentialTargets.Count; ++i)
+        var count = hints.PotentialTargets.Count;
+        for (var i = 0; i < count; ++i)
         {
             var e = hints.PotentialTargets[i];
-            e.Priority = (OID)e.Actor.OID switch
+            e.Priority = e.Actor.OID switch
             {
-                OID.GymnasiouLampas => 3,
-                OID.GymnasiouLyssa => 2,
-                OID.GymnasiouElaphos => 1,
+                (uint)OID.GymnasiouLampas => 3,
+                (uint)OID.GymnasiouLyssa => 2,
+                (uint)OID.GymnasiouElaphos => 1,
                 _ => 0
             };
         }

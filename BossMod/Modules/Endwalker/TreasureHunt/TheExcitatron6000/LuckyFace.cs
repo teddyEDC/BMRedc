@@ -58,7 +58,7 @@ public enum AID : uint
     Telega = 9630 // Mandragoras->self, no cast, single-target, mandragoras disappear
 }
 
-abstract class InTheDark(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(20, 90.Degrees()));
+abstract class InTheDark(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(20, 90f.Degrees()));
 class LeftInTheDark1(BossModule module) : InTheDark(module, AID.LeftInTheDark1);
 class LeftInTheDark2(BossModule module) : InTheDark(module, AID.LeftInTheDark2);
 class RightInTheDark1(BossModule module) : InTheDark(module, AID.RightInTheDark1);
@@ -68,13 +68,13 @@ abstract class QuakeCircle(BossModule module, AID aid) : Components.SimpleAOEs(m
 class QuakeMeAwayCircle(BossModule module) : QuakeCircle(module, AID.QuakeMeAwayCircle);
 class QuakeInYourBootsCircle(BossModule module) : QuakeCircle(module, AID.QuakeInYourBootsCircle);
 
-abstract class QuakeDonut(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeDonut(10, 20));
+abstract class QuakeDonut(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeDonut(10f, 20f));
 class QuakeInYourBootsDonut(BossModule module) : QuakeDonut(module, AID.QuakeInYourBootsDonut);
 class QuakeMeAwayDonut(BossModule module) : QuakeDonut(module, AID.QuakeMeAwayDonut);
 
-class HeartOnFireII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HeartOnFireII), 6);
+class HeartOnFireII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HeartOnFireII), 6f);
 class HeartOnFireIV(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.HeartOnFireIV));
-class HeartOnFireIII(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HeartOnFireIII), 6);
+class HeartOnFireIII(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HeartOnFireIII), 6f);
 class TempersFlare(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.TempersFlare));
 
 abstract class Mandragoras(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 6.84f);
@@ -113,7 +113,7 @@ class LuckyFaceStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 819, NameID = 10831)]
 public class LuckyFace(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(0, -460), 19.5f, 32)], [new Rectangle(new(0, -440), 20, 1)]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(0f, -460f), 19.5f, 32)], [new Rectangle(new(0f, -440f), 20f, 1f)]);
     private static readonly uint[] bonusAdds = [(uint)OID.ExcitingEgg, (uint)OID.ExcitingQueen, (uint)OID.ExcitingOnion, (uint)OID.ExcitingTomato,
     (uint)OID.ExcitingGarlic];
     public static readonly uint[] All = [(uint)OID.Boss, .. bonusAdds];
@@ -126,16 +126,18 @@ public class LuckyFace(WorldState ws, Actor primary) : BossModule(ws, primary, a
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var e in hints.PotentialTargets)
+        var count = hints.PotentialTargets.Count;
+        for (var i = 0; i < count; ++i)
         {
-            e.Priority = (OID)e.Actor.OID switch
+            var e = hints.PotentialTargets[i];
+            e.Priority = e.Actor.OID switch
             {
-                OID.ExcitingOnion => 6,
-                OID.ExcitingEgg => 5,
-                OID.ExcitingGarlic => 4,
-                OID.ExcitingTomato => 3,
-                OID.ExcitingQueen => 2,
-                OID.Boss => 1,
+                (uint)OID.ExcitingOnion => 6,
+                (uint)OID.ExcitingEgg => 5,
+                (uint)OID.ExcitingGarlic => 4,
+                (uint)OID.ExcitingTomato => 3,
+                (uint)OID.ExcitingQueen => 2,
+                (uint)OID.Boss => 1,
                 _ => 0
             };
         }

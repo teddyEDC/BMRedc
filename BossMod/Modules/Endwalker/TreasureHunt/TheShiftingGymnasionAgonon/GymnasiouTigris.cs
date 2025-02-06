@@ -83,17 +83,18 @@ public class GymnasiouTigris(WorldState ws, Actor primary) : THTemplate(ws, prim
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        for (var i = 0; i < hints.PotentialTargets.Count; ++i)
+        var count = hints.PotentialTargets.Count;
+        for (var i = 0; i < count; ++i)
         {
             var e = hints.PotentialTargets[i];
-            e.Priority = (OID)e.Actor.OID switch
+            e.Priority = e.Actor.OID switch
             {
-                OID.GymnasticOnion => 6,
-                OID.GymnasticEggplant => 5,
-                OID.GymnasticGarlic => 4,
-                OID.GymnasticTomato => 3,
-                OID.GymnasticQueen => 2,
-                OID.GymnasiouTigrisMikra => 1,
+                (uint)OID.GymnasticOnion => 6,
+                (uint)OID.GymnasticEggplant => 5,
+                (uint)OID.GymnasticGarlic => 4,
+                (uint)OID.GymnasticTomato => 3,
+                (uint)OID.GymnasticQueen => 2,
+                (uint)OID.GymnasiouTigrisMikra => 1,
                 _ => 0
             };
         }

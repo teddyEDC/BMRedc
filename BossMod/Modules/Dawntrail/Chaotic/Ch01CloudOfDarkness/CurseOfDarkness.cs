@@ -6,12 +6,12 @@ class DarkEnergyParticleBeam(BossModule module) : Components.GenericBaitAway(mod
 {
     private readonly DateTime[] _activation = new DateTime[PartyState.MaxAllianceSize];
 
-    private static readonly AOEShapeCone _shape = new(25, 7.5f.Degrees());
+    private static readonly AOEShapeCone _shape = new(25f, 7.5f.Degrees());
 
     public override void Update()
     {
         CurrentBaits.Clear();
-        var deadline = WorldState.FutureTime(7);
+        var deadline = WorldState.FutureTime(7d);
         foreach (var (i, p) in Raid.WithSlot(false, false, true))
             if (_activation[i] != default && _activation[i] < deadline)
                 CurrentBaits.Add(new(p, p, _shape, _activation[i]));
