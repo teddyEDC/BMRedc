@@ -2,7 +2,6 @@
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using System.IO;
-using System.Security.AccessControl;
 
 namespace BossMod.ReplayVisualization;
 
@@ -82,10 +81,10 @@ class ReplayDetailsWindow : UIWindow
         _zmm.ActiveModule?.DrawGlobalHints();
         if (!_azimuthOverride)
             _azimuth = _mgr.WorldState.Client.CameraAzimuth.Deg;
-        ImGui.DragFloat("Camera azimuth", ref _azimuth, 1, -180, 180);
+        ImGui.DragFloat("Camera azimuth", ref _azimuth, 1, -180f, 180f);
         ImGui.SameLine();
         ImGui.Checkbox("Override", ref _azimuthOverride);
-        _hintsBuilder.Update(_hints, _povSlot, float.MaxValue);
+        _hintsBuilder.Update(_hints, _povSlot, false);
         _rmm.Update(0, false);
         if (_mgr.ActiveModule != null)
         {
@@ -96,8 +95,8 @@ class ReplayDetailsWindow : UIWindow
             if (_showDebug && _hints.ForcedMovement != null && _mgr.ActiveModule.Raid[_povSlot] is var pc && pc != null)
             {
                 var movementDest = pc.Position + new WDir(_hints.ForcedMovement.Value.XZ());
-                _mgr.ActiveModule.Arena.AddLine(pc.Position, movementDest, 0x80ff00ff);
-                _mgr.ActiveModule.Arena.AddCircle(movementDest, 0.5f, 0x80ff00ff);
+                _mgr.ActiveModule.Arena.AddLine(pc.Position, movementDest, Colors.FutureVulnerable);
+                _mgr.ActiveModule.Arena.AddCircle(movementDest, 0.5f, Colors.FutureVulnerable);
             }
 
             var compList = string.Join(", ", _mgr.ActiveModule.Components.Select(c => c.GetType().Name));
@@ -226,16 +225,16 @@ class ReplayDetailsWindow : UIWindow
     {
         var dl = ImGui.GetWindowDrawList();
         var cursor = ImGui.GetCursorScreenPos();
-        var w = ImGui.GetWindowWidth() - 2 * ImGui.GetCursorPosX() - 15;
-        cursor.Y += 4;
-        dl.AddLine(cursor, cursor + new Vector2(w, 0), Colors.TextColor2);
+        var w = ImGui.GetWindowWidth() - 2f * ImGui.GetCursorPosX() - 15f;
+        cursor.Y += 4f;
+        dl.AddLine(cursor, cursor + new Vector2(w, 0f), Colors.TextColor2);
 
-        var curp = cursor + new Vector2(w * (float)((_curTime - _first) / (_last - _first)), 0);
-        dl.AddTriangleFilled(curp, curp + new Vector2(3, 5), curp + new Vector2(-3, 5), Colors.TextColor2);
+        var curp = cursor + new Vector2(w * (float)((_curTime - _first) / (_last - _first)), 0f);
+        dl.AddTriangleFilled(curp, curp + new Vector2(3f, 5f), curp + new Vector2(-3f, 5f), Colors.TextColor2);
         foreach (var e in _player.Replay.Encounters)
         {
-            DrawCheckpoint(e.Time.Start, Colors.TextColor4, cursor, w);
-            DrawCheckpoint(e.Time.End, Colors.TextColor3, cursor, w);
+            DrawCheckpoint(e.Time.Start, Colors.Safe, cursor, w);
+            DrawCheckpoint(e.Time.End, Colors.Enemy, cursor, w);
         }
         foreach (var m in _player.Replay.UserMarkers)
         {
@@ -268,7 +267,7 @@ class ReplayDetailsWindow : UIWindow
         var posX = actor.Position.X;
         var posZ = actor.Position.Z;
         var rot = actor.Rotation.Deg;
-        var modified = false;
+        bool modified = false;
         ImGui.TableNextColumn();
         modified |= ImGui.DragFloat("###X", ref posX, 0.25f, 80, 120);
         ImGui.TableNextColumn();
@@ -281,7 +280,7 @@ class ReplayDetailsWindow : UIWindow
         ImGui.TableNextColumn();
         if (actor.HPMP.MaxHP > 0)
         {
-            var frac = Math.Min((float)(actor.HPMP.CurHP + actor.HPMP.Shield) / actor.HPMP.MaxHP, 1);
+            float frac = Math.Min((float)(actor.HPMP.CurHP + actor.HPMP.Shield) / actor.HPMP.MaxHP, 1);
             ImGui.ProgressBar(frac, new(ImGui.GetColumnWidth(), 0), $"{frac * 100:f1}% ({actor.HPMP.CurHP} + {actor.HPMP.Shield} / {actor.HPMP.MaxHP}) [{actor.PendingHPDiffence} pending]");
         }
 
@@ -309,7 +308,7 @@ class ReplayDetailsWindow : UIWindow
             if (tooltip)
             {
                 string fromString(string prefix, ulong instanceId) => instanceId == 0 ? "" : $", {prefix} {_player.WorldState.Actors.Find(instanceId)?.ToString() ?? instanceId.ToString("X")}";
-                for (int i = 0; i < actor.Statuses.Length; ++i)
+                for (var i = 0; i < actor.Statuses.Length; ++i)
                 {
                     ref var s = ref actor.Statuses[i];
                     if (s.ID != 0)
@@ -325,7 +324,7 @@ class ReplayDetailsWindow : UIWindow
                 {
                     ImGui.TextUnformatted($"[dispel] {Utils.StatusString(s.StatusId)}{fromString("by", s.Effect.SourceInstanceId)}");
                 }
-                for (int i = 0; i < actor.IncomingEffects.Length; ++i)
+                for (var i = 0; i < actor.IncomingEffects.Length; ++i)
                 {
                     ref var inc = ref actor.IncomingEffects[i];
                     if (inc.GlobalSequence != 0)
@@ -350,18 +349,18 @@ class ReplayDetailsWindow : UIWindow
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("Rot", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("HP", ImGuiTableColumnFlags.WidthFixed, 200);
-        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch, 100);
-        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.WidthStretch, 100);
-        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.WidthStretch, 100);
-        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.WidthStretch, 100);
-        ImGui.TableSetupColumn("Hints", ImGuiTableColumnFlags.WidthStretch, 250);
+        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.None, 100);
+        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.None, 100);
+        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.None, 100);
+        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.None, 100);
+        ImGui.TableSetupColumn("Hints", ImGuiTableColumnFlags.None, 250);
         ImGui.TableHeadersRow();
-        foreach ((var slot, var player) in _player.WorldState.Party.WithSlot(true))
+        foreach ((int slot, var player) in _player.WorldState.Party.WithSlot(true))
         {
             ImGui.PushID((int)player.InstanceID);
             ImGui.TableNextRow();
 
-            var isPOV = _povSlot == slot;
+            bool isPOV = _povSlot == slot;
             ImGui.TableNextColumn();
             if (ImGui.Checkbox("###POV", ref isPOV) && isPOV)
             {
@@ -378,9 +377,9 @@ class ReplayDetailsWindow : UIWindow
             if (_mgr.ActiveModule != null)
             {
                 var hints = _mgr.ActiveModule.CalculateHintsForRaidMember(slot, player);
-                foreach ((var hint, var risk) in hints)
+                foreach ((var hint, bool risk) in hints)
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, risk ? Colors.TextColor2 : Colors.TextColor4);
+                    ImGui.PushStyleColor(ImGuiCol.Text, risk ? Colors.TextColor2 : Colors.Safe);
                     ImGui.TextUnformatted(hint);
                     ImGui.PopStyleColor();
                     ImGui.SameLine();
@@ -408,7 +407,7 @@ class ReplayDetailsWindow : UIWindow
         }
     }
 
-    private void DrawEnemyTable(uint oid, List<Actor> actors)
+    private void DrawEnemyTable(uint oid, ICollection<Actor> actors)
     {
         var moduleInfo = _mgr.ActiveModule != null ? BossModuleRegistry.FindByOID(_mgr.ActiveModule.PrimaryActor.OID) : null;
         var oidName = moduleInfo?.ObjectIDType?.GetEnumName(oid);
@@ -420,10 +419,10 @@ class ReplayDetailsWindow : UIWindow
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("Rot", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("HP", ImGuiTableColumnFlags.WidthFixed, 200);
-        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch, 200);
-        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.WidthStretch, 200);
-        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.WidthStretch, 200);
-        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Name");
+        ImGui.TableSetupColumn("Target");
+        ImGui.TableSetupColumn("Cast");
+        ImGui.TableSetupColumn("Statuses");
         ImGui.TableHeadersRow();
         foreach (var enemy in actors)
         {
@@ -445,15 +444,13 @@ class ReplayDetailsWindow : UIWindow
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("Rot", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 90);
         ImGui.TableSetupColumn("HP", ImGuiTableColumnFlags.WidthFixed, 200);
-        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch, 200);
-        ImGui.TableSetupColumn("Target", ImGuiTableColumnFlags.WidthStretch, 200);
-        ImGui.TableSetupColumn("Cast", ImGuiTableColumnFlags.WidthStretch, 200);
-        ImGui.TableSetupColumn("Statuses", ImGuiTableColumnFlags.WidthStretch, 200);
+        ImGui.TableSetupColumn("Name");
+        ImGui.TableSetupColumn("Target");
+        ImGui.TableSetupColumn("Cast");
+        ImGui.TableSetupColumn("Statuses");
         ImGui.TableHeadersRow();
         foreach (var actor in _player.WorldState.Actors)
         {
-            if (OpList.BoringOIDs.Contains(actor.OID) && !_player.WorldState.Party.WithoutSlot().Contains(actor))  // TODO: reconsider?
-                continue;
             ImGui.PushID((int)actor.InstanceID);
             ImGui.TableNextRow();
             DrawCommonColumns(actor);
@@ -470,15 +467,10 @@ class ReplayDetailsWindow : UIWindow
         if (player == null)
             return;
 
-        if (_pfVisu == null)
-        {
-            var playerAssignment = Service.Config.Get<PartyRolesConfig>()[_mgr.WorldState.Party.Members[_povSlot].ContentId];
-            var pfTank = playerAssignment == PartyRolesConfig.Assignment.MT || playerAssignment == PartyRolesConfig.Assignment.OT && !_mgr.WorldState.Party.WithoutSlot().Any(p => p != player && p.Role == Role.Tank);
-            _pfVisu = new(_hints, _mgr.WorldState, player, player.TargetID, e => (e, _pfTargetRadius, _pfPositional, pfTank));
-        }
+        _pfVisu ??= new(_hints, _mgr.WorldState, player, _pfTargetRadius);
         _pfVisu.Draw(_pfTree);
 
-        var rebuild = false;
+        bool rebuild = false;
         //rebuild |= ImGui.SliderFloat("Zone cushion", ref _pfCushion, 0.1f, 5);
         rebuild |= ImGui.SliderFloat("Ability range", ref _pfTargetRadius, 3, 25);
         rebuild |= UICombo.Enum("Ability positional", ref _pfPositional);

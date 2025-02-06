@@ -27,7 +27,7 @@ public sealed class AutoFarm(RotationModuleManager manager, Actor player) : Rota
         return res;
     }
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         var generalStrategy = strategy.Option(Track.General).As<GeneralStrategy>();
         if (generalStrategy == GeneralStrategy.Passive)

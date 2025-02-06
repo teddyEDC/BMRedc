@@ -22,8 +22,8 @@ public enum AID : uint
     PanzerfaustRepeats = 41353 // Boss->player, no cast, single-target, knockback 10, apply concussion
 }
 
-class IsleDrop(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.IsleDrop), 6);
-class WingCutter(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WingCutter), new AOEShapeCone(6, 60.Degrees()));
+class IsleDrop(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.IsleDrop), 6f);
+class WingCutter(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WingCutter), new AOEShapeCone(6f, 60f.Degrees()));
 class PanzerfaustHint(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.Panzerfaust), showNameInHint: true);
 class Panzerfaust(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Panzerfaust));
 class ScraplineStorm(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.ScraplineStorm), 12.5f, kind: Kind.TowardsOrigin)
@@ -41,18 +41,20 @@ class ScraplineStorm(BossModule module) : Components.KnockbackFromCastTarget(mod
 class ScraplineTyphoon(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = new(2);
-    private static readonly AOEShapeCircle circle = new(10);
-    private static readonly AOEShapeDonut donut = new(8, 40);
+    private static readonly AOEShapeCircle circle = new(10f);
+    private static readonly AOEShapeDonut donut = new(8f, 4f);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_aoes.Count != 0)
-            yield return _aoes[0] with { Origin = Module.PrimaryActor.Position };
+            return [_aoes[0]];
+        else
+            return [];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.ScraplineStorm)
+        if (spell.Action.ID == (uint)AID.ScraplineStorm)
         {
             _aoes.Add(new(circle, spell.LocXZ, default, Module.CastFinishAt(spell, 2.1f)));
             _aoes.Add(new(donut, spell.LocXZ, default, Module.CastFinishAt(spell, 5.6f)));
@@ -61,7 +63,7 @@ class ScraplineTyphoon(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count != 0 && (AID)spell.Action.ID is AID.Scrapline or AID.Typhoon)
+        if (_aoes.Count != 0 && spell.Action.ID is (uint)AID.Scrapline or (uint)AID.Typhoon)
             _aoes.RemoveAt(0);
     }
 }

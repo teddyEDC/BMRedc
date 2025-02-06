@@ -56,16 +56,16 @@ class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 4.5f,
 class Blade(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Blade));
 class HighWind(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.HighWind));
 
-abstract class Blades(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(50, 6));
+abstract class Blades(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(50f, 6f));
 class RazorZephyr(BossModule module) : Blades(module, AID.RazorZephyr);
 class BladesOfFamine(BossModule module) : Blades(module, AID.BladesOfFamine);
 
-class Levinsickle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Levinsickle), 4);
-class LevinsickleSpark(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 4, ActionID.MakeSpell(AID.LevinsickleSpark), m => m.Enemies(OID.LightningVoidzone).Where(z => z.EventState != 7), 0.7f);
-class WingOfLightning(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WingOfLightning), new AOEShapeCone(40, 22.5f.Degrees()), 8);
+class Levinsickle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Levinsickle), 4f);
+class LevinsickleSpark(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 4f, ActionID.MakeSpell(AID.LevinsickleSpark), m => m.Enemies(OID.LightningVoidzone).Where(z => z.EventState != 7), 0.7f);
+class WingOfLightning(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WingOfLightning), new AOEShapeCone(40f, 22.5f.Degrees()), 8);
 
-class ThunderIII2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.ThunderIII), 6);
-class BladeTB(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.BladeTB), new AOEShapeCircle(6), true)
+class ThunderIII2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.ThunderIII), 6f);
+class BladeTB(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.BladeTB), new AOEShapeCircle(6f), true)
 {
     public override void AddGlobalHints(GlobalHints hints)
     {
@@ -74,15 +74,25 @@ class BladeTB(BossModule module) : Components.BaitAwayCast(module, ActionID.Make
     }
 }
 
-class WindSickle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WindSickle), new AOEShapeDonut(5, 60));
-class RazorStorm(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RazorStorm), new AOEShapeRect(40, 20));
+class WindSickle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WindSickle), new AOEShapeDonut(5f, 60f));
+class RazorStorm(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RazorStorm), new AOEShapeRect(40f, 20f));
 
 class CuttingWind(BossModule module) : Components.GenericAOEs(module)
 {
-    private readonly List<AOEInstance> _aoes = [];
-    private static readonly AOEShapeRect rect = new(36, 4, 36);
+    private readonly List<AOEInstance> _aoes = new(12);
+    private static readonly AOEShapeRect rect = new(36f, 4f, 36f);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes.Take(4);
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        var count = _aoes.Count;
+        if (count == 0)
+            return [];
+        var max = count > 4 ? 4 : count;
+        var aoes = new AOEInstance[max];
+        for (var i = 0; i < max; ++i)
+            aoes[i] = _aoes[i];
+        return aoes;
+    }
 
     private static readonly Dictionary<WPos, WPos[]> coords = new()
     {
@@ -101,11 +111,11 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorCreated(Actor actor)
     {
-        if ((OID)actor.OID == OID.Whirlwind)
+        if (actor.OID == (uint)OID.Whirlwind)
             foreach (var pos in coords.Keys)
-                if (actor.Position.AlmostEqual(pos, 1))
+                if (actor.Position.AlmostEqual(pos, 1f))
                 {
-                    for (var i = 0; i < coords[pos].Length; ++i)
+                    for (var i = 0; i < 3; ++i)
                         AddAOEs(coords[pos][i], delays[i]);
                     break;
                 }
@@ -113,7 +123,7 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count != 0 && (AID)spell.Action.ID == AID.CuttingWind)
+        if (_aoes.Count != 0 && spell.Action.ID == (uint)AID.CuttingWind)
             _aoes.RemoveAt(0);
     }
 }
@@ -142,5 +152,5 @@ class D013ApollyonStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 826, NameID = 12711)]
 public class D013Apollyon(WorldState ws, Actor primary) : BossModule(ws, primary, DefaultBounds.Center, DefaultBounds)
 {
-    public static readonly ArenaBoundsComplex DefaultBounds = new([new Polygon(new(-107, 265), 19.5f, 32)], [new Rectangle(new(-107, 285.75f), 20, 2)]);
+    public static readonly ArenaBoundsComplex DefaultBounds = new([new Polygon(new(-107f, 265f), 19.5f, 32)], [new Rectangle(new(-107f, 285.75f), 20f, 2f)]);
 }

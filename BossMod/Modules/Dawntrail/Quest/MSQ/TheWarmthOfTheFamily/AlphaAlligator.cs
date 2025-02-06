@@ -27,7 +27,7 @@ class FeedingTime(BossModule module) : Components.InterceptTether(module, Action
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         base.OnCastStarted(caster, spell);
-        if ((AID)spell.Action.ID == AID.ToxicSpit)
+        if (spell.Action.ID == (uint)AID.ToxicSpit)
             _activation = Module.CastFinishAt(spell, 1.2f);
     }
 
@@ -40,7 +40,7 @@ class FeedingTime(BossModule module) : Components.InterceptTether(module, Action
                 return;
             var target = WorldState.Actors.Find(source.Tether.Target);
             if (target != null)
-                hints.AddForbiddenZone(ShapeDistance.InvertedRect(target.Position + (target.HitboxRadius + 0.1f) * target.DirectionTo(source), source.Position, 0.6f), _activation);
+                hints.AddForbiddenZone(ShapeDistance.InvertedRect(target.Position + (target.HitboxRadius + 0.1f) * target.DirectionTo(source), source.Position, 0.5f), _activation);
         }
     }
 }

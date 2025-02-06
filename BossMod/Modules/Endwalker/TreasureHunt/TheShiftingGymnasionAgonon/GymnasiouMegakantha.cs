@@ -123,18 +123,19 @@ public class GymnasiouMegakantha(WorldState ws, Actor primary) : THTemplate(ws, 
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        for (var i = 0; i < hints.PotentialTargets.Count; ++i)
+        var count = hints.PotentialTargets.Count;
+        for (var i = 0; i < count; ++i)
         {
             var e = hints.PotentialTargets[i];
-            e.Priority = (OID)e.Actor.OID switch
+            e.Priority = e.Actor.OID switch
             {
-                OID.GymnasticOnion => 7,
-                OID.GymnasticEggplant => 6,
-                OID.GymnasticGarlic => 5,
-                OID.GymnasticTomato => 4,
-                OID.GymnasticQueen or OID.GymnasiouLampas => 3,
-                OID.GymnasiouLyssa => 2,
-                OID.GymnasiouAkantha or OID.GymnasiouSinapi => 1,
+                (uint)OID.GymnasticOnion => 7,
+                (uint)OID.GymnasticEggplant => 6,
+                (uint)OID.GymnasticGarlic => 5,
+                (uint)OID.GymnasticTomato => 4,
+                (uint)OID.GymnasticQueen or (uint)OID.GymnasiouLampas => 3,
+                (uint)OID.GymnasiouLyssa => 2,
+                (uint)OID.GymnasiouAkantha or (uint)OID.GymnasiouSinapi => 1,
                 _ => 0
             };
         }

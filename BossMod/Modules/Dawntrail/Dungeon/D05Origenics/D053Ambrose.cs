@@ -44,14 +44,14 @@ public enum AID : uint
 
 class PsychicWaveArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCustom rect = new([new Rectangle(D053Ambrose.ArenaCenter, 33, 24)], [new Rectangle(D053Ambrose.ArenaCenter, 15, 19.5f)]);
+    private static readonly AOEShapeCustom rect = new([new Rectangle(D053Ambrose.ArenaCenter, 33f, 24f)], [new Rectangle(D053Ambrose.ArenaCenter, 15f, 19.5f)]);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.PsychicWave && Arena.Bounds == D053Ambrose.StartingBounds)
+        if (spell.Action.ID == (uint)AID.PsychicWave && Arena.Bounds == D053Ambrose.StartingBounds)
             _aoe = new(rect, Arena.Center, default, Module.CastFinishAt(spell, 0.7f));
     }
 
@@ -66,7 +66,7 @@ class PsychicWaveArenaChange(BossModule module) : Components.GenericAOEs(module)
 }
 
 class PsychicWave(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.PsychicWave));
-class Psychokinesis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Psychokinesis), new AOEShapeRect(70, 6.5f));
+class Psychokinesis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Psychokinesis), new AOEShapeRect(70f, 6.5f));
 
 class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, maxCasts: 1)
 {
@@ -78,7 +78,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
     private readonly List<Source> _sources = new(4);
     private static readonly AOEShapeRect rectNS = new(HalfHeight, QuarterWidth);
     private static readonly AOEShapeRect rectEW = new(15, QuarterHeight);
-    private static readonly Angle[] angles = [-0.003f.Degrees(), -180.Degrees(), -89.982f.Degrees(), 89.977f.Degrees()];
+    private static readonly Angle[] angles = [-0.003f.Degrees(), -180f.Degrees(), -89.982f.Degrees(), 89.977f.Degrees()];
     private Func<WPos, float>? distance;
 
     public override IEnumerable<Source> Sources(int slot, Actor actor) => _sources;
@@ -87,7 +87,7 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.ExtrasensoryExpulsionNorthSouth)
+        if (spell.Action.ID == (uint)AID.ExtrasensoryExpulsionNorthSouth)
         {
             Activation = Module.CastFinishAt(spell, 0.8f);
             HandleCastStarted(caster.Position);
@@ -100,21 +100,21 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
         {
             AddSourceAndData(new(QuarterWidth, -HalfHeight), rectNS, angles[0]);
             AddSourceAndData(new(-QuarterWidth, HalfHeight), rectNS, angles[1]);
-            AddSource(new(0, -QuarterHeight), rectEW, angles[2]);
-            AddSource(new(0, QuarterHeight), rectEW, angles[3]);
+            AddSource(new(default, -QuarterHeight), rectEW, angles[2]);
+            AddSource(new(default, QuarterHeight), rectEW, angles[3]);
         }
         else if (position.AlmostEqual(new(182.5f, -8.75f), 0.1f))
         {
             AddSourceAndData(new(-QuarterWidth, -HalfHeight), rectNS, angles[0]);
             AddSourceAndData(new(QuarterWidth, HalfHeight), rectNS, angles[1]);
-            AddSource(new(0, -QuarterHeight), rectEW, angles[3]);
-            AddSource(new(0, QuarterHeight), rectEW, angles[2]);
+            AddSource(new(default, -QuarterHeight), rectEW, angles[3]);
+            AddSource(new(default, QuarterHeight), rectEW, angles[2]);
         }
     }
 
     private void AddSource(WDir direction, AOEShapeRect shape, Angle angle)
     {
-        _sources.Add(new(Arena.Center + direction, 20, Activation, shape, angle, Kind.DirForward));
+        _sources.Add(new(Arena.Center + direction, 20f, Activation, shape, angle, Kind.DirForward));
     }
 
     private void AddSourceAndData(WDir direction, AOEShapeRect shape, Angle angle)
@@ -145,23 +145,10 @@ class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, ma
                 for (var i = 0; i < 2; ++i)
                 {
                     var w = Data[i];
-                    forbidden.Add(ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight - 0.5f, 0, QuarterWidth));
+                    forbidden.Add(ShapeDistance.InvertedRect(w.Item1, w.Item2, HalfHeight - 0.5f, default, QuarterWidth));
                 }
-                distance = p =>
-                {
-                    var maxDistance = float.MinValue;
-                    for (var i = 0; i < 2; ++i)
-                    {
-                        var distance = forbidden[i](p);
-                        if (distance > maxDistance)
-                        {
-                            maxDistance = distance;
-                        }
-                    }
-                    return maxDistance;
-                };
+                hints.AddForbiddenZone(ShapeDistance.Intersection(forbidden), _sources[0].Activation);
             }
-            hints.AddForbiddenZone(distance, _sources[0].Activation);
         }
     }
 }
@@ -172,10 +159,10 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
 {
     private const string Risk2Hint = "Walk into safespot for knockback!";
     private const string StayHint = "Wait inside safespot for knockback!";
-    private static readonly AOEShapeCone cone = new(26, 90.Degrees());
-    private static readonly AOEShapeRect rect = new(19, 7.5f);
+    private static readonly AOEShapeCone cone = new(26f, 90f.Degrees());
+    private static readonly AOEShapeRect rect = new(19f, 7.5f);
     private AOEInstance _aoe;
-    private static readonly Angle a180 = 180.Degrees();
+    private static readonly Angle a180 = 180f.Degrees();
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -197,13 +184,13 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.OverwhelmingCharge1 or AID.OverwhelmingCharge2)
+        if (spell.Action.ID is (uint)AID.OverwhelmingCharge1 or (uint)AID.OverwhelmingCharge2)
             _aoe = new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID is AID.OverwhelmingCharge1 or AID.OverwhelmingCharge2)
+        if (spell.Action.ID is (uint)AID.OverwhelmingCharge1 or (uint)AID.OverwhelmingCharge2)
             _aoe = default;
     }
 
@@ -231,12 +218,12 @@ class OverwhelmingCharge(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Electrolance(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Electrolance), 22);
-class WhorlOfTheMind(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.WhorlOfTheMind), 5);
+class Electrolance(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Electrolance), 22f);
+class WhorlOfTheMind(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.WhorlOfTheMind), 5f);
 
 class Rush(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeRect rect = new(33, 5);
+    private static readonly AOEShapeRect rect = new(33f, 5f);
     private readonly List<AOEInstance> _aoes = new(7);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
@@ -244,32 +231,32 @@ class Rush(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         if (count == 0)
             return [];
-        List<AOEInstance> aoes = new(count);
+        var aoes = new AOEInstance[count];
         for (var i = 0; i < count; ++i)
         {
             var aoe = _aoes[i];
-            aoes.Add(i == 0 ? count > 1 ? aoe with { Color = Colors.Danger } : aoe : aoe);
+            aoes[i] = i == 0 ? count > 1 ? aoe with { Color = Colors.Danger } : aoe : aoe;
         }
         return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.RushTelegraph)
+        if (spell.Action.ID == (uint)AID.RushTelegraph)
         {
             var activation = Module.CastFinishAt(spell, 6.8f);
             var dir = spell.LocXZ - caster.Position;
 
             if (_aoes.Count < 7)
-                _aoes.Add(new(new AOEShapeRect(dir.Length(), 5), caster.Position, Angle.FromDirection(dir), activation));
+                _aoes.Add(new(new AOEShapeRect(dir.Length(), 5f), caster.Position, Angle.FromDirection(dir), activation));
             else
-                _aoes.Add(new(rect, new(190, 19.5f), -180.Degrees(), activation));
+                _aoes.Add(new(rect, new(190f, 19.5f), -180.Degrees(), activation));
         }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (_aoes.Count != 0 && (AID)spell.Action.ID is AID.Rush or AID.ElectrolanceAssimilation)
+        if (_aoes.Count != 0 && spell.Action.ID is (uint)AID.Rush or (uint)AID.ElectrolanceAssimilation)
             _aoes.RemoveAt(0);
     }
 }
@@ -294,9 +281,9 @@ class D053AmbroseStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 825, NameID = 12695, SortOrder = 4)]
 public class D053Ambrose(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
 {
-    public static readonly WPos ArenaCenter = new(190, 0);
-    public static readonly ArenaBoundsRect StartingBounds = new(32.5f, 24);
-    public static readonly ArenaBoundsRect DefaultBounds = new(15, 19.5f);
+    public static readonly WPos ArenaCenter = new(190f, default);
+    public static readonly ArenaBoundsRect StartingBounds = new(32.5f, 24f);
+    public static readonly ArenaBoundsRect DefaultBounds = new(15f, 19.5f);
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

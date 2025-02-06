@@ -1,5 +1,6 @@
 ﻿using BossMod.AI;
 using BossMod.Autorotation;
+using BossMod.Pathfinding;
 
 namespace BossMod.Dawntrail.Ultimate.FRU;
 
@@ -7,13 +8,15 @@ namespace BossMod.Dawntrail.Ultimate.FRU;
 sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModule(manager, player)
 {
     public enum Track { Movement }
-    public enum MovementStrategy { None, Explicit, ExplicitMelee, Prepull, DragToCenter }
+    public enum MovementStrategy { None, Pathfind, PathfindMeleeGreed, Explicit, ExplicitMelee, Prepull, DragToCenter }
 
     public static RotationModuleDefinition Definition()
     {
         var res = new RotationModuleDefinition("AI Experiment", "Experimental encounter-specific rotation", "Encounter AI", "veyn", RotationModuleQuality.WIP, new(~1ul), 100, 1, typeof(FRU));
         res.Define(Track.Movement).As<MovementStrategy>("Movement", "Movement")
             .AddOption(MovementStrategy.None, "None", "No automatic movement")
+            .AddOption(MovementStrategy.Pathfind, "Pathfind", "Use standard pathfinding to move")
+            .AddOption(MovementStrategy.PathfindMeleeGreed, "PathfindMeleeGreed", "Melee greed: find closest safespot, then move to maxmelee closest to it")
             .AddOption(MovementStrategy.Explicit, "Explicit", "Move to specific point", supportedTargets: ActionTargets.Area)
             .AddOption(MovementStrategy.ExplicitMelee, "ExplicitMelee", "Move to the point in maxmelee that is closest to specific point", supportedTargets: ActionTargets.Area)
             .AddOption(MovementStrategy.Prepull, "Prepull", "Pre-pull position: as close to the clock-spot as possible")
@@ -22,22 +25,47 @@ sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModu
     }
 
     private readonly FRUConfig _config = Service.Config.Get<FRUConfig>();
+    private readonly PartyRolesConfig _prc = Service.Config.Get<PartyRolesConfig>();
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override async void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
-        if (Bossmods.ActiveModule is FRU module && module.Raid.FindSlot(Player.InstanceID) is var playerSlot && playerSlot >= 0)
+        if (await AIBehaviour.Semaphore.WaitAsync(0))
         {
-            SetForcedMovement(CalculateDestination(module, primaryTarget, strategy.Option(Track.Movement), Service.Config.Get<PartyRolesConfig>()[module.Raid.Members[playerSlot].ContentId]));
+            try
+            {
+                if (Bossmods.ActiveModule is FRU module && module.Raid.FindSlot(Player.InstanceID) is var playerSlot && playerSlot >= 0)
+                {
+                    var destination = await CalculateDestination(module, primaryTarget, strategy.Option(Track.Movement), _prc[module.Raid.Members[playerSlot].ContentId]).ConfigureAwait(false);
+                    SetForcedMovement(destination);
+                }
+            }
+            finally
+            {
+                AIBehaviour.Semaphore.Release();
+            }
         }
     }
 
-    private WPos? CalculateDestination(FRU module, Actor? primaryTarget, StrategyValues.OptionRef strategy, PartyRolesConfig.Assignment assignment) => strategy.As<MovementStrategy>() switch
+    private Task<WPos?> CalculateDestination(FRU module, Actor? primaryTarget, StrategyValues.OptionRef strategy, PartyRolesConfig.Assignment assignment)
+        => strategy.As<MovementStrategy>() switch
+        {
+            MovementStrategy.Pathfind => PathfindPosition(null),
+            MovementStrategy.PathfindMeleeGreed => PathfindPosition(ResolveTargetOverride(strategy.Value) ?? primaryTarget),
+            MovementStrategy.Explicit => Task.FromResult<WPos?>(ResolveTargetLocation(strategy.Value)),
+            MovementStrategy.ExplicitMelee => Task.FromResult<WPos?>(ExplicitMeleePosition(ResolveTargetLocation(strategy.Value), ResolveTargetOverride(strategy.Value) ?? primaryTarget)),
+            MovementStrategy.Prepull => Task.FromResult<WPos?>(PrepullPosition(module, assignment)),
+            MovementStrategy.DragToCenter => Task.FromResult<WPos?>(DragToCenterPosition(module)),
+            _ => Task.FromResult<WPos?>(null)
+        };
+
+    private async Task<WPos?> PathfindPosition(Actor? meleeGreedTarget)
     {
-        MovementStrategy.ExplicitMelee => ExplicitMeleePosition(ResolveTargetLocation(strategy.Value), ResolveTargetOverride(strategy.Value) ?? primaryTarget),
-        MovementStrategy.Prepull => PrepullPosition(module, assignment),
-        MovementStrategy.DragToCenter => DragToCenterPosition(module),
-        _ => null
-    };
+        var res = await Task.Run(() => NavigationDecision.Build(NavigationContext, World, Hints, Player, Speed())).ConfigureAwait(false);
+
+        return meleeGreedTarget != null && res.Destination != null
+            ? ClosestInMelee(res.Destination.Value, meleeGreedTarget)
+            : res.Destination ?? Player.Position;
+    }
 
     private WPos ExplicitMeleePosition(WPos ideal, Actor? target) => target != null ? ClosestInMelee(ideal, target) : ideal;
 

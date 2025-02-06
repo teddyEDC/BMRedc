@@ -22,7 +22,7 @@ public sealed class ClassBLMUtility(RotationModuleManager manager, Actor player)
         return res;
     }
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         ExecuteShared(strategy, IDLimitBreak3, primaryTarget);
         ExecuteSimple(strategy.Option(Track.Manaward), BLM.AID.Manaward, Player);
@@ -33,6 +33,7 @@ public sealed class ClassBLMUtility(RotationModuleManager manager, Actor player)
         if (ShouldUseDash(dashStrategy, dashTarget))
             Hints.ActionsToExecute.Push(ActionID.MakeSpell(BLM.AID.AetherialManipulation), dashTarget, dash.Priority(), dash.Value.ExpireIn);
     }
+
     private bool ShouldUseDash(DashStrategy strategy, Actor? primaryTarget) => strategy switch
     {
         DashStrategy.None => false,

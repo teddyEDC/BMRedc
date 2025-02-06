@@ -114,7 +114,7 @@ sealed class AIManager : IDisposable
                 ToggleConfig();
                 break;
             case "TARGETMASTER":
-                configModified = ToggleFocusTargetLeader();
+                configModified = ToggleFocusTargetMaster();
                 break;
             case "FOLLOW":
                 var cfgFollowSlot = _config.FollowSlot;
@@ -164,11 +164,7 @@ sealed class AIManager : IDisposable
                 ToggleOutOfBounds(messageData);
                 configModified = cfgOOB != _config.AllowAIToBeOutsideBounds;
                 break;
-            case "OVERRIDEAUTOROTATION":
-                var cfgARO = _config.OverrideAutorotation;
-                ToggleAutorotationOverride(messageData);
-                configModified = cfgARO != _config.OverrideAutorotation;
-                break;
+
             case "POSITIONAL":
                 var cfgPositional = _config.DesiredPositional;
                 HandlePositionalCommand(messageData);
@@ -227,32 +223,10 @@ sealed class AIManager : IDisposable
             SwitchToIdle();
     }
 
-    private bool ToggleFocusTargetLeader()
+    private bool ToggleFocusTargetMaster()
     {
-        _config.FocusTargetLeader = !_config.FocusTargetLeader;
+        _config.FocusTargetMaster = !_config.FocusTargetMaster;
         return true;
-    }
-
-    private void ToggleAutorotationOverride(string[] messageData)
-    {
-        if (messageData.Length == 1)
-            _config.OverrideAutorotation = !_config.OverrideAutorotation;
-        else
-        {
-            switch (messageData[1].ToUpperInvariant())
-            {
-                case "ON":
-                    _config.OverrideAutorotation = true;
-                    break;
-                case "OFF":
-                    _config.OverrideAutorotation = false;
-                    break;
-                default:
-                    Service.ChatGui.Print($"[AI] Unknown follow target command: {messageData[1]}");
-                    return;
-            }
-        }
-        Service.Log($"[AI] Following targets is now {(_config.OverrideAutorotation ? "enabled" : "disabled")}");
     }
 
     private void ToggleOutOfBounds(string[] messageData)

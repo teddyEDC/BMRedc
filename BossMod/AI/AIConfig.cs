@@ -10,7 +10,7 @@ sealed class AIConfig : ConfigNode
     public bool DrawUI = false;
 
     [PropertyDisplay("Focus target master")]
-    public bool FocusTargetLeader = false;
+    public bool FocusTargetMaster = false;
 
     [PropertyDisplay("Broadcast keypresses to other windows")]
     public bool BroadcastToSlaves = false;
@@ -49,9 +49,6 @@ sealed class AIConfig : ConfigNode
     [PropertyDisplay("Max distance to target")]
     public float MaxDistanceToTarget = 2.6f;
 
-    [PropertyDisplay("Override autorotation values", tooltip: "Uses your custom positional and distance settings instead of autorotation specific values")]
-    public bool OverrideAutorotation = true;
-
     [PropertyDisplay("Enable auto AFK", tooltip: "Enables auto AFK if out of combat. While AFK AI will not use autorotation or target anything")]
     public bool AutoAFK = false;
 
@@ -62,7 +59,7 @@ sealed class AIConfig : ConfigNode
     public bool AllowAIToBeOutsideBounds = false;
 
     [PropertyDisplay("Movement decision delay", tooltip: "Only change this at your own risk and keep this value low! Too high and it won't move in time for some mechanics. Make sure to readjust the value for different content.")]
-    public float MoveDelay = 0;
+    public double MoveDelay = 0;
 
     [PropertyDisplay("Idle while mounted")]
     public bool ForbidAIMovementMounted = false;

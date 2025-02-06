@@ -58,12 +58,13 @@ public class LampasChrysine(WorldState ws, Actor primary) : THTemplate(ws, prima
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        for (var i = 0; i < hints.PotentialTargets.Count; ++i)
+        var count = hints.PotentialTargets.Count;
+        for (var i = 0; i < count; ++i)
         {
             var e = hints.PotentialTargets[i];
-            e.Priority = (OID)e.Actor.OID switch
+            e.Priority = e.Actor.OID switch
             {
-                OID.GymnasiouLampas => 1,
+                (uint)OID.GymnasiouLampas => 1,
                 _ => 0
             };
         }

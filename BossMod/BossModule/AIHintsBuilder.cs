@@ -38,11 +38,13 @@ public sealed class AIHintsBuilder : IDisposable
         Obstacles.Dispose();
     }
 
-    public void Update(AIHints hints, int playerSlot, float maxCastTime)
+    public void Update(AIHints hints, int playerSlot, bool moveImminent)
     {
-        hints.Clear();
-        hints.MaxCastTimeEstimate = maxCastTime;
         var player = _ws.Party[playerSlot];
+
+        hints.Clear();
+        // if (moveImminent || player?.PendingKnockbacks.Count > 0)
+        //     hints.MaxCastTime = 0;
         if (player != null)
         {
             var playerAssignment = _config[_ws.Party.Members[playerSlot].ContentId];
@@ -162,7 +164,7 @@ public sealed class AIHintsBuilder : IDisposable
 
         foreach (var aoe in _activeAOEs.Values)
         {
-            var target = aoe.Target?.Position ?? aoe.Caster.CastInfo!.LocXZ;
+            var target = aoe.Caster.CastInfo!.LocXZ;
             var rot = aoe.Caster.CastInfo!.Rotation;
             var finishAt = _ws.FutureTime(aoe.Caster.CastInfo.NPCRemainingTime);
             hints.AddForbiddenZone(aoe.Shape, target, rot, finishAt);
