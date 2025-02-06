@@ -21,12 +21,12 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
     private WPos _masterMovementStart;
     private DateTime _masterLastMoved;
     private DateTime _navStartTime; // if current time is < this, navigation won't start
-    public static readonly SemaphoreSlim Semaphore = new(1, 1);
+    private static readonly SemaphoreSlim _semaphore = new(1, 1);
     public void Dispose() { }
 
     public async Task Execute(Actor player, Actor master)
     {
-        if (await Semaphore.WaitAsync(0))
+        if (await _semaphore.WaitAsync(0))
         {
             try
             {
@@ -94,7 +94,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             }
             finally
             {
-                Semaphore.Release();
+                _semaphore.Release();
             }
         }
     }
