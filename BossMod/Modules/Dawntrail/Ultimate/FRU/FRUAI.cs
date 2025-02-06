@@ -24,47 +24,33 @@ sealed class FRUAI(RotationModuleManager manager, Actor player) : AIRotationModu
         return res;
     }
 
-    private readonly FRUConfig _config = Service.Config.Get<FRUConfig>();
     private readonly PartyRolesConfig _prc = Service.Config.Get<PartyRolesConfig>();
+    private readonly FRUConfig _config = Service.Config.Get<FRUConfig>();
 
-    public override async void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
-        if (await AIBehaviour.Semaphore.WaitAsync(0))
+        if (Bossmods.ActiveModule is FRU module && module.Raid.FindSlot(Player.InstanceID) is var playerSlot && playerSlot >= 0)
         {
-            try
-            {
-                if (Bossmods.ActiveModule is FRU module && module.Raid.FindSlot(Player.InstanceID) is var playerSlot && playerSlot >= 0)
-                {
-                    var destination = await CalculateDestination(module, primaryTarget, strategy.Option(Track.Movement), _prc[module.Raid.Members[playerSlot].ContentId]).ConfigureAwait(false);
-                    SetForcedMovement(destination);
-                }
-            }
-            finally
-            {
-                AIBehaviour.Semaphore.Release();
-            }
+            SetForcedMovement(CalculateDestination(module, primaryTarget, strategy.Option(Track.Movement), _prc[module.Raid.Members[playerSlot].ContentId]));
         }
     }
 
-    private Task<WPos?> CalculateDestination(FRU module, Actor? primaryTarget, StrategyValues.OptionRef strategy, PartyRolesConfig.Assignment assignment)
-        => strategy.As<MovementStrategy>() switch
-        {
-            MovementStrategy.Pathfind => PathfindPosition(null),
-            MovementStrategy.PathfindMeleeGreed => PathfindPosition(ResolveTargetOverride(strategy.Value) ?? primaryTarget),
-            MovementStrategy.Explicit => Task.FromResult<WPos?>(ResolveTargetLocation(strategy.Value)),
-            MovementStrategy.ExplicitMelee => Task.FromResult<WPos?>(ExplicitMeleePosition(ResolveTargetLocation(strategy.Value), ResolveTargetOverride(strategy.Value) ?? primaryTarget)),
-            MovementStrategy.Prepull => Task.FromResult<WPos?>(PrepullPosition(module, assignment)),
-            MovementStrategy.DragToCenter => Task.FromResult<WPos?>(DragToCenterPosition(module)),
-            _ => Task.FromResult<WPos?>(null)
-        };
-
-    private async Task<WPos?> PathfindPosition(Actor? meleeGreedTarget)
+    private WPos? CalculateDestination(FRU module, Actor? primaryTarget, StrategyValues.OptionRef strategy, PartyRolesConfig.Assignment assignment) => strategy.As<MovementStrategy>() switch
     {
-        var res = await Task.Run(() => NavigationDecision.Build(NavigationContext, World, Hints, Player, Speed())).ConfigureAwait(false);
+        MovementStrategy.Pathfind => PathfindPosition(null),
+        MovementStrategy.PathfindMeleeGreed => PathfindPosition(ResolveTargetOverride(strategy.Value) ?? primaryTarget),
+        MovementStrategy.Explicit => ResolveTargetLocation(strategy.Value),
+        MovementStrategy.ExplicitMelee => ExplicitMeleePosition(ResolveTargetLocation(strategy.Value), ResolveTargetOverride(strategy.Value) ?? primaryTarget),
+        MovementStrategy.Prepull => PrepullPosition(module, assignment),
+        MovementStrategy.DragToCenter => DragToCenterPosition(module),
+        _ => null
+    };
 
-        return meleeGreedTarget != null && res.Destination != null
-            ? ClosestInMelee(res.Destination.Value, meleeGreedTarget)
-            : res.Destination ?? Player.Position;
+    // TODO: account for leeway for casters
+    private WPos PathfindPosition(Actor? meleeGreedTarget)
+    {
+        var res = NavigationDecision.Build(NavigationContext, World, Hints, Player, Speed());
+        return meleeGreedTarget != null && res.Destination != null ? ClosestInMelee(res.Destination.Value, meleeGreedTarget) : (res.Destination ?? Player.Position);
     }
 
     private WPos ExplicitMeleePosition(WPos ideal, Actor? target) => target != null ? ClosestInMelee(ideal, target) : ideal;

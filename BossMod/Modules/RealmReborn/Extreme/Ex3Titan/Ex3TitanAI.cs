@@ -19,34 +19,17 @@ sealed class Ex3TitanAIRotation(RotationModuleManager manager, Actor player) : A
         return res;
     }
 
-    public override async void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
-        if (await AIBehaviour.Semaphore.WaitAsync(0))
-        {
-            try
-            {
-                SetForcedMovement(await CalculateDestination(strategy.Option(Track.Movement)).ConfigureAwait(false));
-            }
-            finally
-            {
-                AIBehaviour.Semaphore.Release();
-            }
-        }
+        SetForcedMovement(CalculateDestination(strategy.Option(Track.Movement)));
     }
 
-    private Task<WPos?> CalculateDestination(StrategyValues.OptionRef strategy) => strategy.As<MovementStrategy>() switch
+    private WPos CalculateDestination(StrategyValues.OptionRef strategy) => strategy.As<MovementStrategy>() switch
     {
-        MovementStrategy.Pathfind => PathfindPosition(),
-        MovementStrategy.Explicit => Task.FromResult<WPos?>(ResolveTargetLocation(strategy.Value)),
-        _ => Task.FromResult<WPos?>(Player.Position)
+        MovementStrategy.Pathfind => NavigationDecision.Build(NavigationContext, World, Hints, Player, Speed()).Destination ?? Player.Position,
+        MovementStrategy.Explicit => ResolveTargetLocation(strategy.Value),
+        _ => Player.Position
     };
-
-    private async Task<WPos?> PathfindPosition()
-    {
-        var res = await Task.Run(() => NavigationDecision.Build(NavigationContext, World, Hints, Player, Speed())).ConfigureAwait(false);
-
-        return res.Destination ?? Player.Position;
-    }
 }
 
 class Ex3TitanAI(BossModule module) : BossComponent(module)

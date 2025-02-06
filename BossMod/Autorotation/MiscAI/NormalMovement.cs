@@ -12,7 +12,7 @@ public sealed class NormalMovement(RotationModuleManager manager, Actor player) 
 
     public static RotationModuleDefinition Definition()
     {
-        var res = new RotationModuleDefinition("Automatic movement", "Automatically move character based on pathfinding or explicit coordinates.", "AI", "veyn", RotationModuleQuality.WIP, new(~0ul), 1000, 1, RotationModuleOrder.Movement);
+        var res = new RotationModuleDefinition("Automatic movement", "Automatically move character based on pathfinding or explicit coordinates.", "AI", "veyn", RotationModuleQuality.WIP, new(~0ul), 1000, 1, RotationModuleOrder.Movement, CanUseWhileRoleplaying: true);
         res.Define(Track.Destination).As<DestinationStrategy>("Destination", "Destination", 30)
             .AddOption(DestinationStrategy.None, "None", "No automatic movement")
             .AddOption(DestinationStrategy.Pathfind, "Pathfind", "Use standard pathfinding to find best position")
@@ -39,150 +39,149 @@ public sealed class NormalMovement(RotationModuleManager manager, Actor player) 
 
     private readonly NavigationDecision.Context _navCtx = new();
 
-    public override async void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
-        if (await AI.AIBehaviour.Semaphore.WaitAsync(0))
+        var castOpt = strategy.Option(Track.Cast);
+        var castStrategy = castOpt.As<CastStrategy>();
+        if (castStrategy is CastStrategy.FinishInstants or CastStrategy.DropInstants)
         {
-            try
+            Hints.MaxCastTime = 0;
+            Hints.ForceCancelCast |= castStrategy == CastStrategy.DropInstants;
+        }
+
+        var allowSpecialModes = strategy.Option(Track.SpecialModes).As<SpecialModesStrategy>() == SpecialModesStrategy.Automatic;
+        if (allowSpecialModes)
+        {
+            if (Player.PendingKnockbacks.Count > 0)
+                return; // do not move if there are any unresolved knockbacks - the positions are taken at resolve time, so we might fuck things up
+
+            if (Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Pyretic && Hints.ImminentSpecialMode.activation <= World.FutureTime(1))
             {
-                var castOpt = strategy.Option(Track.Cast);
-                var castOptValue = castOpt.Value;
-                var castStrategy = castOpt.As<CastStrategy>();
-                if (castStrategy is CastStrategy.FinishInstants or CastStrategy.DropInstants)
-                {
-                    Hints.MaxCastTime = 0;
-                    Hints.ForceCancelCast |= castStrategy == CastStrategy.DropInstants;
-                }
-
-                var allowSpecialModes = strategy.Option(Track.SpecialModes).As<SpecialModesStrategy>() == SpecialModesStrategy.Automatic;
-                if (allowSpecialModes)
-                {
-                    if (Player.PendingKnockbacks.Count > 0)
-                        return; // do not move if there are any unresolved knockbacks - the positions are taken at resolve time, so we might fuck things up
-
-                    if (Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Pyretic && Hints.ImminentSpecialMode.activation <= World.FutureTime(1d))
-                    {
-                        Hints.ForceCancelCast = true; // this is only useful if autopyretic tweak is disabled
-                        return; // pyretic is imminent, do not move
-                    }
-
-                    if (Hints.InteractWithTarget != null)
-                        Hints.GoalZones.Add(Hints.GoalSingleTarget(Hints.InteractWithTarget.Position, 2f, 100f)); // strongly prefer moving towards interact target
-                }
-
-                var speed = Player.FindStatus((uint)ClassShared.SID.Sprint) != null ? 7.8f : 6;
-                var destinationOpt = strategy.Option(Track.Destination);
-                var destinationValue = destinationOpt.Value;
-                var destinationStrategy = destinationOpt.As<DestinationStrategy>();
-                var navi = destinationStrategy switch
-                {
-                    DestinationStrategy.Pathfind => await Task.Run(() => NavigationDecision.Build(_navCtx, World, Hints, Player, speed)).ConfigureAwait(false),
-                    DestinationStrategy.Explicit => new() { Destination = ResolveTargetLocation(destinationValue), TimeToGoal = destinationValue.ExpireIn },
-                    _ => default
-                };
-                if (navi.Destination == null)
-                    return; // nothing to do
-
-                var rangeOpt = strategy.Option(Track.Range);
-                var rangeStrategy = rangeOpt.As<RangeStrategy>();
-                if (rangeStrategy != RangeStrategy.Any)
-                {
-                    var rangeReference = ResolveTargetOverride(rangeOpt.Value) ?? primaryTarget;
-                    if (rangeReference != null)
-                    {
-                        var toDestination = navi.Destination.Value - rangeReference.Position;
-                        var maxRange = rangeReference.HitboxRadius + 2.6f;
-                        var range = toDestination.Length();
-                        if (range > maxRange)
-                        {
-                            var uptimePosition = rangeReference.Position + maxRange / range * toDestination;
-                            var uptimeToDestinationTime = (range - maxRange) / speed;
-                            switch (rangeStrategy)
-                            {
-                                case RangeStrategy.MaxMelee:
-                                    navi.Destination = uptimePosition;
-                                    navi.LeewaySeconds -= uptimeToDestinationTime; // assume we'll want to reach destination later, so leeway has to be reduced
-                                    break;
-                                case RangeStrategy.MeleeGreedGCDExplicit:
-                                case RangeStrategy.MeleeGreedLastMomentExplicit:
-                                    navi.LeewaySeconds = destinationValue.ExpireIn - uptimeToDestinationTime;
-                                    if (navi.LeewaySeconds > (rangeStrategy == RangeStrategy.MeleeGreedGCDExplicit ? GCD : 0))
-                                        navi.Destination = uptimePosition;
-                                    break;
-                            }
-                        }
-                        // else: destination is already in melee range, nothing to adjust here
-                    }
-                }
-
-                var dir = navi.Destination.Value - Player.Position;
-                var distSq = dir.LengthSq();
-                if (distSq <= 0.01f)
-                {
-                    // we're already very close to destination
-                    // TODO: what should we do if forced-movement is already set to something?.. not sure who could set it, some other module?..
-                    Hints.ForcedMovement = default;
-                    return;
-                }
-
-                // we want to move somewhere, check whether we're allowed to
-                if (allowSpecialModes && Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Misdirection && Hints.ImminentSpecialMode.activation <= World.CurrentTime)
-                {
-                    // special case for misdirection
-                    // assume it's always fine to drop casts during misdirection (add new option to the specialmode track if it's ever not the case, i guess...)
-                    // we have only two options really - either move to the current forced direction, or wait (and this direction will change) - so see whether moving now brings us closer to the destination
-                    // if our destination is not the last one (turn != 0), we can only move if it will move us *further* from second-next point - otherwise we're moving towards the wall
-                    // the tolerance angle can be inferred from following consideration: in the worst case our movement should keep us at the same distance to destination (or it can move us closer)
-                    // so let's consider isosceles triangle with legs equal to distance to target, and base equal to distance we move over a period of time - the base angle is then our threshold
-                    // this means that cos(threshold) = speed * dt / 2 / distance
-                    // assuming we wanna move at least for a second, speed is standard 6, threshold of 60 degrees would be fine for distances >= 6
-                    // for micro adjusts, if we move for 1 frame (1/60s), threshold of 60 degrees would be fine for distance 0.1, which is our typical threshold
-                    var threshold = 30f.Degrees();
-                    var allowMovement = World.Client.ForcedMovementDirection.AlmostEqual(Angle.FromDirection(dir), threshold.Rad);
-                    if (allowMovement && destinationStrategy == DestinationStrategy.Pathfind)
-                    {
-                        // if we have a map, we can try to see if current direction has long enough unobstructed path
-                        // TODO: maybe just check a single closest grid cell that we would intersect if we go forward?..
-                        allowMovement = CalculateUnobstructedPathLength(World.Client.ForcedMovementDirection) >= Math.Min(4f, distSq);
-                    }
-                    Hints.ForcedMovement = allowMovement ? World.Client.ForcedMovementDirection.ToDirection().ToVec3(Player.PosRot.Y) : default;
-
-                    //var halfThreshold = Hints.MisdirectionThreshold; // even much smaller threshold seems to work fine in practice (TODO: reconsider...)
-                    //var idealDir = Angle.FromDirection(dir);
-                    //if (destinationStrategy == DestinationStrategy.Pathfind)
-                    //{
-                    //    var lenL = CalculateUnobstructedPathLength(idealDir + halfThreshold);
-                    //    var lenR = CalculateUnobstructedPathLength(idealDir - halfThreshold);
-                    //    if (lenL < 4)
-                    //        idealDir -= halfThreshold;
-                    //    if (lenR < 4)
-                    //        idealDir += halfThreshold;
-                    //}
-                    //var withinThreshold = World.Client.ForcedMovementDirection.AlmostEqual(idealDir, halfThreshold.Rad);
-                    //Hints.ForcedMovement = withinThreshold ? World.Client.ForcedMovementDirection.ToDirection().ToVec3(Player.PosRot.Y) : default;
-                }
-                else
-                {
-                    // fine to move if we won't interrupt cast (or are explicitly allowed to)
-                    var allowMovement = Player.CastInfo == null || Player.CastInfo.EventHappened || castStrategy is CastStrategy.DropMove or CastStrategy.DropInstants;
-                    Hints.ForcedMovement = allowMovement ? dir.ToVec3(Player.PosRot.Y) : default;
-                }
-
-                var maxCastTime = castStrategy switch
-                {
-                    CastStrategy.Leeway => navi.LeewaySeconds,
-                    CastStrategy.Explicit => castOptValue.ExpireIn,
-                    CastStrategy.Greedy => float.MaxValue,
-                    _ => 0,
-                };
-                Hints.MaxCastTime = Math.Min(Hints.MaxCastTime, maxCastTime);
-                Hints.ForceCancelCast |= castStrategy == CastStrategy.DropMove;
+                Hints.ForceCancelCast = true; // this is only useful if autopyretic tweak is disabled
+                return; // pyretic is imminent, do not move
             }
-            finally
+
+            if (Hints.InteractWithTarget != null)
             {
-                AI.AIBehaviour.Semaphore.Release();
+                // strongly prefer moving towards interact target
+                Hints.GoalZones.Add(p =>
+                {
+                    var length = (p - Hints.InteractWithTarget.Position).Length();
+
+                    // 99% of eventobjects have an interact range of 3.5y, while the rest have a range of 2.09y
+                    // checking only for the shorter range here would be fine in the vast majority of cases, but it can break interact pathfinding in the case that the target object is partially covered by a forbidden zone with a radius between 2.1 and 3.5
+                    // this is specifically an issue in the metal gear thancred solo duty in endwalker
+                    return length <= 2.09f ? 101 : length <= 3.5f ? 100 : 0;
+                });
             }
         }
+
+        var speed = Player.FindStatus(ClassShared.SID.Sprint) != null ? 7.8f : 6;
+        var destinationOpt = strategy.Option(Track.Destination);
+        var destinationStrategy = destinationOpt.As<DestinationStrategy>();
+        var navi = destinationStrategy switch
+        {
+            DestinationStrategy.Pathfind => NavigationDecision.Build(_navCtx, World, Hints, Player, speed),
+            DestinationStrategy.Explicit => new() { Destination = ResolveTargetLocation(destinationOpt.Value), TimeToGoal = destinationOpt.Value.ExpireIn },
+            _ => default
+        };
+        if (navi.Destination == null)
+            return; // nothing to do
+
+        var rangeOpt = strategy.Option(Track.Range);
+        var rangeStrategy = rangeOpt.As<RangeStrategy>();
+        if (rangeStrategy != RangeStrategy.Any)
+        {
+            var rangeReference = ResolveTargetOverride(rangeOpt.Value) ?? primaryTarget;
+            if (rangeReference != null)
+            {
+                var toDestination = navi.Destination.Value - rangeReference.Position;
+                var maxRange = rangeReference.HitboxRadius + 2.6f;  // Note: melee range is always hitbox radius + 2.6 for auto attacks, doesn't matter if skills have 3 range...
+                var range = toDestination.Length();
+                if (range > maxRange)
+                {
+                    var uptimePosition = rangeReference.Position + maxRange / range * toDestination;
+                    var uptimeToDestinationTime = (range - maxRange) / speed;
+                    switch (rangeStrategy)
+                    {
+                        case RangeStrategy.MaxMelee:
+                            navi.Destination = uptimePosition;
+                            navi.LeewaySeconds -= uptimeToDestinationTime; // assume we'll want to reach destination later, so leeway has to be reduced
+                            break;
+                        case RangeStrategy.MeleeGreedGCDExplicit:
+                        case RangeStrategy.MeleeGreedLastMomentExplicit:
+                            navi.LeewaySeconds = destinationOpt.Value.ExpireIn - uptimeToDestinationTime;
+                            if (navi.LeewaySeconds > (rangeStrategy == RangeStrategy.MeleeGreedGCDExplicit ? GCD : 0))
+                                navi.Destination = uptimePosition;
+                            break;
+                    }
+                }
+                // else: destination is already in melee range, nothing to adjust here
+            }
+        }
+
+        var dir = navi.Destination.Value - Player.Position;
+        var distSq = dir.LengthSq();
+        if (distSq <= 0.01f)
+        {
+            // we're already very close to destination
+            // TODO: what should we do if forced-movement is already set to something?.. not sure who could set it, some other module?..
+            Hints.ForcedMovement = default;
+            return;
+        }
+
+        // we want to move somewhere, check whether we're allowed to
+        if (allowSpecialModes && Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Misdirection && Hints.ImminentSpecialMode.activation <= World.CurrentTime)
+        {
+            // special case for misdirection
+            // assume it's always fine to drop casts during misdirection (add new option to the specialmode track if it's ever not the case, i guess...)
+            // we have only two options really - either move to the current forced direction, or wait (and this direction will change) - so see whether moving now brings us closer to the destination
+            // if our destination is not the last one (turn != 0), we can only move if it will move us *further* from second-next point - otherwise we're moving towards the wall
+            // the tolerance angle can be inferred from following consideration: in the worst case our movement should keep us at the same distance to destination (or it can move us closer)
+            // so let's consider isosceles triangle with legs equal to distance to target, and base equal to distance we move over a period of time - the base angle is then our threshold
+            // this means that cos(threshold) = speed * dt / 2 / distance
+            // assuming we wanna move at least for a second, speed is standard 6, threshold of 60 degrees would be fine for distances >= 6
+            // for micro adjusts, if we move for 1 frame (1/60s), threshold of 60 degrees would be fine for distance 0.1, which is our typical threshold
+            var threshold = 30.Degrees();
+            var allowMovement = World.Client.ForcedMovementDirection.AlmostEqual(Angle.FromDirection(dir), threshold.Rad);
+            if (allowMovement && destinationStrategy == DestinationStrategy.Pathfind)
+            {
+                // if we have a map, we can try to see if current direction has long enough unobstructed path
+                // TODO: maybe just check a single closest grid cell that we would intersect if we go forward?..
+                allowMovement = CalculateUnobstructedPathLength(World.Client.ForcedMovementDirection) >= Math.Min(4, distSq);
+            }
+            Hints.ForcedMovement = allowMovement ? World.Client.ForcedMovementDirection.ToDirection().ToVec3(Player.PosRot.Y) : default;
+
+            //var halfThreshold = Hints.MisdirectionThreshold; // even much smaller threshold seems to work fine in practice (TODO: reconsider...)
+            //var idealDir = Angle.FromDirection(dir);
+            //if (destinationStrategy == DestinationStrategy.Pathfind)
+            //{
+            //    var lenL = CalculateUnobstructedPathLength(idealDir + halfThreshold);
+            //    var lenR = CalculateUnobstructedPathLength(idealDir - halfThreshold);
+            //    if (lenL < 4)
+            //        idealDir -= halfThreshold;
+            //    if (lenR < 4)
+            //        idealDir += halfThreshold;
+            //}
+            //var withinThreshold = World.Client.ForcedMovementDirection.AlmostEqual(idealDir, halfThreshold.Rad);
+            //Hints.ForcedMovement = withinThreshold ? World.Client.ForcedMovementDirection.ToDirection().ToVec3(Player.PosRot.Y) : default;
+        }
+        else
+        {
+            // fine to move if we won't interrupt cast (or are explicitly allowed to)
+            var allowMovement = Player.CastInfo == null || Player.CastInfo.EventHappened || castStrategy is CastStrategy.DropMove or CastStrategy.DropInstants;
+            Hints.ForcedMovement = allowMovement ? dir.ToVec3(Player.PosRot.Y) : default;
+        }
+
+        var maxCastTime = castStrategy switch
+        {
+            CastStrategy.Leeway => navi.LeewaySeconds,
+            CastStrategy.Explicit => castOpt.Value.ExpireIn,
+            CastStrategy.Greedy => float.MaxValue,
+            _ => 0,
+        };
+        Hints.MaxCastTime = Math.Min(Hints.MaxCastTime, maxCastTime);
+        Hints.ForceCancelCast |= castStrategy == CastStrategy.DropMove;
     }
 
     private float CalculateUnobstructedPathLength(Angle dir)
