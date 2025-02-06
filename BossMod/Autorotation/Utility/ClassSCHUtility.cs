@@ -116,7 +116,6 @@ public sealed class ClassSCHUtility(RotationModuleManager manager, Actor player)
         if (deploy.As<DeployOption>() != DeployOption.None)
             QueueOGCD(SCH.AID.DeploymentTactics, Player);
 
-
         var pact = strategy.Option(Track.Aetherpact);
         var pactStrat = pact.As<AetherpactOption>();
         var pactTarget = TargetChoice(strategy.Option(Track.Aetherpact)) ?? primaryTarget ?? Player;

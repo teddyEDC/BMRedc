@@ -253,7 +253,7 @@ public sealed class PCT(RotationModuleManager manager, Actor player) : Castxan<A
 
         return strategy.Option(Track.Motif).As<MotifStrategy>() switch
         {
-            MotifStrategy.Downtime => !Hints.PriorityTargets.Any(),
+            MotifStrategy.Downtime => Hints.PriorityTargets.Count == 0,
             MotifStrategy.Combat => RaidBuffsLeft == 0,
             _ => false
         };

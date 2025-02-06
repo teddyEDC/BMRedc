@@ -112,20 +112,19 @@ class GreatestLabyrinth(BossModule module) : Components.GenericAOEs(module)
         (new(new(-136f, -556f), Radius), new(new(-140f, -544f), Radius))];
 
     private static readonly Shape[] wholeArena = [new Square(D074GreatestSerpentOfTural.ArenaCenter, 12f)];
-    private static readonly AOEShapeCustom[] forbiddenShapes;
-    private static readonly AOEShapeCustom[] safeShapes;
 
-    static GreatestLabyrinth()
+    private static readonly AOEShapeCustom[] forbiddenShapes = InitializeShapes();
+    private static readonly AOEShapeCustom[] safeShapes = InitializeShapes(true);
+
+    private static AOEShapeCustom[] InitializeShapes(bool invert = false)
     {
-        forbiddenShapes = new AOEShapeCustom[4];
-        safeShapes = new AOEShapeCustom[4];
-
+        var shapes = new AOEShapeCustom[4];
         for (var i = 0; i < 4; ++i)
         {
             var tp = tilePairs[i];
-            forbiddenShapes[i] = new AOEShapeCustom(wholeArena, [middle, tp.correctTile, tp.goalTile]);
-            safeShapes[i] = new AOEShapeCustom([tp.correctTile, tp.goalTile], InvertForbiddenZone: true);
+            shapes[i] = new AOEShapeCustom(wholeArena, [middle, tp.correctTile, tp.goalTile], InvertForbiddenZone: invert);
         }
+        return shapes;
     }
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;

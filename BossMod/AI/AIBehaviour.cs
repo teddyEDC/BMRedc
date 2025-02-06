@@ -26,7 +26,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
     public async Task Execute(Actor player, Actor master)
     {
-        if (await _semaphore.WaitAsync(0))
+        if (await _semaphore.WaitAsync(0).ConfigureAwait(false))
         {
             try
             {

@@ -109,7 +109,7 @@ public sealed class WHM(RotationModuleManager manager, Actor player) : Castxan<A
         switch (strategy.Option(Track.Assize).As<AssizeStrategy>())
         {
             case AssizeStrategy.HitEverything:
-                if (NumAssizeTargets == Hints.PriorityTargets.Count())
+                if (NumAssizeTargets == Hints.PriorityTargets.Count)
                     PushOGCD(AID.Assize, Player);
                 break;
             case AssizeStrategy.HitSomething:
