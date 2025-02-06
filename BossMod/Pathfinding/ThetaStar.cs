@@ -72,7 +72,7 @@ public class ThetaStar
         PrefillH();
 
         var startFrac = map.WorldToGridFrac(startPos);
-        var start = map.ClampToGrid(map.FracToGrid(startFrac));
+        var start = map.ClampToGrid(Map.FracToGrid(startFrac));
         _startNodeIndex = _bestIndex = _fallbackIndex = _map.GridToIndex(start.x, start.y);
         _startMaxG = _map.PixelMaxG[_startNodeIndex];
         _startPrio = _map.PixelPriority[_startNodeIndex];

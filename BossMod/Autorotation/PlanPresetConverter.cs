@@ -4,8 +4,8 @@ namespace BossMod.Autorotation;
 
 public static class PlanPresetConverter
 {
-    public static readonly readonly VersionedJSONSchema PlanSchema = BuildSchema(true);
-    public static readonly readonly VersionedJSONSchema PresetSchema = BuildSchema(false);
+    public static readonly VersionedJSONSchema PlanSchema = BuildSchema(true);
+    public static readonly VersionedJSONSchema PresetSchema = BuildSchema(false);
 
     private static VersionedJSONSchema BuildSchema(bool plan)
     {

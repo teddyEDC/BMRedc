@@ -78,7 +78,7 @@ public sealed class ClientState
 
     public List<WorldState.Operation> CompareToInitial()
     {
-        List<WorldState.Operation> ops = new(12);
+        List<WorldState.Operation> ops = new(13);
         if (CountdownRemaining != null)
             ops.Add(new OpCountdownChange(CountdownRemaining));
 
@@ -163,10 +163,10 @@ public sealed class ClientState
 
         if (FocusTargetId != 0)
             ops.Add(new OpFocusTargetChange(FocusTargetId));
-        return ops;
 
         if (ForcedMovementDirection != default)
-            yield return new OpForcedMovementDirectionChange(ForcedMovementDirection);
+            ops.Add(new OpForcedMovementDirectionChange(ForcedMovementDirection));
+        return ops;
     }
 
     public void Tick(float dt)
@@ -418,7 +418,7 @@ public sealed class ClientState
     public Event<OpForcedMovementDirectionChange> ForcedMovementDirectionChanged = new();
     public sealed record class OpForcedMovementDirectionChange(Angle Value) : WorldState.Operation
     {
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             ws.Client.ForcedMovementDirection = Value;
             ws.Client.ForcedMovementDirectionChanged.Fire(this);

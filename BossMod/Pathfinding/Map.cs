@@ -97,9 +97,10 @@ public class Map
 
     public int GridToIndex(int x, int y) => y * Width + x;
     public (int x, int y) IndexToGrid(int index) => (index % Width, index / Width);
-    public (int x, int y) FracToGrid(Vector2 frac) => ((int)MathF.Floor(frac.X), (int)MathF.Floor(frac.Y));
+    public static (int x, int y) FracToGrid(Vector2 frac) => ((int)MathF.Floor(frac.X), (int)MathF.Floor(frac.Y));
     public (int x, int y) WorldToGrid(WPos world) => FracToGrid(WorldToGridFrac(world));
     public (int x, int y) ClampToGrid((int x, int y) pos) => (Math.Clamp(pos.x, 0, Width - 1), Math.Clamp(pos.y, 0, Height - 1));
+    public bool InBounds(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
 
     public WPos GridToWorld(int gx, int gy, float fx, float fy)
     {
@@ -205,6 +206,35 @@ public class Map
                 cx += dx;
             }
             cy += dy;
+        }
+        return result;
+    }
+
+    // enumerate pixels along line starting from (x1, y1) to (x2, y2); first is not returned, last is returned
+    public List<(int x, int y)> EnumeratePixelsInLine(int x1, int y1, int x2, int y2)
+    {
+        var estimatedLength = Math.Max(Math.Abs(x2 - x1), Math.Abs(y2 - y1)) + 1;
+        var result = new List<(int x, int y)>(estimatedLength);
+        int dx = Math.Abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+        int dy = -Math.Abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+        int err = dx + dy, e2;
+
+        while (true)
+        {
+            result.Add((x1, y1));
+            if (x1 == x2 && y1 == y2)
+                break;
+            e2 = 2 * err;
+            if (e2 >= dy)
+            {
+                err += dy;
+                x1 += sx;
+            }
+            if (e2 <= dx)
+            {
+                err += dx;
+                y1 += sy;
+            }
         }
         return result;
     }
