@@ -133,7 +133,7 @@ public sealed unsafe class MovementOverride : IDisposable
         if (misdirectionMode)
         {
             var thresholdDeg = UserMove != default ? _tweaksConfig.MisdirectionThreshold : MisdirectionThreshold.Deg;
-            if (thresholdDeg < 180)
+            if (thresholdDeg < 180f)
             {
                 // note: if we are already moving, it doesn't matter what we do here, only whether 'is input active' function returns true or false
                 _forcedControlState = ActualMove != default && (Angle.FromDirection(ActualMove) + ForwardMovementDirection() - ForcedMovementDirection->Radians()).Normalized().Abs().Deg <= thresholdDeg;
@@ -184,7 +184,7 @@ public sealed unsafe class MovementOverride : IDisposable
         return (dirH - ForwardMovementDirection(), dirV);
     }
 
-    private Angle ForwardMovementDirection() => _legacyMode ? Camera.Instance!.CameraAzimuth.Radians() + 180.Degrees() : GameObjectManager.Instance()->Objects.IndexSorted[0].Value->Rotation.Radians();
+    private Angle ForwardMovementDirection() => _legacyMode ? Camera.Instance!.CameraAzimuth.Radians() + 180f.Degrees() : GameObjectManager.Instance()->Objects.IndexSorted[0].Value->Rotation.Radians();
 
     private bool PlayerHasMisdirection()
     {

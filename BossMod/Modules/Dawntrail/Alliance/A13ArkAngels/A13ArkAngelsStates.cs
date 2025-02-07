@@ -27,7 +27,21 @@ class A13ArkAngelsStates : StateMachineBuilder
             .ActivateOnEnter<Rampage>()
             .ActivateOnEnter<Raiton>()
             .ActivateOnEnter<ArroganceIncarnate>()
-            .Raw.Update = () => module.Enemies(A13ArkAngels.Bosses).All(x => x.IsDeadOrDestroyed);
+            .Raw.Update = () =>
+            {
+                var allDeadOrDestroyed = true;
+                var enemies = module.Enemies(A13ArkAngels.Bosses);
+                var count = enemies.Count;
+                for (var i = 0; i < count; ++i)
+                {
+                    if (!enemies[i].IsDeadOrDestroyed)
+                    {
+                        allDeadOrDestroyed = false;
+                        break;
+                    }
+                }
+                return allDeadOrDestroyed;
+            };
     }
 
     private void SinglePhase(uint id)

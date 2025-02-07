@@ -11,10 +11,11 @@ class ConcertedDissolution(BossModule module) : Components.SimpleAOEs(module, Ac
         var check = chain != null && chain.Casters.Count != 0;
 
         var aoes = new AOEInstance[count];
+        var color = Colors.Danger;
         for (var i = 0; i < count; ++i)
         {
             var aoe = Casters[i];
-            aoes[i] = check ? aoe with { Color = Colors.Danger } : aoe;
+            aoes[i] = check ? aoe with { Color = color } : aoe;
         }
         return aoes;
     }

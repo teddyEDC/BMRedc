@@ -114,14 +114,30 @@ public class ThetaStar
         if (nextNode.Score == Score.UltimatelySafe && (_fallbackIndex == _startNodeIndex || CompareNodeScores(ref nextNode, ref _nodes[_fallbackIndex]) < 0))
             _fallbackIndex = nextNodeIndex;
 
-        if (nextNodeY > _map.MinY)
+        var haveN = nextNodeY > 0;
+        var haveS = nextNodeY < _map.Height - 1;
+        var haveE = nextNodeX > 0;
+        var haveW = nextNodeX < _map.Width - 1;
+        if (haveN)
+        {
             VisitNeighbour(nextNodeIndex, nextNodeX, nextNodeY - 1, nextNodeIndex - _map.Width, _deltaGSide);
-        if (nextNodeX > _map.MinX)
+            if (haveE)
+                VisitNeighbour(nextNodeIndex, nextNodeX - 1, nextNodeY - 1, nextNodeIndex - _map.Width - 1, _deltaGDiag);
+            if (haveW)
+                VisitNeighbour(nextNodeIndex, nextNodeX + 1, nextNodeY - 1, nextNodeIndex - _map.Width + 1, _deltaGDiag);
+        }
+        if (haveE)
             VisitNeighbour(nextNodeIndex, nextNodeX - 1, nextNodeY, nextNodeIndex - 1, _deltaGSide);
-        if (nextNodeX < _map.MaxX)
+        if (haveW)
             VisitNeighbour(nextNodeIndex, nextNodeX + 1, nextNodeY, nextNodeIndex + 1, _deltaGSide);
-        if (nextNodeY < _map.MaxY)
+        if (haveS)
+        {
             VisitNeighbour(nextNodeIndex, nextNodeX, nextNodeY + 1, nextNodeIndex + _map.Width, _deltaGSide);
+            if (haveE)
+                VisitNeighbour(nextNodeIndex, nextNodeX - 1, nextNodeY + 1, nextNodeIndex + _map.Width - 1, _deltaGDiag);
+            if (haveW)
+                VisitNeighbour(nextNodeIndex, nextNodeX + 1, nextNodeY + 1, nextNodeIndex + _map.Width + 1, _deltaGDiag);
+        }
         return true;
     }
 
@@ -314,10 +330,6 @@ public class ThetaStar
                 y += stepY;
                 cumulativeG += _deltaGDiag;
             }
-
-            // If we exceed maxG at any point, line of sight fails
-            // if (cumulativeG - Epsilon > maxG)
-            //     return false;
         }
 
         // If we made it out of the loop, line of sight is good
@@ -364,35 +376,23 @@ public class ThetaStar
             if (LineOfSight(gx, gy, nodeX, nodeY, _nodes[grandParentIndex].GScore, out var losLeeway, out var losDist, out var losMinG))
             {
                 var losScore = CalculateScore(destPixG, losMinG, losLeeway, nodeIndex);
-                altNode.GScore = _nodes[grandParentIndex].GScore + losDist;
-                altNode.ParentIndex = grandParentIndex;
-                altNode.PathLeeway = losLeeway;
-                altNode.PathMinG = losMinG;
-                altNode.Score = losScore;
+                if (losScore > altNode.Score || losScore == altNode.Score && losLeeway >= (losScore >= Score.Safe ? 0 : altNode.PathLeeway))
+                {
+                    parentIndex = grandParentIndex;
+                    altNode.GScore = _nodes[parentIndex].GScore + _deltaGSide * losDist;
+                    altNode.ParentIndex = grandParentIndex;
+                    altNode.PathLeeway = losLeeway;
+                    altNode.PathMinG = losMinG;
+                    altNode.Score = losScore;
+                }
             }
         }
 
-        bool shouldVisit;
-        if (destNode.OpenHeapIndex == 0)
+        var visit = destNode.OpenHeapIndex == 0 || CompareNodeScores(ref altNode, ref destNode) < (destNode.OpenHeapIndex < 0 ? -1 : 0);
+        if (visit)
         {
-            // never visited, definitely add it
-            shouldVisit = true;
-        }
-        else
-        {
-            // compare old vs new
-            var cmp = CompareNodeScores(ref altNode, ref destNode);
-            // if altNode is significantly better (cmp < 0) we do the update
-            shouldVisit = cmp < 0;
-        }
-
-        if (shouldVisit)
-        {
-            // if it was on the closed list, count re-open, etc.
             if (destNode.OpenHeapIndex < 0)
                 ++NumReopens;
-
-            // adopt altNode
             destNode = altNode;
             AddToOpen(nodeIndex);
         }

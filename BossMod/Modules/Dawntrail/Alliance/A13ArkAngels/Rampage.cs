@@ -12,10 +12,11 @@ class Rampage(BossModule module) : Components.GenericAOEs(module)
         if (count == 0)
             return [];
         var aoes = new AOEInstance[count];
+        var color = Colors.Danger;
         for (var i = 0; i < count; ++i)
         {
             var aoe = AOEs[i];
-            aoes[i] = i == 0 ? count > 1 ? aoe with { Color = Colors.Danger } : aoe : aoe;
+            aoes[i] = i == 0 ? count > 1 ? aoe with { Color = color } : aoe : aoe;
         }
         return aoes;
     }

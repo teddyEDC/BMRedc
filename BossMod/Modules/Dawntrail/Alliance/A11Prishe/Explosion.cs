@@ -12,10 +12,11 @@ class Explosion(BossModule module) : Components.GenericAOEs(module, ActionID.Mak
             return [];
         var firstactivation = _aoes[0].Activation;
         var aoes = new AOEInstance[count];
+        var color = Colors.Danger;
         for (var i = 0; i < count; ++i)
         {
             var aoe = _aoes[i];
-            aoes[i] = (aoe.Activation - firstactivation).TotalSeconds < 1d ? aoe with { Color = Colors.Danger } : aoe with { Risky = false };
+            aoes[i] = (aoe.Activation - firstactivation).TotalSeconds < 1d ? aoe with { Color = color } : aoe with { Risky = false };
         }
         return aoes;
     }
@@ -23,7 +24,7 @@ class Explosion(BossModule module) : Components.GenericAOEs(module, ActionID.Mak
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.Explosion)
-            _aoes.Add(new(circle, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
+            _aoes.Add(new(circle, spell.LocXZ, default, Module.CastFinishAt(spell)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)

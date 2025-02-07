@@ -76,7 +76,7 @@ class BanishStorm(BossModule module) : Components.Exaflare(module, 6)
         if (spell.Action.ID == (uint)AID.Banish)
         {
             ++NumCasts;
-            var index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1));
+            var index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1f));
             AdvanceLine(Lines[index], caster.Position);
             if (Lines[index].ExplosionsLeft == 0)
                 Lines.RemoveAt(index);

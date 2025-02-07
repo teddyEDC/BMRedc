@@ -87,7 +87,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
             else
                 aoes[i] = aoe with { Risky = false };
         }
-        return [];
+        return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -98,7 +98,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
             case (uint)AID.Stonecarver2:
             case (uint)AID.Stonecarver3:
             case (uint)AID.Stonecarver4:
-                _aoes.Add(new(rect, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
+                _aoes.Add(new(rect, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell)));
                 if (_aoes.Count == 2)
                     _aoes.SortBy(x => x.Activation);
                 break;

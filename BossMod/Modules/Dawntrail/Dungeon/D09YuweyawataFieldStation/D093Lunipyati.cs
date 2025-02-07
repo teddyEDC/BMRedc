@@ -79,7 +79,7 @@ class RagingClaw(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.RagingClawFirst)
-            _aoe = new(cone, caster.Position, spell.Rotation, Module.CastFinishAt(spell));
+            _aoe = new(cone, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -143,9 +143,9 @@ class LeapingEarth(BossModule module) : Components.GenericAOEs(module)
     private readonly List<float> angles = new(4);
     private static readonly WPos[] spiralSmallPoints = [D093Lunipyati.ArenaCenter, new(31.8f, -715.5f), new(35, -721.7f), new(41, -722.5f)];
     private static readonly WPos[] spiralBigPoints = [D093Lunipyati.ArenaCenter, new(28.7f, -708.2f), new(29.4f, -714), new(35.4f, -715.8f),
-    new(40f, -711), new(38.7f, -705), new(34f, -701.5f), new(28f, -701.4f), new(24f, -704.399f), new(22f, -709.7f), new(23.1f, -715.099f),
+    new(40f, -711f), new(38.7f, -705f), new(34f, -701.5f), new(28f, -701.4f), new(24f, -704.399f), new(22f, -709.7f), new(23.1f, -715.099f),
     new(26.5f, -719.499f), new(32f, -721.699f), new(38f, -721.5f), new(43f, -717.999f), new(45.7f, -712.699f), new(45.9f, -706.699f),
-    new(42.9f, -701.2f), new(38.5f, -697), new(32.5f, -695.199f)];
+    new(42.9f, -701.2f), new(38.5f, -697f), new(32.5f, -695.199f)];
     private int maxCasts;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
@@ -202,9 +202,19 @@ class LeapingEarth(BossModule module) : Components.GenericAOEs(module)
         {
             var angle = angles[i];
             var deg = angle * Angle.RadToDeg;
-            var isIntercardinal = Angle.AnglesIntercardinals.Any(x => x.AlmostEqual(new(angle), Angle.DegToRad));
+            var isIntercardinal = false;
+
+            for (var j = 0; j < 4; ++j)
+            {
+                var angle2 = Angle.AnglesIntercardinals[j];
+                if (angle2.AlmostEqual(new(angle), Angle.DegToRad))
+                {
+                    isIntercardinal = true;
+                    break;
+                }
+            }
+
             var adjustedAngle = isIntercardinal ? deg + intercardinalOffset : deg + cardinalOffset;
-            var rotatedPoints = WPos.GenerateRotatedVertices(D093Lunipyati.ArenaCenter, spiralSmallPoints, adjustedAngle);
             AddAOEs(WPos.GenerateRotatedVertices(D093Lunipyati.ArenaCenter, spiralSmallPoints, adjustedAngle));
         }
     }
