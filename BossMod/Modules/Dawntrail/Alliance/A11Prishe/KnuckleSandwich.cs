@@ -45,7 +45,7 @@ class KnuckleSandwich(BossModule module) : Components.GenericAOEs(module)
             case (uint)AID.BrittleImpact2:
             case (uint)AID.BrittleImpact3:
                 ++NumCasts;
-                if (_aoes.Count > 0)
+                if (_aoes.Count != 0)
                     _aoes.RemoveAt(0);
                 break;
         }

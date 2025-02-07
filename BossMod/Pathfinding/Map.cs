@@ -211,17 +211,23 @@ public class Map
     }
 
     // enumerate pixels along line starting from (x1, y1) to (x2, y2); first is not returned, last is returned
-    public List<(int x, int y)> EnumeratePixelsInLine(int x1, int y1, int x2, int y2)
+    public (int x, int y)[] EnumeratePixelsInLine(int x1, int y1, int x2, int y2)
     {
-        var estimatedLength = Math.Max(Math.Abs(x2 - x1), Math.Abs(y2 - y1)) + 1;
-        var result = new List<(int x, int y)>(estimatedLength);
-        int dx = Math.Abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
-        int dy = -Math.Abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+        var shiftx2x1 = (x2 - x1) >> 31;
+        var shifty2y1 = (y2 - y1) >> 31;
+        var absDx = (x2 - x1) ^ (shiftx2x1 - shiftx2x1);
+        var absDy = (y2 - y1) ^ (shifty2y1 - shifty2y1);
+        var estimatedLength = (absDx ^ ((absDx ^ absDy) & -(absDx < absDy ? 1 : 0))) + 1;
+
+        var result = new (int x, int y)[estimatedLength];
+
+        int dx = absDx, sx = x1 < x2 ? 1 : -1;
+        int dy = -absDy, sy = y1 < y2 ? 1 : -1;
         int err = dx + dy, e2;
 
-        while (true)
+        for (var i = 0; i < estimatedLength; ++i)
         {
-            result.Add((x1, y1));
+            result[i] = (x1, y1);
             if (x1 == x2 && y1 == y2)
                 break;
             e2 = 2 * err;
@@ -236,6 +242,7 @@ public class Map
                 y1 += sy;
             }
         }
+
         return result;
     }
 }

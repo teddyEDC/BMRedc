@@ -92,10 +92,12 @@ class Soulweave(BossModule module) : Components.GenericAOEs(module)
         if (count == 0)
             return [];
         var aoes = new AOEInstance[count];
+        var act0 = _aoes[0].Activation;
+        var color = Colors.Danger;
         for (var i = 0; i < count; ++i)
         {
             var aoe = _aoes[i];
-            aoes[i] = (aoe.Activation - _aoes[0].Activation).TotalSeconds <= 1.3d ? aoe with { Color = Colors.Danger } : aoe with { Risky = false };
+            aoes[i] = (aoe.Activation - act0).TotalSeconds <= 1.3d ? aoe with { Color = color } : aoe with { Risky = false };
         }
         return aoes;
     }

@@ -90,7 +90,6 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
                     autorot.Preset = target.Target != null ? AIPreset : null;
                 }
                 UpdateMovement(player, master, target, gazeImminent || pyreticImminent, misdirectionMode ? autorot.Hints.MisdirectionThreshold : default, !forbidTargeting ? autorot.Hints.ActionsToExecute : null);
-
             }
             finally
             {
@@ -236,10 +235,34 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         }
         else if (misdirectionAngle != default && _naviDecision.Destination != null)
         {
-            var turn = (_naviDecision.Destination.Value - player.Position).OrthoL().Dot((_naviDecision.NextWaypoint ?? _naviDecision.Destination).Value - _naviDecision.Destination.Value);
-            ctrl.NaviTargetPos = turn == 0f ? _naviDecision.Destination
-                : player.Position + (_naviDecision.Destination.Value - player.Position).Rotate(turn > 0f ? -misdirectionAngle : misdirectionAngle);
             ctrl.AllowInterruptingCastByMovement = true;
+            var dir = _naviDecision.Destination.Value - player.Position;
+            var distSq = dir.LengthSq();
+            var threshold = 30f.Degrees();
+            var forceddir = WorldState.Client.ForcedMovementDirection;
+            var allowMovement = forceddir.AlmostEqual(Angle.FromDirection(dir), threshold.Rad);
+            if (allowMovement)
+                allowMovement = CalculateUnobstructedPathLength(forceddir) >= Math.Min(4f, distSq);
+            ctrl.NaviTargetPos = allowMovement && distSq >= 0.01f ? _naviDecision.Destination.Value : null;
+
+            float CalculateUnobstructedPathLength(Angle dir)
+            {
+                var start = _naviCtx.Map.WorldToGrid(player.Position);
+                if (!_naviCtx.Map.InBounds(start.x, start.y))
+                    return 0;
+
+                var end = _naviCtx.Map.WorldToGrid(player.Position + 100f * dir.ToDirection());
+                var startG = _naviCtx.Map.PixelMaxG[_naviCtx.Map.GridToIndex(start.x, start.y)];
+                foreach (var p in _naviCtx.Map.EnumeratePixelsInLine(start.x, start.y, end.x, end.y))
+                {
+                    if (!_naviCtx.Map.InBounds(p.x, p.y) || _naviCtx.Map.PixelMaxG[_naviCtx.Map.GridToIndex(p.x, p.y)] < startG)
+                    {
+                        var dest = _naviCtx.Map.GridToWorld(p.x, p.y, 0.5f, 0.5f);
+                        return (dest - player.Position).LengthSq();
+                    }
+                }
+                return float.MaxValue;
+            }
 
             // debug
             //void drawLine(WPos from, WPos to, uint color) => Camera.Instance!.DrawWorldLine(new(from.X, player.PosRot.Y, from.Z), new(to.X, player.PosRot.Y, to.Z), color);

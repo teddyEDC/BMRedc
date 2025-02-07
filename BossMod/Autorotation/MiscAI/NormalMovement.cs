@@ -142,7 +142,7 @@ public sealed class NormalMovement(RotationModuleManager manager, Actor player) 
             // this means that cos(threshold) = speed * dt / 2 / distance
             // assuming we wanna move at least for a second, speed is standard 6, threshold of 60 degrees would be fine for distances >= 6
             // for micro adjusts, if we move for 1 frame (1/60s), threshold of 60 degrees would be fine for distance 0.1, which is our typical threshold
-            var threshold = 30.Degrees();
+            var threshold = 30f.Degrees();
             var allowMovement = World.Client.ForcedMovementDirection.AlmostEqual(Angle.FromDirection(dir), threshold.Rad);
             if (allowMovement && destinationStrategy == DestinationStrategy.Pathfind)
             {
@@ -190,7 +190,7 @@ public sealed class NormalMovement(RotationModuleManager manager, Actor player) 
         if (!_navCtx.Map.InBounds(start.x, start.y))
             return 0;
 
-        var end = _navCtx.Map.WorldToGrid(Player.Position + 100 * dir.ToDirection());
+        var end = _navCtx.Map.WorldToGrid(Player.Position + 100f * dir.ToDirection());
         var startG = _navCtx.Map.PixelMaxG[_navCtx.Map.GridToIndex(start.x, start.y)];
         foreach (var p in _navCtx.Map.EnumeratePixelsInLine(start.x, start.y, end.x, end.y))
         {

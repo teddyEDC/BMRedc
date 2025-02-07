@@ -36,10 +36,10 @@ class Geyser(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCircle circle = new(6f);
 
-    private static readonly Dictionary<OID, Dictionary<Angle, WPos[]>> GeyserPositions = new()
+    private static readonly Dictionary<uint, Dictionary<Angle, WPos[]>> GeyserPositions = new()
     {
         {
-            OID.GeyserHelper1, new Dictionary<Angle, WPos[]>
+            (uint)OID.GeyserHelper1, new Dictionary<Angle, WPos[]>
             {
                 { 0.Degrees(), [new(0f, 14.16f), new(-9f, 45.16f)] },
                 { 180.Degrees(), [new(9f, 15.16f), new(0f, 46.16f)] },
@@ -48,7 +48,7 @@ class Geyser(BossModule module) : Components.GenericAOEs(module)
             }
         },
         {
-            OID.GeyserHelper2, new Dictionary<Angle, WPos[]>
+            (uint)OID.GeyserHelper2, new Dictionary<Angle, WPos[]>
             {
                 { 0.Degrees(), [new(0f, 35.16f), new(-9f, 15.16f), new(7f, 23.16f)] },
                 { 90.Degrees(),  [new(-15f, 39.16f), new(-7f, 23.16f), new(5f, 30.16f)] },
@@ -81,7 +81,7 @@ class Geyser(BossModule module) : Components.GenericAOEs(module)
     {
         if (state == 0x00100020)
         {
-            if (GeyserPositions.TryGetValue((OID)actor.OID, out var positionsByRotation))
+            if (GeyserPositions.TryGetValue(actor.OID, out var positionsByRotation))
             {
                 var activation = WorldState.FutureTime(5.1f);
                 foreach (var (rotation, positions) in positionsByRotation)
