@@ -14,14 +14,14 @@ abstract class InfernWave(BossModule module, bool savage, bool showHints, int ma
     private readonly int _maxActive = maxActive;
     private readonly List<Beacon> _beacons = [];
 
-    private static readonly AOEShapeCone _shape = new(60, 45.Degrees());
+    private static readonly AOEShapeCone _shape = new(60f, 45f.Degrees());
 
     public override void Update()
     {
         // create entries for newly activated beacons
-        foreach (var s in Module.Enemies(_savage ? OID.SBeacon : OID.NBeacon).Where(s => s.ModelState.AnimState1 == 1 && !_beacons.Any(b => b.Source == s)))
+        foreach (var s in Module.Enemies(_savage ? (uint)OID.SBeacon : (uint)OID.NBeacon).Where(s => s.ModelState.AnimState1 == 1 && !_beacons.Any(b => b.Source == s)))
         {
-            _beacons.Add(new(s, WorldState.FutureTime(17.1f)));
+            _beacons.Add(new(s, WorldState.FutureTime(17.1d)));
         }
 
         // update beacon targets
@@ -88,7 +88,7 @@ abstract class InfernWave(BossModule module, bool savage, bool showHints, int ma
         base.OnEventCast(caster, spell);
         if (spell.Action == WatchedAction)
         {
-            var beacon = _beacons.Find(b => b.Source.Position.AlmostEqual(caster.Position, 1));
+            var beacon = _beacons.Find(b => b.Source.Position.AlmostEqual(caster.Position, 1f));
             if (beacon != null)
                 beacon.Activation = new();
         }

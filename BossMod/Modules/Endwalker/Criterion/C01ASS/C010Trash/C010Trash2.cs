@@ -69,7 +69,23 @@ class C010DullahanStates : StateMachineBuilder
             .ActivateOnEnter<NInfernalPain>(!savage)
             .ActivateOnEnter<SBlightedGloom>(savage)
             .ActivateOnEnter<SKingsWill>(savage)
-            .ActivateOnEnter<SInfernalPain>(savage);
+            .ActivateOnEnter<SInfernalPain>(savage)
+            .Raw.Update = () =>
+            {
+                var allDeadOrDestroyed = true;
+                var enemies = module.Enemies(savage ? Trash2Arena.TrashSavage : Trash2Arena.TrashNormal);
+                var count = enemies.Count;
+                for (var i = 0; i < count; ++i)
+                {
+                    var enemy = enemies[i];
+                    if (!enemy.IsDeadOrDestroyed)
+                    {
+                        allDeadOrDestroyed = false;
+                        break;
+                    }
+                }
+                return allDeadOrDestroyed;
+            };
     }
 }
 class C010NTrash2States(BossModule module) : C010DullahanStates(module, false);
