@@ -238,11 +238,11 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             ctrl.AllowInterruptingCastByMovement = true;
             var dir = _naviDecision.Destination.Value - player.Position;
             var distSq = dir.LengthSq();
-            var threshold = 30f.Degrees();
+            var threshold = 45f.Degrees();
             var forceddir = WorldState.Client.ForcedMovementDirection;
             var allowMovement = forceddir.AlmostEqual(Angle.FromDirection(dir), threshold.Rad);
             if (allowMovement)
-                allowMovement = CalculateUnobstructedPathLength(forceddir) >= Math.Min(4f, distSq);
+                allowMovement = CalculateUnobstructedPathLength(forceddir) >= Math.Min(3f, distSq);
             ctrl.NaviTargetPos = allowMovement && distSq >= 0.01f ? _naviDecision.Destination.Value : null;
 
             float CalculateUnobstructedPathLength(Angle dir)

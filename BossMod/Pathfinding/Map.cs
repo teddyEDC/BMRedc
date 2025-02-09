@@ -213,11 +213,9 @@ public class Map
     // enumerate pixels along line starting from (x1, y1) to (x2, y2); first is not returned, last is returned
     public (int x, int y)[] EnumeratePixelsInLine(int x1, int y1, int x2, int y2)
     {
-        var shiftx2x1 = (x2 - x1) >> 31;
-        var shifty2y1 = (y2 - y1) >> 31;
-        var absDx = (x2 - x1) ^ (shiftx2x1 - shiftx2x1);
-        var absDy = (y2 - y1) ^ (shifty2y1 - shifty2y1);
-        var estimatedLength = (absDx ^ ((absDx ^ absDy) & -(absDx < absDy ? 1 : 0))) + 1;
+        var absDx = Math.Abs(x2 - x1);
+        var absDy = Math.Abs(y2 - y1);
+        var estimatedLength = Math.Max(absDx, absDy);
 
         var result = new (int x, int y)[estimatedLength];
 
@@ -227,9 +225,6 @@ public class Map
 
         for (var i = 0; i < estimatedLength; ++i)
         {
-            result[i] = (x1, y1);
-            if (x1 == x2 && y1 == y2)
-                break;
             e2 = 2 * err;
             if (e2 >= dy)
             {
@@ -241,6 +236,8 @@ public class Map
                 err += dx;
                 y1 += sy;
             }
+
+            result[i] = (x1, y1);
         }
 
         return result;
