@@ -1,5 +1,6 @@
 ﻿using Clipper2Lib;
 using EarcutNet;
+using System.Threading;
 
 // currently we use Clipper2 library (based on Vatti algorithm) for boolean operations and Earcut.net library (earcutting) for triangulating
 // note: the major user of these primitives is bounds clipper; since they operate in 'local' coordinates, we use WDir everywhere (offsets from center) and call that 'relative polygons' - i'm not quite happy with that, it's not very intuitive
@@ -89,50 +90,47 @@ public record class RelPolygonWithHoles(List<WDir> Vertices, List<int> HoleStart
         ref var edgeBuckets = ref _edgeBuckets;
         if (edgeBuckets == null)
         {
-            lock (_edgeBucketLock)
+            var holecount = HoleStarts.Count;
+            ContourEdgeBuckets[] holeEdgeBuckets;
+            var exteriorTask = Task.Run(() => BuildEdgeBucketsForContour(Exterior));
+            switch (holecount)
             {
-                // Double-check to prevent race conditions
-                if (_edgeBuckets == null)
-                {
-                    var exteriorTask = Task.Run(() => BuildEdgeBucketsForContour(Exterior));
-                    var holecount = HoleStarts.Count;
-                    ContourEdgeBuckets[] holeEdgeBuckets;
-                    switch (holecount)
+                case 0:
+                    holeEdgeBuckets = [];
+                    break;
+                case 1:
+                    holeEdgeBuckets = new ContourEdgeBuckets[1];
+                    holeEdgeBuckets[0] = Task.Run(() => BuildEdgeBucketsForContour(Interior(0))).Result;
+                    break;
+                default:
+                    holeEdgeBuckets = new ContourEdgeBuckets[holecount];
+                    var holeTasks = new Task[holecount];
+                    for (var i = 0; i < holecount; ++i)
                     {
-                        case 0:
-                            holeEdgeBuckets = [];
-                            break;
-                        case 1:
-                            holeEdgeBuckets = new ContourEdgeBuckets[1];
-                            holeEdgeBuckets[0] = Task.Run(() => BuildEdgeBucketsForContour(Interior(0))).Result;
-                            break;
-                        default:
-                            holeEdgeBuckets = new ContourEdgeBuckets[holecount];
-                            var holeTasks = new Task[holecount];
-                            for (var i = 0; i < holecount; ++i)
-                            {
-                                var index = i;
-                                holeTasks[i] = Task.Run(() =>
-                                {
-                                    holeEdgeBuckets[index] = BuildEdgeBucketsForContour(Interior(index));
-                                });
-                            }
-                            Task.WaitAll(holeTasks);
-                            break;
+                        holeTasks[i] = Task.Run(() =>
+                        {
+                            holeEdgeBuckets[i] = BuildEdgeBucketsForContour(Interior(i));
+                        });
                     }
-                    edgeBuckets = new EdgeBuckets(exteriorTask.Result, holeEdgeBuckets);
-                }
+                    Task.WaitAll(holeTasks);
+                    break;
             }
+
+            var newEdgeBuckets = new EdgeBuckets(exteriorTask.Result, holeEdgeBuckets);
+            var original = Interlocked.CompareExchange(ref _edgeBuckets, newEdgeBuckets, null);
+
+            edgeBuckets = original ?? newEdgeBuckets;
         }
 
-        if (!InSimplePolygon(p, edgeBuckets!.ExteriorEdgeBuckets))
+        if (!InSimplePolygon(p, edgeBuckets.ExteriorEdgeBuckets))
             return false;
-
-        for (var i = 0; i < edgeBuckets.HoleEdgeBuckets.Length; ++i)
-        {
-            if (InSimplePolygon(p, edgeBuckets.HoleEdgeBuckets[i]))
-                return false;
-        }
+        var len = edgeBuckets.HoleEdgeBuckets.Length;
+        if (len != 0)
+            for (var i = 0; i < len; ++i)
+            {
+                if (InSimplePolygon(p, edgeBuckets.HoleEdgeBuckets[i]))
+                    return false;
+            }
         return true;
     }
 
