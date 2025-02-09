@@ -33,7 +33,6 @@ public record class RelPolygonWithHoles(List<WDir> Vertices, List<int> HoleStart
     public List<(WDir, WDir)> ExteriorEdges => PolygonUtil.EnumerateEdges(Exterior);
     public List<(WDir, WDir)> InteriorEdges(int index) => PolygonUtil.EnumerateEdges(Interior(index));
 
-    private readonly object _edgeBucketLock = new();
     private EdgeBuckets? _edgeBuckets;
     private const int BucketCount = 20;
     private const float Epsilon = 1e-8f;
