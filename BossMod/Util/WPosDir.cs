@@ -99,7 +99,13 @@ public record struct WPos(float X, float Z)
     public readonly WPos Rounded() => new(MathF.Round(X), MathF.Round(Z));
     public readonly WPos Rounded(float precision) => Scaled(1f / precision).Rounded().Scaled(precision);
     public static WPos Lerp(WPos from, WPos to, float progress) => new(from.ToVec2() * (1f - progress) + to.ToVec2() * progress);
-
+    public static WPos ClampToGrid(WPos coord) // AOEs are getting clamped to a grid, if spell.LocXZ can't be used, you can correct the position with this method
+    {
+        const float gridSize = (float)(2000.0d / 65535.0d);
+        const float gridSizeInv = (float)(1d / (2000.0d / 65535.0d));
+        int gridIndexX = (int)MathF.Round(coord.X * gridSizeInv), gridIndexZ = (int)MathF.Round(coord.Z * gridSizeInv);
+        return new((gridIndexX - 0.5f) * gridSize, (gridIndexZ - 0.5f) * gridSize);
+    }
     public static WPos RotateAroundOrigin(float rotateByDegrees, WPos origin, WPos point)
     {
         var (sin, cos) = ((float, float))Math.SinCos(rotateByDegrees * Angle.DegToRad);

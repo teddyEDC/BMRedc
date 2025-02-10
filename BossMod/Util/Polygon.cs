@@ -106,9 +106,10 @@ public record class RelPolygonWithHoles(List<WDir> Vertices, List<int> HoleStart
                     var holeTasks = new Task[holecount];
                     for (var i = 0; i < holecount; ++i)
                     {
+                        var index = i;
                         holeTasks[i] = Task.Run(() =>
                         {
-                            holeEdgeBuckets[i] = BuildEdgeBucketsForContour(Interior(i));
+                            holeEdgeBuckets[index] = BuildEdgeBucketsForContour(Interior(index));
                         });
                     }
                     Task.WaitAll(holeTasks);

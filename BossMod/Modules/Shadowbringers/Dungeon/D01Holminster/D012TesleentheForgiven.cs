@@ -38,13 +38,13 @@ class FeveredFlagellation(BossModule module) : Components.GenericBaitAway(module
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (CurrentBaits.Count != 0 && (AID)spell.Action.ID == AID.FeveredFlagellation2)
+        if (CurrentBaits.Count != 0 && spell.Action.ID == (uint)AID.FeveredFlagellation2)
             CurrentBaits.RemoveAt(0);
     }
 
     public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
     {
-        if ((IconID)iconID is >= IconID.Icon1 and <= IconID.Icon4)
+        if (iconID is >= (uint)IconID.Icon1 and <= (uint)IconID.Icon4)
             CurrentBaits.Add(new(Module.PrimaryActor, actor, rect));
     }
 
@@ -58,8 +58,8 @@ class FeveredFlagellation(BossModule module) : Components.GenericBaitAway(module
     }
 }
 
-class Exorcise(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.ExorciseA), 6, 4, 4);
-class HolyWater(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(AID.HolyWater), m => m.Enemies(OID.HolyWaterVoidzone).Where(z => z.EventState != 7), 0.8f);
+class Exorcise(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.ExorciseA), 6f, 4, 4);
+class HolyWater(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.HolyWater), m => m.Enemies(OID.HolyWaterVoidzone).Where(z => z.EventState != 7), 0.8f);
 
 class D012TesleentheForgivenStates : StateMachineBuilder
 {
