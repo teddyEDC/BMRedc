@@ -173,7 +173,7 @@ class DivineCall(BossModule module) : Components.StatusDrivenForcedMarch(module,
         for (var i = 0; i < count; ++i)
         {
             var aoe = _lit.AOEs[i];
-            if (aoe.Shape.Check(pos, aoe.Origin, aoe.Rotation))
+            if (aoe.Check(pos))
                 return true;
         }
         return false;

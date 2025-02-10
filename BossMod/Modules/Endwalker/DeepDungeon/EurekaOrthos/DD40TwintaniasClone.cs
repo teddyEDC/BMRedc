@@ -84,7 +84,7 @@ class Turbine(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
     {
         foreach (var aoe in _aoe.ActiveAOEs(slot, actor))
         {
-            if (aoe.Shape.Check(pos, aoe.Origin, aoe.Rotation))
+            if (aoe.Check(pos))
                 return true;
         }
         return !Arena.InBounds(pos);
