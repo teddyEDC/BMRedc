@@ -33,11 +33,7 @@ class ScraplineStorm(BossModule module) : Components.KnockbackFromCastTarget(mod
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {
         var aoes = _aoe.AOEs;
-        var aoe = aoes[0];
-        if (aoes.Count != 0 && aoe.Shape.Check(pos, aoe.Origin, aoe.Rotation))
-            return true;
-        else
-            return false;
+        return aoes.Count != 0 && aoes[0].Check(pos);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -54,13 +50,7 @@ class ScraplineTyphoon(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(10f);
     private static readonly AOEShapeDonut donut = new(8f, 40f);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        if (AOEs.Count != 0)
-            return [AOEs[0]];
-        else
-            return [];
-    }
+    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => AOEs.Count != 0 ? [AOEs[0]] : [];
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

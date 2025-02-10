@@ -66,7 +66,7 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
         for (var i = 0; i < count; ++i)
         {
             var aoe = _aoe1.AOEs[i];
-            if (aoe.Shape.Check(pos, aoe.Origin, aoe.Rotation))
+            if (aoe.Check(pos))
                 return true;
         }
 
