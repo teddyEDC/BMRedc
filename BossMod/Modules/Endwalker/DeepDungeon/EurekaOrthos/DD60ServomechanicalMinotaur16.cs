@@ -78,9 +78,9 @@ class DisorientingGroan(BossModule module) : Components.KnockbackFromCastTarget(
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var source = Sources(slot, actor).FirstOrDefault();
-        if (source != default)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5f), source.Activation);
+        var source = Casters.Count != 0 ? Casters[0] : null;
+        if (source != null)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center, 5f), Module.CastFinishAt(source.CastInfo));
     }
 }
 

@@ -30,18 +30,14 @@ public class A10VanguardPathfinderStates : StateMachineBuilder
             .ActivateOnEnter<BombToss>()
             .Raw.Update = () =>
             {
-                var allDeadOrDestroyed = true;
                 var enemies = module.Enemies(A10VanguardPathfinder.Trash);
                 var count = enemies.Count;
                 for (var i = 0; i < count; ++i)
                 {
                     if (!enemies[i].IsDeadOrDestroyed)
-                    {
-                        allDeadOrDestroyed = false;
-                        break;
-                    }
+                        return false;
                 }
-                return allDeadOrDestroyed;
+                return true;
             };
     }
 }

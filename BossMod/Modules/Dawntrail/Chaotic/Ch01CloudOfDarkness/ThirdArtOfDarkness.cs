@@ -20,7 +20,7 @@ class ThirdArtOfDarknessCleave(BossModule module) : Components.GenericAOEs(modul
                 _ => default
             };
             if (dir != default)
-                yield return new(_shape, caster.Position, caster.Rotation + dir, m[0].activation);
+                yield return new(_shape, WPos.ClampToGrid(caster.Position), caster.Rotation + dir, m[0].activation);
         }
     }
 

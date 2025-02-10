@@ -53,18 +53,14 @@ public class A10AquariusStates : StateMachineBuilder
             .ActivateOnEnter<Agaricus>()
             .Raw.Update = () =>
             {
-                var allDeadOrDestroyed = true;
                 var enemies = module.Enemies(A10Aquarius.Trash);
                 var count = enemies.Count;
                 for (var i = 0; i < count; ++i)
                 {
                     if (!enemies[i].IsDeadOrDestroyed)
-                    {
-                        allDeadOrDestroyed = false;
-                        break;
-                    }
+                        return false;
                 }
-                return allDeadOrDestroyed;
+                return true;
             };
     }
 }

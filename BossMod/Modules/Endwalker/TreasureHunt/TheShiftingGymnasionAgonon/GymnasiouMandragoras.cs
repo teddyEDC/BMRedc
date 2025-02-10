@@ -30,9 +30,9 @@ public enum AID : uint
 
 class Ram(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Ram));
 class SaibaiMandragora(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.SaibaiMandragora), "Calls adds");
-class LeafDagger(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.LeafDagger), 3);
+class LeafDagger(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.LeafDagger), 3f);
 
-abstract class Mandragoras(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 7);
+abstract class Mandragoras(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 7f);
 class PluckAndPrune(BossModule module) : Mandragoras(module, AID.PluckAndPrune);
 class TearyTwirl(BossModule module) : Mandragoras(module, AID.TearyTwirl);
 class HeirloomScream(BossModule module) : Mandragoras(module, AID.HeirloomScream);
@@ -52,7 +52,17 @@ class GymnasiouMandragorasStates : StateMachineBuilder
             .ActivateOnEnter<HeirloomScream>()
             .ActivateOnEnter<PungentPirouette>()
             .ActivateOnEnter<Pollen>()
-            .Raw.Update = () => module.Enemies(GymnasiouMandragoras.All).All(x => x.IsDeadOrDestroyed);
+            .Raw.Update = () =>
+            {
+                var enemies = module.Enemies(GymnasiouMandragoras.All);
+                var count = enemies.Count;
+                for (var i = 0; i < count; ++i)
+                {
+                    if (!enemies[i].IsDeadOrDestroyed)
+                        return false;
+                }
+                return true;
+            };
     }
 }
 
@@ -66,7 +76,7 @@ public class GymnasiouMandragoras(WorldState ws, Actor primary) : THTemplate(ws,
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.GymnasiouKorrigan));
+        Arena.Actors(Enemies((uint)OID.GymnasiouKorrigan));
         Arena.Actors(Enemies(bonusAdds), Colors.Vulnerable);
     }
 

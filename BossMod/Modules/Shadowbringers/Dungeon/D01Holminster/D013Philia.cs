@@ -28,12 +28,12 @@ public enum AID : uint
     IntoTheLightMarker = 15844, // Helper->player, no cast, single-target, line stack
     IntoTheLightVisual = 17232, // Boss->self, 5.0s cast, single-target
     IntoTheLight = 15845, // Boss->self, no cast, range 50 width 8 rect
-    FierceBeating1 = 15834, // Boss->self, 5.0s cast, single-target
-    FierceBeating2 = 15836, // Boss->self, no cast, single-target
-    FierceBeating3 = 15835, // Boss->self, no cast, single-target
-    FierceBeating4 = 15837, // Helper->self, 5.0s cast, range 4 circle
-    FierceBeating5 = 15839, // Helper->location, no cast, range 4 circle
-    FierceBeating6 = 15838, // Helper->self, no cast, range 4 circle
+    FierceBeatingRotationVisual = 15834, // Boss->self, 5.0s cast, single-target
+    FierceBeatingVisual1 = 15836, // Boss->self, no cast, single-target
+    FierceBeatingVisual2 = 15835, // Boss->self, no cast, single-target
+    FierceBeatingExaFirst = 15837, // Helper->self, 5.0s cast, range 4 circle
+    FierceBeatingExaRestFirst = 15838, // Helper->self, no cast, range 4 circle
+    FierceBeatingExaRestRest = 15839, // Helper->location, no cast, range 4 circle
     CatONineTailsVisual = 15840, // Boss->self, no cast, single-target
     CatONineTails = 15841 // Helper->self, 2.0s cast, range 25 120-degree cone
 }
@@ -185,7 +185,7 @@ class CatONineTails(BossModule module) : Components.GenericRotatingAOE(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action.ID == (uint)AID.FierceBeating1)
+        if (spell.Action.ID == (uint)AID.FierceBeatingRotationVisual)
             Sequences.Add(new(_shape, spell.LocXZ, spell.Rotation + 180f.Degrees(), -45f.Degrees(), Module.CastFinishAt(spell), 2, 8));
     }
 
@@ -198,12 +198,8 @@ class CatONineTails(BossModule module) : Components.GenericRotatingAOE(module)
 
 class FierceBeating(BossModule module) : Components.Exaflare(module, 4f)
 {
-    private readonly List<WPos> _casters = [];
-    private int linesstartedcounttotal;
-    private int linesstartedcount1;
-    private int linesstartedcount2;
     private static readonly AOEShapeCircle circle = new(4f);
-    private DateTime _activation;
+    private readonly List<AOEInstance> _aoes = new(2);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -214,82 +210,72 @@ class FierceBeating(BossModule module) : Components.Exaflare(module, 4f)
         var imminentAOEs = ImminentAOEs(linesCount);
         var futureCount = futureAOEs.Count;
         var imminentCount = imminentAOEs.Length;
-        var total = futureCount + imminentCount;
+        var aoesCount = _aoes.Count;
+        var total = futureCount + imminentCount + aoesCount;
         var index = 0;
-        var aoes = new AOEInstance[total + 2];
+        var aoes = new AOEInstance[total];
         for (var i = 0; i < futureCount; ++i)
         {
             var aoe = futureAOEs[i];
             aoes[index++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, FutureColor);
         }
-
         for (var i = 0; i < imminentCount; ++i)
         {
             var aoe = imminentAOEs[i];
             aoes[index++] = new(Shape, aoe.Item1, aoe.Item3, aoe.Item2, ImminentColor);
         }
-        if (linesstartedcount1 < 8)
-            aoes[index++] = new(circle, WPos.ClampToGrid(WPos.RotateAroundOrigin(linesstartedcount1 * 45, D013Philia.ArenaCenter, _casters[0])), default, _activation.AddSeconds(linesstartedcount1 * 3.7d));
-        if (linesCount > 1 && linesstartedcount2 < 8)
-            aoes[index++] = new(circle, WPos.ClampToGrid(WPos.RotateAroundOrigin(linesstartedcount2 * 45, D013Philia.ArenaCenter, _casters[1])), default, _activation.AddSeconds(linesstartedcount2 * 3.7d));
-        return aoes[..index];
-    }
-
-    public override void Update()
-    {
-        if (linesstartedcount1 != 0 && Lines.Count == 0)
+        for (var i = 0; i < _aoes.Count; ++i)
         {
-            linesstartedcounttotal = 0;
-            linesstartedcount1 = 0;
-            linesstartedcount2 = 0;
-            _casters.Clear();
+            var aoe = _aoes[i];
+            aoes[index++] = aoe;
         }
+        return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action.ID == (uint)AID.FierceBeating4)
+        if (spell.Action.ID == (uint)AID.FierceBeatingExaFirst)
         {
-            Lines.Add(new() { Next = spell.LocXZ, Advance = 2.5f * spell.Rotation.ToDirection(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 1f, ExplosionsLeft = 7, MaxShownExplosions = 3 });
-            _activation = Module.CastFinishAt(spell);
-            ++linesstartedcounttotal;
-            ++NumCasts;
-            _casters.Add(caster.Position);
-            if (linesstartedcounttotal % 2 != 0)
-                ++linesstartedcount1;
-            else
-                ++linesstartedcount2;
+            AddLine(ref caster, Module.CastFinishAt(spell));
         }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (spell.Action.ID == (uint)AID.FierceBeating6)
+        if (spell.Action.ID == (uint)AID.FierceBeatingExaRestFirst)
         {
-            Lines.Add(new() { Next = caster.Position, Advance = 2.5f * caster.Rotation.ToDirection(), NextExplosion = WorldState.FutureTime(1), TimeToMove = 1f, ExplosionsLeft = 7, MaxShownExplosions = 3 });
-            ++linesstartedcounttotal;
-            if (linesstartedcounttotal % 2 != 0)
-                ++linesstartedcount1;
-            else
-                ++linesstartedcount2;
+            AddLine(ref caster, WorldState.FutureTime(1d));
         }
-        if (Lines.Count > 0)
+        if (Lines.Count != 0)
         {
-            if (spell.Action.ID is (uint)AID.FierceBeating4 or (uint)AID.FierceBeating6)
-            {
-                var index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1f));
-                AdvanceLine(Lines[index], caster.Position);
-                if (Lines[index].ExplosionsLeft == 0)
-                    Lines.RemoveAt(index);
-            }
-            else if (spell.Action.ID == (uint)AID.FierceBeating5)
-            {
-                var index = Lines.FindIndex(item => item.Next.AlmostEqual(spell.TargetXZ, 1f));
-                AdvanceLine(Lines[index], spell.TargetXZ);
-                if (Lines[index].ExplosionsLeft == 0)
-                    Lines.RemoveAt(index);
-            }
+            if (spell.Action.ID is (uint)AID.FierceBeatingExaFirst or (uint)AID.FierceBeatingExaRestFirst)
+                Advance(caster.Position);
+            else if (spell.Action.ID == (uint)AID.FierceBeatingExaRestRest)
+                Advance(spell.TargetXZ);
         }
+
+        void Advance(WPos pos)
+        {
+            var index = Lines.FindIndex(item => item.Next.AlmostEqual(pos, 1f));
+            if (index < 0)
+                return;
+            AdvanceLine(Lines[index], pos);
+            if (Lines[index].ExplosionsLeft == 0)
+                Lines.RemoveAt(index);
+        }
+    }
+
+    public void AddLine(ref Actor caster, DateTime activation)
+    {
+        var adv = 2.5f * caster.Rotation.ToDirection();
+        Lines.Add(new() { Next = caster.Position, Advance = adv, NextExplosion = activation, TimeToMove = 1f, ExplosionsLeft = 7, MaxShownExplosions = 3 });
+        ++NumCasts;
+        if (_aoes.Count != 0 && NumCasts > 2)
+            _aoes.RemoveAt(0);
+        if (NumCasts <= 14)
+            _aoes.Add(new(circle, WPos.ClampToGrid(WPos.RotateAroundOrigin(45, D013Philia.ArenaCenter, caster.Position + adv)), default, WorldState.FutureTime(3.7d)));
+        if (NumCasts == 16)
+            NumCasts = 0;
     }
 }
 

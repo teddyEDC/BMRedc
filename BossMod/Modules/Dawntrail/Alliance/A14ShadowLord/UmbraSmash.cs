@@ -28,7 +28,7 @@ class UmbraSmash(BossModule module) : Components.Exaflare(module, new AOEShapeRe
             case (uint)AID.UmbraSmashAOE4:
             case (uint)AID.UmbraSmashAOEClone:
                 var dir = spell.Rotation.ToDirection();
-                var origin = spell.LocXZ + 30f * dir;
+                var origin = caster.Position + 30f * dir;
                 Lines.Add(new() { Next = origin, Advance = 5f * dir.OrthoL(), Rotation = spell.Rotation + 90f.Degrees(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2.3f, ExplosionsLeft = 6, MaxShownExplosions = 2 });
                 Lines.Add(new() { Next = origin, Advance = 5f * dir.OrthoR(), Rotation = spell.Rotation - 90f.Degrees(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 2.3f, ExplosionsLeft = 6, MaxShownExplosions = 2 });
                 break;
@@ -45,7 +45,7 @@ class UmbraSmash(BossModule module) : Components.Exaflare(module, new AOEShapeRe
             case (uint)AID.UmbraSmashAOE4:
             case (uint)AID.UmbraSmashAOEClone:
                 ++NumCasts;
-                var origin = spell.LocXZ + 30f * spell.Rotation.ToDirection();
+                var origin = caster.Position + 30f * spell.Rotation.ToDirection();
                 foreach (var l in Lines.Where(l => l.Next.AlmostEqual(origin, 1f)))
                 {
                     l.Next = origin + l.Advance;
