@@ -91,18 +91,14 @@ public class A10DespotStates : StateMachineBuilder
             .ActivateOnEnter<PanzerfaustHint>()
             .Raw.Update = () =>
             {
-                var allDeadOrDestroyed = true;
                 var enemies = module.Enemies(A10Despot.Trash);
                 var count = enemies.Count;
                 for (var i = 0; i < count; ++i)
                 {
                     if (!enemies[i].IsDeadOrDestroyed)
-                    {
-                        allDeadOrDestroyed = false;
-                        break;
-                    }
+                        return false;
                 }
-                return allDeadOrDestroyed;
+                return true;
             };
     }
 }

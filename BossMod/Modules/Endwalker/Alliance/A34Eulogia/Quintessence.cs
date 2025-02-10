@@ -45,14 +45,14 @@ class Quintessence(BossModule module) : Components.GenericAOEs(module)
 
         WDir offset = index switch
         {
-            0x4C or 0x53 or 0x56 => new(8.979f, 8.996f),
-            0x4D or 0x50 or 0x55 => new(-9.027f, 8.996f),
-            0x4E or 0x52 or 0x57 => new(-9.027f, -9.009f),
-            0x4F or 0x51 or 0x54 => new(8.979f, -9.009f),
+            0x4C or 0x53 or 0x56 => new(9f, 9f),
+            0x4D or 0x50 or 0x55 => new(-9f, 9f),
+            0x4E or 0x52 or 0x57 => new(-9f, -9f),
+            0x4F or 0x51 or 0x54 => new(9f, -9f),
             _ => default
         };
         _index = index;
-        position = Arena.Center + offset;
+        position = WPos.ClampToGrid(Arena.Center + offset);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
