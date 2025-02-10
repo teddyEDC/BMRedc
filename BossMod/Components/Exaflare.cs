@@ -55,7 +55,7 @@ public class Exaflare(BossModule module, AOEShape shape, ActionID aid = default)
         {
             var l = Lines[i];
             if (l.ExplosionsLeft != 0)
-                exas[i] = (l.Next, l.NextExplosion, l.Rotation);
+                exas[i] = (WPos.ClampToGrid(l.Next), l.NextExplosion, l.Rotation);
         }
         return exas;
     }
@@ -73,7 +73,7 @@ public class Exaflare(BossModule module, AOEShape shape, ActionID aid = default)
             {
                 pos += l.Advance;
                 time = time.AddSeconds(l.TimeToMove);
-                exas.Add((pos, time, l.Rotation));
+                exas.Add((WPos.ClampToGrid(pos), time, l.Rotation));
             }
         }
         return exas;

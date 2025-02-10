@@ -150,12 +150,13 @@ class RapidRotary(BossModule module) : Components.GenericAOEs(module)
         }
         void AddAOEs(AOEShape shape2, Angle initialAngle)
         {
+            var pos = WPos.ClampToGrid(Arena.Center);
             for (var i = 0; i < 3; ++i)
             {
                 var activation = Module.CastFinishAt(spell, 1.8f + i * 0.3f);
                 var angle = initialAngle - i * a120;
-                _aoes.Add(new(donutSectorSmall, Arena.Center, angle, activation));
-                _aoes.Add(new(shape2, Arena.Center, angle, activation));
+                _aoes.Add(new(donutSectorSmall, pos, angle, activation));
+                _aoes.Add(new(shape2, pos, angle, activation));
             }
         }
     }

@@ -54,7 +54,7 @@ public enum SID : uint
 
 class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 {
-    private const float Radius = 0.5f;
+    private const float Radius = 0.51f; // small cushion since fences don't seem to be positioned perfectly
     public static readonly WPos ArenaCenter = new(0f, -100f);
     public static readonly ArenaBoundsRect StartingBounds = new(14.5f, 22.5f);
     private static readonly ArenaBoundsRect defaultBounds = new(12f, 20f);
@@ -231,36 +231,11 @@ class BlastCannon : Components.SimpleAOEs
 }
 class Shock(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Shock), 3f);
 
-class HomingCannon(BossModule module) : Components.GenericAOEs(module)
+class HomingCannon : Components.SimpleAOEs
 {
-    private static readonly AOEShapeRect rect = new(50, 1);
-    private readonly List<AOEInstance> _aoes = [];
-
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public HomingCannon(BossModule module) : base(module, ActionID.MakeSpell(AID.HomingCannon), new AOEShapeRect(50f, 1f))
     {
-        var count = _aoes.Count;
-        if (count == 0)
-            return [];
-        var aoes = new AOEInstance[count];
-        var act0 = _aoes[0].Activation;
-        for (var i = 0; i < count; ++i)
-        {
-            var aoe = _aoes[i];
-            aoes[i] = (aoe.Activation - act0).TotalSeconds < 1d ? aoe with { Color = Colors.Danger } : aoe with { Risky = false };
-        }
-        return aoes;
-    }
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        if (spell.Action.ID == (uint)AID.HomingCannon)
-            _aoes.Add(new(rect, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell)));
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        if (_aoes.Count != 0 && spell.Action.ID == (uint)AID.HomingCannon)
-            _aoes.RemoveAt(0);
+        MaxDangerColor = 4;
     }
 }
 

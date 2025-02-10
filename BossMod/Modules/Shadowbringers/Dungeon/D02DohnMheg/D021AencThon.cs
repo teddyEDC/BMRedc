@@ -88,7 +88,7 @@ class Geyser(BossModule module) : Components.GenericAOEs(module)
                     if (actor.Rotation.AlmostEqual(rotation, Angle.DegToRad))
                     {
                         for (var i = 0; i < positions.Length; ++i)
-                            _aoes.Add(new(circle, positions[i], default, activation));
+                            _aoes.Add(new(circle, WPos.ClampToGrid(positions[i]), default, activation));
                         break;
                     }
             }
