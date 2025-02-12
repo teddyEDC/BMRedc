@@ -24,10 +24,10 @@ public enum AID : uint
 }
 
 class StoneFlail(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.StoneFlail));
-class FallingRock(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FallingRock), 4);
-class FlailSmash(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FlailSmash), 10);
-class HeadToss(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.HeadToss), 6, 4, 4);
-class Earthshake(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Earthshake), new AOEShapeDonut(10, 20));
+class FallingRock(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FallingRock), 4f);
+class FlailSmash(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FlailSmash), 10f);
+class HeadToss(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.HeadToss), 6f, 4, 4);
+class Earthshake(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Earthshake), new AOEShapeDonut(10f, 20f));
 class Rehydration(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.Rehydration), showNameInHint: true);
 
 class RightRound(BossModule module) : Components.GenericAOEs(module)
@@ -39,13 +39,13 @@ class RightRound(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.RightRoundVisual)
+        if (spell.Action.ID == (uint)AID.RightRoundVisual) // TODO: find more precise way to calculate spell location. seems to be neither spell.LocXZ nor morningstar location, instead its somewhere in the middle, seen distances of 0-7.6 away from morningstar
             _aoe = new(circle, spell.LocXZ, default, Module.CastFinishAt(spell, 0.9f));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.RightRound)
+        if (spell.Action.ID == (uint)AID.RightRound)
             _aoe = null;
     }
 }
@@ -68,16 +68,19 @@ class D041GreaterArmadilloStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 656, NameID = 8252)]
 public class D041GreaterArmadillo(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBoundsComplex arena = new([new Circle(new(278, 204), 19.5f)], [new Rectangle(new(278, 223.75f), 20, 1)]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(278f, 204f), 19.5f, 40)], [new Rectangle(new(278f, 223.594f), 20f, 1f)]);
 
     protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var e in hints.PotentialTargets)
+        var count = hints.PotentialTargets.Count;
+        if (count == 0)
+            return;
+        for (var i = 0; i < count; ++i)
         {
-            e.Priority = (OID)e.Actor.OID switch
+            var e = hints.PotentialTargets[i];
+            e.Priority = e.Actor.OID switch
             {
-                OID.PackArmadillo => 2,
-                OID.Boss => 1,
+                (uint)OID.PackArmadillo => 1,
                 _ => 0
             };
         }
@@ -86,6 +89,6 @@ public class D041GreaterArmadillo(WorldState ws, Actor primary) : BossModule(ws,
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.PackArmadillo));
+        Arena.Actors(Enemies((uint)OID.PackArmadillo));
     }
 }

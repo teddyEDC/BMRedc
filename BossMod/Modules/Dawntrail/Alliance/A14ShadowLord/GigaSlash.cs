@@ -23,7 +23,7 @@ class GigaSlash(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         void AddAOE(AOEShapeCone shape, float rotationOffset, float finishOffset)
-        => AOEs.Add(new(shape, caster.Position, spell.Rotation + rotationOffset.Degrees(), Module.CastFinishAt(spell, finishOffset)));
+        => AOEs.Add(new(shape, spell.LocXZ, spell.Rotation + rotationOffset.Degrees(), Module.CastFinishAt(spell, finishOffset)));
 
         switch (spell.Action.ID)
         {
