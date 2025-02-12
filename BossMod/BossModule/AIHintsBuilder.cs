@@ -76,10 +76,10 @@ public sealed class AIHintsBuilder : IDisposable
         }
         foreach (var actor in _ws.Actors.Actors.Values)
         {
+            if (!actor.IsTargetable || actor.IsAlly || actor.IsDead)
+                continue;
             var index = actor.CharacterSpawnIndex;
             if (index < 0 || index >= hints.Enemies.Length)
-                continue;
-            if (!actor.IsTargetable || actor.IsAlly || actor.IsDead)
                 continue;
 
             int priority;

@@ -18,13 +18,15 @@ public enum AID : uint
 }
 
 class Dissever(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.Dissever), new AOEShapeCone(10.8f, 45.Degrees()), activeWhileCasting: false);
-class BallofFire(BossModule module) : Components.PersistentVoidzone(module, 6, m => m.Enemies(OID.FireVoidPuddle).Where(z => z.EventState != 7));
-class BallofIce(BossModule module) : Components.PersistentVoidzone(module, 6, m => m.Enemies(OID.IceVoidPuddle).Where(z => z.EventState != 7));
+class BallofFire(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(AID.BallOfFire), m => m.Enemies(OID.FireVoidPuddle).Where(z => z.EventState != 7), 2.1f);
+class BallofIce(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(AID.BallOfIce), m => m.Enemies(OID.IceVoidPuddle).Where(z => z.EventState != 7), 2.1f);
 class FearItself(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FearItself), new AOEShapeDonut(5, 50));
 
 class Hints(BossModule module) : BossComponent(module)
 {
-    public int NumCasts { get; private set; }
+    // arena is like a weird octagon and the boss also doesn't cast from the center
+    private static readonly WPos FearCastSource = new(-300, -236);
+    public int NumCasts;
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
@@ -44,6 +46,14 @@ class Hints(BossModule module) : BossComponent(module)
         if (NumCasts >= 4)
             hints.Add($"Run to the middle of the arena! \n{Module.PrimaryActor.Name} is about to cast a donut AOE!");
     }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (NumCasts < 4)
+            hints.AddForbiddenZone(ShapeDistance.Circle(FearCastSource, 11), FearCastSource, WorldState.FutureTime(10d));
+        else
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(FearCastSource, 5), WorldState.FutureTime(10d));
+    }
 }
 
 class DD30NingishzidaStates : StateMachineBuilder
@@ -60,4 +70,4 @@ class DD30NingishzidaStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 176, NameID = 5012)]
-public class DD30Ningishzida(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300, -235), new ArenaBoundsCircle(25));
+public class DD30Ningishzida(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -237f), new ArenaBoundsCircle(24f));

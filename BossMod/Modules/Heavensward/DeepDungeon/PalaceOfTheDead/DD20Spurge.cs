@@ -23,12 +23,18 @@ class BossAdds(BossModule module) : Components.Adds(module, (uint)OID.PalaceHorn
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         foreach (var e in hints.PotentialTargets)
-            e.Priority = (OID)e.Actor.OID switch
+        {
+            switch ((OID)e.Actor.OID)
             {
-                OID.PalaceHornet => 2,
-                OID.Boss => 1,
-                _ => 0
-            };
+                case OID.Boss:
+                    e.Priority = 1;
+                    break;
+                case OID.PalaceHornet:
+                    e.Priority = 2;
+                    e.ForbidDOTs = true;
+                    break;
+            }
+        }
     }
 }
 class AcidMist(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AcidMist), 9.6f);

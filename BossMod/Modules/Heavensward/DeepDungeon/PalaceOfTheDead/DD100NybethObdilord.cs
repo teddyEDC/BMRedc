@@ -27,7 +27,7 @@ class Catapult(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeS
 class CorseAdds(BossModule module) : Components.AddsMulti(module, [(uint)OID.BicephalicCorse, (uint)OID.GiantCorse, (uint)OID.IronCorse]);
 class Doom(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Doom), new AOEShapeCone(47.4f, 60.Degrees()));
 class Shackle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Shackle), new AOEShapeRect(52.4f, 4));
-class SummonDarkness(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SummonDarkness), "Summoning the corse, incoming Adds! \nRemember to use a resolution to make them permanently disappear");
+class SummonDarkness(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.SummonDarkness), "Summoning the corse, incoming Adds! \nRemember to use a resolution to make them permanently disappear");
 
 class EncounterHints(BossModule module) : BossComponent(module)
 {
@@ -55,7 +55,7 @@ class DD100NybethObdilordStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 208, NameID = 5356)]
 public class DD100NybethObdilord : BossModule
 {
-    public DD100NybethObdilord(WorldState ws, Actor primary) : base(ws, primary, new(300, 300), new ArenaBoundsCircle(24))
+    public DD100NybethObdilord(WorldState ws, Actor primary) : base(ws, primary, new(300f, 300f), new ArenaBoundsCircle(24f))
     {
         ActivateComponent<EncounterHints>();
     }

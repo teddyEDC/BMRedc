@@ -22,20 +22,68 @@ public enum AID : uint
 class Charybdis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Charybdis), 6);
 class Maelstrom(BossModule module) : Components.PersistentVoidzone(module, 10, m => m.Enemies(OID.Tornado));
 class Trounce(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Trounce), new AOEShapeCone(51.6f, 30.Degrees()));
-class EclipticMeteor(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.EclipticMeteor), "Kill him before he kills you! 80% max HP damage incoming!");
+class EclipticMeteor(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.EclipticMeteor), "Kill him before he kills you! 80% max HP damage incoming!");
 class Thunderbolt(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Thunderbolt), new AOEShapeCone(16.6f, 60.Degrees()));
 
 class EncounterHints(BossModule module) : BossComponent(module)
 {
+    private bool _disabled;
+
+    enum BossAction
+    {
+        None,
+        Thunderbolt,
+        Charybdis,
+        TrounceWest,
+        TrounceEast
+    }
+
     private int NumCast;
+    private BossAction NextAction => NumCast switch
+    {
+        0 or 2 or 5 => BossAction.Thunderbolt,
+        1 or 4 or 6 => BossAction.Charybdis,
+        3 => BossAction.TrounceEast,
+        7 => BossAction.TrounceWest,
+        _ => default
+    };
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (_disabled)
+            return;
+
+        switch (NextAction)
+        {
+            case BossAction.Charybdis:
+                // drop charybdis near arena edge (22y or more from center)
+                hints.GoalZones.Add(p => (p - Arena.Center).LengthSq() >= 484f ? 0.5f : 0f);
+                break;
+            case BossAction.Thunderbolt:
+                // stay near boss to make thunderbolt dodge easier
+                hints.GoalZones.Add(hints.GoalSingleTarget(Module.PrimaryActor.Position, 6f, 0.5f));
+                break;
+            case BossAction.TrounceEast:
+                // stay in eastward 1/4th of arena to prepare for dodging trounce
+                hints.GoalZones.Add(p => (p.X - Arena.Center.X) >= 20f ? 0.5f : 0f);
+                break;
+            case BossAction.TrounceWest:
+                // see above
+                hints.GoalZones.Add(p => (p.X - Arena.Center.X) <= -20f ? 0.5f : 0f);
+                break;
+        }
+    }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.Charybdis or AID.Trounce or AID.Thunderbolt)
-            ++NumCast;
+        if (_disabled)
+            return;
 
         if ((AID)spell.Action.ID is AID.EclipticMeteor)
-            NumCast = 9;
+            _disabled = true;
+
+        else if ((AID)spell.Action.ID is AID.Charybdis or AID.Trounce or AID.Thunderbolt)
+            ++NumCast;
 
         if (NumCast == 8)
         {
@@ -46,6 +94,9 @@ class EncounterHints(BossModule module) : BossComponent(module)
 
     public override void AddGlobalHints(GlobalHints hints)
     {
+        if (_disabled)
+            return;
+
         switch (NumCast)
         {
             case 0:
