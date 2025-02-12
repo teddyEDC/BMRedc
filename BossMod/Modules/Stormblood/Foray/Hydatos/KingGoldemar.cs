@@ -1,4 +1,4 @@
-﻿//namespace BossMod.Stormblood.Foray.NM.KingGoldemar;
+﻿//namespace BossMod.Stormblood.Foray.Hydatos.KingGoldemar;
 //public enum OID : uint
 //{
 //    Boss = 0x2745,

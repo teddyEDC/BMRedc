@@ -18,7 +18,7 @@ public sealed class AutoPull(RotationModuleManager manager, Actor player) : Rota
         return def;
     }
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         if (Player.InCombat || primaryTarget != null || World.Client.CountdownRemaining != null)
             return;

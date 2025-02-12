@@ -64,7 +64,7 @@ public abstract class AutoClear : ZoneModule
 
     public record class Gaze(Actor Source, AOEShape Shape);
 
-    protected readonly AutoDDConfig _config = Service.Config.Get<AutoDDConfig>();
+    protected static readonly AutoDDConfig _config = Service.Config.Get<AutoDDConfig>();
     private readonly EventSubscriptions _subscriptions;
     private readonly List<WPos> _trapsCurrentZone = [];
 
@@ -293,7 +293,7 @@ public abstract class AutoClear : ZoneModule
 
     public override bool WantDrawExtra() => _config.EnableMinimap && !Palace.IsBossFloor;
 
-    public sealed override string WindowName() => "VBM DD minimap###Zone module";
+    public sealed override string WindowName() => "BMR DD minimap###Zone module";
 
     public override void DrawExtra()
     {
@@ -364,7 +364,7 @@ public abstract class AutoClear : ZoneModule
 
     private void IterAndExpire<T>(List<T> items, Func<T, bool> expire, Action<T> action, Action<T>? onRemove = null)
     {
-        for (var i = items.Count - 1; i >= 0; i--)
+        for (var i = items.Count - 1; i >= 0; --i)
         {
             var item = items[i];
             if (expire(item))
@@ -379,7 +379,7 @@ public abstract class AutoClear : ZoneModule
 
     protected virtual void OnActorCreated(Actor c)
     {
-        if ((OID)c.OID is OID.BeaconHoH or OID.BandedCofferIndicator)
+        if (c.OID is (uint)OID.BeaconHoH or (uint)OID.BandedCofferIndicator)
             IgnoreTraps.Add(c.Position);
     }
 
@@ -393,13 +393,13 @@ public abstract class AutoClear : ZoneModule
             return;
 
         foreach (var (w, rot) in Walls)
-            hints.AddForbiddenZone(new AOEShapeRect(w.Depth, 20, w.Depth), w.Position, (rot ? 90f : 0f).Degrees());
+            hints.AddForbiddenZone(ShapeDistance.Rect(w.Position, (rot ? 90f : 0f).Degrees(), w.Depth, w.Depth, 20));
 
         HandleFloorPathfind(player, hints);
         DrawAOEs(playerSlot, player, hints);
         CalculateExtraHints(playerSlot, player, hints);
 
-        var isStunned = IsPlayerTransformed(player) || player.Statuses.Any(s => (SID)s.ID is SID.Silence or SID.Pacification);
+        var isStunned = IsPlayerTransformed(player) || player.Statuses.Any(s => s.ID is (uint)SID.Silence or (uint)SID.Pacification);
         var isOccupied = player.InCombat || isStunned;
 
         Actor? coffer = null;
@@ -425,12 +425,12 @@ public abstract class AutoClear : ZoneModule
             if (_openedChests.Contains(a.InstanceID) || _fakeExits.Contains(a.InstanceID))
                 continue;
 
-            var oid = (OID)a.OID;
+            var oid = a.OID;
             if (a.IsTargetable && (
-                oid == OID.GoldCoffer && OpenGold ||
-                oid == OID.SilverCoffer && OpenSilver && player.HPMP.CurHP > player.HPMP.MaxHP * 0.7f ||
+                oid == (uint)OID.GoldCoffer && OpenGold ||
+                oid == (uint)OID.SilverCoffer && OpenSilver && player.HPMP.CurHP > player.HPMP.MaxHP * 0.7f ||
                 BronzeChestIDs.Contains(a.OID) && OpenBronze ||
-                oid == OID.BandedCoffer
+                oid == (uint)OID.BandedCoffer
             ))
             {
                 if ((coffer?.DistanceToHitbox(player) ?? float.MaxValue) > a.DistanceToHitbox(player))
@@ -440,7 +440,7 @@ public abstract class AutoClear : ZoneModule
             if (a.OID == (uint)OID.BandedCofferIndicator)
                 hoardLight = a;
 
-            if ((OID)a.OID is OID.CairnPalace or OID.BeaconHoH or OID.PylonEO && (passage?.DistanceToHitbox(player) ?? float.MaxValue) > a.DistanceToHitbox(player))
+            if (a.OID is (uint)OID.CairnPalace or (uint)OID.BeaconHoH or (uint)OID.PylonEO && (passage?.DistanceToHitbox(player) ?? float.MaxValue) > a.DistanceToHitbox(player))
                 passage = a;
 
             if (RevealedTrapOIDs.Contains(a.OID))
@@ -461,8 +461,32 @@ public abstract class AutoClear : ZoneModule
 
         if (_config.TrapHints && _trapsHidden)
         {
-            var traps = _trapsCurrentZone.Where(t => t.InCircle(player.Position, 30) && !IgnoreTraps.Any(b => b.AlmostEqual(t, 1))).Select(t => ShapeDistance.Circle(t, 2)).ToList();
-            if (traps.Count > 0)
+            var count = _trapsCurrentZone.Count;
+            var traps = new List<Func<WPos, float>>(count);
+
+            foreach (var trap in _trapsCurrentZone)
+            {
+                if (trap.InCircle(player.Position, 30f))
+                {
+                    var shouldIgnore = false;
+                    foreach (var b in IgnoreTraps)
+                    {
+                        if (b.AlmostEqual(trap, 1f))
+                        {
+                            shouldIgnore = true;
+                            break;
+                        }
+                    }
+
+                    if (!shouldIgnore)
+                    {
+                        var trapCircle = ShapeDistance.Circle(trap, 2f);
+                        traps.Add(trapCircle);
+                    }
+                }
+            }
+
+            if (traps.Count != 0)
                 hints.AddForbiddenZone(ShapeDistance.Union(traps));
         }
 
@@ -484,7 +508,7 @@ public abstract class AutoClear : ZoneModule
             }
         }
 
-        if (!isStunned && pomanderToUseHere is PomanderID p2 && player.FindStatus(SID.ItemPenalty) == null)
+        if (!isStunned && pomanderToUseHere is PomanderID p2 && player.FindStatus((uint)SID.ItemPenalty) == null)
             hints.ActionsToExecute.Push(new ActionID(ActionType.Pomander, (uint)p2), null, ActionQueue.Priority.VeryHigh);
 
         Actor? wantCoffer = null;
@@ -498,9 +522,9 @@ public abstract class AutoClear : ZoneModule
 
             if (passage is Actor c && !fullClear)
             {
-                hints.GoalZones.Add(hints.GoalSingleTarget(c.Position, 2, 0.5f));
+                hints.GoalZones.Add(hints.GoalSingleTarget(c.Position, 2f, 0.5f));
                 // give pathfinder a little help lmao
-                hints.GoalZones.Add(hints.GoalSingleTarget(c.Position, 25, 0.25f));
+                hints.GoalZones.Add(hints.GoalSingleTarget(c.Position, 25f, 0.25f));
                 if (player.DistanceToHitbox(c) < player.DistanceToHitbox(coffer) && !_config.OpenChestsFirst)
                     wantCoffer = null;
             }
@@ -509,7 +533,7 @@ public abstract class AutoClear : ZoneModule
         if (wantCoffer is Actor xxx)
         {
             wantCoffer = xxx;
-            hints.GoalZones.Add(hints.GoalSingleTarget(xxx.Position, 25));
+            hints.GoalZones.Add(hints.GoalSingleTarget(xxx.Position, 25f));
             hints.InteractWithTarget = coffer;
         }
 
@@ -517,7 +541,7 @@ public abstract class AutoClear : ZoneModule
             hints.AddForbiddenZone(ShapeDistance.Union(revealedTraps));
 
         if (!IsPlayerTransformed(player) && (!player.InCombat || _config.NavigateInCombat) && _config.AutoMoveTreasure && hoardLight is Actor h && Palace.GetPomanderState(PomanderID.Intuition).Active)
-            hints.GoalZones.Add(hints.GoalSingleTarget(h.Position, 2, 10));
+            hints.GoalZones.Add(hints.GoalSingleTarget(h.Position, 2f, 10f));
 
         var shouldTargetMobs = _config.AutoClear switch
         {
@@ -541,11 +565,11 @@ public abstract class AutoClear : ZoneModule
         foreach (var pp in hints.PotentialTargets)
         {
             // enemy is petrified, any damage will kill
-            if (pp.Actor.FindStatus(SID.StoneCurse)?.ExpireAt > World.FutureTime(1.5f))
+            if (pp.Actor.FindStatus((uint)SID.StoneCurse)?.ExpireAt > World.FutureTime(1.5d))
                 pickBetterTarget(pp.Actor);
 
             // pomander of storms was used, enemy can't autoheal; any damage will kill
-            else if (pp.Actor.FindStatus(SID.AutoHealPenalty) != null && pp.Actor.HPMP.CurHP < 10)
+            else if (pp.Actor.FindStatus((uint)SID.AutoHealPenalty) != null && pp.Actor.HPMP.CurHP < 10)
                 pickBetterTarget(pp.Actor);
 
             // if player does not have a target, prioritize everything so that AI picks one - skip dangerous enemies
@@ -560,23 +584,32 @@ public abstract class AutoClear : ZoneModule
     {
         IterAndExpire(HintDisabled, g => g.CastInfo == null, g =>
         {
-            hints.ForbiddenZones.RemoveAll(z => z.Source == g.InstanceID);
+            var count = hints.ForbiddenZones.Count;
+            for (var i = 0; i < count; ++i)
+            {
+                var fz = hints.ForbiddenZones[i];
+                if (fz.Source == g.InstanceID)
+                {
+                    hints.ForbiddenZones.Remove(fz);
+                    break;
+                }
+            }
         });
 
         IterAndExpire(Gazes, g => g.Source.CastInfo == null, d =>
         {
             if (d.Shape.Check(player.Position, d.Source))
-                hints.ForbiddenDirections.Add((player.AngleTo(d.Source), 45.Degrees(), CastFinishAt(d.Source)));
+                hints.ForbiddenDirections.Add((player.AngleTo(d.Source), 45f.Degrees(), CastFinishAt(d.Source)));
         });
 
         IterAndExpire(Donuts, d => d.Source.CastInfo == null, d =>
         {
-            hints.AddForbiddenZone(new AOEShapeDonut(d.Inner, d.Outer), d.Source.Position, default, CastFinishAt(d.Source));
+            hints.AddForbiddenZone(ShapeDistance.Donut(WPos.ClampToGrid(d.Source.Position), d.Inner, d.Outer), CastFinishAt(d.Source));
         });
 
         IterAndExpire(Circles, d => d.Source.CastInfo == null, d =>
         {
-            hints.AddForbiddenZone(new AOEShapeCircle(d.Radius), d.Source.Position, default, CastFinishAt(d.Source));
+            hints.AddForbiddenZone(ShapeDistance.Circle(WPos.ClampToGrid(d.Source.Position), d.Radius), CastFinishAt(d.Source));
 
             // some enrages are way bigger than pathfinding map size (e.g. slime explosion is 60y)
             // in these cases, if the player is inside the aoe, add a goal zone telling it to GTFO as far as possible
@@ -585,11 +618,11 @@ public abstract class AutoClear : ZoneModule
                 var distToSource = (player.Position - d.Source.Position).Length();
                 if (distToSource <= d.Radius)
                 {
-                    var desiredDistance = distToSource + 10;
+                    var desiredDistance = distToSource + 10f;
                     hints.GoalZones.Add(p =>
                     {
                         var dist = (p - d.Source.Position).Length();
-                        return dist >= desiredDistance ? 100 : 0;
+                        return dist >= desiredDistance ? 100f : 0f;
                     });
                 }
             }
@@ -624,7 +657,7 @@ public abstract class AutoClear : ZoneModule
 
         IterAndExpire(Voidzones, d => d.Source.IsDeadOrDestroyed, d =>
         {
-            hints.AddForbiddenZone(d.Zone, d.Source.Position, d.Source.Rotation);
+            hints.AddForbiddenZone(d.Zone, WPos.ClampToGrid(d.Source.Position), d.Source.Rotation);
         });
 
         IterAndExpire(KnockbackZones, d => d.Source.CastInfo == null, kb =>
@@ -633,7 +666,7 @@ public abstract class AutoClear : ZoneModule
             if (_playerImmunes[playerSlot].ImmuneAt(castFinish))
                 return;
 
-            hints.AddForbiddenZone(new AOEShapeCircle(kb.Radius), kb.Source.Position, default, castFinish);
+            hints.AddForbiddenZone(ShapeDistance.Circle(kb.Source.Position, kb.Radius), castFinish);
         });
 
         IterAndExpire(Spikes, t => t.Timeout <= World.CurrentTime, t =>
@@ -644,7 +677,7 @@ public abstract class AutoClear : ZoneModule
     }
 
     private static bool IsPlayerTransformed(Actor player) => player.Statuses.Any(Autorotation.RotationModuleManager.IsTransformStatus);
-    private static bool IsDangerousOutOfCombatStatus(uint statusRaw) => (SID)statusRaw is SID.DamageUp or SID.DreadBeastAura or SID.PhysicalDamageUp;
+    private static bool IsDangerousOutOfCombatStatus(uint statusRaw) => statusRaw is (uint)SID.DamageUp or (uint)SID.DreadBeastAura or (uint)SID.PhysicalDamageUp;
 
     private void HandleFloorPathfind(Actor player, AIHints hints)
     {

@@ -85,7 +85,7 @@ public class GymnasiouLeon(WorldState ws, Actor primary) : THTemplate(ws, primar
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.GymnasiouLeonMikros));
+        Arena.Actors(Enemies((uint)OID.GymnasiouLeonMikros));
         Arena.Actors(Enemies(bonusAdds), Colors.Vulnerable);
     }
 

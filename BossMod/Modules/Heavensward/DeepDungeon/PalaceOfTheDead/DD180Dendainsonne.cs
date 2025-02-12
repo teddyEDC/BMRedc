@@ -2,8 +2,8 @@
 
 public enum OID : uint
 {
-    Boss = 0x181F, // R11.600, x1
-    TornadoVoidZones = 0x18F0, // R1.000, x0 (spawn during fight)
+    Boss = 0x181F, // R11.6
+    Tornado = 0x18F0 // R1.0
 }
 
 public enum AID : uint
@@ -18,11 +18,14 @@ public enum AID : uint
     Trounce = 7165 // Boss->self, 2.5s cast, range 40+R 60-degree cone
 }
 
-class Charybdis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.CharybdisCast), 6);
-class Maelstrom(BossModule module) : Components.PersistentVoidzone(module, 10, m => m.Enemies(OID.TornadoVoidZones));
-class Trounce(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Trounce), new AOEShapeCone(51.6f, 30.Degrees()));
+class Charybdis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.CharybdisCast), 6f);
+class Maelstrom(BossModule module) : Components.PersistentVoidzone(module, 10f, GetVoidzones)
+{
+    public static List<Actor> GetVoidzones(BossModule module) => module.Enemies((uint)OID.Tornado);
+}
+class Trounce(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Trounce), new AOEShapeCone(51.6f, 30f.Degrees()));
 class EclipticMeteor(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.EclipticMeteor), "Kill him before he kills you! 80% max HP damage incoming!");
-class Thunderbolt(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Thunderbolt), new AOEShapeCone(16.6f, 60.Degrees()));
+class Thunderbolt(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Thunderbolt), new AOEShapeCone(16.6f, 60f.Degrees()));
 
 class EncounterHints : BossComponent
 {
@@ -90,24 +93,6 @@ class Hints(BossModule module) : BossComponent(module)
     public override void AddGlobalHints(GlobalHints hints)
     {
         hints.Add($"{Module.PrimaryActor.Name} will cast Trounce (Cone AOE) from the South and North wall. \nMake sure to stay near him to dodge the AOE. \n{Module.PrimaryActor.Name} will also cast Ecliptic Meteor at 15% HP, plan accordingly!");
-    }
-}
-
-class ManualBurst(BossModule module) : BossComponent(module)
-{
-    private float HPRatio => Module.PrimaryActor.HPMP.CurHP / (float)Module.PrimaryActor.HPMP.MaxHP;
-    private bool Hold => HPRatio is > 0.15f and < 0.158f;
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        if (Hold && hints.FindEnemy(Module.PrimaryActor) is { } e)
-            e.Priority = AIHints.Enemy.PriorityForbidden;
-    }
-
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (HPRatio is > 0.15f and < 0.20f)
-            hints.Add("Autorotation will not attack if boss HP is between 15 and 16% - press buttons manually when ready to start burst");
     }
 }
 

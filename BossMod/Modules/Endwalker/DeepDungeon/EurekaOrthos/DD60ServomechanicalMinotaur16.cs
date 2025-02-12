@@ -36,15 +36,14 @@ class OctupleSwipe(BossModule module) : Components.GenericAOEs(module)
             return [];
         var max = count > 2 ? 2 : count;
         var aoes = new AOEInstance[max];
+        var color = Colors.Danger;
+        for (var i = 0; i < max; ++i)
         {
-            for (var i = 0; i < max; ++i)
-            {
-                var aoe = _aoes[i];
-                if (i == 0)
-                    aoes[i] = count > 1 ? aoe with { Color = Colors.Danger } : aoe;
-                else
-                    aoes[i] = aoe;
-            }
+            var aoe = _aoes[i];
+            if (i == 0)
+                aoes[i] = count > 1 ? aoe with { Color = color } : aoe;
+            else
+                aoes[i] = aoe;
         }
         return aoes;
     }

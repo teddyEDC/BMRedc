@@ -22,8 +22,28 @@ public enum AID : uint
     TwistingDive = 31471 // Boss->self, 5.0s cast, range 50 width 15 rect
 }
 
-class Twister(BossModule module) : Components.CastTwister(module, 1f.5f, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
-class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.Gust), m => m.Enemies(OID.BitingWind).Where(z => z.EventState != 7), 0.9f);
+class Twister(BossModule module) : Components.CastTwister(module, 1.5f, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
+class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.Gust), GetVoidzones, 0.9f)
+{
+    private static Actor[] GetVoidzones(BossModule module)
+    {
+        var enemies = module.Enemies((uint)OID.BitingWind);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (z.EventState != 7)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
+    }
+}
+
 class MeracydianSquall(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.MeracydianSquall), 5f);
 
 class TwistersHint(BossModule module, AID aid) : Components.CastHint(module, ActionID.MakeSpell(aid), "Twisters soon, get moving!");

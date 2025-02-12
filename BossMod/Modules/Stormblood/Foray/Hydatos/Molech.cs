@@ -1,4 +1,4 @@
-﻿//namespace BossMod.Stormblood.Foray.NM.Molech;
+﻿//namespace BossMod.Stormblood.Foray.Hydatos.Molech;
 
 //public enum OID : uint
 //{

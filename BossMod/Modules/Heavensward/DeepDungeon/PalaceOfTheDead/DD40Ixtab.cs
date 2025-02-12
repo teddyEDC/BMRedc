@@ -19,23 +19,31 @@ public enum AID : uint
     ShadowFlare = 6432 // Boss->self, 3.0s cast, range 25+R circle
 }
 
-class Adds(BossModule module) : Components.Adds(module, (uint)OID.NightmareBhoot)
+class Adds(BossModule module) : Components.Adds(module, (uint)OID.NightmareBhoot, 1);
+
+class AccursedPox(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AccursedPox), 8f);
+class AncientEruption(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AncientEruption), 4f);
+class AncientEruptionZone(BossModule module) : Components.PersistentInvertibleVoidzone(module, 4f, GetVoidzones)
 {
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    private static Actor[] GetVoidzones(BossModule module)
     {
-        foreach (var e in hints.PotentialTargets)
-            e.Priority = (OID)e.Actor.OID switch
-            {
-                OID.NightmareBhoot => 2,
-                OID.Boss => 1,
-                _ => 0
-            };
+        var enemies = module.Enemies((uint)OID.AccursedPoxVoidZone);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (z.ModelState.AnimState1 == 1)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
     }
 }
-class AccursedPox(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AccursedPox), 8);
-class AncientEruption(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AncientEruption), 4);
-class AncientEruptionZone(BossModule module) : Components.PersistentInvertibleVoidzone(module, 4, m => m.Enemies(OID.AccursedPoxVoidZone).Where(z => z.EventState != 7));
-class EntropicFlame(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.EntropicFlame), new AOEShapeRect(53.8f, 4));
+class EntropicFlame(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.EntropicFlame), new AOEShapeRect(53.8f, 4f));
 class Scream(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Scream), "Raidwide + Fear, Adds need to be dead by now");
 class ShadowFlare(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ShadowFlare));
 
@@ -55,4 +63,4 @@ class DD40IxtabStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 177, NameID = 5025)]
-public class DD40Ixtab(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -226f), new ArenaBoundsCircle(24));
+public class DD40Ixtab(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -226f), new ArenaBoundsCircle(24f));

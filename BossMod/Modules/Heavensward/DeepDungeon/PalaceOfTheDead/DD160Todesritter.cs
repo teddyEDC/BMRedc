@@ -18,26 +18,48 @@ public enum AID : uint
 }
 
 class CleaveAuto(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.AutoAttack), new AOEShapeCone(11.92f, 45.Degrees()), activeWhileCasting: false);
-class HallOfSorrow(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 9, ActionID.MakeSpell(AID.HallOfSorrow), m => m.Enemies(OID.Voidzone).Where(z => z.EventState != 7), 1.3f);
+class HallOfSorrow(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 9, ActionID.MakeSpell(AID.HallOfSorrow), GetVoidzones, 1.3f)
+{
+    private static Actor[] GetVoidzones(BossModule module)
+    {
+        var enemies = module.Enemies((uint)OID.Voidzone);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (z.EventState != 7)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
+    }
+}
+
 class Infatuation(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Infatuation), 7);
 class Valfodr(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.Valfodr), 3);
-class ValfodrKB(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.Valfodr), stopAtWall: true, stopAtWall: true) // note actual knockback is delayed by upto 1.2s in replay
+class ValfodrKB(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.Valfodr), stopAtWall: true) // note actual knockback is delayed by upto 1.2s in replay
 {
     private int _target;
     private Source? _source;
-    private Infatuation? _infatuation;
+    private readonly Infatuation _aoe = module.FindComponent<Infatuation>()!;
 
     public override IEnumerable<Source> Sources(int slot, Actor actor)
     {
         if (_target == slot && _source != null)
-            yield return _source.Value;
+            return [_source.Value];
+        else
+            return [];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action == WatchedAction)
         {
-            _source = new(caster.Position, 25, Module.CastFinishAt(spell));
+            _source = new(caster.Position, 25f, Module.CastFinishAt(spell));
             _target = Raid.FindSlot(spell.TargetID);
         }
     }
@@ -53,11 +75,13 @@ class ValfodrKB(BossModule module) : Components.Knockback(module, ActionID.MakeS
 
     private Func<WPos, float>? GetFireballZone()
     {
-        _infatuation ??= Module.FindComponent<Infatuation>();
-        if (_infatuation == null || _infatuation.Casters.Count == 0)
+        var count = _aoe.Casters.Count;
+        if (count == 0)
             return null;
-
-        return ShapeDistance.Union(_infatuation.Casters.Select(c => ShapeDistance.Circle(c.Position, 7)).ToList());
+        var forbidden = new Func<WPos, float>[count];
+        for (var i = 0; i < count; ++i)
+            forbidden[i] = ShapeDistance.Circle(_aoe.Casters[i].Origin, 7);
+        return ShapeDistance.Union(forbidden);
     }
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => GetFireballZone() is var z && z != null && z(pos) < 0;
@@ -96,4 +120,4 @@ class DD160TodesritterStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 214, NameID = 5438)]
-public class DD160Todesritter(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300, -300), new ArenaBoundsCircle(25));
+public class DD160Todesritter(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -300f), new ArenaBoundsCircle(25f));

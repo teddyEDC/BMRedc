@@ -57,13 +57,21 @@ public static partial class Utils
         if (world.Client.ActiveFate.ID == 0)
             return false;
 
-        var fate = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(world.Client.ActiveFate.ID);
-        if (fate == null)
-            return false;
+        var fate = GetFateData(world.Client.ActiveFate.ID);
+        return fate.EurekaFate == 1
+            ? world.Client.ElementalLevelSynced <= fate.ClassJobLevelMax
+            : world.Party.Player()?.Level <= fate.ClassJobLevelMax;
+    }
 
-        return fate.Value.EurekaFate == 1
-            ? world.Client.ElementalLevelSynced <= fate.Value.ClassJobLevelMax
-            : world.Party.Player()?.Level <= fate.Value.ClassJobLevelMax;
+    private static readonly Dictionary<uint, (byte, byte)> _fateCache = [];
+    private static (byte ClassJobLevelMax, byte EurekaFate) GetFateData(uint fateID)
+    {
+        if (_fateCache.TryGetValue(fateID, out var fateRow))
+            return fateRow;
+        var row = Service.LuminaRow<Lumina.Excel.Sheets.Fate>(fateID);
+        (byte, byte)? data;
+        data = (row!.Value.ClassJobLevelMax, row.Value.EurekaFate);
+        return _fateCache[fateID] = data.Value;
     }
 
     // lumina extensions

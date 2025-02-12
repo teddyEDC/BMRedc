@@ -31,7 +31,7 @@ public struct NavigationDecision
         // build a pathfinding map: rasterize all forbidden zones and goals
         hints.InitPathfindMap(ctx.Map);
         // local copies of forbidden zones and goals to ensure no race conditions during async pathfinding
-        (Func<WPos, float>, DateTime)[] localForbiddenZones = [.. hints.ForbiddenZones];
+        (Func<WPos, float>, DateTime, ulong)[] localForbiddenZones = [.. hints.ForbiddenZones];
         Func<WPos, float>[] localGoalZones = [.. hints.GoalZones];
         if (hints.ForbiddenZones.Count != 0)
             RasterizeForbiddenZones(ctx.Map, localForbiddenZones, ws.CurrentTime, ctx.Scratch);

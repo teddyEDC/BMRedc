@@ -28,63 +28,15 @@ class Flashthoom(BossModule module) : Components.SimpleAOEs(module, ActionID.Mak
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
-
-        if (Module.Enemies(OID.LavaBomb).FirstOrDefault() is Actor g && Module.PrimaryActor.Position.InCircle(g.Position, 7.2f))
+        var bomb = Module.Enemies((uint)OID.LavaBomb);
+        if (bomb.Count != 0 && bomb[0] is Actor g && Module.PrimaryActor.Position.InCircle(g.Position, 7.2f))
             hints.SetPriority(g, AIHints.Enemy.PriorityForbidden);
     }
 }
 class Sap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Sap), 8);
-class ScaldingScoldingCleave(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.ScaldingScolding), new AOEShapeCone(11.75f, 45.Degrees()), activeWhileCasting: false);
-
-class RemedyBombEnrage(BossModule module) : BossComponent(module)
-{
-    private DateTime _enrage;
-
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (_enrage != default)
-            hints.Add($"Remedy bomb is enraging in {(_enrage - WorldState.CurrentTime).TotalSeconds:f1}s, kill it!");
-    }
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        {
-            if ((AID)spell.Action.ID == AID.HypothermalCombustionRemedyBomb)
-                _enrage = WorldState.FutureTime(16);
-        }
-    }
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        {
-            if ((AID)spell.Action.ID == AID.HypothermalCombustionRemedyBomb)
-                _enrage = default;
-        }
-    }
-}
-
-class MassiveBurstEnrage(BossModule module) : BossComponent(module)
-{
-    private DateTime _enrage;
-
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (_enrage != default)
-            hints.Add($"Boss will cast a roomwide in {(_enrage - WorldState.CurrentTime).TotalSeconds:f1}s, stun it with the Lavabomb!");
-    }
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        {
-            if ((AID)spell.Action.ID == AID.MassiveBurst)
-                _enrage = WorldState.FutureTime(26);
-        }
-    }
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        {
-            if ((AID)spell.Action.ID == AID.MassiveBurst)
-                _enrage = default;
-        }
-    }
-}
+class ScaldingScoldingCleave(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.ScaldingScolding), new AOEShapeCone(11.75f, 45f.Degrees()), activeWhileCasting: false);
+class RemedyBombEnrage(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.HypothermalCombustionRemedyBomb), "Remedy bomb is enraging!", true);
+class MassiveBurstEnrage(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.MassiveBurst), "Enrage! Stun boss with the Lavabomb!", true);
 
 class HypothermalMinion(BossModule module) : Components.GenericAOEs(module)
 {

@@ -1,4 +1,4 @@
-﻿namespace BossMod.Stormblood.Foray.NM.Ceto;
+﻿namespace BossMod.Stormblood.Foray.Hydatos.Ceto;
 
 public enum OID : uint
 {
@@ -22,13 +22,13 @@ public enum AID : uint
 }
 
 class SickleStrike(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.SickleStrike));
-class PetrifactionBoss(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.PetrifactionBoss), range: 50);
-class PetrifactionAdds(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.PetrifactionAdds), range: 50);
-class AbyssalReaper(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.AbyssalReaper), new AOEShapeCircle(18));
-class CircleOfFlames(BossModule module) : Components.LocationTargetedAOEs(module, ActionID.MakeSpell(AID.CircleOfFlames), 5);
-class TailSlap(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.TailSlap), new AOEShapeCone(12, 60.Degrees()));
-class Petrattraction(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Petrattraction), 50, kind: Kind.TowardsOrigin);
-class CircleBlade(BossModule module) : Components.SelfTargetedAOEs(module, ActionID.MakeSpell(AID.CircleBlade), new AOEShapeCircle(7));
+class PetrifactionBoss(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.PetrifactionBoss), range: 50f);
+class PetrifactionAdds(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.PetrifactionAdds), range: 50f);
+class AbyssalReaper(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AbyssalReaper), 18f);
+class CircleOfFlames(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.CircleOfFlames), 5f);
+class TailSlap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TailSlap), new AOEShapeCone(12f, 60f.Degrees()));
+class Petrattraction(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Petrattraction), 50f, kind: Kind.TowardsOrigin);
+class CircleBlade(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.CircleBlade), 7);
 class Adds(BossModule module) : Components.Adds(module, (uint)OID.FaithlessGuard);
 
 class CetoStates : StateMachineBuilder
@@ -49,5 +49,5 @@ class CetoStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 639, NameID = 7955, Contributors = "xan")]
-public class Ceto(WorldState ws, Actor primary) : BossModule(ws, primary, new(747.8959f, -878.8765f), new ArenaBoundsCircle(80, MapResolution: 1));
+public class Ceto(WorldState ws, Actor primary) : BossModule(ws, primary, new(747.8959f, -878.8765f), new ArenaBoundsCircle(80f, MapResolution: 1));
 

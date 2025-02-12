@@ -239,13 +239,7 @@ public sealed class AkechiBLM(RotationModuleManager manager, Actor player) : Ake
     }
     #endregion
 
-<<<<<<< HEAD:BossMod/Autorotation/Standard/akechi/AkechiBLM.cs
-    #endregion
-
-    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving) //Executes our actions
-=======
     public override void Execution(StrategyValues strategy, Enemy? primaryTarget)
->>>>>>> merge:BossMod/Autorotation/Standard/akechi/DPS/AkechiBLM.cs
     {
         #region Variables
         var gauge = World.Client.GetGauge<BlackMageGauge>(); //Retrieve BLM gauge

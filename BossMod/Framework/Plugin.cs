@@ -343,32 +343,6 @@ public sealed class Plugin : IDalamudPlugin
         return obj;
     }
 
-    private unsafe bool CheckInteractRange(Actor? player, Actor? target)
-    {
-        var playerObj = GetActorObject(player);
-        var targetObj = GetActorObject(target);
-        if (playerObj == null || targetObj == null)
-            return false;
-
-        // treasure chests have no client-side interact range check at all; just assume they use the standard "small" range, seems to be accurate from testing
-        if (targetObj->ObjectKind is FFXIVClientStructs.FFXIV.Client.Game.Object.ObjectKind.Treasure)
-            return player?.DistanceToHitbox(target) <= 2.09f;
-
-        return EventFramework.Instance()->CheckInteractRange(playerObj, targetObj, 1, false);
-    }
-
-    private unsafe FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject* GetActorObject(Actor? actor)
-    {
-        if (actor == null)
-            return null;
-
-        var obj = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObjectManager.Instance()->Objects.IndexSorted[actor.SpawnIndex].Value;
-        if (obj == null || obj->GetGameObjectId() != actor.InstanceID)
-            return null;
-
-        return obj;
-    }
-
     private void ParseAutorotationCommands(string[] cmd)
     {
         switch (cmd.Length > 1 ? cmd[1].ToUpperInvariant() : "")

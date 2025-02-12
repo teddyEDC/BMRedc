@@ -23,10 +23,10 @@ public enum AID : uint
 class BlackHoneymoon(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BlackHoneymoon));
 class ColdFeet(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.ColdFeet));
 class DarkHarvest(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.DarkHarvest), "Tankbuster");
-class Desolation(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Desolation), new AOEShapeRect(57.3f, 3));
-class InHeathCircle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.InHealthCircle), 16);
-class InHeathDonut(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.InHealthDonut), new AOEShapeDonut(2.5f, 50));
-class TerrorEye(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TerrorEye), 6);
+class Desolation(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Desolation), new AOEShapeRect(57.3f, 3f));
+class InHeathCircle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.InHealthCircle), 16f);
+class InHeathDonut(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.InHealthDonut), new AOEShapeDonut(2.5f, 50f));
+class TerrorEye(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TerrorEye), 6f);
 
 class DD50EddaBlackbosomStates : StateMachineBuilder
 {
@@ -44,4 +44,4 @@ class DD50EddaBlackbosomStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 178, NameID = 5038)]
-public class DD50EddaBlackbosom(WorldState ws, Actor primary) : BossModule(ws, primary, new(300, 375), new ArenaBoundsCircle(25));
+public class DD50EddaBlackbosom(WorldState ws, Actor primary) : BossModule(ws, primary, new(300f, 375f), new ArenaBoundsCircle(24f));

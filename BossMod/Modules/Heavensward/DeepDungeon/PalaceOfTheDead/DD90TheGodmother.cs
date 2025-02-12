@@ -28,14 +28,14 @@ class HypothermalCombustion(BossModule module) : Components.SimpleAOEs(module, A
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         base.AddAIHints(slot, actor, assignment, hints);
-
-        if (Module.Enemies(OID.GiddyBomb).FirstOrDefault() is Actor g && Module.PrimaryActor.Position.InCircle(g.Position, 7.2f))
+        var bomb = Module.Enemies((uint)OID.GiddyBomb);
+        if (bomb.Count != 0 && bomb[0] is Actor g && Module.PrimaryActor.Position.InCircle(g.Position, 7.2f))
             hints.SetPriority(g, AIHints.Enemy.PriorityForbidden);
     }
 }
 class MassiveBurst(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MassiveBurst), "Knock the Giddy bomb into the boss and let it explode on the boss. \n or else take 99% damage!");
-class Sap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Sap), 8);
-class ScaldingScolding(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.ScaldingScolding), new AOEShapeCone(11.75f, 45.Degrees()))
+class Sap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Sap), 8f);
+class ScaldingScolding(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.ScaldingScolding), new AOEShapeCone(11.75f, 45f.Degrees()))
 {
     private readonly MassiveBurst _raidwide1 = module.FindComponent<MassiveBurst>()!;
     private readonly Sap _locationaoe1 = module.FindComponent<Sap>()!;
@@ -68,13 +68,13 @@ class SelfDestruct(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorCreated(Actor actor)
     {
-        if ((OID)actor.OID == OID.LavaBomb)
-            _aoes.Add(new(circle, actor.Position, default, WorldState.FutureTime(10)));
+        if (actor.OID == (uint)OID.LavaBomb)
+            _aoes.Add(new(circle, WPos.ClampToGrid(actor.Position), default, WorldState.FutureTime(10d)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.SelfDestruct)
+        if (spell.Action.ID == (uint)AID.SelfDestruct)
             _aoes.Clear();
     }
 }

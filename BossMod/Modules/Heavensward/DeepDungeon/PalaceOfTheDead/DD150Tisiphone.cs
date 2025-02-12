@@ -2,11 +2,11 @@ namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD150Tisiphone;
 
 public enum OID : uint
 {
-    Boss = 0x181C, // R2.000, x1
-    FanaticGargoyle = 0x18EB, // R2.300, x0 (spawn during fight)
-    FanaticSuccubus = 0x18EE, // R1.000, x0 (spawn during fight)
-    FanaticVodoriga = 0x18EC, // R1.200, x0 (spawn during fight)
-    FanaticZombie = 0x18ED // R0.500, x0 (spawn during fight)
+    Boss = 0x181C, // R2.0
+    FanaticGargoyle = 0x18EB, // R2.3
+    FanaticSuccubus = 0x18EE, // R1.0
+    FanaticVodoriga = 0x18EC, // R1.2
+    FanaticZombie = 0x18ED // R0.5
 }
 
 public enum AID : uint
@@ -34,30 +34,33 @@ class BossAdds(BossModule module) : Components.AddsMulti(module, [(uint)OID.Fana
         if (actor.Class.GetRole() is Role.Ranged or Role.Healer)
         {
             // ignore all adds, just attack boss
-            hints.PrioritizeTargetsByOID(OID.Boss, 5);
-            foreach (var zombie in Module.Enemies(OID.FanaticZombie))
+            hints.PrioritizeTargetsByOID((uint)OID.Boss, 5);
+            var zombies = Module.Enemies((uint)OID.FanaticZombie);
+            var count = zombies.Count;
+            for (var i = 0; i < count; ++i)
             {
-                hints.AddForbiddenZone(new AOEShapeCircle(3), zombie.Position);
-                hints.AddForbiddenZone(new AOEShapeCircle(8), zombie.Position, activation: WorldState.FutureTime(5));
+                var zombie = zombies[i];
+                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 3));
+                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 8), WorldState.FutureTime(5d));
             }
         }
         else
         {
             // kill zombies first, they have low health
-            hints.PrioritizeTargetsByOID(OID.FanaticZombie, 5);
+            hints.PrioritizeTargetsByOID((uint)OID.FanaticZombie, 5);
             // attack boss, ignore succubus
-            hints.PrioritizeTargetsByOID(OID.Boss, 1);
+            hints.PrioritizeTargetsByOID((uint)OID.Boss, 1);
         }
     }
 }
-class DarkMist(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DarkMist), 10);
-class Desolation(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Desolation), new AOEShapeRect(57.3f, 3));
+class DarkMist(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DarkMist), 10f);
+class Desolation(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Desolation), new AOEShapeRect(57.3f, 3f));
 class FatalAllure(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.FatalAllure), "Boss is life stealing from the succubus");
-class SweetSteel(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SweetSteel), new AOEShapeCone(7, 45.Degrees()));
-class TerrorEye(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TerrorEye), 6);
-class VoidAero(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidAero), new AOEShapeRect(42, 4));
-class VoidFireII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireII), 5);
-class VoidFireIV(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireIV), 10);
+class SweetSteel(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SweetSteel), new AOEShapeCone(7f, 45f.Degrees()));
+class TerrorEye(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TerrorEye), 6f);
+class VoidAero(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidAero), new AOEShapeRect(42f, 4f));
+class VoidFireII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireII), 5f);
+class VoidFireIV(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireIV), 10f);
 
 class EncounterHints(BossModule module) : BossComponent(module)
 {

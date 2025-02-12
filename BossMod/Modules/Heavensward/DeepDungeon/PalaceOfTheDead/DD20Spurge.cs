@@ -22,14 +22,16 @@ class BossAdds(BossModule module) : Components.Adds(module, (uint)OID.PalaceHorn
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var e in hints.PotentialTargets)
+        var count = hints.PotentialTargets.Count;
+        for (var i = 0; i < count; ++i)
         {
-            switch ((OID)e.Actor.OID)
+            var e = hints.PotentialTargets[i];
+            switch (e.Actor.OID)
             {
-                case OID.Boss:
+                case (uint)OID.Boss:
                     e.Priority = 1;
                     break;
-                case OID.PalaceHornet:
+                case (uint)OID.PalaceHornet:
                     e.Priority = 2;
                     e.ForbidDOTs = true;
                     break;
@@ -38,10 +40,10 @@ class BossAdds(BossModule module) : Components.Adds(module, (uint)OID.PalaceHorn
     }
 }
 class AcidMist(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AcidMist), 9.6f);
-class BloodyCaress(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.BloodyCaress), new AOEShapeCone(11.6f, 60.Degrees()), activeWhileCasting: false);
-class GoldDust(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GoldDust), 8);
+class BloodyCaress(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.BloodyCaress), new AOEShapeCone(11.6f, 60f.Degrees()), activeWhileCasting: false);
+class GoldDust(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GoldDust), 8f);
 class Leafstorm(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Leafstorm));
-class RottenStench(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RottenStench), new AOEShapeRect(48.6f, 6));
+class RottenStench(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RottenStench), new AOEShapeRect(48.6f, 6f));
 
 class DD20SpurgeStates : StateMachineBuilder
 {
@@ -58,4 +60,4 @@ class DD20SpurgeStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 175, NameID = 4999)]
-public class DD20Spurge(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300, -235), new ArenaBoundsCircle(24));
+public class DD20Spurge(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -235f), new ArenaBoundsCircle(24f));

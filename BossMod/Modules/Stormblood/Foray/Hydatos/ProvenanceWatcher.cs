@@ -1,4 +1,4 @@
-﻿//namespace BossMod.Stormblood.Foray.NM.ProvenanceWatcher;
+﻿//namespace BossMod.Stormblood.Foray.Hydatos.ProvenanceWatcher;
 
 //public enum OID : uint
 //{

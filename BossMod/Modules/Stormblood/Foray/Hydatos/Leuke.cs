@@ -1,4 +1,4 @@
-﻿//namespace BossMod.Stormblood.Foray.NM.Leuke;
+﻿//namespace BossMod.Stormblood.Foray.Hydatos.Leuke;
 //public enum OID : uint
 //{
 //    Boss = 0x273C,

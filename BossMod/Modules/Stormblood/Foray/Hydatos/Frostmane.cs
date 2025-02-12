@@ -1,4 +1,4 @@
-﻿//namespace BossMod.Stormblood.Foray.NM.Frostmane;
+﻿//namespace BossMod.Stormblood.Foray.Hydatos.Frostmane;
 
 //public enum OID : uint
 //{

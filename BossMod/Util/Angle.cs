@@ -70,14 +70,6 @@ public record struct Angle(float Rad)
         return midDist.Rad > width.Rad ? min : midDist.Rad < -width.Rad ? max : this;
     }
 
-    // closest direction in range to this angle
-    public readonly Angle ClosestInRange(Angle min, Angle max)
-    {
-        var width = (max - min) * 0.5f;
-        var midDist = DistanceToAngle((min + max) * 0.5f);
-        return midDist.Rad > width.Rad ? min : midDist.Rad < -width.Rad ? max : this;
-    }
-
     public override readonly string ToString() => Deg.ToString("f3");
 }
 

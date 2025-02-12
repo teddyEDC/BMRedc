@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace BossMod;
 
-public sealed class ReplayManager(RotationDatabase rotationDB, string logDirectory) : IDisposable
+public sealed class ReplayManager : IDisposable
 {
     private sealed class ReplayEntry : IDisposable
     {
@@ -68,24 +68,24 @@ public sealed class ReplayManager(RotationDatabase rotationDB, string logDirecto
         }
     }
 
-    private readonly RotationDatabase _rotationDB;
-    private readonly ReplayManagementConfig _config = Service.Config.Get<ReplayManagementConfig>();
+    private static readonly ReplayManagementConfig _config = Service.Config.Get<ReplayManagementConfig>();
     private readonly List<ReplayEntry> _replayEntries = [];
     private readonly List<AnalysisEntry> _analysisEntries = [];
     private int _nextAnalysisId;
     private string _path = "";
-    private string _fileDialogStartPath;
     private FileDialog? _fileDialog;
-    private string _logDirectory = logDirectory;
-    private readonly RotationDatabase _rotationDB = rotationDB;
+    private string _logDirectory;
+    private readonly RotationDatabase _rotationDB;
 
     public void SetLogDirectory(string logDirectory)
     {
         _logDirectory = logDirectory;
     }
 
-    public ReplayManager(RotationDatabase rotationDB, string fileDialogStartPath)
+    public ReplayManager(RotationDatabase rotationDB, string logDirectory)
     {
+        _rotationDB = rotationDB;
+        _logDirectory = logDirectory;
         RestoreHistory();
     }
 
@@ -109,7 +109,7 @@ public sealed class ReplayManager(RotationDatabase rotationDB, string logDirecto
         {
             if (e.AutoShowWindow && e.Window == null && e.Replay.IsCompletedSuccessfully && e.Replay.Result.Ops.Count > 0)
             {
-                e.Show(__rotationDB);
+                e.Show(_rotationDB);
             }
         }
         // auto-show analysis windows that are now ready, auto dispose entries that had their windows closed
@@ -253,7 +253,7 @@ public sealed class ReplayManager(RotationDatabase rotationDB, string logDirecto
         ImGui.SameLine();
         if (ImGui.Button("..."))
         {
-            _fileDialog ??= new FileDialog("select_log", "Select file or directory", "Log files{.log},All files{.*}", __logDirectory, "", ".log", 1, false, ImGuiFileDialogFlags.SelectOnly);
+            _fileDialog ??= new FileDialog("select_log", "Select file or directory", "Log files{.log},All files{.*}", _logDirectory, "", ".log", 1, false, ImGuiFileDialogFlags.SelectOnly);
             _fileDialog.Show();
         }
         ImGui.SameLine();
@@ -332,7 +332,16 @@ public sealed class ReplayManager(RotationDatabase rotationDB, string logDirecto
     {
         if (!_config.RememberReplays)
             return;
-        _config.ReplayHistory = _replayEntries.Select(r => new ReplayMemory(r.Path, r.Window?.IsOpen ?? true, r.Window?.CurrentTime ?? default)).ToList();
+        var replayHistory = new List<ReplayMemory>();
+
+        foreach (var r in _replayEntries)
+        {
+            var isOpen = r.Window?.IsOpen ?? true;
+            var currentTime = r.Window?.CurrentTime ?? default;
+            replayHistory.Add(new ReplayMemory(r.Path, isOpen, currentTime));
+        }
+
+        _config.ReplayHistory = replayHistory;
         _config.Modified.Fire();
     }
 

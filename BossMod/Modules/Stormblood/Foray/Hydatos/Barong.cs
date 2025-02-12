@@ -1,4 +1,4 @@
-﻿//namespace BossMod.Stormblood.Foray.NM.Barong;
+﻿//namespace BossMod.Stormblood.Foray.Hydatos.Barong;
 //public enum OID : uint
 //{
 //    Boss = 0x2746,

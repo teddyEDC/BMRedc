@@ -34,7 +34,7 @@ public class DeepDungeonAI(RotationModuleManager manager, Actor player) : AIBase
         ItemPenalty = 1094,
     }
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         if (World.DeepDungeon.DungeonId == 0)
             return;

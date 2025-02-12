@@ -443,7 +443,7 @@ public sealed class ClientState
     public sealed record class OpContentKVDataChange(uint[] Value) : WorldState.Operation
     {
         public readonly uint[] Value = Value;
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             ws.Client.ContentKeyValueData = Value;
             ws.Client.ContentKVDataChanged.Fire(this);
