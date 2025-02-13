@@ -8,7 +8,7 @@ public sealed class AutoFarm(RotationModuleManager manager, Actor player) : Rota
 
     public static RotationModuleDefinition Definition()
     {
-        RotationModuleDefinition res = new("Automatic targeting", "Collection of utilities to automatically target and pull mobs based on different criteria.", "AI", "veyn", RotationModuleQuality.Basic, new(~0ul), 1000, 1, RotationModuleOrder.HighLevel);
+        RotationModuleDefinition res = new("Automatic targeting", "Collection of utilities to automatically target and pull mobs based on different criteria.", "AI", "veyn", RotationModuleQuality.Basic, new(~0ul), 1000, 1, RotationModuleOrder.HighLevel, CanUseWhileRoleplaying: true);
 
         res.Define(Track.General).As<GeneralStrategy>("General")
             .AddOption(GeneralStrategy.FightBack, "FightBack", "Automatically engage any mobs that are in combat with player, but don't pull new mobs", supportedTargets: ActionTargets.Hostile)
@@ -58,7 +58,7 @@ public sealed class AutoFarm(RotationModuleManager manager, Actor player) : Rota
         // first deal with pulling new enemies
         if (allowPulling)
         {
-            if (World.Client.ActiveFate.ID != 0 && Player.Level <= Service.LuminaRow<Lumina.Excel.Sheets.Fate>(World.Client.ActiveFate.ID)?.ClassJobLevelMax && strategy.Option(Track.Fate).As<PriorityStrategy>() == PriorityStrategy.Prioritize)
+            if (Utils.IsPlayerSyncedToFate(World) && strategy.Option(Track.Fate).As<PriorityStrategy>() == PriorityStrategy.Prioritize)
             {
                 foreach (var e in Hints.PotentialTargets)
                 {

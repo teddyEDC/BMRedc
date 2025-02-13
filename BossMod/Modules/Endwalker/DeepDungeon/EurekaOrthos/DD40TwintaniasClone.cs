@@ -22,18 +22,39 @@ public enum AID : uint
     TwistingDive = 31471 // Boss->self, 5.0s cast, range 50 width 15 rect
 }
 
-class Twister(BossModule module) : Components.CastTwister(module, 1f, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
-class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.BitingWind), m => m.Enemies(OID.BitingWind).Where(z => z.EventState != 7), 0.9f);
+class Twister(BossModule module) : Components.CastTwister(module, 1.5f, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
+class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.Gust), GetVoidzones, 0.9f)
+{
+    private static Actor[] GetVoidzones(BossModule module)
+    {
+        var enemies = module.Enemies((uint)OID.BitingWind);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (z.EventState != 7)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
+    }
+}
+
 class MeracydianSquall(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.MeracydianSquall), 5f);
 
 class TwistersHint(BossModule module, AID aid) : Components.CastHint(module, ActionID.MakeSpell(aid), "Twisters soon, get moving!");
 class Twisters1(BossModule module) : TwistersHint(module, AID.TwisterVisual);
 class Twisters2(BossModule module) : TwistersHint(module, AID.TwistingDive);
+class DiveTwister(BossModule module) : Components.CastTwister(module, 1.5f, (uint)OID.Twister, ActionID.MakeSpell(AID.TwistingDive), 0.4f, 0.25f);
 
 class TwistingDive(BossModule module) : Components.GenericAOEs(module)
 {
     private AOEInstance? _aoe;
-    private static readonly AOEShapeRect rect = new(50, 7.5f);
+    private static readonly AOEShapeRect rect = new(50f, 7.5f);
     private bool preparing;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
@@ -102,9 +123,10 @@ class DD40TwintaniasCloneStates : StateMachineBuilder
             .ActivateOnEnter<BitingWind>()
             .ActivateOnEnter<MeracydianSquall>()
             .ActivateOnEnter<Turbine>()
-            .ActivateOnEnter<TwistingDive>();
+            .ActivateOnEnter<TwistingDive>()
+            .ActivateOnEnter<DiveTwister>();
     }
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 900, NameID = 12263)]
-public class DD40TwintaniasClone(WorldState ws, Actor primary) : BossModule(ws, primary, new(-600, -300), new ArenaBoundsCircle(20));
+public class DD40TwintaniasClone(WorldState ws, Actor primary) : BossModule(ws, primary, new(-600f, -300f), new ArenaBoundsCircle(20f));

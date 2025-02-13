@@ -23,6 +23,7 @@ public sealed class AIHints
         public bool ShouldBeInterrupted; // if set and enemy is casting interruptible spell, some ranged/tank will try to interrupt
         public bool ShouldBeStunned; // if set, AI will stun if possible
         public bool StayAtLongRange; // if set, players with ranged attacks don't bother coming closer than max range (TODO: reconsider)
+        public bool Spikes; // if set, autoattacks will be prevented
     }
 
     public enum SpecialMode
@@ -62,7 +63,7 @@ public sealed class AIHints
 
     // positioning: list of shapes that are either forbidden to stand in now or will be in near future
     // AI will try to move in such a way to avoid standing in any forbidden zone after its activation or outside of some restricted zone after its activation, even at the cost of uptime
-    public readonly List<(Func<WPos, float> shapeDistance, DateTime activation)> ForbiddenZones = [];
+    public readonly List<(Func<WPos, float> shapeDistance, DateTime activation, ulong Source)> ForbiddenZones = [];
 
     // positioning: list of goal functions
     // AI will try to move to reach non-forbidden point with highest goal value (sum of values returned by all functions)
@@ -167,11 +168,17 @@ public sealed class AIHints
         }
     }
 
+    public void SetPriority(Actor actor, int priority)
+    {
+        if (FindEnemy(actor) is { } enemy)
+            enemy.Priority = priority;
+    }
+
     public void InteractWithOID(WorldState ws, uint oid) => InteractWithTarget = ws.Actors.FirstOrDefault(a => a.OID == oid && a.IsTargetable);
     public void InteractWithOID<OID>(WorldState ws, OID oid) where OID : Enum => InteractWithOID(ws, (uint)(object)oid);
 
-    public void AddForbiddenZone(Func<WPos, float> shapeDistance, DateTime activation = new()) => ForbiddenZones.Add((shapeDistance, activation));
-    public void AddForbiddenZone(AOEShape shape, WPos origin, Angle rot = new(), DateTime activation = new()) => ForbiddenZones.Add((shape.Distance(origin, rot), activation));
+    public void AddForbiddenZone(Func<WPos, float> shapeDistance, DateTime activation = new(), ulong source = 0) => ForbiddenZones.Add((shapeDistance, activation, source));
+    public void AddForbiddenZone(AOEShape shape, WPos origin, Angle rot = new(), DateTime activation = new(), ulong source = 0) => ForbiddenZones.Add((shape.Distance(origin, rot), activation, source));
 
     public void AddSpecialMode(SpecialMode mode, DateTime activation)
     {
@@ -247,8 +254,13 @@ public sealed class AIHints
     public int NumPriorityTargetsInAOECone(WPos origin, float radius, WDir direction, Angle halfAngle) => NumPriorityTargetsInAOE(a => TargetInAOECone(a.Actor, origin, radius, direction, halfAngle));
     public int NumPriorityTargetsInAOERect(WPos origin, WDir direction, float lenFront, float halfWidth, float lenBack = 0) => NumPriorityTargetsInAOE(a => TargetInAOERect(a.Actor, origin, direction, lenFront, halfWidth, lenBack));
     public bool TargetInAOECircle(Actor target, WPos origin, float radius) => target.Position.InCircle(origin, radius + target.HitboxRadius);
-    public bool TargetInAOECone(Actor target, WPos origin, float radius, WDir direction, Angle halfAngle) => target.Position.InCircleCone(origin, radius + target.HitboxRadius, direction, halfAngle);
-    public bool TargetInAOERect(Actor target, WPos origin, WDir direction, float lenFront, float halfWidth, float lenBack = 0) => target.Position.InRect(origin, direction, lenFront + target.HitboxRadius, lenBack, halfWidth);
+    public bool TargetInAOECone(Actor target, WPos origin, float radius, WDir direction, Angle halfAngle) => Intersect.CircleCone(target.Position, target.HitboxRadius, origin, radius, direction, halfAngle);
+    public bool TargetInAOERect(Actor target, WPos origin, WDir direction, float lenFront, float halfWidth, float lenBack = 0)
+    {
+        var rectCenterOffset = (lenFront - lenBack) / 2;
+        var rectCenter = origin + direction * rectCenterOffset;
+        return Intersect.CircleRect(target.Position, target.HitboxRadius, rectCenter, direction, halfWidth, (lenFront + lenBack) / 2);
+    }
 
     // goal zones
     // simple goal zone that returns 1 if target is in range, useful for single-target actions

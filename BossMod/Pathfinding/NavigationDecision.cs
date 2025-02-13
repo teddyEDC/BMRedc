@@ -31,7 +31,7 @@ public struct NavigationDecision
         // build a pathfinding map: rasterize all forbidden zones and goals
         hints.InitPathfindMap(ctx.Map);
         // local copies of forbidden zones and goals to ensure no race conditions during async pathfinding
-        (Func<WPos, float>, DateTime)[] localForbiddenZones = [.. hints.ForbiddenZones];
+        (Func<WPos, float>, DateTime, ulong)[] localForbiddenZones = [.. hints.ForbiddenZones];
         Func<WPos, float>[] localGoalZones = [.. hints.GoalZones];
         if (hints.ForbiddenZones.Count != 0)
             RasterizeForbiddenZones(ctx.Map, localForbiddenZones, ws.CurrentTime, ctx.Scratch);
@@ -49,7 +49,7 @@ public struct NavigationDecision
         return new() { Destination = waypoints.first, NextWaypoint = waypoints.second, LeewaySeconds = bestNode.PathLeeway, TimeToGoal = bestNode.GScore };
     }
 
-    public static void RasterizeForbiddenZones(Map map, (Func<WPos, float> shapeDistance, DateTime activation)[] zones, DateTime current, float[] scratch)
+    public static void RasterizeForbiddenZones(Map map, (Func<WPos, float> shapeDistance, DateTime activation, ulong source)[] zones, DateTime current, float[] scratch)
     {
         // 1) Cluster activation times
         // very slight difference in activation times cause issues for pathfinding - cluster them together

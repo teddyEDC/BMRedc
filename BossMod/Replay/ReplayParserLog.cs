@@ -418,6 +418,7 @@ public sealed class ReplayParserLog : IDisposable
             [new("CPET"u8)] = ParseClientActivePet,
             [new("CLFT"u8)] = ParseClientFocusTarget,
             [new("CLFD"u8)] = ParseClientForcedMovementDirection,
+            [new("CLKV"u8)] = ParseClientContentKVData,
             [new("DDPG"u8)] = ParseDeepDungeonProgress,
             [new("DDMP"u8)] = ParseDeepDungeonMap,
             [new("DDPT"u8)] = ParseDeepDungeonParty,
@@ -803,6 +804,14 @@ public sealed class ReplayParserLog : IDisposable
     private ClientState.OpActivePetChange ParseClientActivePet() => new(new(_input.ReadULong(true), _input.ReadByte(false), _input.ReadByte(false)));
     private ClientState.OpFocusTargetChange ParseClientFocusTarget() => new(_input.ReadULong(true));
     private ClientState.OpForcedMovementDirectionChange ParseClientForcedMovementDirection() => new(_input.ReadAngle());
+    private ClientState.OpContentKVDataChange ParseClientContentKVData() => new([
+        _input.ReadUInt(false),
+        _input.ReadUInt(false),
+        _input.ReadUInt(false),
+        _input.ReadUInt(false),
+        _input.ReadUInt(false),
+        _input.ReadUInt(false),
+    ]);
 
     private DeepDungeonState.OpProgressChange ParseDeepDungeonProgress() => new((DeepDungeonState.DungeonType)_input.ReadByte(false), new(_input.ReadByte(false), _input.ReadByte(false), _input.ReadByte(false), _input.ReadByte(false), _input.ReadByte(false), _input.ReadByte(false), _input.ReadByte(false), _input.ReadByte(false)));
     private DeepDungeonState.OpMapDataChange ParseDeepDungeonMap()

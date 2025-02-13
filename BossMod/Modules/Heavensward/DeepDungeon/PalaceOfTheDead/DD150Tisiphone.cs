@@ -2,11 +2,11 @@ namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD150Tisiphone;
 
 public enum OID : uint
 {
-    Boss = 0x181C, // R2.000, x1
-    FanaticGargoyle = 0x18EB, // R2.300, x0 (spawn during fight)
-    FanaticSuccubus = 0x18EE, // R1.000, x0 (spawn during fight)
-    FanaticVodoriga = 0x18EC, // R1.200, x0 (spawn during fight)
-    FanaticZombie = 0x18ED // R0.500, x0 (spawn during fight)
+    Boss = 0x181C, // R2.0
+    FanaticGargoyle = 0x18EB, // R2.3
+    FanaticSuccubus = 0x18EE, // R1.0
+    FanaticVodoriga = 0x18EC, // R1.2
+    FanaticZombie = 0x18ED // R0.5
 }
 
 public enum AID : uint
@@ -27,18 +27,40 @@ public enum AID : uint
 }
 
 class BloodRain(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BloodRain), "Heavy Raidwide damage! Also killing any add that is currently up");
-class BossAdds(BossModule module) : Components.AddsMulti(module, [(uint)OID.FanaticZombie, (uint)OID.FanaticSuccubus]);
-class DarkMist(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DarkMist), 10);
-class Desolation(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Desolation), new AOEShapeRect(57.3f, 3));
+class BossAdds(BossModule module) : Components.AddsMulti(module, [(uint)OID.FanaticZombie, (uint)OID.FanaticSuccubus])
+{
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (actor.Class.GetRole() is Role.Ranged or Role.Healer)
+        {
+            // ignore all adds, just attack boss
+            hints.PrioritizeTargetsByOID((uint)OID.Boss, 5);
+            var zombies = Module.Enemies((uint)OID.FanaticZombie);
+            var count = zombies.Count;
+            for (var i = 0; i < count; ++i)
+            {
+                var zombie = zombies[i];
+                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 3));
+                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 8), WorldState.FutureTime(5d));
+            }
+        }
+        else
+        {
+            // kill zombies first, they have low health
+            hints.PrioritizeTargetsByOID((uint)OID.FanaticZombie, 5);
+            // attack boss, ignore succubus
+            hints.PrioritizeTargetsByOID((uint)OID.Boss, 1);
+        }
+    }
+}
+class DarkMist(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DarkMist), 10f);
+class Desolation(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Desolation), new AOEShapeRect(57.3f, 3f));
 class FatalAllure(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.FatalAllure), "Boss is life stealing from the succubus");
-class SweetSteel(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SweetSteel), new AOEShapeCone(7, 45.Degrees()));
-class TerrorEye(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TerrorEye), 6);
-class VoidAero(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidAero), new AOEShapeRect(42, 4));
-class VoidFireII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireII), 5);
-class VoidFireIV(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireIV), 10);
-class ZombieGrab(BossModule module) : Components.PersistentVoidzone(module, 2, m => m.Enemies(OID.FanaticZombie)); // Future note to Ice(self): Not entirely sure if I'm happy with this per se? It shows to essentially stay away from the zombies but, maybe a better hint when I can think of one
-
-// TODO: Add a switch to target the zombie that is currently attached to you. Missing the status effect that it gives when caught.
+class SweetSteel(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SweetSteel), new AOEShapeCone(7f, 45f.Degrees()));
+class TerrorEye(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TerrorEye), 6f);
+class VoidAero(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidAero), new AOEShapeRect(42f, 4f));
+class VoidFireII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireII), 5f);
+class VoidFireIV(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidFireIV), 10f);
 
 class EncounterHints(BossModule module) : BossComponent(module)
 {
@@ -63,7 +85,6 @@ class DD150TisiphoneStates : StateMachineBuilder
             .ActivateOnEnter<VoidAero>()
             .ActivateOnEnter<VoidFireII>()
             .ActivateOnEnter<VoidFireIV>()
-            .ActivateOnEnter<ZombieGrab>()
             .DeactivateOnEnter<EncounterHints>();
     }
 }
@@ -71,7 +92,7 @@ class DD150TisiphoneStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 213, NameID = 5424)]
 public class DD150Tisiphone : BossModule
 {
-    public DD150Tisiphone(WorldState ws, Actor primary) : base(ws, primary, new(-300, -237.17f), new ArenaBoundsCircle(24))
+    public DD150Tisiphone(WorldState ws, Actor primary) : base(ws, primary, new(-300f, -237.17f), new ArenaBoundsCircle(24f))
     {
         ActivateComponent<EncounterHints>();
     }

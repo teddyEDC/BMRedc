@@ -17,70 +17,78 @@ public enum AID : uint
     FangsEnd = 7092 // Boss->player, no cast, single-target
 }
 
-class Douse(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8, ActionID.MakeSpell(AID.Douse), m => m.Enemies(OID.Voidzone).Where(z => z.EventState != 7), 0.8f);
-
-class DouseHaste(BossModule module) : BossComponent(module)
+class Douse(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8, ActionID.MakeSpell(AID.Douse), GetVoidzones, 0.8f)
 {
-    private bool BossInVoidzone;
-
-    public override void Update()
+    public static Actor[] GetVoidzones(BossModule module)
     {
-        if (Module.FindComponent<Douse>()?.ActiveAOEs(0, Module.PrimaryActor).Any(z => z.Shape.Check(Module.PrimaryActor.Position, z.Origin, z.Rotation)) ?? false)
-            BossInVoidzone = true;
-        else
-            BossInVoidzone = false;
+        var enemies = module.Enemies((uint)OID.Voidzone);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (z.EventState != 7)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
+    }
+}
+
+class DousePuddle(BossModule module) : BossComponent(module)
+{
+    private readonly Actor[] puddles = Douse.GetVoidzones(module);
+
+    private bool BossInPuddle
+    {
+        get
+        {
+            var len = puddles.Length;
+            for (var i = 0; i < len; ++i)
+            {
+                if (Module.PrimaryActor.Position.InCircle(puddles[i].Position, 8f + Module.PrimaryActor.HitboxRadius))
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public override void DrawArenaBackground(int pcSlot, Actor pc)
+    {
+        // indicate on minimap how far boss needs to be pulled
+        if (BossInPuddle)
+            Arena.AddCircle(Module.PrimaryActor.Position, Module.PrimaryActor.HitboxRadius, Colors.Danger);
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (BossInVoidzone && Module.PrimaryActor.TargetID == actor.InstanceID)
-            hints.Add("Pull the boss out of the water puddle!");
-        if (BossInVoidzone && Module.PrimaryActor.TargetID != actor.InstanceID && actor.Role == Role.Tank)
-            hints.Add("Consider provoking and pulling the boss out of the water puddle.");
+        if (Module.PrimaryActor.TargetID == actor.InstanceID && BossInPuddle)
+            hints.Add("Pull boss out of puddle!");
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (Module.PrimaryActor.TargetID == actor.InstanceID && BossInPuddle)
+        {
+            var effPuddleSize = 8 + Module.PrimaryActor.HitboxRadius;
+            var tankDist = hints.FindEnemy(Module.PrimaryActor)?.TankDistance ?? 2;
+            // yaquaru tank distance seems to be around 2-2.5y, but from testing, 3y minimum is needed to move it out of the puddle, either because of rasterization shenanigans or netcode
+            var effTankDist = Module.PrimaryActor.HitboxRadius + tankDist + 1;
+
+            var len = puddles.Length;
+            var puddlez = new Func<WPos, float>[len];
+            for (var i = 0; i < len; ++i)
+                puddlez[i] = ShapeDistance.Circle(puddles[i].Position, effPuddleSize + effTankDist);
+            var closest = ShapeDistance.Union(puddlez);
+            hints.GoalZones.Add(p => closest(p) > 0f ? 1000f : 0f);
+        }
     }
 }
 
-class Drench(BossModule module) : Components.GenericAOEs(module)
-{
-    private DateTime _activation;
-    private static readonly AOEShapeCone cone = new(15.75f, 45.Degrees());
-    private bool Pulled;
-
-    public override void Update()
-    {
-        if (!Pulled)
-        {
-            _activation = WorldState.FutureTime(5.1f);
-            Pulled = true;
-        }
-    }
-
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        if (_activation != default)
-            yield return new(cone, Module.PrimaryActor.Position, Module.PrimaryActor.Rotation, _activation);
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        if ((AID)spell.Action.ID == AID.Electrogenesis) // boss can move after cast started, so we can't use aoe instance, since that would cause outdated position data to be used
-        {
-            ++NumCasts;
-            if (NumCasts % 2 == 0)
-                _activation = WorldState.FutureTime(7.3f);
-        }
-    }
-
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
-    {
-        if ((AID)spell.Action.ID == AID.Drench)
-            _activation = default;
-        if ((AID)spell.Action.ID == AID.FangsEnd)
-            _activation = WorldState.FutureTime(7.1f);
-    }
-}
-
-class Electrogenesis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Electrogenesis), 8);
+class Electrogenesis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Electrogenesis), 8f);
 
 class DD70TaquaruStates : StateMachineBuilder
 {
@@ -88,11 +96,10 @@ class DD70TaquaruStates : StateMachineBuilder
     {
         TrivialPhase()
             .ActivateOnEnter<Douse>()
-            .ActivateOnEnter<DouseHaste>()
-            .ActivateOnEnter<Drench>()
+            .ActivateOnEnter<DousePuddle>()
             .ActivateOnEnter<Electrogenesis>();
     }
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "legendoficeman, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 205, NameID = 5321)]
-public class DD70Taquaru(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300, -220), new ArenaBoundsCircle(25));
+public class DD70Taquaru(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -220f), new ArenaBoundsCircle(25f));

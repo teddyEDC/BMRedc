@@ -157,17 +157,18 @@ class NerveGasRingAndAutoCannons(BossModule module) : Components.GenericAOEs(mod
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
+        void AddAOE(AOEShape shape, bool risky = true) => AOEs.Add(new(shape, spell.LocXZ, default, Module.CastFinishAt(spell), Risky: risky));
         if (spell.Action.ID == (uint)AID.NerveGasRing)
         {
-            AOEs.Add(new(donut, Arena.Center, default, Module.CastFinishAt(spell), Risky: false));
-            AOEs.Add(new(cross, Arena.Center, default, Module.CastFinishAt(spell)));
+            AddAOE(donut, false);
+            AddAOE(cross);
         }
-        if (AOEs.Count == 0 && (AID)spell.Action.ID == AID.AutoCannons)
-            AOEs.Add(new(cross, Arena.Center, default, Module.CastFinishAt(spell)));
-        else if (AOEs.Count == 2 && (AID)spell.Action.ID == AID.AutoCannons)
+        else if (spell.Action.ID == (uint)AID.AutoCannons)
+            AddAOE(cross);
+        else if (AOEs.Count == 2 && spell.Action.ID == (uint)AID.AutoCannons)
         {
             AOEs.RemoveAt(1);
-            AOEs.Add(new(cross, Arena.Center, default, Module.CastFinishAt(spell)));
+            AddAOE(cross);
         }
     }
 

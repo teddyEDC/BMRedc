@@ -2,10 +2,10 @@ namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD100NybethObdilord;
 
 public enum OID : uint
 {
-    Boss = 0x1808, // R2.400, x1
-    BicephalicCorse = 0x180A, // R1.900, x0 (spawn during fight)
-    GiantCorse = 0x1809, // R1.900, x0 (spawn during fight)
-    IronCorse = 0x180B // R1.900, x0 (spawn during fight)
+    Boss = 0x1808, // R2.4
+    BicephalicCorse = 0x180A, // R1.9
+    GiantCorse = 0x1809, // R1.9
+    IronCorse = 0x180B // R1.9
 }
 
 public enum AID : uint
@@ -22,12 +22,12 @@ public enum AID : uint
     WordOfPain = 6873 // Boss->self, no cast, range 40+R circle
 }
 
-class Abyss(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Abyss), new AOEShapeCircle(6), true);
-class Catapult(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Catapult), 6);
+class Abyss(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Abyss), new AOEShapeCircle(6f), true);
+class Catapult(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Catapult), 6f);
 class CorseAdds(BossModule module) : Components.AddsMulti(module, [(uint)OID.BicephalicCorse, (uint)OID.GiantCorse, (uint)OID.IronCorse]);
-class Doom(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Doom), new AOEShapeCone(47.4f, 60.Degrees()));
-class Shackle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Shackle), new AOEShapeRect(52.4f, 4));
-class SummonDarkness(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SummonDarkness), "Summoning the corse, incoming Adds! \nRemember to use a resolution to make them permanently disappear");
+class Doom(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Doom), new AOEShapeCone(47.4f, 60f.Degrees()));
+class Shackle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Shackle), new AOEShapeRect(52.4f, 4f));
+class SummonDarkness(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.SummonDarkness), "Summoning the corse, incoming Adds! \nRemember to use a resolution to make them permanently disappear");
 
 class EncounterHints(BossModule module) : BossComponent(module)
 {
@@ -55,7 +55,7 @@ class DD100NybethObdilordStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 208, NameID = 5356)]
 public class DD100NybethObdilord : BossModule
 {
-    public DD100NybethObdilord(WorldState ws, Actor primary) : base(ws, primary, new(300, 300), new ArenaBoundsCircle(24))
+    public DD100NybethObdilord(WorldState ws, Actor primary) : base(ws, primary, new(300f, 300f), new ArenaBoundsCircle(24f))
     {
         ActivateComponent<EncounterHints>();
     }

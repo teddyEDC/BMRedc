@@ -45,5 +45,5 @@ public class BossModuleHintsWindow : UIWindow
         }
     }
 
-    private bool ShowZoneModule() => _mgr.ActiveModule?.StateMachine.ActivePhase == null && (_zmm.ActiveModule?.WantToBeDrawn() ?? false);
+    private bool ShowZoneModule() => _mgr.ActiveModule?.StateMachine.ActivePhase == null && (_zmm.ActiveModule?.WantDrawHints() ?? false);
 }

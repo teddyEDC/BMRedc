@@ -126,6 +126,8 @@ public sealed class RDM(RotationModuleManager manager, Actor player) : Castxan<A
         if (primaryTarget is { } tar && (Swordplay > 0 || LowestMana >= comboMana || InCombo))
             Hints.GoalZones.Add(Hints.GoalSingleTarget(tar.Actor, 3));
 
+        GoalZoneSingle(25);
+
         OGCD(strategy, primaryTarget);
 
         if (ComboLastMove is AID.Scorch)
@@ -243,9 +245,9 @@ public sealed class RDM(RotationModuleManager manager, Actor player) : Castxan<A
     private bool DashOk(StrategyValues strategy, Enemy? primaryTarget) => strategy.Option(Track.Dash).As<DashStrategy>() switch
     {
         DashStrategy.Any => true,
-        DashStrategy.Move => MaxCastTime > 30,
+        DashStrategy.Move => !IsMoving,
         DashStrategy.Close => Player.DistanceToHitbox(primaryTarget) < 3,
-        DashStrategy.CloseMove => Player.DistanceToHitbox(primaryTarget) < 3 && MaxCastTime > 30,
+        DashStrategy.CloseMove => Player.DistanceToHitbox(primaryTarget) < 3 && !IsMoving,
         _ => false
     };
 }

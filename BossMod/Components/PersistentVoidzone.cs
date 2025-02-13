@@ -119,7 +119,7 @@ public class PersistentInvertibleVoidzone(BossModule module, float radius, Func<
     // TODO: reconsider - draw foreground circles instead?
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        var color = Inverted ? Colors.SafeFromAOE : Colors.AOE;
+        var color = Inverted ? Colors.SafeFromAOE : 0;
         foreach (var s in Sources(Module))
             Shape.Draw(Arena, s.Position, s.Rotation, color);
     }

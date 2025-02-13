@@ -34,7 +34,26 @@ class DarkMegaflare(BossModule module) : Components.SimpleAOEs(module, ActionID.
 class DarkWyrm(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40f, 8f));
 class DarkWyrmwing(BossModule module) : DarkWyrm(module, AID.DarkWyrmwing);
 class DarkWyrmtail(BossModule module) : DarkWyrm(module, AID.DarkWyrmtail);
-class CreatureOfDarkness(BossModule module) : Components.PersistentVoidzone(module, 2f, m => m.Enemies(OID.DarkWanderer).Where(x => x.ModelState.AnimState1 == 1), 6f);
+class CreatureOfDarkness(BossModule module) : Components.PersistentVoidzone(module, 2f, GetVoidzones, 6f)
+{
+    private static Actor[] GetVoidzones(BossModule module)
+    {
+        var enemies = module.Enemies((uint)OID.DarkWanderer);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (z.ModelState.AnimState1 == 1)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
+    }
+}
 
 class DD30TiamatsCloneStates : StateMachineBuilder
 {

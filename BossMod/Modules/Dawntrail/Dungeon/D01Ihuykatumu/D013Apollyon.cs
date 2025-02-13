@@ -123,8 +123,12 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
         void AddWhirlwind(ReadOnlySpan<WPos> pos)
         {
             for (var i = 0; i < 3; ++i)
+            {
+                var delay = WorldState.FutureTime(delays[i]);
+                var posi = WPos.ClampToGrid(pos[i]);
                 for (var j = 0; j < 4; ++j)
-                    _aoes.Add(new(rect, WPos.ClampToGrid(pos[i]), angles[j], WorldState.FutureTime(delays[i])));
+                    _aoes.Add(new(rect, posi, angles[j], delay));
+            }
         }
         if (actor.OID == (uint)OID.Whirlwind)
             if (actor.Position.AlmostEqual(new WPos(-121f, 279f), 1f))

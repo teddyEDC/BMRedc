@@ -72,7 +72,7 @@ public enum AID : uint
 
 class DisruptionArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCustom square = new([new Square(D063Eliminator.ArenaCenter, 16)], [new Square(D063Eliminator.ArenaCenter, 15)]);
+    private static readonly AOEShapeCustom square = new([new Square(D063Eliminator.ArenaCenter, 16f)], [new Square(D063Eliminator.ArenaCenter, 15f)]);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
@@ -115,7 +115,7 @@ class Electray(BossModule module) : Components.SpreadFromCastTargets(module, Act
         {
             base.AddAIHints(slot, actor, assignment, hints);
             if (ActiveSpreads.Count != 0)
-                hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center - new WDir(0f, 15f), 15f), ActiveSpreads[0].Activation);
+                hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center - new WDir(default, 15f), 15f), ActiveSpreads[0].Activation);
         }
     }
 }

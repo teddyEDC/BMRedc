@@ -19,7 +19,7 @@ public enum AID : uint
 class AeroBlast(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AeroBlast));
 class Bombination(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Bombination), 12);
 class Lumisphere(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Lumisphere), 6);
-class Stormwind(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Stormwind), new AOEShapeCone(18, 45.Degrees()));
+class Stormwind(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Stormwind), new AOEShapeCone(18f, 45f.Degrees()));
 
 class DD10PalaceDeathgazeStates : StateMachineBuilder
 {
@@ -34,5 +34,4 @@ class DD10PalaceDeathgazeStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 174, NameID = 4986)]
-public class DD10PalaceDeathgaze(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300, -220), new ArenaBoundsCircle(25));
-
+public class DD10PalaceDeathgaze(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -220f), new ArenaBoundsCircle(24f));

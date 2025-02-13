@@ -23,10 +23,19 @@ public enum AID : uint
 class BossAdds(BossModule module) : Components.AddsMulti(module, [(uint)OID.GreyBomb, (uint)OID.GiddyBomb]);
 class Burst(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Burst), "Kill the Grey Bomb! or take 80% of your Max HP");
 // future thing to do: maybe add a tether between bomb/boss to show it needs to show the aoe needs to explode on them. . . 
-class HypothermalCombustion(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HypothermalCombustion), 7.2f);
+class HypothermalCombustion(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HypothermalCombustion), 7.2f)
+{
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.AddAIHints(slot, actor, assignment, hints);
+        var bomb = Module.Enemies((uint)OID.GiddyBomb);
+        if (bomb.Count != 0 && bomb[0] is Actor g && Module.PrimaryActor.Position.InCircle(g.Position, 7.2f))
+            hints.SetPriority(g, AIHints.Enemy.PriorityForbidden);
+    }
+}
 class MassiveBurst(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MassiveBurst), "Knock the Giddy bomb into the boss and let it explode on the boss. \n or else take 99% damage!");
-class Sap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Sap), 8);
-class ScaldingScolding(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.ScaldingScolding), new AOEShapeCone(11.75f, 45.Degrees()))
+class Sap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Sap), 8f);
+class ScaldingScolding(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.ScaldingScolding), new AOEShapeCone(11.75f, 45f.Degrees()))
 {
     private readonly MassiveBurst _raidwide1 = module.FindComponent<MassiveBurst>()!;
     private readonly Sap _locationaoe1 = module.FindComponent<Sap>()!;
@@ -59,13 +68,13 @@ class SelfDestruct(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorCreated(Actor actor)
     {
-        if ((OID)actor.OID == OID.LavaBomb)
-            _aoes.Add(new(circle, actor.Position, default, WorldState.FutureTime(10)));
+        if (actor.OID == (uint)OID.LavaBomb)
+            _aoes.Add(new(circle, WPos.ClampToGrid(actor.Position), default, WorldState.FutureTime(10d)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.SelfDestruct)
+        if (spell.Action.ID == (uint)AID.SelfDestruct)
             _aoes.Clear();
     }
 }
@@ -86,4 +95,4 @@ class DD90TheGodmotherStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 207, NameID = 5345)]
-public class DD90TheGodmother(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300, -235), new ArenaBoundsCircle(25));
+public class DD90TheGodmother(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -235f), new ArenaBoundsCircle(25f));
