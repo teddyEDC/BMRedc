@@ -39,10 +39,10 @@ class WrathOfTheRonka(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeRect rectShort = new(12f, 4f), rectMedium = new(22f, 4f), rectLong = new(35f, 4f);
 
     private static readonly (WPos Position, AOEShapeRect Shape)[] aoeMap =
-        [(new(-17, 627), rectMedium), (new(17, 642), rectMedium),
-        (new(-17, 436), rectMedium), (new(17, 421), rectMedium),
-        (new(-17, 642), rectShort), (new(17, 627), rectShort),
-        (new(17, 436), rectShort), (new(-17, 421), rectShort)];
+        [(new(-17f, 627f), rectMedium), (new(17f, 642f), rectMedium),
+        (new(-17f, 436f), rectMedium), (new(17f, 421f), rectMedium),
+        (new(-17f, 642f), rectShort), (new(17f, 627f), rectShort),
+        (new(17f, 436f), rectShort), (new(-17f, 421f), rectShort)];
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
 

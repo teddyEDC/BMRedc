@@ -32,9 +32,9 @@ public enum AID : uint
     SteelFlame = 31336, // Caliburnus->location, 2.0s cast, width 4 rect charge
     SteelFrost = 31337, // Caliburnus->location, 2.0s cast, width 4 rect charge
 
-    AbyssalSlash1 = 31339, // Helper->self, 7.0s cast, range 2-7 donut
-    AbyssalSlash2 = 31340, // Helper->self, 7.0s cast, range 7-12 donut
-    AbyssalSlash3 = 31341, // Helper->self, 7.0s cast, range 17-22 donut
+    AbyssalSlash1 = 31339, // Helper->self, 7.0s cast, range 2-7 180-degree donut segment
+    AbyssalSlash2 = 31340, // Helper->self, 7.0s cast, range 7-12 180-degree donut segment
+    AbyssalSlash3 = 31341, // Helper->self, 7.0s cast, range 17-22 180-degree donut segment
 
     FlamesRevelation = 31331, // Helper->self, no cast, range 60 circle
     FrostRevelation = 31332, // Helper->self, no cast, range 60 circle
@@ -59,10 +59,10 @@ class Steelstrike(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeRect rect = new(20f, 2f);
     private static readonly AOEShapeRect rect2 = new(20f, 2f, 20f);
-    private readonly HashSet<AOEInstance> _aoes = [];
-    private readonly List<Angle> angles = [];
-    private readonly List<AOEInstance> swordsFire = [];
-    private readonly List<AOEInstance> swordsIce = [];
+    private readonly List<AOEInstance> _aoes = new(15);
+    private readonly List<Angle> angles = new(15);
+    private readonly List<AOEInstance> swordsFire = new(5);
+    private readonly List<AOEInstance> swordsIce = new(5);
     private static readonly Angle[] offsets = [default, 120f.Degrees(), 240f.Degrees()];
     private static readonly Angle a20 = 20f.Degrees();
     private static readonly Angle a10 = 10f.Degrees();
@@ -78,19 +78,29 @@ class Steelstrike(BossModule module) : Components.GenericAOEs(module)
         var ice = actor.FindStatus((uint)SID.SoulOfIce) != null;
 
         return ice && (bool)nextRaidwide ? GetSafeAOEs(swordsFire)
-            : fire && !(bool)nextRaidwide ? GetSafeAOEs(swordsIce)
-            : _aoes;
+            : fire && !(bool)nextRaidwide ? GetSafeAOEs(swordsIce) : _aoes;
     }
 
-    private IEnumerable<AOEInstance> GetSafeAOEs(List<AOEInstance> swordAOEs)
+    private AOEInstance[] GetSafeAOEs(List<AOEInstance> swordAOEs)
     {
-        var result = _aoes.Except([swordAOEs.First(), swordAOEs.Last()]).ToList();
-        var safeAOEs = new[]
+        var count = _aoes.Count;
+        var aoes = new AOEInstance[count];
+
+        var firstSwordAOE = swordAOEs[0];
+        var lastSwordAOE = swordAOEs[^1];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
         {
-            swordAOEs.First() with { Color = Colors.SafeFromAOE },
-            swordAOEs.Last() with { Color = Colors.SafeFromAOE }
-        };
-        return result.Concat(safeAOEs);
+            var aoe = _aoes[i];
+            if (aoe == firstSwordAOE || aoe == lastSwordAOE)
+                continue;
+            aoes[index++] = _aoes[i];
+        }
+
+        aoes[^1] = firstSwordAOE with { Color = Colors.SafeFromAOE, Risky = false };
+        aoes[^2] = lastSwordAOE with { Color = Colors.SafeFromAOE, Risky = false };
+
+        return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -103,8 +113,9 @@ class Steelstrike(BossModule module) : Components.GenericAOEs(module)
                 break;
             case (uint)AID.ThermalDivide1:
             case (uint)AID.ParadoxumVisual:
-                foreach (var a in angles)
-                    _aoes.Add(new(rect2, Arena.Center, a, Module.CastFinishAt(spell, 3.4f)));
+                var count = angles.Count;
+                for (var i = 0; i < count; ++i)
+                    _aoes.Add(new(rect2, Arena.Center, angles[i], Module.CastFinishAt(spell, 3.4f)));
                 break;
             case (uint)AID.Flameforge:
                 nextRaidwide = false;
@@ -145,12 +156,20 @@ class Steelstrike(BossModule module) : Components.GenericAOEs(module)
                 swordsFire.Sort((a, b) => a.Rotation.Rad.CompareTo(b.Rotation.Rad));
                 swordsIce.Sort((a, b) => a.Rotation.Rad.CompareTo(b.Rotation.Rad));
             }
+            void AddSwordAOE(Actor actor, List<AOEInstance> swordAOEs)
+            {
+                var count = _aoes.Count;
+                for (var i = 0; i < count; ++i)
+                {
+                    var aoe = _aoes[i];
+                    if (aoe.Rotation.AlmostEqual(actor.Rotation, Angle.DegToRad))
+                    {
+                        swordAOEs.Add(aoe);
+                        break;
+                    }
+                }
+            }
         }
-    }
-
-    private void AddSwordAOE(Actor actor, List<AOEInstance> swordAOEs)
-    {
-        swordAOEs.Add(_aoes.FirstOrDefault(x => x.Origin.AlmostEqual(actor.Position, 1f)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
@@ -182,21 +201,40 @@ class Steelstrike(BossModule module) : Components.GenericAOEs(module)
             if (NumCasts == 0)
                 AddSingleAOE(rot);
             else
-                foreach (var o in offsets)
-                    AddSingleAOE(rot + o);
+            {
+                for (var j = 0; j < 3; ++j)
+                    AddSingleAOE(rot + offsets[j]);
+            }
         }
-    }
-
-    private void AddSingleAOE(Angle rotation)
-    {
-        _aoes.Add(new(rect, WPos.ClampToGrid(Arena.Center), rotation));
-        angles.Add(rotation);
+        void AddSingleAOE(Angle rot)
+        {
+            _aoes.Add(new(rect, Arena.Center, rot));
+            angles.Add(rot);
+        }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (spell.Action.ID is (uint)AID.FlamesRevelation or (uint)AID.FrostRevelation)
             nextRaidwide = null;
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        if (_aoes.Count == 0)
+            return;
+        base.AddAIHints(slot, actor, assignment, hints);
+        var forbidden = new Func<WPos, float>[2];
+        var index = 0;
+        foreach (var aoe in ActiveAOEs(slot, actor))
+        {
+            if (aoe.Color == Colors.SafeFromAOE)
+            {
+                forbidden[index++] = ShapeDistance.InvertedRect(aoe.Origin, aoe.Rotation, 20f, 20f, 2f);
+            }
+        }
+        if (index != 0)
+            hints.AddForbiddenZone(ShapeDistance.Intersection(forbidden), _aoes[0].Activation);
     }
 }
 
@@ -222,30 +260,25 @@ class ThermalDivideSides(BossModule module) : Components.GenericAOEs(module)
             return [];
     }
 
-    private IEnumerable<AOEInstance> HandleAOEs(bool condition)
+    private AOEInstance[] HandleAOEs(bool condition)
     {
-        var pos1 = WPos.ClampToGrid(Arena.Center + offset);
-        var pos2 = WPos.ClampToGrid(Arena.Center - offset);
+        var pos1 = Arena.Center + offset;
+        var pos2 = Arena.Center - offset;
 
-        if (condition)
-        {
-            yield return new(cone, pos1, rotation + a90, activation);
-            yield return new(cone with { InvertForbiddenZone = true }, pos2, rotation - a90, activation, Colors.SafeFromAOE);
-        }
-        else
-        {
-            yield return new(cone, pos2, rotation - a90, activation);
-            yield return new(cone with { InvertForbiddenZone = true }, pos1, rotation + a90, activation, Colors.SafeFromAOE);
-        }
+        var check = condition ? 1 : -1;
+        var aoes = new AOEInstance[2];
+        aoes[0] = new(cone, condition ? pos1 : pos2, rotation + check * a90, activation);
+        aoes[1] = new(cone with { InvertForbiddenZone = true }, condition ? pos2 : pos1, rotation - check * a90, activation, Colors.SafeFromAOE);
+        return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID is (uint)AID.ThermalDivideVisual1 or (uint)AID.ThermalDivideVisual2)
         {
-            pattern = (AID)spell.Action.ID == AID.ThermalDivideVisual2;
+            pattern = spell.Action.ID == (uint)AID.ThermalDivideVisual2;
             rotation = spell.Rotation;
-            offset = 4 * (spell.Rotation + a90).ToDirection();
+            offset = 4f * (spell.Rotation + a90).ToDirection();
             activation = Module.CastFinishAt(spell, 1.9f);
         }
     }
@@ -260,8 +293,15 @@ class ThermalDivideSides(BossModule module) : Components.GenericAOEs(module)
     {
         if (pattern == null)
             return;
-        if (ActiveAOEs(slot, actor).Any(c => c.Color == Colors.SafeFromAOE && !c.Check(actor.Position)))
-            hints.Add("Go to safe side!");
+
+        foreach (var aoe in ActiveAOEs(slot, actor))
+        {
+            if (aoe.Color == Colors.SafeFromAOE && !aoe.Check(actor.Position))
+            {
+                hints.Add("Go to safe side!");
+                break;
+            }
+        }
     }
 }
 
