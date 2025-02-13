@@ -64,7 +64,7 @@ public abstract class AutoClear : ZoneModule
 
     public record class Gaze(Actor Source, AOEShape Shape);
 
-    protected static readonly AutoDDConfig _config = Service.Config.Get<AutoDDConfig>();
+    protected static readonly AutoDDConfig Config = Service.Config.Get<AutoDDConfig>();
     private readonly EventSubscriptions _subscriptions;
     private readonly List<WPos> _trapsCurrentZone = [];
 
@@ -254,19 +254,19 @@ public abstract class AutoClear : ZoneModule
 
     protected void AddLOS(Actor Source, float Range)
     {
-        if (_config.AutoLOS)
+        if (Config.AutoLOS)
             AddLOSFromTerrain(Source, Range);
         else
             Circles.Add((Source, Range));
     }
 
-    private bool OpenGold => _config.GoldCoffer;
+    private bool OpenGold => Config.GoldCoffer;
     private bool OpenSilver
     {
         get
         {
             // disabled
-            if (!_config.SilverCoffer)
+            if (!Config.SilverCoffer)
                 return false;
 
             // sanity check
@@ -289,9 +289,9 @@ public abstract class AutoClear : ZoneModule
         }
     }
 
-    private bool OpenBronze => _config.BronzeCoffer;
+    private bool OpenBronze => Config.BronzeCoffer;
 
-    public override bool WantDrawExtra() => _config.EnableMinimap && !Palace.IsBossFloor;
+    public override bool WantDrawExtra() => Config.EnableMinimap && !Palace.IsBossFloor;
 
     public sealed override string WindowName() => "BMR DD minimap###Zone module";
 
@@ -304,12 +304,12 @@ public abstract class AutoClear : ZoneModule
 
         ImGui.Text($"Kills: {Kills}");
 
-        var navInCombat = _config.NavigateInCombat;
+        var navInCombat = Config.NavigateInCombat;
 
         if (ImGui.Checkbox("Allow navigation in combat", ref navInCombat))
         {
-            _config.NavigateInCombat = navInCombat;
-            _config.Modified.Fire();
+            Config.NavigateInCombat = navInCombat;
+            Config.Modified.Fire();
         }
 
         if (ImGui.Button("Reload obstacles"))
@@ -389,7 +389,7 @@ public abstract class AutoClear : ZoneModule
 
     public override void CalculateAIHints(int playerSlot, Actor player, AIHints hints)
     {
-        if (!_config.Enable || Palace.IsBossFloor || BetweenFloors)
+        if (!Config.Enable || Palace.IsBossFloor || BetweenFloors)
             return;
 
         foreach (var (w, rot) in Walls)
@@ -448,7 +448,7 @@ public abstract class AutoClear : ZoneModule
         }
 
         var fullClear = false;
-        if (_config.FullClear)
+        if (Config.FullClear)
         {
             var unexplored = Array.FindIndex(Palace.Rooms, d => (byte)d > 0 && !d.HasFlag(RoomFlags.Revealed));
             if (unexplored > 0)
@@ -458,8 +458,7 @@ public abstract class AutoClear : ZoneModule
             }
         }
 
-
-        if (_config.TrapHints && _trapsHidden)
+        if (Config.TrapHints && _trapsHidden)
         {
             var count = _trapsCurrentZone.Count;
             var traps = new List<Func<WPos, float>>(count);
@@ -512,10 +511,10 @@ public abstract class AutoClear : ZoneModule
             hints.ActionsToExecute.Push(new ActionID(ActionType.Pomander, (uint)p2), null, ActionQueue.Priority.VeryHigh);
 
         Actor? wantCoffer = null;
-        if (coffer is Actor t && !IsPlayerTransformed(player) && (_config.AutoMoveTreasure && (!player.InCombat || _config.NavigateInCombat) || player.DistanceToHitbox(t) < 3.5f))
+        if (coffer is Actor t && !IsPlayerTransformed(player) && (Config.AutoMoveTreasure && (!player.InCombat || Config.NavigateInCombat) || player.DistanceToHitbox(t) < 3.5f))
             wantCoffer = t;
 
-        if (!player.InCombat && _config.AutoPassage && Palace.PassageActive)
+        if (!player.InCombat && Config.AutoPassage && Palace.PassageActive)
         {
             if (DesiredRoom == 0)
                 DesiredRoom = Array.FindIndex(Palace.Rooms, d => d.HasFlag(RoomFlags.Passage));
@@ -525,7 +524,7 @@ public abstract class AutoClear : ZoneModule
                 hints.GoalZones.Add(hints.GoalSingleTarget(c.Position, 2f, 0.5f));
                 // give pathfinder a little help lmao
                 hints.GoalZones.Add(hints.GoalSingleTarget(c.Position, 25f, 0.25f));
-                if (player.DistanceToHitbox(c) < player.DistanceToHitbox(coffer) && !_config.OpenChestsFirst)
+                if (player.DistanceToHitbox(c) < player.DistanceToHitbox(coffer) && !Config.OpenChestsFirst)
                     wantCoffer = null;
             }
         }
@@ -540,10 +539,10 @@ public abstract class AutoClear : ZoneModule
         if (revealedTraps.Count > 0)
             hints.AddForbiddenZone(ShapeDistance.Union(revealedTraps));
 
-        if (!IsPlayerTransformed(player) && (!player.InCombat || _config.NavigateInCombat) && _config.AutoMoveTreasure && hoardLight is Actor h && Palace.GetPomanderState(PomanderID.Intuition).Active)
+        if (!IsPlayerTransformed(player) && (!player.InCombat || Config.NavigateInCombat) && Config.AutoMoveTreasure && hoardLight is Actor h && Palace.GetPomanderState(PomanderID.Intuition).Active)
             hints.GoalZones.Add(hints.GoalSingleTarget(h.Position, 2f, 10f));
 
-        var shouldTargetMobs = _config.AutoClear switch
+        var shouldTargetMobs = Config.AutoClear switch
         {
             AutoDDConfig.ClearBehavior.Passage => !Palace.PassageActive,
             AutoDDConfig.ClearBehavior.Leveling => player.Level < LevelCap || !Palace.PassageActive,
@@ -681,7 +680,7 @@ public abstract class AutoClear : ZoneModule
 
     private void HandleFloorPathfind(Actor player, AIHints hints)
     {
-        if (player.InCombat && !_config.NavigateInCombat)
+        if (player.InCombat && !Config.NavigateInCombat)
             return;
 
         var playerRoom = Palace.Party[0].Room;

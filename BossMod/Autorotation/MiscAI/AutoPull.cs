@@ -29,7 +29,7 @@ public sealed class AutoPull(RotationModuleManager manager, Actor player) : Rota
             enabled |= Bossmods.ActiveModule?.Info?.Category == BossModuleInfo.Category.Quest;
 
         if (strategy.Enabled(Track.DeepDungeon))
-            enabled |= Bossmods.ActiveModule?.Info?.Category == BossModuleInfo.Category.DeepDungeon && World.Party.WithoutSlot().Count() == 1;
+            enabled |= Bossmods.ActiveModule?.Info?.Category == BossModuleInfo.Category.DeepDungeon && World.Party.WithoutSlot().Length == 1;
 
         if (strategy.Enabled(Track.EpicEcho))
             enabled |= Player.Statuses.Any(s => s.ID == 2734);
