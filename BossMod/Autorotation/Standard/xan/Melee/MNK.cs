@@ -118,7 +118,6 @@ public sealed class MNK(RotationModuleManager manager, Actor player) : Attackxan
             .AddOption(WRStrategy.PreDowntime, "Ensure usage at least 2 GCDs before next downtime", minLevel: 96)
             .AddAssociatedActions(AID.WindsReply);
 
-
         // PB-related settings
         def.Define(Track.PB).As<PBStrategy>("PB", uiPriority: 89)
             .AddOption(PBStrategy.Automatic, "Automatically use after Opo before or during Riddle of Fire", minLevel: 50)
