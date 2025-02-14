@@ -19,7 +19,7 @@ public class AutoDDConfig : ConfigNode
     public bool Enable = true;
     [PropertyDisplay("Enable minimap")]
     public bool EnableMinimap = true;
-    [PropertyDisplay("Try to avoid traps", tooltip: "Avoid known trap locations sourced from PalacePal data. (Traps revealed by a Pomander of Sight will always be avoided regardless of this setting.)")]
+    [PropertyDisplay("Try to avoid traps", tooltip: "Avoid known trap locations sourced from PalacePal data. Does not need PalacePal installed since data is embedded into BMR. (Traps revealed by a Pomander of Sight will always be avoided regardless of this setting.)")]
     public bool TrapHints = true;
     [PropertyDisplay("Automatically navigate to Cairn of Passage")]
     public bool AutoPassage = true;

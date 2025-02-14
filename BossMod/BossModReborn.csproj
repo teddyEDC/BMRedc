@@ -105,9 +105,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Modules\Global\DeepDungeon\*.json" />
+    <EmbeddedResource Include="Modules\Global\DeepDungeon\*.sqlite3" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+  <ItemGroup>
     <EmbeddedResource Include="Pathfinding\ObstacleMaps\*" />
   </ItemGroup>
+
+<ItemGroup>
+    <Content Include="System.Data.SQLite.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+</ItemGroup>
 </Project>
