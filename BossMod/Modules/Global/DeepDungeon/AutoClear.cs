@@ -129,7 +129,7 @@ public abstract class AutoClear : ZoneModule
             })
         );
 
-        _trapsCurrentZone = PalacePalInterop.GetTrapLocationsForZone(ws.CurrentZone);
+        _trapsCurrentZone = DDTrapsData.GetTrapLocationsForZone(ws.CurrentZone);
 
         LoadedFloors = JsonSerializer.Deserialize<Dictionary<string, Floor<Wall>>>(GetEmbeddedResource("Walls.json"))!;
         ProblematicTrapLocations = JsonSerializer.Deserialize<List<WPos>>(GetEmbeddedResource("BadTraps.json"))!;
@@ -142,6 +142,7 @@ public abstract class AutoClear : ZoneModule
         _subscriptions.Dispose();
         _obstacles.Dispose();
         base.Dispose(disposing);
+        DDTrapsData.CleanupTemporaryDatabase();
     }
 
     protected virtual void OnCastStarted(Actor actor) { }
@@ -830,45 +831,72 @@ public abstract class AutoClear : ZoneModule
         return false;
     }
 
-    private Stream GetEmbeddedResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream($"BossMod.Modules.Global.DeepDungeon.{name}") ?? throw new InvalidDataException($"Missing embedded resource {name}");
+    private Stream GetEmbeddedResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream($"BossModReborn.Modules.Global.DeepDungeon.{name}") ?? throw new InvalidDataException($"Missing embedded resource {name}");
 }
 
-static class PalacePalInterop
+static class DDTrapsData
 {
-    // TODO make an IPC for this? wouldn't work in uidev
-    private static readonly string PalacePalDbFile = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XIVLauncher", "pluginConfigs", "PalacePal", "palace-pal.data.sqlite3");
+    private const string EmbeddedDbResourceName = "BossModReborn.Modules.Global.DeepDungeon.DDTrapsData.sqlite3";
+    private static string? _tempDbFilePath;
+
+    private static string GetTempDbFilePath()
+    {
+        if (_tempDbFilePath != null)
+        {
+            return _tempDbFilePath;
+        }
+
+        var tempFileName = Path.GetTempFileName() + ".sqlite3";
+        _tempDbFilePath = tempFileName;
+
+        using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(EmbeddedDbResourceName))
+        {
+            if (resourceStream == null)
+            {
+                throw new FileNotFoundException($"Embedded resource '{EmbeddedDbResourceName}' not found.");
+            }
+
+            using var fileStream = new FileStream(tempFileName, FileMode.Create, FileAccess.Write);
+            resourceStream.CopyTo(fileStream);
+        }
+        return tempFileName;
+    }
 
     public static List<WPos> GetTrapLocationsForZone(uint zone)
     {
         List<WPos> locations = [];
-
-        try
+        var tempDbPath = GetTempDbFilePath();
+        using (var connection = new SQLiteConnection($"Data Source={tempDbPath};Version=3;Read Only=True;"))
         {
-            using (var connection = new SQLiteConnection($"Data Source={PalacePalDbFile}"))
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"select X,Z from Locations where Type = 1 and TerritoryType = $tt";
+            command.Parameters.AddWithValue("$tt", zone);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
             {
-                connection.Open();
-
-                var command = connection.CreateCommand();
-                command.CommandText = @"
-                select X,Z from Locations where Type = 1 and TerritoryType = $tt
-            ";
-                command.Parameters.AddWithValue("$tt", zone);
-
-                using var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    var x = reader.GetFloat(0);
-                    var z = reader.GetFloat(1);
-                    locations.Add(new(x, z));
-                }
+                var x = reader.GetFloat(0);
+                var z = reader.GetFloat(1);
+                locations.Add(new(x, z));
             }
+        }
+        return locations;
+    }
 
-            return locations;
-        }
-        catch (SQLiteException e)
+    public static void CleanupTemporaryDatabase()
+    {
+        if (_tempDbFilePath != null)
         {
-            Service.Log($"unable to load traps for zone ${zone}: ${e}");
-            return [];
+            var baseTempPath = Path.GetFileNameWithoutExtension(_tempDbFilePath);
+            var tempDirPath = Path.GetDirectoryName(_tempDbFilePath) ?? "";
+
+            string[] extensions = [".sqlite3", ".sqlite3-shm", ".sqlite3-wal", ""];
+
+            for (var i = 0; i < 4; ++i)
+                File.Delete(Path.Combine(tempDirPath, baseTempPath + extensions[i]));
         }
+        _tempDbFilePath = null;
     }
 }
