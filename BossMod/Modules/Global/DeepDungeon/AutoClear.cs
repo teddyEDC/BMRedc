@@ -142,7 +142,6 @@ public abstract class AutoClear : ZoneModule
         _subscriptions.Dispose();
         _obstacles.Dispose();
         base.Dispose(disposing);
-        DDTrapsData.CleanupTemporaryDatabase();
     }
 
     protected virtual void OnCastStarted(Actor actor) { }
@@ -393,8 +392,13 @@ public abstract class AutoClear : ZoneModule
         if (!Config.Enable || Palace.IsBossFloor || BetweenFloors)
             return;
 
-        foreach (var (w, rot) in Walls)
-            hints.AddForbiddenZone(ShapeDistance.Rect(w.Position, (rot ? 90f : 0f).Degrees(), w.Depth, w.Depth, 20));
+        var countWalls = Walls.Count;
+        for (var i = 0; i < countWalls; ++i)
+        {
+            var wall = Walls[i];
+            var w = wall.Wall;
+            hints.AddForbiddenZone(ShapeDistance.Rect(w.Position, (wall.Rotated ? 90f : 0f).Degrees(), w.Depth, w.Depth, 20f));
+        }
 
         HandleFloorPathfind(player, hints);
         DrawAOEs(playerSlot, player, hints);
@@ -461,17 +465,19 @@ public abstract class AutoClear : ZoneModule
 
         if (Config.TrapHints && _trapsHidden)
         {
-            var count = _trapsCurrentZone.Count;
-            var traps = new List<Func<WPos, float>>(count);
+            var countTraps = _trapsCurrentZone.Count;
+            var traps = new List<Func<WPos, float>>(countTraps);
 
-            foreach (var trap in _trapsCurrentZone)
+            for (var i = 0; i < countTraps; ++i)
             {
+                var trap = _trapsCurrentZone[i];
                 if (trap.InCircle(player.Position, 30f))
                 {
                     var shouldIgnore = false;
-                    foreach (var b in IgnoreTraps)
+                    var countIgnoreTraps = IgnoreTraps.Count;
+                    for (var j = 0; i < countIgnoreTraps; ++j)
                     {
-                        if (b.AlmostEqual(trap, 1f))
+                        if (IgnoreTraps[i].AlmostEqual(trap, 1f))
                         {
                             shouldIgnore = true;
                             break;
@@ -562,8 +568,10 @@ public abstract class AutoClear : ZoneModule
                 bestTarget = t;
         }
 
-        foreach (var pp in hints.PotentialTargets)
+        var counttargets = hints.PotentialTargets.Count;
+        for (var i = 0; i < counttargets; ++i)
         {
+            var pp = hints.PotentialTargets[i];
             // enemy is petrified, any damage will kill
             if (pp.Actor.FindStatus((uint)SID.StoneCurse)?.ExpireAt > World.FutureTime(1.5d))
                 pickBetterTarget(pp.Actor);
@@ -573,10 +581,26 @@ public abstract class AutoClear : ZoneModule
                 pickBetterTarget(pp.Actor);
 
             // if player does not have a target, prioritize everything so that AI picks one - skip dangerous enemies
-            else if (shouldTargetMobs && !pp.Actor.Statuses.Any(s => IsDangerousOutOfCombatStatus(s.ID)))
-                pickBetterTarget(pp.Actor);
-        }
+            else if (shouldTargetMobs)
+            {
+                var hasDangerousStatus = false;
+                var len = pp.Actor.Statuses.Length;
+                ref var statuses = ref pp.Actor.Statuses;
+                for (var j = 0; j < len; ++j)
+                {
+                    if (IsDangerousOutOfCombatStatus(statuses[j].ID))
+                    {
+                        hasDangerousStatus = true;
+                        break;
+                    }
+                }
 
+                if (!hasDangerousStatus)
+                {
+                    pickBetterTarget(pp.Actor);
+                }
+            }
+        }
         hints.ForcedTarget = bestTarget;
     }
 
@@ -831,72 +855,46 @@ public abstract class AutoClear : ZoneModule
         return false;
     }
 
-    private Stream GetEmbeddedResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream($"BossModReborn.Modules.Global.DeepDungeon.{name}") ?? throw new InvalidDataException($"Missing embedded resource {name}");
+    private Stream GetEmbeddedResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream($"BossModReborn.Modules.Global.DeepDungeon.{name}")!;
 }
 
-static class DDTrapsData
+public static class DDTrapsData
 {
-    private const string EmbeddedDbResourceName = "BossModReborn.Modules.Global.DeepDungeon.DDTrapsData.sqlite3";
-    private static string? _tempDbFilePath;
+    private static string? _path;
 
-    private static string GetTempDbFilePath()
+    public static void Initialize(Dalamud.Plugin.IDalamudPluginInterface dalamud)
     {
-        if (_tempDbFilePath != null)
-        {
-            return _tempDbFilePath;
-        }
-
-        var tempFileName = Path.GetTempFileName() + ".sqlite3";
-        _tempDbFilePath = tempFileName;
-
-        using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(EmbeddedDbResourceName))
-        {
-            if (resourceStream == null)
-            {
-                throw new FileNotFoundException($"Embedded resource '{EmbeddedDbResourceName}' not found.");
-            }
-
-            using var fileStream = new FileStream(tempFileName, FileMode.Create, FileAccess.Write);
-            resourceStream.CopyTo(fileStream);
-        }
-        return tempFileName;
+        _path = Path.Combine(dalamud.AssemblyLocation.DirectoryName!, "DDTrapsData.sqlite3");
     }
-
+    // TODO: find a better solution, performance does not seem that good and creates a copy of SQLite.Interop.dll in temp folder for some reason which does not automatically get cleaned up
     public static List<WPos> GetTrapLocationsForZone(uint zone)
     {
         List<WPos> locations = [];
-        var tempDbPath = GetTempDbFilePath();
-        using (var connection = new SQLiteConnection($"Data Source={tempDbPath};Version=3;Read Only=True;"))
+        try
         {
-            connection.Open();
-
-            var command = connection.CreateCommand();
-            command.CommandText = @"select X,Z from Locations where Type = 1 and TerritoryType = $tt";
-            command.Parameters.AddWithValue("$tt", zone);
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (var connection = new SQLiteConnection($"Data Source={_path}"))
             {
-                var x = reader.GetFloat(0);
-                var z = reader.GetFloat(1);
-                locations.Add(new(x, z));
+                connection.Open();
+
+                var command = connection.CreateCommand();
+                command.CommandText = @"select X,Z from Locations where Type = 1 and TerritoryType = $tt";
+                command.Parameters.AddWithValue("$tt", zone);
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    var x = reader.GetFloat(0);
+                    var z = reader.GetFloat(1);
+                    locations.Add(new(x, z));
+                }
             }
-        }
-        return locations;
-    }
 
-    public static void CleanupTemporaryDatabase()
-    {
-        if (_tempDbFilePath != null)
+            return locations;
+        }
+        catch (SQLiteException e)
         {
-            var baseTempPath = Path.GetFileNameWithoutExtension(_tempDbFilePath);
-            var tempDirPath = Path.GetDirectoryName(_tempDbFilePath) ?? "";
-
-            string[] extensions = [".sqlite3", ".sqlite3-shm", ".sqlite3-wal", ""];
-
-            for (var i = 0; i < 4; ++i)
-                File.Delete(Path.Combine(tempDirPath, baseTempPath + extensions[i]));
+            Service.Log($"unable to load traps for zone ${zone}: ${e}");
+            return [];
         }
-        _tempDbFilePath = null;
     }
 }
