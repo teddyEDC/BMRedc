@@ -16,7 +16,7 @@ public enum AID : uint
     FangsEnd = 7159 // Boss->player, no cast, single-target
 }
 
-class Douse(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8, ActionID.MakeSpell(AID.Douse), GetVoidzones, 0.8f)
+class Douse(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8f, ActionID.MakeSpell(AID.Douse), GetVoidzones, 0.8f)
 {
     public static Actor[] GetVoidzones(BossModule module)
     {
@@ -73,7 +73,7 @@ class DousePuddle(BossModule module) : BossComponent(module)
         {
             var effPuddleSize = 8 + Module.PrimaryActor.HitboxRadius;
             var tankDist = hints.FindEnemy(Module.PrimaryActor)?.TankDistance ?? 2;
-            // yaquaru tank distance seems to be around 2-2.5y, but from testing, 3y minimum is needed to move it out of the puddle, either because of rasterization shenanigans or netcode
+            // yulunggu tank distance seems to be around 2-2.5y, but from testing, 3y minimum is needed to move it out of the puddle, either because of rasterization shenanigans or netcode
             var effTankDist = Module.PrimaryActor.HitboxRadius + tankDist + 1;
 
             var len = puddles.Length;
@@ -87,7 +87,6 @@ class DousePuddle(BossModule module) : BossComponent(module)
 }
 
 class Drench(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.Drench), new AOEShapeCone(15.75f, 45f.Degrees()), activeWhileCasting: false);
-
 class Electrogenesis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Electrogenesis), 8f);
 
 class DD170YulungguStates : StateMachineBuilder
@@ -103,4 +102,4 @@ class DD170YulungguStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 215, NameID = 5449)]
-public class DD170Yulunggu(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -300f), new ArenaBoundsCircle(25f));
+public class DD170Yulunggu(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds160170180190.Center, SharedBounds.ArenaBounds160170180190);

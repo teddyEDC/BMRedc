@@ -2,8 +2,8 @@ namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD20Spurge;
 
 public enum OID : uint
 {
-    Boss = 0x169F, // R3.600, x1
-    PalaceHornet = 0x1763 // R0.400, x0 (spawn during fight)
+    Boss = 0x169F, // R3.6
+    PalaceHornet = 0x1763 // R0.4
 }
 
 public enum AID : uint
@@ -60,4 +60,4 @@ class DD20SpurgeStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 175, NameID = 4999)]
-public class DD20Spurge(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -235f), new ArenaBoundsCircle(24f));
+public class DD20Spurge(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds2090110.Center, SharedBounds.ArenaBounds2090110);

@@ -22,7 +22,6 @@ public struct NavigationDecision
     public WPos? NextWaypoint;
     public float LeewaySeconds; // can be used for finishing casts / slidecasting etc.
     public float TimeToGoal;
-    private static readonly AI.AIConfig _config = Service.Config.Get<AI.AIConfig>();
 
     public const float ActivationTimeCushion = 1f; // reduce time between now and activation by this value in seconds; increase for more conservativeness
 
@@ -39,10 +38,7 @@ public struct NavigationDecision
             RasterizeGoalZones(ctx.Map, localGoalZones);
 
         // execute pathfinding
-        if (!_config.AllowAIToBeOutsideBounds && IsOutsideBounds(player.Position, ctx))
-            return FindPathFromOutsideBounds(ctx, player.Position, playerSpeed);
-        else
-            ctx.ThetaStar.Start(ctx.Map, player.Position, 1.0f / playerSpeed);
+        ctx.ThetaStar.Start(ctx.Map, player.Position, 1.0f / playerSpeed);
         var bestNodeIndex = ctx.ThetaStar.Execute();
         ref var bestNode = ref ctx.ThetaStar.NodeByIndex(bestNodeIndex);
         var waypoints = GetFirstWaypoints(ctx.ThetaStar, ctx.Map, bestNodeIndex, player.Position);
@@ -395,36 +391,5 @@ public struct NavigationDecision
             cell = node.ParentIndex;
         }
         while (true);
-    }
-
-    public static bool IsOutsideBounds(WPos position, Context ctx)
-    {
-        var map = ctx.Map;
-        var (x, y) = map.WorldToGrid(position);
-        if (x < 0 || x >= map.Width || y < 0 || y >= map.Height)
-            return true; // outside current pathfinding map
-        return map.PixelMaxG[y * map.Width + x] == -1; // inside pathfinding map, but outside actual walkable bounds
-    }
-
-    public static NavigationDecision FindPathFromOutsideBounds(Context ctx, WPos startPos, float speed = 6)
-    {
-        WPos? closest = null;
-        var closestDistance = float.MaxValue;
-        var pixels = ctx.Map.EnumeratePixels();
-        var len = pixels.Length;
-        for (var i = 0; i < len; ++i)
-        {
-            ref var p = ref pixels[i];
-            if (ctx.Map.PixelMaxG[p.y * ctx.Map.Width + p.x] > 0f) // assume any pixel not marked as blocked is better than being outside of bounds
-            {
-                var distance = (p.center - startPos).LengthSq();
-                if (distance < closestDistance)
-                {
-                    closest = p.center;
-                    closestDistance = distance;
-                }
-            }
-        }
-        return new() { Destination = closest, LeewaySeconds = 0f, TimeToGoal = MathF.Sqrt(closestDistance) / speed };
     }
 }

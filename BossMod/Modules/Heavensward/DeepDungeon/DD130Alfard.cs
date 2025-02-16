@@ -19,7 +19,7 @@ public enum AID : uint
 
 class Dissever(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.Dissever), new AOEShapeCone(10.8f, 45f.Degrees()), activeWhileCasting: false);
 
-abstract class Voidzones(BossModule module, AID aid, uint oid) : Components.PersistentVoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(aid), m => GetVoidzones(m, oid), 2.1f)
+abstract class Voidzones(BossModule module, AID aid, uint oid) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(aid), m => GetVoidzones(m, oid), 2.1f)
 {
     private static Actor[] GetVoidzones(BossModule module, uint oid)
     {
@@ -92,4 +92,4 @@ class DD130AlfardStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 211, NameID = 5397)]
-public class DD130Alfard(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -237f), new ArenaBoundsCircle(24f));
+public class DD130Alfard(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds120130.Center, SharedBounds.ArenaBounds120130);

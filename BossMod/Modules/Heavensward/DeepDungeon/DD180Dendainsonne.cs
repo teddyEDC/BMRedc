@@ -38,9 +38,9 @@ class EncounterHints : BossComponent
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.CharybdisCast or AID.Trounce or AID.Thunderbolt)
+        if (spell.Action.ID is (uint)AID.CharybdisCast or (uint)AID.Trounce or (uint)AID.Thunderbolt)
             ++NumCast;
-        else if ((AID)spell.Action.ID is AID.EclipticMeteor)
+        else if (spell.Action.ID == (uint)AID.EclipticMeteor)
             NumCast = 11;
 
         if (NumCast == 10)
@@ -153,7 +153,7 @@ class DD180DendainsonneStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 216, NameID = 5461, PlanLevel = 60)]
 public class DD180Dendainsonne : BossModule
 {
-    public DD180Dendainsonne(WorldState ws, Actor primary) : base(ws, primary, new(-300f, -300f), new ArenaBoundsCircle(25f))
+    public DD180Dendainsonne(WorldState ws, Actor primary) : base(ws, primary, SharedBounds.ArenaBounds160170180190.Center, SharedBounds.ArenaBounds160170180190)
     {
         ActivateComponent<Hints>();
     }

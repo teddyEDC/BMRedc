@@ -60,7 +60,7 @@ sealed class AIManagementWindow : UIWindow
         ImGui.Spacing();
         configModified |= ImGui.Checkbox("Manual targeting", ref _config.ManualTarget);
         ImGui.SameLine();
-        configModified |= ImGui.Checkbox("Allow outside bounds", ref _config.AllowAIToBeOutsideBounds);
+        configModified |= ImGui.Checkbox("Disable loading obstacle maps", ref _config.DisableObstacleMaps);
 
         ImGui.Text("Follow party slot");
         ImGui.SameLine();

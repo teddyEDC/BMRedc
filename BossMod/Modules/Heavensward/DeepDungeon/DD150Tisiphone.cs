@@ -40,8 +40,8 @@ class BossAdds(BossModule module) : Components.AddsMulti(module, [(uint)OID.Fana
             for (var i = 0; i < count; ++i)
             {
                 var zombie = zombies[i];
-                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 3));
-                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 8), WorldState.FutureTime(5d));
+                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 3f));
+                hints.AddForbiddenZone(ShapeDistance.Circle(zombie.Position, 8f), WorldState.FutureTime(5d));
             }
         }
         else
@@ -92,7 +92,7 @@ class DD150TisiphoneStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 213, NameID = 5424)]
 public class DD150Tisiphone : BossModule
 {
-    public DD150Tisiphone(WorldState ws, Actor primary) : base(ws, primary, new(-300f, -237.17f), new ArenaBoundsCircle(24f))
+    public DD150Tisiphone(WorldState ws, Actor primary) : base(ws, primary, SharedBounds.ArenaBounds140150.Center, SharedBounds.ArenaBounds140150)
     {
         ActivateComponent<EncounterHints>();
     }

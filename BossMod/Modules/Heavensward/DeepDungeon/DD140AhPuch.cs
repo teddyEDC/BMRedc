@@ -1,25 +1,24 @@
-namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.D40Ixtab;
+﻿namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD140AhPuch;
 
 public enum OID : uint
 {
-    Boss = 0x16B9, // R3.800, x1
+    Boss = 0x181B, // R3.800, x1
+    DeepPalaceFollower = 0x1906, // R1.800, x0 (spawn during fight)
     AccursedPoxVoidZone = 0x1E8EA9, // R0.500, x0 (spawn during fight), EventObj type
-    NightmareBhoot = 0x1764 // R1.800, x0 (spawn during fight)
 }
 
 public enum AID : uint
 {
     AutoAttack = 6498, // Boss->player, no cast, single-target
-
-    AccursedPox = 6434, // Boss->location, 3.0s cast, range 8 circle
-    AncientEruption = 6430, // Boss->location, 2.5s cast, range 4 circle
-    Blizzard = 967, // NightmareBhoot->player, 1.0s cast, single-target
-    EntropicFlame = 6431, // Boss->self, 3.0s cast, range 50+R width 8 rect
-    Scream = 6433, // Boss->self, 3.0s cast, range 25 circle
-    ShadowFlare = 6432 // Boss->self, 3.0s cast, range 25+R circle
+    AccursedPox = 7146, // Boss->location, 3.0s cast, range 8 circle
+    AncientEruption = 7142, // Boss->location, 2.5s cast, range 4 circle
+    Blizzard = 967, // DeepPalaceFollower->player, 1.0s cast, single-target
+    EntropicFlame = 7143, // Boss->self, 3.0s cast, range 50+R width 8 rect
+    Scream = 7145, // Boss->self, 3.0s cast, range 30 circle
+    ShadowFlare = 7144, // Boss->self, 3.0s cast, range 25+R circle
 }
 
-class Adds(BossModule module) : Components.Adds(module, (uint)OID.NightmareBhoot, 1);
+class Adds(BossModule module) : Components.Adds(module, (uint)OID.DeepPalaceFollower, 1);
 
 class AccursedPox(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AccursedPox), 8f);
 class AncientEruption(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AncientEruption), 4f);
@@ -37,7 +36,7 @@ class AncientEruptionZone(BossModule module) : Components.PersistentInvertibleVo
         for (var i = 0; i < count; ++i)
         {
             var z = enemies[i];
-            if (z.ModelState.AnimState1 == 1)
+            if (z.EventState != 7)
                 voidzones[index++] = z;
         }
         return voidzones[..index];
@@ -47,9 +46,9 @@ class EntropicFlame(BossModule module) : Components.SimpleAOEs(module, ActionID.
 class Scream(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Scream), "Raidwide + Fear, Adds need to be dead by now");
 class ShadowFlare(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ShadowFlare));
 
-class DD40IxtabStates : StateMachineBuilder
+class DD140AhPuchStates : StateMachineBuilder
 {
-    public DD40IxtabStates(BossModule module) : base(module)
+    public DD140AhPuchStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Adds>()
@@ -62,5 +61,5 @@ class DD40IxtabStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 177, NameID = 5025)]
-public class DD40Ixtab(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -226f), new ArenaBoundsCircle(24f));
+[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 212, NameID = 5410)]
+public class DD140AhPuch(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds140150.Center, SharedBounds.ArenaBounds140150);

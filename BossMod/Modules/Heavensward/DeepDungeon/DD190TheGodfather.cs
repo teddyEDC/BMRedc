@@ -3,9 +3,9 @@
 public enum OID : uint
 {
     Boss = 0x1820, // R3.750, x1
-    GiddyBomb = 0x18F3, // R0.600, x0 (spawn during fight), small bombs that are untargetable, multiple spawn up and explode at once
-    LavaBomb = 0x18F2, // R1.200, x0 (spawn during fight), (also known as greybomb) cast a pbaoe that stuns needs to be on top of the boss's hitbox to stun
-    RemedyBomb = 0x18F1 // R1.200, x0 (spawn during fight), cast a roomwide aoe that will hit for 80% of max hp + inflicts a dot
+    GiddyBomb = 0x18F3, // R0.6, small bombs that are untargetable, multiple spawn up and explode at once
+    LavaBomb = 0x18F2, // R1.2, (also known as greybomb) cast a pbaoe that stuns needs to be on top of the boss's hitbox to stun
+    RemedyBomb = 0x18F1 // R1.2, cast a roomwide aoe that will hit for 80% of max hp + inflicts a dot
 }
 
 public enum AID : uint
@@ -33,7 +33,7 @@ class Flashthoom(BossModule module) : Components.SimpleAOEs(module, ActionID.Mak
             hints.SetPriority(g, AIHints.Enemy.PriorityForbidden);
     }
 }
-class Sap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Sap), 8);
+class Sap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Sap), 8f);
 class ScaldingScoldingCleave(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.ScaldingScolding), new AOEShapeCone(11.75f, 45f.Degrees()), activeWhileCasting: false);
 class RemedyBombEnrage(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.HypothermalCombustionRemedyBomb), "Remedy bomb is enraging!", true);
 class MassiveBurstEnrage(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.MassiveBurst), "Enrage! Stun boss with the Lavabomb!", true);
@@ -41,19 +41,19 @@ class MassiveBurstEnrage(BossModule module) : Components.CastHint(module, Action
 class HypothermalMinion(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = [];
-    private static readonly AOEShapeCircle Circle = new(6.6f);
+    private static readonly AOEShapeCircle circle = new(6.6f);
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
 
     public override void OnActorCreated(Actor actor)
     {
-        if ((OID)actor.OID == OID.GiddyBomb)
-            _aoes.Add(new(Circle, actor.Position, default, WorldState.FutureTime(10)));
+        if (actor.OID == (uint)OID.GiddyBomb)
+            _aoes.Add(new(circle, WPos.ClampToGrid(actor.Position), default, WorldState.FutureTime(10d)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.HypothermalCombustionMinionCast)
+        if (spell.Action.ID == (uint)AID.HypothermalCombustionMinionCast)
             _aoes.Clear();
     }
 }
@@ -74,4 +74,4 @@ class DD190TheGodfatherStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 217, NameID = 5471)]
-public class DD190TheGodfather(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300, -300), new ArenaBoundsCircle(25));
+public class DD190TheGodfather(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds160170180190.Center, SharedBounds.ArenaBounds160170180190);

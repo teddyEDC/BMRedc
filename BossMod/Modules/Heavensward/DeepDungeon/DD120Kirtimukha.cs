@@ -43,7 +43,7 @@ class BossAdds(BossModule module) : Components.Adds(module, (uint)OID.DeepPalace
 }
 class BloodyCaress(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.BloodyCaress), new AOEShapeCone(11.6f, 60f.Degrees()), activeWhileCasting: false);
 class FinalSting(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.FinalSting), "Final sting is being cast! \nKill the add or take 98% of your hp!");
-class GoldDust(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GoldDust), 8);
+class GoldDust(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GoldDust), 8f);
 class Leafstorm(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Leafstorm));
 class RottenStench(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RottenStench), new AOEShapeRect(48.6f, 6f));
 
@@ -63,4 +63,4 @@ class DD120KirtimukhaStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 210, NameID = 5384)]
-public class DD120Kirtimukha(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -235f), new ArenaBoundsCircle(24f));
+public class DD120Kirtimukha(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds120130.Center, SharedBounds.ArenaBounds120130);

@@ -41,6 +41,7 @@ public sealed class AIHints
     public WPos PathfindMapCenter;
     public ArenaBounds PathfindMapBounds = DefaultBounds;
     public Bitmap.Region PathfindMapObstacles;
+    private static readonly AI.AIConfig _config = Service.Config.Get<AI.AIConfig>();
 
     // list of potential targets
     public readonly Enemy?[] Enemies = new Enemy?[100];
@@ -200,7 +201,7 @@ public sealed class AIHints
     public void InitPathfindMap(Pathfinding.Map map)
     {
         PathfindMapBounds.PathfindMap(map, PathfindMapCenter);
-        if (PathfindMapObstacles.Bitmap != null)
+        if (PathfindMapObstacles.Bitmap != null && !_config.DisableObstacleMaps)
         {
             var offX = -PathfindMapObstacles.Rect.Left;
             var offY = -PathfindMapObstacles.Rect.Top;
