@@ -68,7 +68,6 @@ public record struct WDir(float X, float Z)
 }
 
 // 2d vector that represents world-space position on XZ plane
-[Serializable]
 public record struct WPos(float X, float Z)
 {
     public WPos(Vector2 v) : this(v.X, v.Y) { }

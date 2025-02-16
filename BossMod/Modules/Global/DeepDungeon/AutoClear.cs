@@ -2,7 +2,7 @@
 using ImGuiNET;
 using System.IO;
 using System.Reflection;
-using System.Text.Json;
+
 using static FFXIVClientStructs.FFXIV.Client.Game.InstanceContent.InstanceContentDeepDungeon;
 
 namespace BossMod.Global.DeepDungeon;
@@ -75,7 +75,6 @@ public abstract class AutoClear : ZoneModule
     private bool _lastChestMagicite;
     private bool _trapsHidden = true;
 
-    private readonly Dictionary<string, Floor<Wall>> LoadedFloors;
     private readonly List<(Wall Wall, bool Rotated)> Walls = [];
     private readonly List<WPos> RoomCenters = [];
     private readonly List<WPos> ProblematicTrapLocations = [];
@@ -128,11 +127,9 @@ public abstract class AutoClear : ZoneModule
             })
         );
 
-        _trapsCurrentZone = DDTrapsData.GetTrapLocationsForZone(ws.CurrentZone);
+        _trapsCurrentZone = GeneratedTrapData.Traps.TryGetValue(ws.CurrentZone, out var locations) ? locations : [];
 
-        LoadedFloors = JsonSerializer.Deserialize<Dictionary<string, Floor<Wall>>>(GetEmbeddedResource("Walls.json"))!;
-        ProblematicTrapLocations = JsonSerializer.Deserialize<List<WPos>>(GetEmbeddedResource("BadTraps.json"))!;
-
+        ProblematicTrapLocations.AddRange(ProblematicTrapLocations);
         IgnoreTraps.AddRange(ProblematicTrapLocations);
     }
 
@@ -759,7 +756,7 @@ public abstract class AutoClear : ZoneModule
         Walls.Clear();
         var floorset = Palace.Floor / 10;
         var key = $"{(int)Palace.DungeonId}.{floorset + 1}";
-        if (!LoadedFloors.TryGetValue(key, out var floor))
+        if (!LoadedFloors.Walls.TryGetValue(key, out var floor))
         {
             Service.Log($"unable to load floorset {key}");
             return;
@@ -780,8 +777,10 @@ public abstract class AutoClear : ZoneModule
                 Service.Log($"unrecognized tileset number {Palace.Progress.Tileset}");
                 return;
         }
-        foreach (var (room, i) in Palace.Rooms.Select((m, i) => (m, i)))
+        var len = Palace.Rooms.Length;
+        for (var i = 0; i < len; ++i)
         {
+            ref var room = ref Palace.Rooms[i];
             if (room > 0)
             {
                 var roomdata = tileset[i];
@@ -843,7 +842,7 @@ public abstract class AutoClear : ZoneModule
         var vx = dir.X;
         var vy = dir.Y;
 
-        for (var i = 0; i < (int)dist; i++)
+        for (var i = 0; i < (int)dist; ++i)
         {
             if (map[(int)ox, (int)oy])
                 return true;
@@ -852,15 +851,5 @@ public abstract class AutoClear : ZoneModule
         }
 
         return false;
-    }
-
-    private Stream GetEmbeddedResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream($"BossModReborn.Modules.Global.DeepDungeon.{name}")!;
-}
-
-public static class DDTrapsData
-{
-    public static WPos[] GetTrapLocationsForZone(uint zone)
-    {
-        return GeneratedTrapData.Traps.TryGetValue(zone, out var locations) ? locations : [];
     }
 }
