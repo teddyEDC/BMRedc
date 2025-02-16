@@ -97,8 +97,8 @@ class Steelstrike(BossModule module) : Components.GenericAOEs(module)
             aoes[index++] = _aoes[i];
         }
 
-        aoes[^1] = firstSwordAOE with { Color = Colors.SafeFromAOE, Risky = false };
-        aoes[^2] = lastSwordAOE with { Color = Colors.SafeFromAOE, Risky = false };
+        aoes[count - 1] = firstSwordAOE with { Color = Colors.SafeFromAOE, Risky = false };
+        aoes[count - 2] = lastSwordAOE with { Color = Colors.SafeFromAOE, Risky = false };
 
         return aoes;
     }

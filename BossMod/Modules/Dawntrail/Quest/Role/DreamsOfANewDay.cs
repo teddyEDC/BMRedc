@@ -63,7 +63,7 @@ class KeenTempest(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
         for (var i = 0; i < count; ++i)
         {
             var aoe = Casters[i];
-            if ((aoe.Activation - Casters[0].Activation).TotalSeconds <= 1)
+            if ((aoe.Activation - Casters[0].Activation).TotalSeconds <= 1d)
                 list.Add(aoe);
         }
         return list;
@@ -72,7 +72,7 @@ class KeenTempest(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 
 class AethericBurst(BossModule module) : Components.RaidwideCastDelay(module, ActionID.MakeSpell(AID.AethericBurstVisual), ActionID.MakeSpell(AID.AethericBurst), 0.9f);
 class AetherialExposure(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.AetherialExposure), 6f, 3, 3);
-class Conviction(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.Conviction), 4)
+class Conviction(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.Conviction), 4f)
 {
     private readonly AetherialExposure _stack = module.FindComponent<AetherialExposure>()!;
 
@@ -109,7 +109,7 @@ class Daggerflight(BossModule module) : Components.InterceptTether(module, Actio
         if (Active)
         {
             var source = Module.PrimaryActor;
-            var target = Module.Enemies(OID.TentoawaTheWideEye).FirstOrDefault()!;
+            var target = Module.Enemies(OID.TentoawaTheWideEye)[0];
             hints.AddForbiddenZone(ShapeDistance.InvertedRect(target.Position + (target.HitboxRadius + 0.1f) * target.DirectionTo(source), source.Position, 0.5f), _activation);
         }
     }
@@ -127,7 +127,7 @@ class CradleOfTheSleepless(BossModule module) : Components.GenericAOEs(module)
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (spell.Action.ID == (uint)AID.ActivateShield)
-            _aoe = new(cone, caster.Position, caster.Rotation + 180.Degrees(), default, Colors.SafeFromAOE);
+            _aoe = new(cone, caster.Position, caster.Rotation + 180f.Degrees(), default, Colors.SafeFromAOE);
         else if (spell.Action.ID == (uint)AID.CradleOfTheSleepless)
             _aoe = null;
     }

@@ -1,6 +1,5 @@
 ﻿using BossMod.Pathfinding;
 using ImGuiNET;
-using System.Data.SQLite;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
@@ -66,7 +65,7 @@ public abstract class AutoClear : ZoneModule
 
     protected static readonly AutoDDConfig Config = Service.Config.Get<AutoDDConfig>();
     private readonly EventSubscriptions _subscriptions;
-    private readonly List<WPos> _trapsCurrentZone = [];
+    private readonly WPos[] _trapsCurrentZone = [];
 
     private readonly Dictionary<ulong, PomanderID> _chestContentsGold = [];
     private readonly Dictionary<ulong, int> _chestContentsSilver = [];
@@ -465,7 +464,7 @@ public abstract class AutoClear : ZoneModule
 
         if (Config.TrapHints && _trapsHidden)
         {
-            var countTraps = _trapsCurrentZone.Count;
+            var countTraps = _trapsCurrentZone.Length;
             var traps = new List<Func<WPos, float>>(countTraps);
 
             for (var i = 0; i < countTraps; ++i)
@@ -860,41 +859,8 @@ public abstract class AutoClear : ZoneModule
 
 public static class DDTrapsData
 {
-    private static string? _path;
-
-    public static void Initialize(Dalamud.Plugin.IDalamudPluginInterface dalamud)
+    public static WPos[] GetTrapLocationsForZone(uint zone)
     {
-        _path = Path.Combine(dalamud.AssemblyLocation.DirectoryName!, "DDTrapsData.sqlite3");
-    }
-    // TODO: find a better solution, performance does not seem that good and creates a copy of SQLite.Interop.dll in temp folder for some reason which does not automatically get cleaned up
-    public static List<WPos> GetTrapLocationsForZone(uint zone)
-    {
-        List<WPos> locations = [];
-        try
-        {
-            using (var connection = new SQLiteConnection($"Data Source={_path}"))
-            {
-                connection.Open();
-
-                var command = connection.CreateCommand();
-                command.CommandText = @"select X,Z from Locations where Type = 1 and TerritoryType = $tt";
-                command.Parameters.AddWithValue("$tt", zone);
-
-                using var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    var x = reader.GetFloat(0);
-                    var z = reader.GetFloat(1);
-                    locations.Add(new(x, z));
-                }
-            }
-
-            return locations;
-        }
-        catch (SQLiteException e)
-        {
-            Service.Log($"unable to load traps for zone ${zone}: ${e}");
-            return [];
-        }
+        return GeneratedTrapData.Traps.TryGetValue(zone, out var locations) ? locations : [];
     }
 }

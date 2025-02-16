@@ -135,13 +135,13 @@ class Impact(BossModule module) : Components.KnockbackFromCastTarget(module, Act
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var source = Sources(slot, actor).FirstOrDefault();
-        if (source != default)
-            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Origin, 6, 8, source.Origin.Z == -640 ? 180.Degrees() : default, halfAngle), source.Activation);
+        var source = Casters.Count != 0 ? Casters[0] : null;
+        if (source != null)
+            hints.AddForbiddenZone(ShapeDistance.InvertedDonutSector(source.Position, 6f, 8f, source.Position.Z == -640f ? 180f.Degrees() : default, halfAngle), Module.CastFinishAt(source.CastInfo));
     }
 }
 
-class Compression(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Compression), 6);
+class Compression(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Compression), 6f);
 
 class Overexposure(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.OverexposureMarker), ActionID.MakeSpell(AID.Overexposure), 5f, 40f, 3f);
 class LightOfDevotion(BossModule module) : Components.LineStack(module, ActionID.MakeSpell(AID.LightOfDevotionMarker), ActionID.MakeSpell(AID.LightOfDevotion), 5.5f, 40f, 3f)
@@ -156,7 +156,7 @@ class LightOfDevotion(BossModule module) : Components.LineStack(module, ActionID
 class LightOfSalvation(BossModule module) : Components.GenericBaitAway(module)
 {
     private readonly Impact _kb = module.FindComponent<Impact>()!;
-    private static readonly AOEShapeRect rect = new(40, 3);
+    private static readonly AOEShapeRect rect = new(40f, 3f);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -178,8 +178,7 @@ class LightOfSalvation(BossModule module) : Components.GenericBaitAway(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var source = _kb.Sources(slot, actor).FirstOrDefault();
-        if (source != default)
+        if (_kb.Casters.Count != 0)
         { }
         else
             base.AddAIHints(slot, actor, assignment, hints);
@@ -211,13 +210,13 @@ class D063EliminatorStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus, LTS), erdelf", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 827, NameID = 12729)]
 public class D063Eliminator(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, StartingBounds)
 {
-    public static readonly WPos ArenaCenter = new(-759, -648);
+    public static readonly WPos ArenaCenter = new(-759f, -648f);
     public static readonly ArenaBoundsSquare StartingBounds = new(15.5f);
-    public static readonly ArenaBoundsSquare DefaultBounds = new(15);
+    public static readonly ArenaBoundsSquare DefaultBounds = new(15f);
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.LightningGenerator), Colors.Object);
+        Arena.Actors(Enemies((uint)OID.LightningGenerator), Colors.Object);
     }
 }
