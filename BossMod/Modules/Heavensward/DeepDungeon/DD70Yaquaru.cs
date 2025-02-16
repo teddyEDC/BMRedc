@@ -1,10 +1,9 @@
-namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD70Taquaru;
+namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD70Yaquaru;
 
 public enum OID : uint
 {
-    Boss = 0x1815, // R5.750, x1
-    Voidzone = 0x1E9998, // R0.500, EventObj type, spawn during fight
-    Helper = 0x233C
+    Boss = 0x1815, // R5.75
+    Voidzone = 0x1E9998 // R0.5
 }
 
 public enum AID : uint
@@ -17,7 +16,7 @@ public enum AID : uint
     FangsEnd = 7092 // Boss->player, no cast, single-target
 }
 
-class Douse(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8, ActionID.MakeSpell(AID.Douse), GetVoidzones, 0.8f)
+class Douse(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8f, ActionID.MakeSpell(AID.Douse), GetVoidzones, 0.8f)
 {
     public static Actor[] GetVoidzones(BossModule module)
     {
@@ -90,9 +89,9 @@ class DousePuddle(BossModule module) : BossComponent(module)
 
 class Electrogenesis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Electrogenesis), 8f);
 
-class DD70TaquaruStates : StateMachineBuilder
+class DD70YaquaruStates : StateMachineBuilder
 {
-    public DD70TaquaruStates(BossModule module) : base(module)
+    public DD70YaquaruStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<Douse>()
@@ -102,4 +101,4 @@ class DD70TaquaruStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "legendoficeman, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 205, NameID = 5321)]
-public class DD70Taquaru(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -220f), new ArenaBoundsCircle(25f));
+public class DD70Yaquaru(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds607080.Center, SharedBounds.ArenaBounds607080);

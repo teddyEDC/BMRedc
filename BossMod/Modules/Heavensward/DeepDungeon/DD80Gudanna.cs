@@ -158,7 +158,7 @@ class DD80GudannaStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "legendoficeman, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 206, NameID = 5333)]
 public class DD80Gudanna : BossModule
 {
-    public DD80Gudanna(WorldState ws, Actor primary) : base(ws, primary, new(-300f, -220f), new ArenaBoundsCircle(25f))
+    public DD80Gudanna(WorldState ws, Actor primary) : base(ws, primary, SharedBounds.ArenaBounds607080.Center, SharedBounds.ArenaBounds607080)
     {
         ActivateComponent<Hints>();
     }

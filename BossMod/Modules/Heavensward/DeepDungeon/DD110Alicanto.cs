@@ -34,4 +34,4 @@ class DD110AlicantoStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 209, NameID = 5371)]
-public class DD110Alicanto(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -235f), new ArenaBoundsCircle(24f));
+public class DD110Alicanto(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds2090110.Center, SharedBounds.ArenaBounds2090110);

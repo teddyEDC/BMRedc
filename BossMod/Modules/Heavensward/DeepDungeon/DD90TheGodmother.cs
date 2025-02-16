@@ -2,10 +2,10 @@ namespace BossMod.Heavensward.DeepDungeon.PalaceOfTheDead.DD90TheGodmother;
 
 public enum OID : uint
 {
-    Boss = 0x1817, // R3.750, x1
-    LavaBomb = 0x18E9, // R0.600, x0 (spawn during fight)
-    GreyBomb = 0x18E8, // R1.200, x0 (spawn during fight)
-    GiddyBomb = 0x18EA // R1.200, x0 (spawn during fight)
+    Boss = 0x1817, // R3.75
+    LavaBomb = 0x18E9, // R0.6
+    GreyBomb = 0x18E8, // R1.2
+    GiddyBomb = 0x18EA // R1.2
 }
 
 public enum AID : uint
@@ -95,4 +95,4 @@ class DD90TheGodmotherStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 207, NameID = 5345)]
-public class DD90TheGodmother(WorldState ws, Actor primary) : BossModule(ws, primary, new(-300f, -235f), new ArenaBoundsCircle(25f));
+public class DD90TheGodmother(WorldState ws, Actor primary) : BossModule(ws, primary, SharedBounds.ArenaBounds2090110.Center, SharedBounds.ArenaBounds2090110);

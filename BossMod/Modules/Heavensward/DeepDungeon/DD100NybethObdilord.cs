@@ -55,8 +55,19 @@ class DD100NybethObdilordStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 208, NameID = 5356)]
 public class DD100NybethObdilord : BossModule
 {
-    public DD100NybethObdilord(WorldState ws, Actor primary) : base(ws, primary, new(300f, 300f), new ArenaBoundsCircle(24f))
+    public DD100NybethObdilord(WorldState ws, Actor primary) : base(ws, primary, arena.Center, arena)
     {
         ActivateComponent<EncounterHints>();
     }
+
+    private static readonly WPos[] vertices = [new(302.11f, 276.34f), new(307.39f, 276.36f), new(308.04f, 276.58f), new(309.51f, 278.03f), new(310.04f, 278.17f),
+    new(311.94f, 278.24f), new(312.52f, 278.61f), new(321.65f, 287.79f), new(321.81f, 288.44f), new(321.9f, 290.34f),
+    new(324.01f, 292.58f), new(324.28f, 293.17f), new(324.29f, 306.71f), new(324.08f, 307.35f), new(321.86f, 309.64f),
+    new(321.77f, 312.15f), new(312.3f, 321.62f), new(311.60f, 321.80f), new(309.56f, 321.92f), new(307.32f, 324.12f),
+    new(306.66f, 324.29f), new(300.1f, 324.22f), new(293.11f, 324.29f), new(292.52f, 323.96f), new(290.57f, 322.02f),
+    new(290.01f, 321.88f), new(288.08f, 321.81f), new(287.52f, 321.42f), new(278.22f, 312.13f), new(278.14f, 310.01f),
+    new(278f, 309.45f), new(275.71f, 307.13f), new(275.73f, 293.36f), new(275.86f, 292.68f), new(277.75f, 290.77f),
+    new(278.12f, 290.27f), new(278.20f, 288.37f), new(278.33f, 287.73f), new(287.51f, 278.59f), new(288.05f, 278.21f),
+    new(290.12f, 278.13f), new(290.61f, 277.91f), new(291.97f, 276.56f), new(302.11f, 276.34f)];
+    private static readonly ArenaBoundsComplex arena = new([new PolygonCustom(vertices)]);
 }
