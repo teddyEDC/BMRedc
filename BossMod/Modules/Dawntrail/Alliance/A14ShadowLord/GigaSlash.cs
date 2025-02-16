@@ -12,12 +12,14 @@ class GigaSlash(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (AOEs.Count == 0)
+        var count = AOEs.Count;
+        if (count == 0)
             return;
         base.AddAIHints(slot, actor, assignment, hints);
+        var aoe = AOEs[0];
         // stay close to the middle if there is next imminent aoe from same origin
-        if (Module.FindComponent<DarkNebula>()?.Casters.Count == 0 && AOEs.Count > 1 && AOEs[0].Origin == AOEs[1].Origin)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(AOEs[0].Origin, 3), AOEs[0].Activation);
+        if (Module.FindComponent<DarkNebula>()?.Casters.Count == 0 && count > 1 && aoe.Origin == AOEs[1].Origin)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(aoe.Origin, 3f), aoe.Activation);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

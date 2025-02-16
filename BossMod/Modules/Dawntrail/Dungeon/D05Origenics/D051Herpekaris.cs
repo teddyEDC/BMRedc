@@ -43,7 +43,26 @@ class CollectiveAgony(BossModule module) : Components.LineStack(module, ActionID
 class StridentShriek(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.StridentShriek));
 class ConvulsiveCrush(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.ConvulsiveCrush));
 class PoisonHeartSpread(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.PoisonHeartSpread), 5f);
-class PoisonHeartVoidzone(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 2f, ActionID.MakeSpell(AID.PoisonHeartVoidzone), m => m.Enemies(OID.PoisonVoidzone).Where(z => z.EventState != 7), 0.9f);
+class PoisonHeartVoidzone(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 2f, ActionID.MakeSpell(AID.PoisonHeartVoidzone), GetVoidzones, 0.9f)
+{
+    private static Actor[] GetVoidzones(BossModule module)
+    {
+        var enemies = module.Enemies((uint)OID.PoisonVoidzone);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (z.EventState != 7)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
+    }
+}
 
 abstract class PodBurst(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 6f);
 class PodBurst1(BossModule module) : PodBurst(module, AID.PodBurst1);
@@ -77,7 +96,7 @@ class WrithingRiot(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        void AddAOE(AOEShape shape) => _aoes.Add(new(shape, spell.LocXZ, spell.Rotation, WorldState.FutureTime(9.2d + _aoes.Count * 2d)));
+        void AddAOE(AOEShape shape) => _aoes.Add(new(shape, spell.LocXZ, spell.Rotation, WorldState.FutureTime(7.3d - _aoes.Count * 1d)));
         switch (spell.Action.ID)
         {
             case (uint)AID.RightSweepTelegraph:
@@ -101,6 +120,17 @@ class WrithingRiot(BossModule module) : Components.GenericAOEs(module)
                     _aoes.RemoveAt(0);
                     break;
             }
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.AddAIHints(slot, actor, assignment, hints);
+        // stay close to the middle if there is next imminent aoe
+        if (_aoes.Count > 1)
+        {
+            var aoe = _aoes[0];
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(aoe.Origin, 3f), aoe.Activation);
+        }
     }
 }
 
