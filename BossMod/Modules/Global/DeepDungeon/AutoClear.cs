@@ -777,8 +777,10 @@ public abstract class AutoClear : ZoneModule
                 Service.Log($"unrecognized tileset number {Palace.Progress.Tileset}");
                 return;
         }
-        foreach (var (room, i) in Palace.Rooms.Select((m, i) => (m, i)))
+        var len = Palace.Rooms.Length;
+        for (var i = 0; i < len; ++i)
         {
+            ref var room = ref Palace.Rooms[i];
             if (room > 0)
             {
                 var roomdata = tileset[i];
@@ -840,7 +842,7 @@ public abstract class AutoClear : ZoneModule
         var vx = dir.X;
         var vy = dir.Y;
 
-        for (var i = 0; i < (int)dist; i++)
+        for (var i = 0; i < (int)dist; ++i)
         {
             if (map[(int)ox, (int)oy])
                 return true;
@@ -850,6 +852,4 @@ public abstract class AutoClear : ZoneModule
 
         return false;
     }
-
-    private Stream GetEmbeddedResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream($"BossModReborn.Modules.Global.DeepDungeon.{name}")!;
 }
