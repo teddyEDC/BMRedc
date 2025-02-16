@@ -2,7 +2,6 @@
 using ImGuiNET;
 using System.IO;
 using System.Reflection;
-using System.Text.Json;
 
 using static FFXIVClientStructs.FFXIV.Client.Game.InstanceContent.InstanceContentDeepDungeon;
 
@@ -76,7 +75,6 @@ public abstract class AutoClear : ZoneModule
     private bool _lastChestMagicite;
     private bool _trapsHidden = true;
 
-    private readonly Dictionary<string, Floor<Wall>> LoadedFloors;
     private readonly List<(Wall Wall, bool Rotated)> Walls = [];
     private readonly List<WPos> RoomCenters = [];
     private readonly List<WPos> ProblematicTrapLocations = [];
@@ -131,9 +129,7 @@ public abstract class AutoClear : ZoneModule
 
         _trapsCurrentZone = GeneratedTrapData.Traps.TryGetValue(ws.CurrentZone, out var locations) ? locations : [];
 
-        LoadedFloors = JsonSerializer.Deserialize<Dictionary<string, Floor<Wall>>>(GetEmbeddedResource("Walls.json"))!;
-        ProblematicTrapLocations = JsonSerializer.Deserialize<List<WPos>>(GetEmbeddedResource("BadTraps.json"))!;
-
+        ProblematicTrapLocations.AddRange(ProblematicTrapLocations);
         IgnoreTraps.AddRange(ProblematicTrapLocations);
     }
 
@@ -760,7 +756,7 @@ public abstract class AutoClear : ZoneModule
         Walls.Clear();
         var floorset = Palace.Floor / 10;
         var key = $"{(int)Palace.DungeonId}.{floorset + 1}";
-        if (!LoadedFloors.TryGetValue(key, out var floor))
+        if (!LoadedFloors.Walls.TryGetValue(key, out var floor))
         {
             Service.Log($"unable to load floorset {key}");
             return;
