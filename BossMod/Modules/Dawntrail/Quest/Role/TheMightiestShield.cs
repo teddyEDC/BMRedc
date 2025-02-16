@@ -131,7 +131,26 @@ class AreaBombardment(BossModule module) : Bombardment(module, AID.AreaBombardme
 
 class RagingArtillery(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.RagingArtilleryFirst));
 class MagitekCannon(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.MagitekCannon), 6f);
-class MagitekMissile(BossModule module) : Components.PersistentVoidzone(module, 3f, m => m.Enemies(OID.MagitekMissile).Where(x => !x.IsDead), 5);
+class MagitekMissile(BossModule module) : Components.PersistentVoidzone(module, 3f, GetVoidzones, 5f)
+{
+    private static Actor[] GetVoidzones(BossModule module)
+    {
+        var enemies = module.Enemies((uint)OID.MagitekMissile);
+        var count = enemies.Count;
+        if (count == 0)
+            return [];
+
+        var voidzones = new Actor[count];
+        var index = 0;
+        for (var i = 0; i < count; ++i)
+        {
+            var z = enemies[i];
+            if (!z.IsDead)
+                voidzones[index++] = z;
+        }
+        return voidzones[..index];
+    }
+}
 
 class NeedleGunOilShower(BossModule module) : Components.GenericAOEs(module)
 {
@@ -217,7 +236,7 @@ class HeavySurfaceMissiles(BossModule module) : Components.GenericAOEs(module)
             case (uint)AID.HeavySurfaceMissiles2:
             case (uint)AID.HeavySurfaceMissiles3:
             case (uint)AID.HeavySurfaceMissiles4:
-                _aoes.Add(new(circle, caster.Position, spell.Rotation, Module.CastFinishAt(spell)));
+                _aoes.Add(new(circle, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell)));
                 if (_aoes.Count > 1)
                     _aoes.SortBy(x => x.Activation);
                 break;

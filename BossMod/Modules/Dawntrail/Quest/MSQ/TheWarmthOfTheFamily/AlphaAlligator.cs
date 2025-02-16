@@ -35,7 +35,19 @@ class FeedingTime(BossModule module) : Components.InterceptTether(module, Action
     {
         if (Active)
         {
-            var source = Module.Enemies(OID.HornedLizard).FirstOrDefault(x => x.Position.AlmostEqual(new(403, -105), 1)); // NPCs always seem to ignore the middle tether
+            Actor? source = null;
+            var enemies = Module.Enemies((uint)OID.HornedLizard);
+            var sourcePosition = new WPos(403, -105); // NPCs always seem to ignore the middle tether
+            var count = enemies.Count;
+            for (var i = 0; i < count; ++i)
+            {
+                var enemy = enemies[i];
+                if (enemy.Position.AlmostEqual(sourcePosition, 1f))
+                {
+                    source = enemy;
+                    break;
+                }
+            }
             if (source == null)
                 return;
             var target = WorldState.Actors.Find(source.Tether.Target);

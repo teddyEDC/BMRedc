@@ -37,15 +37,15 @@ public enum AID : uint
     Visual = 37473 // Boss->self, no cast, single-target
 }
 
-class FledglingFury(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FledglingFury), 4);
-class PromisedFall(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PromisedFall), 13);
-class GoldDust(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.GoldDust), 8, 2, 2);
-class AcidRain(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.AcidRain), 8);
-class UnboundArrow(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.UnboundArrow), new AOEShapeCircle(5), true)
+class FledglingFury(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FledglingFury), 4f);
+class PromisedFall(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PromisedFall), 13f);
+class GoldDust(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.GoldDust), 8f, 2, 2);
+class AcidRain(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.AcidRain), 8f);
+class UnboundArrow(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.UnboundArrow), new AOEShapeCircle(5f), true)
 {
     public override void AddGlobalHints(GlobalHints hints)
     {
-        if (CurrentBaits.Count > 0)
+        if (CurrentBaits.Count != 0)
             hints.Add("Tankbuster cleave");
     }
 }
@@ -54,15 +54,15 @@ class ForeseenFlurry(BossModule module) : Components.Exaflare(module, 4)
 {
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.ForeseenFlurryFirst)
+        if (spell.Action.ID == (uint)AID.ForeseenFlurryFirst)
             Lines.Add(new() { Next = caster.Position, Advance = 5 * spell.Rotation.ToDirection(), NextExplosion = Module.CastFinishAt(spell), TimeToMove = 1.1f, ExplosionsLeft = 8, MaxShownExplosions = 3 });
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.ForeseenFlurryFirst or AID.ForeseenFlurryRest)
+        if (spell.Action.ID is (uint)AID.ForeseenFlurryFirst or (uint)AID.ForeseenFlurryRest)
         {
-            var index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1));
+            var index = Lines.FindIndex(item => item.Next.AlmostEqual(caster.Position, 1f));
             if (index < 0)
                 return;
             AdvanceLine(Lines[index], caster.Position);

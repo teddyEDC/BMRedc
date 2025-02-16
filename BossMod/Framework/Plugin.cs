@@ -108,8 +108,6 @@ public sealed class Plugin : IDalamudPlugin
         dalamud.UiBuilder.Draw += DrawUI;
         dalamud.UiBuilder.OpenMainUi += () => OpenConfigUI();
         dalamud.UiBuilder.OpenConfigUi += () => OpenConfigUI();
-
-        Global.DeepDungeon.DDTrapsData.Initialize(dalamud);
     }
 
     public void Dispose()
