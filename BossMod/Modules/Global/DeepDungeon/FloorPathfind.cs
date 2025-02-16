@@ -11,7 +11,7 @@ public enum Direction
 }
 
 // neat feature of deep dungeons - there is only one path from any room to any other room (no loops) and the grid is so small that brute forcing is basically free!
-internal class FloorPathfind(ReadOnlySpan<RoomFlags> Map)
+internal sealed class FloorPathfind(ReadOnlySpan<RoomFlags> Map)
 {
     public readonly RoomFlags[] Map = Map.ToArray();
 
