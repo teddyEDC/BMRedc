@@ -4,7 +4,7 @@ using static FFXIVClientStructs.FFXIV.Client.Game.InstanceContent.InstanceConten
 
 namespace BossMod.Global.DeepDungeon;
 
-public record class Minimap(DeepDungeonState State, Angle PlayerRotation, int CurrentDestination)
+public sealed record class Minimap(DeepDungeonState State, Angle PlayerRotation, int CurrentDestination)
 {
     enum IconID : uint
     {
