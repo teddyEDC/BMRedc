@@ -3,6 +3,7 @@ using ImGuiNET;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+
 using static FFXIVClientStructs.FFXIV.Client.Game.InstanceContent.InstanceContentDeepDungeon;
 
 namespace BossMod.Global.DeepDungeon;
@@ -128,7 +129,7 @@ public abstract class AutoClear : ZoneModule
             })
         );
 
-        _trapsCurrentZone = DDTrapsData.GetTrapLocationsForZone(ws.CurrentZone);
+        _trapsCurrentZone = GeneratedTrapData.Traps.TryGetValue(ws.CurrentZone, out var locations) ? locations : [];
 
         LoadedFloors = JsonSerializer.Deserialize<Dictionary<string, Floor<Wall>>>(GetEmbeddedResource("Walls.json"))!;
         ProblematicTrapLocations = JsonSerializer.Deserialize<List<WPos>>(GetEmbeddedResource("BadTraps.json"))!;
@@ -855,12 +856,4 @@ public abstract class AutoClear : ZoneModule
     }
 
     private Stream GetEmbeddedResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream($"BossModReborn.Modules.Global.DeepDungeon.{name}")!;
-}
-
-public static class DDTrapsData
-{
-    public static WPos[] GetTrapLocationsForZone(uint zone)
-    {
-        return GeneratedTrapData.Traps.TryGetValue(zone, out var locations) ? locations : [];
-    }
 }
