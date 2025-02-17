@@ -87,7 +87,7 @@ class Trash2States : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1016, NameID = 13676)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1016, NameID = 13676)]
 public class Trash2(WorldState ws, Actor primary) : BossModule(ws, primary, new(default, 28.5f), new ArenaBoundsRect(34.6f, 23.5f))
 {
     public static readonly WPos Arena2Center = new(default, 57f);
