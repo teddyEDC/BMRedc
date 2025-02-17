@@ -32,15 +32,19 @@ class Rehydration(BossModule module) : Components.CastInterruptHint(module, Acti
 
 class RightRound(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCircle circle = new(9);
     private AOEInstance? _aoe;
 
     public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action.ID == (uint)AID.RightRoundVisual) // TODO: find more precise way to calculate spell location. seems to be neither spell.LocXZ nor morningstar location, instead its somewhere in the middle, seen distances of 0-7.6 away from morningstar
-            _aoe = new(circle, spell.LocXZ, default, Module.CastFinishAt(spell, 0.9f));
+        if (spell.Action.ID == (uint)AID.RightRoundVisual)
+        {
+            // approximation of the mechanic with a capsule since the jump seems to behave quite unpredictable for long distances to the morning star
+            var len = (spell.LocXZ - caster.Position).Length();
+            var maxLen = len > 10f ? 10f : len;
+            _aoe = new(new AOEShapeCapsule(9f, maxLen), spell.LocXZ, spell.Rotation + 180f.Degrees(), Module.CastFinishAt(spell, 0.9f));
+        }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
