@@ -102,7 +102,7 @@ class Trash1States : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1016, NameID = 13720)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1016, NameID = 13720)]
 public class Trash1(WorldState ws, Actor primary) : BossModule(ws, primary, new(default, -336.3f), new ArenaBoundsRect(34.6f, 43.7f))
 {
     private static readonly uint[] trash = [(uint)OID.UncannyHornedLizard, (uint)OID.UncannyCactuar1, (uint)OID.UncannyCactuar2, (uint)OID.UncannyFlyingPopoto1,
