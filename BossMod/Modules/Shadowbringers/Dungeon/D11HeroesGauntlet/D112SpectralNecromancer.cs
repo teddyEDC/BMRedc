@@ -90,7 +90,7 @@ class Necrobombs(BossModule module) : BossComponent(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_ba.ActiveBaits.Any())
+        if (_ba.ActiveBaits.Count != 0)
             return;
         var forbidden = new List<Func<WPos, float>>();
         foreach (var e in WorldState.Actors.Where(x => !x.IsAlly && x.Tether.ID == (uint)TetherID.CrawlingNecrobombs))

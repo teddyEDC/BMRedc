@@ -16,8 +16,8 @@ public enum AID : uint
     LineVoltage = 40665 // Electrogolem2->self, 4.0s cast, range 14 width 4 rect
 }
 
-class FlashFlood(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SweepingGouge), new AOEShapeCone(9, 45.Degrees()));
-class LineVoltage(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.LineVoltage), new AOEShapeRect(14, 2));
+class FlashFlood(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SweepingGouge), new AOEShapeCone(9f, 45f.Degrees()));
+class LineVoltage(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.LineVoltage), new AOEShapeRect(14f, 2f));
 
 class D90ForestBatStates : StateMachineBuilder
 {
@@ -28,7 +28,6 @@ class D90ForestBatStates : StateMachineBuilder
             .ActivateOnEnter<LineVoltage>()
             .Raw.Update = () =>
             {
-                var allDeadOrDestroyed = true;
                 var enemies = module.Enemies(D90ForestBat.Trash);
                 var center = module.Arena.Center;
                 var radius = module.Bounds.Radius;
@@ -37,12 +36,9 @@ class D90ForestBatStates : StateMachineBuilder
                 {
                     var enemy = enemies[i];
                     if (!enemy.IsDeadOrDestroyed && enemy.Position.AlmostEqual(center, radius))
-                    {
-                        allDeadOrDestroyed = false;
-                        break;
-                    }
+                        return false;
                 }
-                return allDeadOrDestroyed;
+                return true;
             };
     }
 }

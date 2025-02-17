@@ -58,13 +58,13 @@ public enum AID : uint
     Telega = 9630 // Mandragoras->self, no cast, single-target, mandragoras disappear
 }
 
-abstract class InTheDark(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(20, 90f.Degrees()));
+abstract class InTheDark(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(20f, 90f.Degrees()));
 class LeftInTheDark1(BossModule module) : InTheDark(module, AID.LeftInTheDark1);
 class LeftInTheDark2(BossModule module) : InTheDark(module, AID.LeftInTheDark2);
 class RightInTheDark1(BossModule module) : InTheDark(module, AID.RightInTheDark1);
 class RightInTheDark2(BossModule module) : InTheDark(module, AID.RightInTheDark2);
 
-abstract class QuakeCircle(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 10);
+abstract class QuakeCircle(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 10f);
 class QuakeMeAwayCircle(BossModule module) : QuakeCircle(module, AID.QuakeMeAwayCircle);
 class QuakeInYourBootsCircle(BossModule module) : QuakeCircle(module, AID.QuakeInYourBootsCircle);
 
@@ -106,21 +106,31 @@ class LuckyFaceStates : StateMachineBuilder
             .ActivateOnEnter<HeirloomScream>()
             .ActivateOnEnter<PungentPirouette>()
             .ActivateOnEnter<Pollen>()
-            .Raw.Update = () => module.Enemies(LuckyFace.All).All(x => x.IsDeadOrDestroyed);
+            .Raw.Update = () =>
+            {
+                var enemies = module.Enemies(LuckyFace.All);
+                var count = enemies.Count;
+                for (var i = 0; i < count; ++i)
+                {
+                    if (!enemies[i].IsDeadOrDestroyed)
+                        return false;
+                }
+                return true;
+            };
     }
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 819, NameID = 10831)]
 public class LuckyFace(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(0f, -460f), 19.5f, 32)], [new Rectangle(new(0f, -440f), 20f, 1f)]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(default, -460f), 19.5f, 32)], [new Rectangle(new(default, -440f), 20f, 1f)]);
     private static readonly uint[] bonusAdds = [(uint)OID.ExcitingEgg, (uint)OID.ExcitingQueen, (uint)OID.ExcitingOnion, (uint)OID.ExcitingTomato,
     (uint)OID.ExcitingGarlic];
     public static readonly uint[] All = [(uint)OID.Boss, .. bonusAdds];
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-        Arena.Actors(Enemies(OID.Boss));
+        Arena.Actor(PrimaryActor);
         Arena.Actors(Enemies(bonusAdds), Colors.Vulnerable);
     }
 

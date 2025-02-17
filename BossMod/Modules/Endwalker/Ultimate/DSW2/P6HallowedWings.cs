@@ -69,7 +69,7 @@ abstract class P6HallowedPlume(BossModule module) : Components.GenericBaitAway(m
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         var shouldBait = actor.Role == Role.Tank;
-        var isBaiting = ActiveBaitsOn(actor).Any();
+        var isBaiting = ActiveBaitsOn(actor).Count != 0;
         var stayFar = shouldBait == _far;
         hints.Add(stayFar ? "Stay far!" : "Stay close!", shouldBait != isBaiting);
 

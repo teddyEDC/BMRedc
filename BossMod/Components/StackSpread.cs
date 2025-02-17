@@ -473,7 +473,7 @@ public class LineStack(BossModule module, ActionID? aidMarker, ActionID aidResol
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!ActiveBaits.Any())
+        if (ActiveBaits.Count == 0)
             return;
         var isBaitTarget = ActiveBaits.Any(x => x.Target == actor);
         var isBaitNotTarget = ActiveBaits.Any(x => x.Target != actor);
@@ -501,7 +501,7 @@ public class LineStack(BossModule module, ActionID? aidMarker, ActionID aidResol
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (!ActiveBaits.Any())
+        if (ActiveBaits.Count == 0)
             return;
 
         var isBaitTarget = ActiveBaits.Any(x => x.Target == actor);
@@ -513,7 +513,7 @@ public class LineStack(BossModule module, ActionID? aidMarker, ActionID aidResol
         else if ((isBaitNotTarget || isBaitTarget) && isInBaitShape)
             hints.Add(HintStack, false);
 
-        if (ActiveBaits.Count() > 1 && isBaitTarget)
+        if (ActiveBaits.Count > 1 && isBaitTarget)
         {
             var isInOtherBaitShape = ActiveBaits.Any(x => x.Target != actor && actor.Position.InRect(x.Source.Position, x.Rotation, Range, 0, 2 * HalfWidth));
             if (isInOtherBaitShape)
@@ -526,7 +526,7 @@ public class LineStack(BossModule module, ActionID? aidMarker, ActionID aidResol
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        if (!ActiveBaits.Any())
+        if (ActiveBaits.Count == 0)
             return;
 
         var isBaitTarget = ActiveBaits.Any(x => x.Target == pc);

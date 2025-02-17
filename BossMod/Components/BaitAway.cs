@@ -28,9 +28,51 @@ public class GenericBaitAway(BossModule module, ActionID aid = default, bool alw
     public List<Bait> CurrentBaits = [];
     public const string BaitAwayHint = "Bait away from raid!";
 
-    public IEnumerable<Bait> ActiveBaits => AllowDeadTargets ? CurrentBaits.Where(b => !b.Source.IsDead) : CurrentBaits.Where(b => !b.Source.IsDead && !b.Target.IsDead);
-    public IEnumerable<Bait> ActiveBaitsOn(Actor target) => ActiveBaits.Where(b => b.Target == target);
-    public IEnumerable<Bait> ActiveBaitsNotOn(Actor target) => ActiveBaits.Where(b => b.Target != target);
+    public List<Bait> ActiveBaits
+    {
+        get
+        {
+            var count = CurrentBaits.Count;
+            List<Bait> activeBaits = new(count);
+            for (var i = 0; i < count; ++i)
+            {
+                var bait = CurrentBaits[i];
+                if (!bait.Source.IsDead)
+                {
+                    if (AllowDeadTargets || !bait.Target.IsDead)
+                        activeBaits.Add(bait);
+                }
+            }
+            return activeBaits;
+        }
+    }
+
+    public List<Bait> ActiveBaitsOn(Actor target)
+    {
+        var count = CurrentBaits.Count;
+        List<Bait> activeBaitsOnTarget = new(count);
+        for (var i = 0; i < count; ++i)
+        {
+            var bait = CurrentBaits[i];
+            if (!bait.Source.IsDead && bait.Target == target)
+                activeBaitsOnTarget.Add(bait);
+        }
+        return activeBaitsOnTarget;
+    }
+
+    public List<Bait> ActiveBaitsNotOn(Actor target)
+    {
+        var count = CurrentBaits.Count;
+        List<Bait> activeBaitsNotOnTarget = new(count);
+        for (var i = 0; i < count; ++i)
+        {
+            var bait = CurrentBaits[i];
+            if (!bait.Source.IsDead && bait.Target != target)
+                activeBaitsNotOnTarget.Add(bait);
+        }
+        return activeBaitsNotOnTarget;
+    }
+
     public WPos BaitOrigin(Bait bait) => (CenterAtTarget ? bait.Target : bait.Source).Position;
     public bool IsClippedBy(Actor actor, Bait bait) => bait.Shape.Check(actor.Position, BaitOrigin(bait), bait.Rotation);
     public IEnumerable<Actor> PlayersClippedBy(Bait bait) => Raid.WithoutSlot().Exclude(bait.Target).InShape(bait.Shape, BaitOrigin(bait), bait.Rotation);
@@ -42,7 +84,7 @@ public class GenericBaitAway(BossModule module, ActionID aid = default, bool alw
 
         if (ForbiddenPlayers[slot])
         {
-            if (ActiveBaitsOn(actor).Any())
+            if (ActiveBaitsOn(actor).Count != 0)
                 hints.Add("Avoid baiting!");
         }
         else
@@ -57,7 +99,7 @@ public class GenericBaitAway(BossModule module, ActionID aid = default, bool alw
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!ActiveBaits.Any())
+        if (ActiveBaits.Count == 0)
             return;
 
         foreach (var bait in ActiveBaitsNotOn(actor))
@@ -90,7 +132,7 @@ public class GenericBaitAway(BossModule module, ActionID aid = default, bool alw
             }
     }
 
-    public override PlayerPriority CalcPriority(int pcSlot, Actor pc, int playerSlot, Actor player, ref uint customColor) => ActiveBaitsOn(player).Any() ? BaiterPriority : PlayerPriority.Irrelevant;
+    public override PlayerPriority CalcPriority(int pcSlot, Actor pc, int playerSlot, Actor player, ref uint customColor) => ActiveBaitsOn(player).Count != 0 ? BaiterPriority : PlayerPriority.Irrelevant;
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
@@ -289,7 +331,7 @@ public class BaitAwayChargeTether(BossModule module, float halfWidth, float acti
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (!ActiveBaits.Any())
+        if (ActiveBaits.Count == 0)
             return;
         base.AddHints(slot, actor, hints);
         if (ActiveBaitsOn(actor).Any(b => PlayersClippedBy(b).Any()))
