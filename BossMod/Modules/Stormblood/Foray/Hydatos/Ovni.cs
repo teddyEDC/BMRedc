@@ -50,9 +50,18 @@ class IonShower(BossModule module) : Components.GenericStackSpread(module, alway
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Spreads.Any(s => s.Target == actor))
-            // just gtfo from boss as far as possible
-            hints.GoalZones.Add(p => (p - Module.PrimaryActor.Position).LengthSq() > 1600f ? 100f : 0f);
+        var found = false;
+        var count = Spreads.Count;
+        for (var i = 0; i < count; ++i)
+        {
+            if (Spreads[i].Target == actor)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (found) // just gtfo from boss as far as possible
+            hints.GoalZones.Add(p => (p - Module.PrimaryActor.Position).LengthSq() > 1600f ? 100f : default);
         else
             base.AddAIHints(slot, actor, assignment, hints);
     }
@@ -73,6 +82,6 @@ class OvniStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 639, NameID = 8060, Contributors = "xan")]
-public class Ovni(WorldState ws, Actor primary) : BossModule(ws, primary, new(266.1068f, -97.09414f), new ArenaBoundsCircle(80f, MapResolution: 1));
+[ModuleInfo(BossModuleInfo.Maturity.Contributed, GroupType = BossModuleInfo.GroupType.EurekaNM, GroupID = 639, NameID = 1424, Contributors = "xan", SortOrder = 11)]
+public class Ovni(WorldState ws, Actor primary) : BossModule(ws, primary, new(266.1068f, -97.09414f), new ArenaBoundsCircle(80f, 1f, true));
 
