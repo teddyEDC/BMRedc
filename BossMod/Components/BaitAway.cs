@@ -376,7 +376,7 @@ public class BaitAwayChargeTether(BossModule module, float halfWidth, float acti
         if (ActiveBaits.Count == 0)
             return;
         base.AddHints(slot, actor, hints);
-        if (ActiveBaitsOn(actor).Any(b => PlayersClippedBy(b).Any()))
+        if (ActiveBaitsOn(actor).Any(b => PlayersClippedBy(b).Count != 0))
             hints.Add(BaitAwayHint);
     }
 }
