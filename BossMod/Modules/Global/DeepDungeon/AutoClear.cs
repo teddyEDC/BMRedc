@@ -389,14 +389,14 @@ public abstract class AutoClear : ZoneModule
         if (!Config.Enable || Palace.IsBossFloor || BetweenFloors)
             return;
 
-        var canNavigate = _config.MaxPull == 0 ? !player.InCombat : hints.PotentialTargets.Count(t => t.Actor.AggroPlayer && !t.Actor.IsDeadOrDestroyed) < _config.MaxPull;
+        var canNavigate = Config.MaxPull == 0 ? !player.InCombat : hints.PotentialTargets.Count(t => t.Actor.AggroPlayer && !t.Actor.IsDeadOrDestroyed) < Config.MaxPull;
 
         var countWalls = Walls.Count;
         for (var i = 0; i < countWalls; ++i)
         {
             var wall = Walls[i];
             var w = wall.Wall;
-            hints.AddForbiddenZone(ShapeDistance.Rect(w.Position, (wall.Rotated ? 90f : 0f).Degrees(), w.Depth, w.Depth, 20f));
+            hints.AddForbiddenZone(ShapeDistance.Rect(w.Position, (wall.Rotated ? 90f : default).Degrees(), w.Depth, w.Depth, 20f));
         }
 
         if (canNavigate)

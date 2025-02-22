@@ -33,21 +33,17 @@ class HypothermalCombustion(BossModule module) : Components.SimpleAOEs(module, A
             hints.SetPriority(g, AIHints.Enemy.PriorityForbidden);
     }
 }
+
 class GiddyBomb(BossModule module) : BossComponent(module)
 {
-    public static readonly WPos[] BombSpawns = [
-        new(-305, -240),
-        new(-295, -240),
-        new(-295, -240),
-        new(-300, -235)
-    ];
+    public static readonly WPos[] BombSpawns = [new(-305f, -240f), new(-295f, -240f), new(-295f, -240f), new(-300f, -235f)];
 
     private int _index;
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.HypothermalCombustion)
-            _index++;
+        if (spell.Action.ID == (uint)AID.HypothermalCombustion)
+            ++_index;
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -57,8 +53,11 @@ class GiddyBomb(BossModule module) : BossComponent(module)
             return;
 
         // giddy bomb is alive, don't pull anywhere
-        if (Module.Enemies(OID.GiddyBomb).Any(x => !x.IsDeadOrDestroyed))
-            return;
+        var giddybombs = Module.Enemies((uint)OID.GiddyBomb);
+        var count = giddybombs.Count;
+        for (var i = 0; i < count; ++i)
+            if (!giddybombs[i].IsDeadOrDestroyed)
+                return;
 
         var nextBombSpot = BombSpawns[_index % BombSpawns.Length];
         hints.GoalZones.Add(hints.PullTargetToLocation(Module.PrimaryActor, nextBombSpot));

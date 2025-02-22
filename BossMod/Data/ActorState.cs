@@ -43,7 +43,7 @@ public sealed class ActorState : IEnumerable<Actor>
             if (act.MountId != 0)
                 ops.Add(new OpMount(instanceID, act.MountId));
             if (act.ForayInfo != default)
-                yield return new OpForayInfo(act.InstanceID, act.ForayInfo);
+                ops.Add(new OpForayInfo(act.InstanceID, act.ForayInfo));
             if (act.Tether.ID != 0)
                 ops.Add(new OpTether(instanceID, act.Tether));
             if (act.CastInfo != null)
@@ -371,7 +371,7 @@ public sealed class ActorState : IEnumerable<Actor>
     public Event<Actor> ForayInfoChanged = new();
     public sealed record class OpForayInfo(ulong InstanceID, ActorForayInfo Value) : Operation(InstanceID)
     {
-        protected override void ExecActor(WorldState ws, Actor actor)
+        protected override void ExecActor(ref WorldState ws, ref Actor actor)
         {
             actor.ForayInfo = Value;
             ws.Actors.ForayInfoChanged.Fire(actor);

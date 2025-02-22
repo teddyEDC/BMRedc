@@ -12,6 +12,10 @@ public class EurekaConfig : ConfigNode
     [PropertyDisplay("Max number of mobs to pull at once (0 for no limit)")]
     [PropertySlider(0, 30, Speed = 0.1f)]
     public int MaxPullCount = 10;
+
+    [PropertyDisplay("Show auto farm window")]
+    public bool ShowAutoFarmWindow = false;
+
 }
 
 [ConfigDisplay(Name = "Hydatos", Parent = typeof(EurekaConfig))]
@@ -85,8 +89,8 @@ static class NMExtensions
 [ZoneModuleInfo(BossModuleInfo.Maturity.WIP, 639)]
 public class Hydatos : ZoneModule
 {
-    private readonly EurekaConfig _eurekaConfig = Service.Config.Get<EurekaConfig>();
-    private readonly HydatosConfig _hydatosConfig = Service.Config.Get<HydatosConfig>();
+    private static readonly EurekaConfig _eurekaConfig = Service.Config.Get<EurekaConfig>();
+    private static readonly HydatosConfig _hydatosConfig = Service.Config.Get<HydatosConfig>();
 
     private readonly EventSubscriptions _subscriptions;
 
@@ -148,7 +152,7 @@ public class Hydatos : ZoneModule
             };
     }
 
-    public override bool WantDrawExtra() => true;
+    public override bool WantDrawExtra() => _eurekaConfig.ShowAutoFarmWindow;
 
     public override string WindowName() => "Hydatos###Eureka module";
 

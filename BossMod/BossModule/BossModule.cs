@@ -297,16 +297,18 @@ public abstract class BossModule : IDisposable
         hints.PathfindMapCenter = Center;
         hints.PathfindMapBounds = Bounds;
 
-        var (entry, bitmap) = Obstacles.Find(new Vector3(Center.X, actor.PosRot.Y, Center.Z));
-        if (entry != null && bitmap != null)
+        if (Arena.Bounds.AllowObstacleMap)
         {
-            var originCell = (Center - entry.Origin) / bitmap.PixelSize;
-            var originX = (int)originCell.X;
-            var originZ = (int)originCell.Z;
-            var halfSize = (int)(Bounds.Radius / bitmap.PixelSize);
-            hints.PathfindMapObstacles = new(bitmap, new(originX - halfSize, originZ - halfSize, originX + halfSize, originZ + halfSize));
+            var (entry, bitmap) = Obstacles.Find(new Vector3(Center.X, actor.PosRot.Y, Center.Z));
+            if (entry != null && bitmap != null)
+            {
+                var originCell = (Center - entry.Origin) / bitmap.PixelSize;
+                var originX = (int)originCell.X;
+                var originZ = (int)originCell.Z;
+                var halfSize = (int)(Bounds.Radius / bitmap.PixelSize);
+                hints.PathfindMapObstacles = new(bitmap, new(originX - halfSize, originZ - halfSize, originX + halfSize, originZ + halfSize));
+            }
         }
-
         var count = Components.Count;
         for (var i = 0; i < count; ++i)
             Components[i].AddAIHints(slot, actor, assignment, hints);
@@ -390,9 +392,15 @@ public abstract class BossModule : IDisposable
 
     private void DrawPartyMembers(int pcSlot, ref Actor pc)
     {
-        foreach (var (slot, player) in Raid.WithSlot().Exclude(pcSlot))
+        var raid = Raid.WithSlot();
+        var count = raid.Length;
+        for (var i = 0; i < count; ++i)
         {
-            var (prio, color) = CalculateHighestPriority(pcSlot, ref pc, slot, player);
+            if (i == pcSlot)
+                continue;
+
+            var player = raid[i].Item2;
+            var (prio, color) = CalculateHighestPriority(pcSlot, ref pc, i, player);
 
             var isFocus = WorldState.Client.FocusTargetId == player.InstanceID;
             if (prio == BossComponent.PlayerPriority.Irrelevant && !WindowConfig.ShowIrrelevantPlayers && !(isFocus && WindowConfig.ShowFocusTargetPlayer))
@@ -429,6 +437,7 @@ public abstract class BossModule : IDisposable
                     }
                 }
             }
+
             Arena.Actor(player, color);
         }
     }

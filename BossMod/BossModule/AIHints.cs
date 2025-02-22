@@ -416,8 +416,6 @@ public sealed class AIHints
         };
     }
 
-    public WPos ClampToBounds(WPos position) => PathfindMapCenter + PathfindMapBounds.ClampToBounds(position - PathfindMapCenter);
-
     public Func<WPos, float> PullTargetToLocation(Actor target, WPos destination, float destRadius = 2)
     {
         var enemy = FindEnemy(target);
@@ -430,8 +428,8 @@ public sealed class AIHints
         if (desiredToTarget.LengthSq() > leewaySq)
         {
             var dest = destination - adjRange * desiredToTarget.Normalized();
-            return GoalSingleTarget(dest, PathfindMapBounds.MapResolution, 10);
+            return GoalSingleTarget(dest, PathfindMapBounds.MapResolution, 10f);
         }
-        return _ => 0;
+        return _ => 0f;
     }
 }
