@@ -126,15 +126,15 @@ public record class Rectangle(WPos Center, float HalfWidth, float HalfHeight, An
     {
         if (Points == null)
         {
-            var (sin, cos) = ((float, float))Math.SinCos(Rotation.Rad);
-            var rotatedHalfWidth = new WDir(HalfWidth * cos, HalfWidth * sin);
-            var rotatedHalfHeight = new WDir(-HalfHeight * sin, HalfHeight * cos);
+            var dir = Rotation != default ? Rotation.ToDirection() : new(0, 1);
+            var dx = dir.OrthoL() * HalfWidth;
+            var dz = dir * HalfHeight;
             Points =
             [
-                rotatedHalfWidth + rotatedHalfHeight,
-                rotatedHalfWidth - rotatedHalfHeight,
-                -rotatedHalfWidth - rotatedHalfHeight,
-                -rotatedHalfWidth + rotatedHalfHeight
+                dx - dz,
+                -dx - dz,
+                -dx + dz,
+                dx + dz
             ];
         }
         var offset = Center - center;
@@ -149,9 +149,9 @@ public record class Rectangle(WPos Center, float HalfWidth, float HalfHeight, An
 // for rectangles defined by a start point, end point and halfwidth
 public sealed record class RectangleSE(WPos Start, WPos End, float HalfWidth) : Rectangle(
     Center: new((Start.X + End.X) * Half, (Start.Z + End.Z) * Half),
-    HalfWidth: HalfWidth,
-    HalfHeight: (End - Start).Length() * Half,
-    Rotation: new Angle(MathF.Atan2(End.Z - Start.Z, End.X - Start.X)) + 90.Degrees()
+    HalfHeight: HalfWidth,
+    HalfWidth: (End - Start).Length() * Half,
+    Rotation: new Angle(MathF.Atan2(End.Z - Start.Z, End.X - Start.X))
 );
 
 public sealed record class Square(WPos Center, float HalfSize, Angle Rotation = default) : Rectangle(Center, HalfSize, HalfSize, Rotation);
