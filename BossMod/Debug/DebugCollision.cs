@@ -306,7 +306,8 @@ public sealed unsafe class DebugCollision() : IDisposable
                 {
                     var cast = (ColliderBox*)coll;
                     _tree.LeafNode2($"Translation: {Vec3Str(cast->Translation)}");
-                    _tree.LeafNode2($"Rotation: {Vec3Str(cast->Rotation)}");
+                    var rotation = cast->Rotation;
+                    _tree.LeafNode2($"Rotation: {Vec3Str(rotation)} (Yaw: {(rotation.Y * Angle.RadToDeg).Degrees().Normalized()}°)");
                     _tree.LeafNode2($"Scale: {Vec3Str(cast->Scale)}");
                     DrawMat4x3("World", ref cast->World);
                     DrawMat4x3("InvWorld", ref cast->InvWorld);
@@ -316,7 +317,8 @@ public sealed unsafe class DebugCollision() : IDisposable
                 {
                     var cast = (ColliderCylinder*)coll;
                     _tree.LeafNode2($"Translation: {Vec3Str(cast->Translation)}");
-                    _tree.LeafNode2($"Rotation: {Vec3Str(cast->Rotation)}");
+                    var rotation = cast->Rotation;
+                    _tree.LeafNode2($"Rotation: {Vec3Str(rotation)} (Yaw: {(rotation.Y * Angle.RadToDeg).Degrees().Normalized()}°)");
                     _tree.LeafNode2($"Scale: {Vec3Str(cast->Scale)}");
                     _tree.LeafNode2($"Radius: {cast->Radius:f3}");
                     DrawMat4x3("World", ref cast->World);
@@ -327,7 +329,8 @@ public sealed unsafe class DebugCollision() : IDisposable
                 {
                     var cast = (ColliderSphere*)coll;
                     _tree.LeafNode2($"Translation: {Vec3Str(cast->Translation)}");
-                    _tree.LeafNode2($"Rotation: {Vec3Str(cast->Rotation)}");
+                    var rotation = cast->Rotation;
+                    _tree.LeafNode2($"Rotation: {Vec3Str(rotation)} (Yaw: {(rotation.Y * Angle.RadToDeg).Degrees().Normalized()}°)");
                     _tree.LeafNode2($"Scale: {Vec3Str(cast->Scale)}");
                     DrawMat4x3("World", ref cast->World);
                     DrawMat4x3("InvWorld", ref cast->InvWorld);
@@ -339,7 +342,8 @@ public sealed unsafe class DebugCollision() : IDisposable
                     var cast = (ColliderPlane*)coll;
                     _tree.LeafNode2($"Normal: {cast->World.Row2 / cast->Scale.Z:f3}");
                     _tree.LeafNode2($"Translation: {Vec3Str(cast->Translation)}");
-                    _tree.LeafNode2($"Rotation: {Vec3Str(cast->Rotation)}");
+                    var rotation = cast->Rotation;
+                    _tree.LeafNode2($"Rotation: {Vec3Str(rotation)} (Yaw: {(rotation.Y * Angle.RadToDeg).Degrees().Normalized()}°)");
                     _tree.LeafNode2($"Scale: {Vec3Str(cast->Scale)}");
                     DrawMat4x3("World", ref cast->World);
                     DrawMat4x3("InvWorld", ref cast->InvWorld);
@@ -352,7 +356,8 @@ public sealed unsafe class DebugCollision() : IDisposable
     {
         DrawResource(coll->Resource);
         _tree.LeafNode2($"Translation: {Vec3Str(coll->Translation)}");
-        _tree.LeafNode2($"Rotation: {Vec3Str(coll->Rotation)}");
+        var rotation = coll->Rotation;
+        _tree.LeafNode2($"Rotation: {Vec3Str(rotation)} (Yaw: {(rotation.Y * Angle.RadToDeg).Degrees().Normalized()}°)");
         _tree.LeafNode2($"Scale: {Vec3Str(coll->Scale)}");
         DrawMat4x3("World", ref coll->World);
         DrawMat4x3("InvWorld", ref coll->InvWorld);
@@ -655,7 +660,7 @@ public sealed unsafe class DebugCollision() : IDisposable
             coll->VisibilityFlags ^= 2;
     }
 
-    static Vector3 ApplyTransformation(Vector3 vertex, Vector3 translation, Vector3 rotation)
+    private static Vector3 ApplyTransformation(Vector3 vertex, Vector3 translation, Vector3 rotation)
     {
         var rotX = rotation.X;
         var rotY = rotation.Y;

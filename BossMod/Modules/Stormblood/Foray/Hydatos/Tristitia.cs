@@ -1,5 +1,3 @@
-using BossMod.Shadowbringers.Hunt.RankS.Ixtab;
-
 namespace BossMod.Stormblood.Foray.Hydatos.Tristitia;
 
 public enum OID : uint
