@@ -149,8 +149,8 @@ public record class Rectangle(WPos Center, float HalfWidth, float HalfHeight, An
 // for rectangles defined by a start point, end point and halfwidth
 public sealed record class RectangleSE(WPos Start, WPos End, float HalfWidth) : Rectangle(
     Center: new((Start.X + End.X) * Half, (Start.Z + End.Z) * Half),
-    HalfHeight: HalfWidth,
-    HalfWidth: (End - Start).Length() * Half,
+    HalfWidth: HalfWidth,
+    HalfHeight: (End - Start).Length() * Half,
     Rotation: new Angle(MathF.Atan2(End.Z - Start.Z, End.X - Start.X))
 );
 
