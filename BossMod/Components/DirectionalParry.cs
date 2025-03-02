@@ -41,18 +41,18 @@ public class DirectionalParry(BossModule module, uint[] actorOID) : AddsMulti(mo
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var (id, targetState) in _actorStates)
+        foreach (var (id, targetState) in ActorStates)
         {
             var target = WorldState.Actors.Find(id);
             if (target == null)
                 continue;
 
-            void forbidDirection(Angle offset) => hints.AddForbiddenZone(new AOEShapeCone(100, 45.Degrees()), target.Position, target.Rotation + offset, DateTime.MaxValue, target.InstanceID);
+            void forbidDirection(Angle offset) => hints.AddForbiddenZone(new AOEShapeCone(100f, 45f.Degrees()), target.Position, target.Rotation + offset, DateTime.MaxValue, target.InstanceID);
 
             var forbiddenSides = ActiveSides(targetState);
             var attackDir = (actor.Position - target.Position).Normalized();
             var facing = target.Rotation.ToDirection();
-            bool attackingFromForbidden = attackDir.Dot(facing) switch
+            var attackingFromForbidden = attackDir.Dot(facing) switch
             {
                 > 0.7071067f => forbiddenSides.HasFlag(Side.Front),
                 < -0.7071067f => forbiddenSides.HasFlag(Side.Back),
@@ -69,11 +69,11 @@ public class DirectionalParry(BossModule module, uint[] actorOID) : AddsMulti(mo
                     if (forbiddenSides.HasFlag(Side.Front))
                         forbidDirection(default);
                     if (forbiddenSides.HasFlag(Side.Left))
-                        forbidDirection(90.Degrees());
+                        forbidDirection(90f.Degrees());
                     if (forbiddenSides.HasFlag(Side.Back))
-                        forbidDirection(180.Degrees());
+                        forbidDirection(180f.Degrees());
                     if (forbiddenSides.HasFlag(Side.Right))
-                        forbidDirection(270.Degrees());
+                        forbidDirection(270f.Degrees());
                 }
             }
         }
