@@ -3,7 +3,7 @@
 // generic component that shows arbitrary shapes representing avoidable aoes
 public abstract class GenericAOEs(BossModule module, ActionID aid = default, string warningText = "GTFO from aoe!") : CastCounter(module, aid)
 {
-    public record struct AOEInstance(AOEShape Shape, WPos Origin, Angle Rotation = default, DateTime Activation = default, uint Color = 0, bool Risky = true, ulong? ActorID = null)
+    public record struct AOEInstance(AOEShape Shape, WPos Origin, Angle Rotation = default, DateTime Activation = default, uint Color = 0, bool Risky = true, ulong ActorID = default)
     {
         public readonly bool Check(WPos pos) => Shape.Check(pos, Origin, Rotation);
     }
@@ -106,7 +106,7 @@ public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int max
                 if (Casters[i].ActorID == id)
                 {
                     Casters.RemoveAt(i);
-                    break;
+                    return;
                 }
             }
         }
