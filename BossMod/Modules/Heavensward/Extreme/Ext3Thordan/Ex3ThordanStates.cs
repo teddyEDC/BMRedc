@@ -150,10 +150,10 @@ class Ex3ThordanStates : StateMachineBuilder
 
     private void SacredCrossSpiralThrust(uint id, float delay)
     {
-        ComponentCondition<SerZephirin>(id, delay, comp => comp.ActiveActors.Any(), "Add appears")
+        ComponentCondition<SerZephirin>(id, delay, comp => comp.ActiveActors.Count != 0, "Add appears")
             .ActivateOnEnter<SerZephirin>()
             .SetHint(StateMachine.StateHint.DowntimeEnd);
-        ComponentCondition<SerZephirin>(id + 0x10, 20.1f, comp => !comp.ActiveActors.Any(), "DPS check")
+        ComponentCondition<SerZephirin>(id + 0x10, 20.1f, comp => comp.ActiveActors.Count == 0, "DPS check")
             .ActivateOnEnter<SpiralThrust1>()
             .DeactivateOnExit<SerZephirin>()
             .SetHint(StateMachine.StateHint.DowntimeStart | StateMachine.StateHint.Raidwide);
@@ -375,7 +375,7 @@ class Ex3ThordanStates : StateMachineBuilder
             .DeactivateOnExit<HeavenswardLeap>()
             .SetHint(StateMachine.StateHint.Raidwide);
 
-        ComponentCondition<SerZephirin>(id + 0x1000, 7.7f, comp => comp.ActiveActors.Any(), "Boss invuln")
+        ComponentCondition<SerZephirin>(id + 0x1000, 7.7f, comp => comp.ActiveActors.Count != 0, "Boss invuln")
             .ActivateOnEnter<SerZephirin>();
         // +0.1s: zephirin starts 25s cast
         ComponentCondition<PureOfSoul>(id + 0x1010, 6.1f, comp => comp.NumCasts > 0, "Raidwide")
@@ -388,7 +388,7 @@ class Ex3ThordanStates : StateMachineBuilder
             .SetHint(StateMachine.StateHint.Raidwide);
         Cast(id + 0x1030, AID.DragonsGaze, 2.3f, 3, "Gaze")
             .DeactivateOnExit<DragonsGaze>();
-        ComponentCondition<SerZephirin>(id + 0x1040, 2.8f, comp => !comp.ActiveActors.Any(), "Add enrage")
+        ComponentCondition<SerZephirin>(id + 0x1040, 2.8f, comp => comp.ActiveActors.Count == 0, "Add enrage")
             .DeactivateOnExit<SerZephirin>();
     }
 }

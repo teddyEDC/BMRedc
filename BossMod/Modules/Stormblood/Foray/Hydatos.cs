@@ -16,7 +16,6 @@ public class EurekaConfig : ConfigNode
     [PropertyDisplay("Show auto farm window")]
     public bool ShowAutoFarmWindow = false;
 
-
     public bool AssistMode;
 }
 
@@ -133,7 +132,7 @@ public class Hydatos : ZoneModule
             return;
 
         // only need to check "undesirable" targets, as mobs already attacking party members will be handled by autofarm
-        bool canTarget(AIHints.Enemy enemy) => enemy.Priority == AIHints.Enemy.PriorityUndesirable && (!_eurekaConfig.AssistMode || enemy.Actor.InCombat);
+        static bool canTarget(AIHints.Enemy enemy) => enemy.Priority == AIHints.Enemy.PriorityUndesirable && (!_eurekaConfig.AssistMode || enemy.Actor.InCombat);
 
         foreach (var e in hints.PotentialTargets.Where(t => t.Actor.OID == farmOID))
         {
