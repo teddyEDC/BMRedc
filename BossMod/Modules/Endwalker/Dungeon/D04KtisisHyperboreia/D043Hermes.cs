@@ -140,18 +140,18 @@ class TrueAeroIVLOS(BossModule module) : Components.CastLineOfSightAOE(module, A
         base.AddAIHints(slot, actor, assignment, hints);
 
         Actor? meteor = null;
+        var countBroken = 0;
         for (var i = 0; i < count; ++i)
         {
             var m = meteors[i];
-            if (m.ModelState.AnimState2 == 1)
-            {
+            if (m.ModelState.AnimState2 != 1)
                 meteor = m;
-                break;
-            }
+            else
+                ++countBroken;
         }
 
-        if (meteor is Actor met && _aoe.Casters.Count == 0) // force AI to move closer to the meteor as soon as they become visible
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(met.Position, 8f));
+        if (countBroken == 3 && meteor is Actor met && _aoe.Casters.Count == 0) // force AI to move closer to the meteor as soon as they become visible
+            hints.GoalZones.Add(hints.GoalSingleTarget(met, 5f, 5f));
     }
 }
 
