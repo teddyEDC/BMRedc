@@ -38,7 +38,7 @@ public enum AID : uint
     Explosion = 29021, // Helper->self, 7.0s cast, raidwide with ? falloff
 
     LimitBreakRefill = 28542, // Helper->self, no cast, range 40 circle - probably limit break refill
-    Ultima = 29024, // Boss->self, 71.0s cast, enrage
+    Ultima = 29024 // Boss->self, 71.0s cast, enrage
 }
 
 class TankPurge(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.TankPurge));
@@ -113,10 +113,12 @@ class CitadelBuster(BossModule module) : Components.SimpleAOEs(module, ActionID.
 
 class Explosion(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Explosion), 16f) // TODO: verify falloff
 {
+    private readonly AssaultCannon _aoe = module.FindComponent<AssaultCannon>()!;
+
     // there is an overlap with another mechanic which has to be resolved first
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Module.FindComponent<AssaultCannon>()!.Casters.Count == 0)
+        if (_aoe.Casters.Count == 0)
             base.AddAIHints(slot, actor, assignment, hints);
     }
 }

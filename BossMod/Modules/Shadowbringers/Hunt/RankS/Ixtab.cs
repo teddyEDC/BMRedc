@@ -81,14 +81,7 @@ class TartareanTwister(BossModule module) : Components.CastInterruptHint(module,
 class TartareanBlizzard(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TartareanBlizzard), new AOEShapeCone(40, 22.5f.Degrees()));
 class TartareanQuake(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.TartareanQuake));
 
-class TartareanAbyss(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.TartareanAbyss), new AOEShapeCircle(6), true)
-{
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count > 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
+class TartareanAbyss(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.TartareanAbyss), new AOEShapeCircle(6f), true, tankbuster: true);
 
 class TartareanFlare(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TartareanFlare), 18);
 class TartareanMeteor(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.TartareanMeteor), 10, 8);

@@ -231,14 +231,7 @@ class AutoAttack(BossModule module) : Components.Cleave(module, ActionID.MakeSpe
     }
 }
 
-class Resonance(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Resonance), new AOEShapeCone(12f, 45f.Degrees()), endsOnCastEvent: true)
-{
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count != 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
+class Resonance(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Resonance), new AOEShapeCone(12f, 45f.Degrees()), endsOnCastEvent: true, tankbuster: true);
 
 class DD80ProtoKaliyaStates : StateMachineBuilder
 {

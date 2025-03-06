@@ -63,14 +63,7 @@ class NoFutureAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 class Peacefire(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Peacefire), 10);
 class SmallBoreLaser(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SmallBoreLaser), new AOEShapeRect(20, 2));
 
-class Elimination(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Elimination), new AOEShapeRect(46, 5), endsOnCastEvent: true)
-{
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count != 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
+class Elimination(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Elimination), new AOEShapeRect(46, 5), endsOnCastEvent: true, tankbuster: true);
 
 class Decimation(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Decimation));
 class EclipsingExhaust(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.EclipsingExhaust));

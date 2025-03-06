@@ -88,11 +88,27 @@ public abstract class GenericGaze(BossModule module, ActionID aid = new(), bool 
 }
 
 // gaze that happens on cast end
-public class CastGaze(BossModule module, ActionID aid, bool inverted = false, float range = 10000) : GenericGaze(module, aid, inverted)
+public class CastGaze(BossModule module, ActionID aid, bool inverted = false, float range = 10000, int maxCasts = int.MaxValue) : GenericGaze(module, aid, inverted)
 {
     public readonly List<Eye> Eyes = [];
+    public int MaxCasts = maxCasts; // used for staggered gazes, when showing all active would be pointless
 
-    public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor) => Eyes;
+    public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor)
+    {
+        var count = Eyes.Count;
+        if (count == 0)
+            return [];
+
+        var max = count > MaxCasts ? MaxCasts : count;
+
+        var eyes = new Eye[max];
+        for (var i = 0; i < max; ++i)
+        {
+            var eye = Eyes[i];
+            eyes[i] = eye;
+        }
+        return eyes;
+    }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

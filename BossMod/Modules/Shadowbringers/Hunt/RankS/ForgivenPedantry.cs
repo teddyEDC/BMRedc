@@ -71,21 +71,7 @@ class TheStake(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeS
 class SecondCircle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SecondCircle), new AOEShapeRect(40, 4));
 class CleansingFire(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.CleansingFire));
 
-class FeveredFlagellation(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.FeveredFlagellation), new AOEShapeCone(15, 45.Degrees()))
-{
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell) { }
-    public override void OnEventCast(Actor caster, ActorCastEvent spell) //tankbuster resolves on cast event, which can be delayed by moving out of tankbuster range
-    {
-        if (spell.Action == WatchedAction)
-            CurrentBaits.RemoveAll(b => b.Source == caster);
-    }
-
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count > 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
+class FeveredFlagellation(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.FeveredFlagellation), new AOEShapeCone(15, 45.Degrees()), tankbuster: true, endsOnCastEvent: true);
 
 class WitchHunt(BossModule module) : Components.GenericBaitAway(module)
 {

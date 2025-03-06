@@ -72,7 +72,7 @@ class Gurgle(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Crack(BossModule module) : Components.GenericBaitAway(module)
+class Crack(BossModule module) : Components.GenericBaitAway(module, tankbuster: true)
 {
     private static readonly AOEShapeRect rect = new(80, 1.5f);
 
@@ -86,12 +86,6 @@ class Crack(BossModule module) : Components.GenericBaitAway(module)
     {
         if ((AID)spell.Action.ID == AID.Crack)
             CurrentBaits.RemoveAll(x => x.Source == caster);
-    }
-
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count != 0)
-            hints.Add("4x Tankbuster cleave");
     }
 }
 

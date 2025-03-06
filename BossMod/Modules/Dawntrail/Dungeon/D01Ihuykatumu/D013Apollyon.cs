@@ -86,14 +86,7 @@ class LevinsickleSpark(BossModule module) : Components.PersistentVoidzoneAtCastT
 class WingOfLightning(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WingOfLightning), new AOEShapeCone(40f, 22.5f.Degrees()), 8);
 
 class ThunderIII2(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.ThunderIII), 6f);
-class BladeTB(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.BladeTB), new AOEShapeCircle(6f), true)
-{
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count != 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
+class BladeTB(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.BladeTB), new AOEShapeCircle(6f), true, tankbuster: true);
 
 class WindSickle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WindSickle), new AOEShapeDonut(5f, 60f));
 class RazorStorm(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RazorStorm), new AOEShapeRect(40f, 20f));
