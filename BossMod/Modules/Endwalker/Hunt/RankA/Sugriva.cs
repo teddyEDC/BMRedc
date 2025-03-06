@@ -48,14 +48,7 @@ class Twister(BossModule module) : Components.KnockbackFromCastTarget(module, Ac
 class Spark(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Spark), new AOEShapeDonut(14, 30));
 class ScytheTail(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ScytheTail), 17);
 
-class Butcher(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Butcher), new AOEShapeCone(8, 60.Degrees()), endsOnCastEvent: true)
-{
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count > 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
+class Butcher(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.Butcher), new AOEShapeCone(8, 60.Degrees()), endsOnCastEvent: true, tankbuster: true);
 
 class Rip(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Rip), new AOEShapeCone(8, 60.Degrees()));
 

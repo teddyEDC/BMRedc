@@ -5,22 +5,34 @@ class ArchaicRockbreakerCenter(BossModule module) : Components.SimpleAOEs(module
 class ArchaicRockbreakerShockwave(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.ArchaicRockbreakerShockwave), true)
 {
     private readonly DateTime _activation = module.WorldState.FutureTime(6.5f);
-    private static readonly List<SafeWall> Walls0 = [new(new(93, 117.5f), new(108, 117.5f)), new(new(82.5f, 93), new(82.5f, 108)),
+    private static readonly SafeWall[] Walls0 = [new(new(93, 117.5f), new(108, 117.5f)), new(new(82.5f, 93), new(82.5f, 108)),
     new(new(117.5f, 93), new(117.5f, 108)), new(new(93, 82.5f), new(108, 82.5f))];
-    private static readonly List<SafeWall> Walls45 = [.. Walls0.Select(wall => RotatedSafeWall(wall.Vertex1, wall.Vertex2))];
+    private static readonly SafeWall[] Walls45 = CreateRotatedWalls();
+
+    private static SafeWall[] CreateRotatedWalls()
+    {
+        var walls = new SafeWall[4];
+        for (var i = 0; i < 4; i++)
+        {
+            var wall = Walls0[i];
+            walls[i] = RotatedSafeWall(ref wall);
+        }
+        return walls;
+    }
 
     public override IEnumerable<Source> Sources(int slot, Actor actor)
     {
         if (Arena.Bounds == P9SKokytos.arenaUplift0)
-            yield return new(Arena.Center, 21, _activation, SafeWalls: Walls0);
+            return [new(Arena.Center, 21f, _activation, SafeWalls: Walls0)];
         else if (Arena.Bounds == P9SKokytos.arenaUplift45)
-            yield return new(Arena.Center, 21, _activation, SafeWalls: Walls45);
+            return [new(Arena.Center, 21f, _activation, SafeWalls: Walls45)];
+        return [];
     }
 
-    private static SafeWall RotatedSafeWall(WPos start, WPos end)
+    private static SafeWall RotatedSafeWall(ref SafeWall wall)
     {
-        var rotatedStart = WPos.RotateAroundOrigin(45, P9SKokytos.center, start);
-        var rotatedEnd = WPos.RotateAroundOrigin(45, P9SKokytos.center, end);
+        var rotatedStart = WPos.RotateAroundOrigin(45f, P9SKokytos.center, wall.Vertex1);
+        var rotatedEnd = WPos.RotateAroundOrigin(45f, P9SKokytos.center, wall.Vertex2);
         return new(rotatedStart, rotatedEnd);
     }
 }

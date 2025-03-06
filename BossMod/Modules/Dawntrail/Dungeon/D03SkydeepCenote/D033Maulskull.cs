@@ -253,15 +253,7 @@ abstract class DeepThunder(BossModule module, AID aid) : Components.CastTowers(m
 class DeepThunder1(BossModule module) : DeepThunder(module, AID.DeepThunderTower1);
 class DeepThunder2(BossModule module) : DeepThunder(module, AID.DeepThunderTower2);
 
-class WroughtFire(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.WroughtFire), new AOEShapeCircle(6f), true)
-{
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count > 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
-
+class WroughtFire(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.WroughtFire), new AOEShapeCircle(6f), true, tankbuster: true);
 class BuildingHeat(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.BuildingHeat), 6f, 4, 4);
 class Ashlayer(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Ashlayer));
 

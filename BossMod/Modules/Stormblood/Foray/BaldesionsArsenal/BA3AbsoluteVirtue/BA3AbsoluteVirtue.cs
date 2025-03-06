@@ -2,14 +2,7 @@ namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA3AbsoluteVirtue;
 
 class Meteor(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Meteor));
 class MedusaJavelin(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.MedusaJavelin), new AOEShapeCone(65.4f, 45f.Degrees()));
-class AuroralWind(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.AuroralWind), new AOEShapeCircle(5f), true)
-{
-    public override void AddGlobalHints(GlobalHints hints)
-    {
-        if (CurrentBaits.Count != 0)
-            hints.Add("Tankbuster cleave");
-    }
-}
+class AuroralWind(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.AuroralWind), new AOEShapeCircle(5f), true, tankbuster: true);
 
 abstract class ExplosiveImpulse(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 18f);
 class ExplosiveImpulse1(BossModule module) : ExplosiveImpulse(module, AID.ExplosiveImpulse1);
