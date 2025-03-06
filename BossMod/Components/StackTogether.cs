@@ -2,9 +2,10 @@
 
 public class StackTogether(BossModule module, uint iconId, float activationDelay, float radius = 3) : BossComponent(module)
 {
-    private BitMask Targets;
-    private DateTime Activation;
+    public readonly List<Actor> Targets = [];
+    public DateTime Activation;
     public readonly uint Icon = iconId;
+    public readonly float Radius = radius;
 
     public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
     {
@@ -13,7 +14,7 @@ public class StackTogether(BossModule module, uint iconId, float activationDelay
             var slot = Raid.FindSlot(actor.InstanceID);
             if (slot >= 0)
             {
-                Targets.Set(slot);
+                Targets.Add(actor);
                 if (Activation == default)
                     Activation = WorldState.FutureTime(activationDelay);
             }
@@ -25,31 +26,76 @@ public class StackTogether(BossModule module, uint iconId, float activationDelay
         if (Activation != default && Activation < WorldState.CurrentTime)
         {
             Activation = default;
-            Targets.Reset();
+            Targets.Clear();
         }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (Targets[slot])
-            hints.Add("Stack with other targets!", !OtherTargets(slot, actor).Any(t => t.Position.InCircle(actor.Position, radius)));
-    }
+        var count = Targets.Count;
+        if (count == 0)
+            return;
+        var actorFound = false;
+        var foundTarget = false;
 
-    private IEnumerable<Actor> OtherTargets(int slot, Actor actor) => Targets[slot] ? Raid.WithSlot().IncludedInMask(Targets).Exclude(actor).Select(t => t.Item2) : [];
+        for (var i = 0; i < count; ++i)
+        {
+            var target = Targets[i];
+
+            if (target == actor)
+                actorFound = true;
+            else if (target.Position.InCircle(actor.Position, Radius))
+                foundTarget = true;
+            if (actorFound && foundTarget)
+                break;
+        }
+
+        if (actorFound)
+            hints.Add("Stack with other targets!", !foundTarget);
+    }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        if (Targets[pcSlot])
-            foreach (var target in OtherTargets(pcSlot, pc))
-                Arena.AddCircle(target.Position, radius, ArenaColor.Safe);
+        var count = Targets.Count;
+        if (count == 0)
+            return;
+        var actorFound = false;
+
+        var positions = new List<WPos>(count);
+        for (var i = 0; i < count; ++i)
+        {
+            var target = Targets[i];
+
+            if (target == pc)
+                actorFound = true;
+            else
+                positions.Add(target.Position);
+        }
+        if (!actorFound)
+            return;
+
+        var countPos = positions.Count;
+        for (var i = 0; i < countPos; ++i)
+            Arena.AddCircle(positions[i], Radius, Colors.Safe);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (!Targets[slot])
+        var count = Targets.Count;
+        if (count == 0)
             return;
+        var actorFound = false;
+        var forbidden = new List<Func<WPos, float>>(count);
+        for (var i = 0; i < count; ++i)
+        {
+            var target = Targets[i];
 
-        var otherTargets = ShapeDistance.Intersection(OtherTargets(slot, actor).Select(t => ShapeDistance.Donut(t.Position, radius, 100)).ToList());
-        hints.AddForbiddenZone(otherTargets, Activation);
+            if (target == actor)
+                actorFound = true;
+            else
+                forbidden.Add(ShapeDistance.InvertedCircle(target.Position, Radius));
+        }
+        if (actorFound)
+            hints.AddForbiddenZone(ShapeDistance.Intersection(forbidden), Activation);
     }
 }
