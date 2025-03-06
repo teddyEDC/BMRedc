@@ -7,9 +7,9 @@ namespace BossMod;
 //                       rotation 0 corresponds to South, and increases counterclockwise (so East is +pi/2, North is pi, West is -pi/2)
 // - camera azimuth 0 correpsonds to camera looking North and increases counterclockwise
 // - screen coordinates - X points left to right, Y points top to bottom
-public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds bounds)
+public sealed class MiniArena(WPos center, ArenaBounds bounds)
 {
-    public readonly BossModuleConfig Config = config;
+    public static readonly BossModuleConfig Config = Service.Config.Get<BossModuleConfig>();
     private WPos _center = center;
 #pragma warning disable IDE0032
     private ArenaBounds _bounds = bounds;
@@ -116,6 +116,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
     // unclipped primitive rendering that accept world-space positions; thin convenience wrappers around drawlist api
     public void AddLine(WPos a, WPos b, uint color = 0, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         if (Config.ShowOutlinesAndShadows)
             ImGui.GetWindowDrawList().AddLine(WorldPositionToScreenPosition(a), WorldPositionToScreenPosition(b), Colors.Shadows, thickness + 1);
         ImGui.GetWindowDrawList().AddLine(WorldPositionToScreenPosition(a), WorldPositionToScreenPosition(b), color != 0 ? color : Colors.Danger, thickness);
@@ -123,6 +124,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddTriangle(WPos p1, WPos p2, WPos p3, uint color = 0, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         ImGui.GetWindowDrawList().AddTriangle(WorldPositionToScreenPosition(p1), WorldPositionToScreenPosition(p2), WorldPositionToScreenPosition(p3), color != 0 ? color : Colors.Danger, thickness);
     }
 
@@ -133,6 +135,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddQuad(WPos p1, WPos p2, WPos p3, WPos p4, uint color = 0, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         ImGui.GetWindowDrawList().AddQuad(WorldPositionToScreenPosition(p1), WorldPositionToScreenPosition(p2), WorldPositionToScreenPosition(p3), WorldPositionToScreenPosition(p4), color != 0 ? color : Colors.Danger, thickness);
     }
 
@@ -143,6 +146,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddRect(WPos origin, WDir direction, float lenFront, float lenBack, float halfWidth, uint color, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         var side = halfWidth * direction.OrthoR();
         var front = origin + lenFront * direction;
         var back = origin - lenBack * direction;
@@ -152,6 +156,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
     public void AddCircle(WPos center, float radius, uint color = 0, float thickness = 1)
     {
         var radiusscreenhalfsize = radius / _bounds.Radius * ScreenHalfSize;
+        thickness *= Config.ThicknessScale;
         if (Config.ShowOutlinesAndShadows)
             ImGui.GetWindowDrawList().AddCircle(WorldPositionToScreenPosition(center), radiusscreenhalfsize, Colors.Shadows, 0, thickness + 1);
         ImGui.GetWindowDrawList().AddCircle(WorldPositionToScreenPosition(center), radiusscreenhalfsize, color != 0 ? color : Colors.Danger, 0, thickness);
@@ -164,6 +169,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddCone(WPos center, float radius, Angle centerDirection, Angle halfAngle, uint color = 0, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         var sCenter = WorldPositionToScreenPosition(center);
         var sDir = Angle.HalfPi - centerDirection.Rad + _cameraAzimuth.Rad;
         var drawlist = ImGui.GetWindowDrawList();
@@ -174,6 +180,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddDonutCone(WPos center, float innerRadius, float outerRadius, Angle centerDirection, Angle halfAngle, uint color = 0, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         var sCenter = WorldPositionToScreenPosition(center);
         var sDir = Angle.HalfPi - centerDirection.Rad + _cameraAzimuth.Rad;
         var drawlist = ImGui.GetWindowDrawList();
@@ -224,13 +231,16 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddPolygon(ReadOnlySpan<WPos> vertices, uint color = 0, float thickness = 1)
     {
-        for (var i = 0; i < vertices.Length; ++i)
+        thickness *= Config.ThicknessScale;
+        var len = vertices.Length;
+        for (var i = 0; i < len; ++i)
             PathLineTo(vertices[i]);
         PathStroke(true, color != 0 ? color : Colors.Danger, thickness);
     }
 
     public void AddPolygon(IEnumerable<WPos> vertices, uint color = 0, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         foreach (var p in vertices)
             PathLineTo(p);
         PathStroke(true, color != 0 ? color : Colors.Danger, thickness);
@@ -238,6 +248,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddPolygonTransformed(WPos center, WDir rotation, ReadOnlySpan<WDir> vertices, uint color, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         foreach (var p in vertices)
             PathLineTo(center + p.Rotate(rotation));
         PathStroke(true, color != 0 ? color : Colors.Danger, thickness);
@@ -245,6 +256,8 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public void AddComplexPolygon(WPos center, WDir rotation, RelSimplifiedComplexPolygon poly, uint color, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
+
         foreach (var part in poly.Parts)
         {
             AddPolygonTransformed(center, rotation, part.Exterior, color, thickness);
@@ -267,6 +280,7 @@ public sealed class MiniArena(BossModuleConfig config, WPos center, ArenaBounds 
 
     public static void PathStroke(bool closed, uint color = 0, float thickness = 1)
     {
+        thickness *= Config.ThicknessScale;
         ImGui.GetWindowDrawList().PathStroke(color != 0 ? color : Colors.Danger, closed ? ImDrawFlags.Closed : ImDrawFlags.None, thickness);
     }
 
