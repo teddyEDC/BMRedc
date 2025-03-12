@@ -28,13 +28,12 @@ class AbsoluteAuthorityDorito(BossModule module) : Components.GenericStackSpread
         {
             var player = Raid.Player()!;
             var party = Raid.WithoutSlot(false, true, true);
-            party.Sort((a, b) =>
-                {
-                    var distA = (player.Position - a.Position).LengthSq();
-                    var distB = (player.Position - a.Position).LengthSq();
-                    return distA.CompareTo(distB);
-                });
-
+            Array.Sort(party, (a, b) =>
+            {
+                var distA = (player.Position - a.Position).LengthSq();
+                var distB = (player.Position - a.Position).LengthSq();
+                return distA.CompareTo(distB);
+            });
             var len = party.Length;
             Actor? closest = null;
             var aoes = _aoe.ActiveAOEs(default, player);

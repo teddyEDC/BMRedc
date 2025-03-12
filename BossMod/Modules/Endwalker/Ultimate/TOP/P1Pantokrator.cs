@@ -172,7 +172,7 @@ class P1DiffuseWaveCannonKyrios : Components.GenericBaitAway
     {
         CurrentBaits.Clear();
         var party = Raid.WithoutSlot(false, true, true);
-        party.Sort((a, b) =>
+        Array.Sort(party, (a, b) =>
             {
                 var distA = (a.Position - Arena.Center).LengthSq();
                 var distB = (b.Position - Arena.Center).LengthSq();
