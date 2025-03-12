@@ -313,7 +313,7 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
                     preferredDir = -preferredDir; // swap movement direction to follow healer
             }
 
-            moveQuickly &= (actor.Position - master.Position).LengthSq() < 25; // don't move too quickly if healer can't catch up
+            moveQuickly &= (actor.Position - master.Position).LengthSq() < 25f; // don't move too quickly if healer can't catch up
 
             // non-healers should just stack with whatever closest healer is
             // before first cast, ignore master's movements
@@ -323,7 +323,7 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
 
         // note: other hints have to be 'later' than immediate (to make getting out of voidzones higher prio), but 'earlier' than stack-with-healer:
         // healer's position is often overlapped by new voidzones, if healer is moving slowly - in that case we still need to dodge in correct direction
-        var hintTime = WorldState.FutureTime(50);
+        var hintTime = WorldState.FutureTime(50d);
 
         // stay near border
         hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center, 16f), hintTime);
