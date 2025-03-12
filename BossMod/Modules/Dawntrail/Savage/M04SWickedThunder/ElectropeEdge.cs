@@ -22,7 +22,7 @@ abstract class ElectropeEdgeSidewise(BossModule module, AID aid) : Components.Si
 class ElectropeEdgeSidewiseSparkR(BossModule module) : ElectropeEdgeSidewise(module, AID.ElectropeEdgeSidewiseSparkR);
 class ElectropeEdgeSidewiseSparkL(BossModule module) : ElectropeEdgeSidewise(module, AID.ElectropeEdgeSidewiseSparkL);
 
-class ElectropeEdgeStar(BossModule module) : Components.UniformStackSpread(module, 6f, default, alwaysShowSpreads: true)
+class ElectropeEdgeStar(BossModule module) : Components.UniformStackSpread(module, 6f, 6f, alwaysShowSpreads: true)
 {
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
@@ -35,7 +35,7 @@ class ElectropeEdgeStar(BossModule module) : Components.UniformStackSpread(modul
                     var cage = Module.FindComponent<LightningCage>();
                     var targets = Raid.WithSlot(true, true, true);
                     targets = cage != null ? [.. targets.WhereSlot(i => cage.Order[i] == 2)] : [.. targets.WhereActor(p => p.Class.IsSupport())];
-                    AddStacks(targets.Actors(), status.ExpireAt.AddSeconds(1));
+                    AddStacks(targets.Actors(), status.ExpireAt.AddSeconds(1d));
                     break;
                 case 0x2F1:
                     AddSpreads(Raid.WithoutSlot(true, true, true), status.ExpireAt.AddSeconds(1d));
@@ -46,7 +46,7 @@ class ElectropeEdgeStar(BossModule module) : Components.UniformStackSpread(modul
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.FourStar or AID.EightStar)
+        if (spell.Action.ID is (uint)AID.FourStar or (uint)AID.EightStar)
         {
             Spreads.Clear();
             Stacks.Clear();
@@ -73,7 +73,7 @@ class LightningCage(BossModule module) : Components.GenericAOEs(module, ActionID
         (BitMask.Build(0, 3, 8, 12, 17, 18, 19, 20, 24, 28, 32, 35), 16,  1, 33,  4, 36),
     ];
 
-    private static readonly AOEShapeRect _cell = new(4, 4, 4);
+    private static readonly AOEShapeRect _cell = new(4f, 4f, 4f);
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -82,11 +82,10 @@ class LightningCage(BossModule module) : Components.GenericAOEs(module, ActionID
         var len = patternAOE.Length;
         var count = safeCells.Count;
         var aoes = new AOEInstance[len + count];
-        var index = 0;
         for (var i = 0; i < len; ++i)
-            aoes[index++] = new(_cell, CellCenter(patternAOE[i]), default, _activation);
+            aoes[i] = new(_cell, CellCenter(patternAOE[i]), default, _activation);
         for (var i = 0; i < count; ++i)
-            aoes[index++] = new(_cell, CellCenter(safeCells[i]), default, _activation, Colors.SafeFromAOE, false);
+            aoes[i + len] = new(_cell, CellCenter(safeCells[i]), default, _activation, Colors.SafeFromAOE, false);
         return aoes;
     }
 
