@@ -81,7 +81,7 @@ class P2DiamondDustHouseOfLight(BossModule module) : Components.GenericBaitAway(
 
             var len = party.Length;
             var max = len > 4 ? 4 : len;
-            for (var i = 0; i < len; ++i)
+            for (var i = 0; i < max; ++i)
             {
                 ref readonly var p = ref party[i];
                 CurrentBaits.Add(new(_source, p, _shape, _activation));
