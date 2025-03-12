@@ -68,7 +68,7 @@ public class FRU(WorldState ws, Actor primary) : BossModule(ws, primary, arena.C
         }
         if (_bossP4Oracle == null)
         {
-            if (StateMachine.ActivePhaseIndex == 4)
+            if (StateMachine.ActivePhaseIndex == 2)
             {
                 var b = Enemies((uint)OID.OracleOfDarknessP4);
                 _bossP4Oracle = b.Count != 0 ? b[0] : null;
@@ -76,7 +76,7 @@ public class FRU(WorldState ws, Actor primary) : BossModule(ws, primary, arena.C
         }
         if (_bossP5 == null)
         {
-            if (StateMachine.ActivePhaseIndex >= 4)
+            if (StateMachine.ActivePhaseIndex == 3)
             {
                 var b = Enemies((uint)OID.BossP5);
                 _bossP5 = b.Count != 0 ? b[0] : null;

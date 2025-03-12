@@ -9,7 +9,7 @@ class P2IcicleImpact(BossModule module) : Components.GenericAOEs(module, ActionI
 
     private static readonly AOEShapeCircle _shape = new(10f);
 
-    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(AOEs);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(AOEs)[NumCasts..];
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -275,7 +275,8 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
         // if oracle jumps directly to one of the initial safespots, both groups run opposite in one (arbitrary, CW) direction, and the one that ends up behind boss slides across - in that case we return zero destination
         // note: we assume that when this is called oracle is already at position
         var icicles = module.FindComponent<P2IcicleImpact>();
-        var oracle = module.Enemies((uint)OID.OraclesReflection).FirstOrDefault();
+        var oracles = module.Enemies((uint)OID.OraclesReflection);
+        var oracle = oracles.Count != 0 ? oracles[0] : null;
         if (icicles == null || icicles.AOEs.Count == 0 || oracle == null)
             return default;
 
@@ -292,7 +293,7 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var master = actor.Role != Role.Healer ? Stacks.MinBy(s => (s.Target.Position - actor.Position).LengthSq()).Target : null;
-        if (master != null && ((master.Position - actor.Position).LengthSq() > 100 || (master.Position - Arena.Center).LengthSq() < 196))
+        if (master != null && ((master.Position - actor.Position).LengthSq() > 100f || (master.Position - Arena.Center).LengthSq() < 196f))
             master = null; // our closest healer is too far away or too close to center, something is wrong (maybe kb didn't finish yet, or healer fucked up)
 
         // determine movement speed and direction
@@ -317,8 +318,7 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
             // non-healers should just stack with whatever closest healer is
             // before first cast, ignore master's movements
             var moveDir = NumCasts > 0 ? master.LastFrameMovement.Normalized() : default;
-            var capsule = ShapeDistance.Capsule(master.Position + 2f * moveDir, moveDir, 4f, 1.5f);
-            hints.AddForbiddenZone(p => -capsule(p), DateTime.MaxValue);
+            hints.AddForbiddenZone(ShapeDistance.InvertedCapsule(master.Position + 2f * moveDir, moveDir, 4f, 1.5f), DateTime.MaxValue);
         }
 
         // note: other hints have to be 'later' than immediate (to make getting out of voidzones higher prio), but 'earlier' than stack-with-healer:
