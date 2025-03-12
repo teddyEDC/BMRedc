@@ -191,7 +191,7 @@ class P2PartySynergyOpticalLaser(BossModule module) : Components.GenericAOEs(mod
         Arena.Actor(_source, Colors.Object, true);
         var pos = AssignedPosition(pcSlot);
         if (pos != default)
-            Arena.AddCircle(Module.Center + pos, 1f, Colors.Safe);
+            Arena.AddCircle(Arena.Center + pos, 1f, Colors.Safe);
     }
 
     private WDir AssignedPosition(int slot)
@@ -203,7 +203,7 @@ class P2PartySynergyOpticalLaser(BossModule module) : Components.GenericAOEs(mod
         if (ps.Order == 0 || ps.Group == 0 || _synergy.ActiveGlitch == P2PartySynergy.Glitch.Unknown)
             return new();
 
-        var eyeOffset = _source.Position - Module.Center;
+        var eyeOffset = _source.Position - Arena.Center;
         var toRelNorth = eyeOffset.Normalized();
         var order = _synergy.GetNorthSouthOrder(ps);
         var centerOffset = _synergy.ActiveGlitch == P2PartySynergy.Glitch.Remote && order is 2 or 3 ? 17.5f : 11;
@@ -263,7 +263,7 @@ class P2PartySynergyEfficientBladework : Components.GenericAOEs
     {
         var pos = AssignedPosition(pcSlot);
         if (pos != default)
-            Arena.AddCircle(Module.Center + pos, 1f, Colors.Safe);
+            Arena.AddCircle(Arena.Center + pos, 1f, Colors.Safe);
     }
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
@@ -332,7 +332,7 @@ class P2PartySynergyEfficientBladework : Components.GenericAOEs
             return new();
 
         // assumption: first source (F) is our relative north, G1 always goes to relative west, G2 goes to relative S/E depending on glitch
-        var relNorth = 1.4f * (_sources[0].Position - Module.Center);
+        var relNorth = 1.4f * (_sources[0].Position - Arena.Center);
         return _firstGroup[slot] ? relNorth.OrthoL() : _synergy.ActiveGlitch == P2PartySynergy.Glitch.Mid ? -relNorth : relNorth.OrthoR();
     }
 }

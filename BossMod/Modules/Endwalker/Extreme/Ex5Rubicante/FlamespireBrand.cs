@@ -62,7 +62,7 @@ class Flamerake(BossModule module) : Components.GenericAOEs(module)
             for (var i = 0; i < 4; ++i)
             {
                 var dir = i * 90f.Degrees() + _offset;
-                aoes[i] = new(_rest, WPos.ClampToGrid(Module.Center + offset * dir.ToDirection()), dir, _activation);
+                aoes[i] = new(_rest, WPos.ClampToGrid(Arena.Center + offset * dir.ToDirection()), dir, _activation);
             }
             return aoes;
         }

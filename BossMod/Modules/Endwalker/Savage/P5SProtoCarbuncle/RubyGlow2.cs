@@ -20,7 +20,7 @@ class RubyGlow2(BossModule module) : RubyGlowCommon(module, ActionID.MakeSpell(A
         var aoes = new AOEInstance[countSadj + len];
         var index = 0;
         if (magic != null)
-            aoes[index++] = new(ShapeHalf, Module.Center, Angle.FromDirection(QuadrantDir(QuadrantForPosition(magic.Position))));
+            aoes[index++] = new(ShapeHalf, Arena.Center, Angle.FromDirection(QuadrantDir(QuadrantForPosition(magic.Position))));
         for (var i = 0; i < len; ++i)
         {
             aoes[index++] = poison[i];

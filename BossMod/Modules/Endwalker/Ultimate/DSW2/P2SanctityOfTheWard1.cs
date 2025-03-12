@@ -207,7 +207,7 @@ class P2SanctityOfTheWard1Hints(BossModule module) : BossComponent(module)
         if (!_inited && _sever?.Source != null && _sever.Stacks.Count == 2 && _flares != null && _flares.ChargeAngle != default)
         {
             _inited = true;
-            _severStartDir = Angle.FromDirection(_sever.Source.Position - Module.Center);
+            _severStartDir = Angle.FromDirection(_sever.Source.Position - Arena.Center);
 
             var config = Service.Config.Get<DSW2Config>();
             _groupEast = config.P2SanctityGroups.BuildGroupMask(1, Raid);

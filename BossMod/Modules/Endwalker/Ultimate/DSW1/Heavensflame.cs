@@ -54,7 +54,7 @@ class HeavensflameKnockback(BossModule module) : Components.SimpleKnockbacks(mod
             Arena.AddCircle(hint, 1, Colors.Safe);
             //var dir = Vector3.Normalize(pos.Value - _knockbackSource.Position);
             //var adjPos = Arena.ClampToBounds(_knockbackSource.Position + 50 * dir);
-            //Arena.AddLine(Module.Center, adjPos, Colors.Safe);
+            //Arena.AddLine(Arena.Center, adjPos, Colors.Safe);
         }
 
         var partner = FindTetheredPartner(pcSlot);

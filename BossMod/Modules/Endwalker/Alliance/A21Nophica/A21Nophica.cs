@@ -12,7 +12,7 @@ class ArenaBounds(BossModule module) : Components.GenericAOEs(module)
         if (index == 0x39)
         {
             if (state == 0x02000200)
-                _aoe = new(donut, Module.Center, default, WorldState.FutureTime(5.8f));
+                _aoe = new(donut, Arena.Center, default, WorldState.FutureTime(5.8f));
             if (state is 0x00200010 or 0x00020001)
             {
                 Arena.Bounds = A21Nophica.SmallerBounds;

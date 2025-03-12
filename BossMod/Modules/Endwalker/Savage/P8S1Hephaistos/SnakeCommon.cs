@@ -76,7 +76,7 @@ abstract class PetrifactionCommon(BossModule module) : Components.GenericGaze(mo
     {
         if (spell.Action.ID == (uint)AID.Petrifaction)
         {
-            var dir = Angle.FromDirection(caster.Position - Module.Center);
+            var dir = Angle.FromDirection(caster.Position - Arena.Center);
             var priority = (int)MathF.Round((180f - dir.Deg) / 45f) % 8;
             ActiveGorgons.Add((caster, Module.CastFinishAt(spell, 1.1f), priority));
         }

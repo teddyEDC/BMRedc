@@ -43,7 +43,7 @@ class HexingStaves(BossModule module) : Components.GenericAOEs(module)
         if (count == 0 || _aoe.Casters.Count != 0)
             return [];
         var aoes = new AOEInstance[count];
-        var risky = _aoes[9].Activation.AddSeconds(-5d) < WorldState.CurrentTime;
+        var risky = _aoes[0].Activation.AddSeconds(-5d) < WorldState.CurrentTime;
         for (var i = 0; i < count; ++i)
         {
             var aoe = _aoes[i];

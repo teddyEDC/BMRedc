@@ -43,7 +43,7 @@ class P5Sigma(BossModule module) : BossComponent(module)
         }
 
         foreach (var safeSpot in SafeSpotOffsets(pcSlot))
-            Arena.AddCircle(Module.Center + safeSpot, 1, Colors.Safe);
+            Arena.AddCircle(Arena.Center + safeSpot, 1, Colors.Safe);
     }
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
@@ -279,7 +279,7 @@ class P5SigmaTowers(BossModule module) : Components.GenericTowers(module)
 
         foreach (ref var tower in Towers.AsSpan())
         {
-            var offset = tower.Position - Module.Center;
+            var offset = tower.Position - Arena.Center;
             var left = relNorth.OrthoL().Dot(offset) > 0;
             if (Towers.Count == 5)
             {

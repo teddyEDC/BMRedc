@@ -139,7 +139,7 @@ class Entrapment : Components.CastCounter
 
     private void AddTrap(ref BitMask mask, WPos position, bool exploded)
     {
-        var index = IndexFromOffset(position - Module.Center);
+        var index = IndexFromOffset(position - Arena.Center);
         //ReportError($"Trap @ {position} (dist={(position - Raid.Player()!.Position).Length()}) = {index}");
         mask[index] = true;
         _uncovered[index] = true;
@@ -167,7 +167,7 @@ class Entrapment : Components.CastCounter
         mask &= ~_exploded; // don't draw already exploded traps
         foreach (var index in mask.SetBits())
         {
-            var pos = Module.Center + CellOffset(index);
+            var pos = Arena.Center + CellOffset(index);
             if (background)
                 Arena.ZoneCircle(pos, 2.5f, safe ? Colors.SafeFromAOE : Colors.AOE);
             else

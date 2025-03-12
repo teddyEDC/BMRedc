@@ -49,7 +49,7 @@ class P3Apocalypse(BossModule module) : Components.GenericAOEs(module)
     {
         if (actor.OID == (uint)OID.ApocalypseLight)
         {
-            if (actor.Position.AlmostEqual(Module.Center, 1))
+            if (actor.Position.AlmostEqual(Arena.Center, 1))
             {
                 if (Starting == null)
                     Starting = actor.Rotation;
@@ -287,7 +287,7 @@ class P3ApocalypseDarkEruption(BossModule module) : Components.SpreadFromIcon(mo
         {
             Arena.AddCircle(Arena.Center + safeSpot, 1, Colors.Safe);
             if (refSafeSpot != safeSpot)
-                Arena.AddCircle(Module.Center + refSafeSpot, 1, Colors.Danger);
+                Arena.AddCircle(Arena.Center + refSafeSpot, 1, Colors.Danger);
         }
         else if (refSafeSpot != default)
         {
@@ -469,7 +469,7 @@ class P3ApocalypseAIWater3(BossModule module) : BossComponent(module)
         if (_water == null || _knockback?.Caster == null)
             return;
 
-        var toCenter = Module.Center - _knockback.Caster.Position;
+        var toCenter = Arena.Center - _knockback.Caster.Position;
         if (toCenter.LengthSq() < 1)
             return; // did not jump yet, wait...
 

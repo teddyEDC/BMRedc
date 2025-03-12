@@ -24,13 +24,13 @@ class Border(BossModule module) : BossComponent(module)
     {
         if (!_threePlatforms)
         {
-            Arena.AddCircle(Module.Center, LargePlatformRadius, Colors.Border);
+            Arena.AddCircle(Arena.Center, LargePlatformRadius, Colors.Border);
         }
         else
         {
-            var cs = Module.Center + PlatformSOffset;
-            var ce = Module.Center + PlatformEOffset;
-            var cw = Module.Center + PlatformWOffset;
+            var cs = Arena.Center + PlatformSOffset;
+            var ce = Arena.Center + PlatformEOffset;
+            var cw = Arena.Center + PlatformWOffset;
             Arena.AddCircle(cs, SmallPlatformRadius, Colors.Border);
             Arena.AddCircle(ce, SmallPlatformRadius, Colors.Border);
             Arena.AddCircle(cw, SmallPlatformRadius, Colors.Border);
@@ -48,9 +48,9 @@ class Border(BossModule module) : BossComponent(module)
             }
             if (_bridgeCenter)
             {
-                DrawBridge(cs, Module.Center, true);
-                DrawBridge(ce, Module.Center, true);
-                DrawBridge(cw, Module.Center, true);
+                DrawBridge(cs, Arena.Center, true);
+                DrawBridge(ce, Arena.Center, true);
+                DrawBridge(cw, Arena.Center, true);
             }
         }
     }
