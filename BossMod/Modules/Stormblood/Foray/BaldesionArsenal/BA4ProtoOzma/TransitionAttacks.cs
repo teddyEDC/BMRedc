@@ -8,21 +8,19 @@ class TransitionAttacks(BossModule module) : Components.GenericAOEs(module)
     public readonly List<AOEInstance> AOEs = new(3);
     private static readonly Angle[] angles = [-120.003f.Degrees(), -0.003f.Degrees(), 119.997f.Degrees()];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = AOEs.Count;
         if (count == 0)
             return [];
-        var firstactivation = AOEs[0].Activation;
-        var aoes = new AOEInstance[count];
+
+        var deadline = AOEs[0].Activation.AddSeconds(1d);
+
         var index = 0;
-        for (var i = 0; i < count; ++i)
-        {
-            var aoe = AOEs[i];
-            if ((aoe.Activation - firstactivation).TotalSeconds < 1d)
-                aoes[index++] = aoe;
-        }
-        return aoes[..index];
+        while (index < count && AOEs[index].Activation < deadline)
+            ++index;
+
+        return CollectionsMarshal.AsSpan(AOEs)[..index];
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)

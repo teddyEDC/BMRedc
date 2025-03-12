@@ -60,7 +60,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     private bool outOfBounds;
     private bool defaultArena;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -222,7 +222,7 @@ class VacuumWave(BossModule module) : Components.Knockback(module, ignoreImmunes
         new(new(-24.543f, -281.453f), new(-33.053f, -278.523f)), // ENVC 0A
     ];
 
-    public override IEnumerable<Source> Sources(int slot, Actor actor) => Utils.ZeroOrOne(_source);
+    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _source);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -242,7 +242,7 @@ class VacuumWaveHint(BossModule module) : Components.GenericAOEs(module)
     private readonly ArenaChanges _arena = module.FindComponent<ArenaChanges>()!;
     private AOEInstance? _aoe;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

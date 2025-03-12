@@ -96,20 +96,17 @@ class CuttingWind(BossModule module) : Components.GenericAOEs(module)
     private readonly List<AOEInstance> _aoes = new(12);
     private static readonly AOEShapeRect rect = new(36f, 4f, 36f);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = _aoes.Count;
         if (count == 0)
             return [];
         var max = count > 4 ? 4 : count;
-        var aoes = new AOEInstance[max];
-        for (var i = 0; i < max; ++i)
-            aoes[i] = _aoes[i];
-        return aoes;
+        return CollectionsMarshal.AsSpan(_aoes)[..max];
     }
 
     private static readonly double[] delays = [8.6d, 16.7d, 24.7d];
-    private static readonly Angle[] angles = [89.999f.Degrees(), 44.998f.Degrees(), 134.999f.Degrees(), -0.003f.Degrees()];
+    private static readonly Angle[] angles = [Angle.AnglesCardinals[3], Angle.AnglesIntercardinals[1], Angle.AnglesIntercardinals[2], Angle.AnglesCardinals[1]];
 
     public override void OnActorCreated(Actor actor)
     {

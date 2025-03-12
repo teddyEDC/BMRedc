@@ -64,7 +64,7 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
     public static void DrawKnockback(Actor actor, WPos adjPos, MiniArena arena) => DrawKnockback(actor.Position, adjPos, actor.Rotation, arena);
 
     // note: if implementation returns multiple sources, it is assumed they are applied sequentially (so they should be pre-sorted in activation order)
-    public abstract IEnumerable<Source> Sources(int slot, Actor actor);
+    public abstract ReadOnlySpan<Source> ActiveSources(int slot, Actor actor);
 
     // called to determine whether we need to show hint
     public virtual bool DestinationUnsafe(int slot, Actor actor, WPos pos) => !StopAtWall && !Module.InBounds(pos);
@@ -130,7 +130,7 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
         var movements = new List<(WPos, WPos)>();
         var from = actor.Position;
         var count = 0;
-        foreach (var s in Sources(slot, actor))
+        foreach (var s in ActiveSources(slot, actor))
         {
             if (IsImmune(slot, s.Activation))
                 continue; // this source won't affect player due to immunity
@@ -209,7 +209,7 @@ public class KnockbackFromCastTarget(BossModule module, ActionID aid, float dist
     public readonly bool MinDistanceBetweenHitboxes = minDistanceBetweenHitboxes;
     public readonly List<Actor> Casters = [];
 
-    public override IEnumerable<Source> Sources(int slot, Actor actor)
+    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
     {
         var count = Casters.Count;
         if (count == 0)

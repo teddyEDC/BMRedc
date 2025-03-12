@@ -14,7 +14,7 @@ class LancingBlowAOE(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(10f);
     public readonly List<AOEInstance> AOEs = new(6);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => AOEs;
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(AOEs);
 
     public override void OnActorCreated(Actor actor)
     {

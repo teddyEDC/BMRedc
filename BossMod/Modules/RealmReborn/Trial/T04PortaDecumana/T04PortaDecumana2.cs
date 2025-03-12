@@ -72,39 +72,53 @@ class AethericBoom(BossModule module) : Components.KnockbackFromCastTarget(modul
 
 class Aetheroplasm(BossModule module) : BossComponent(module)
 {
-    private readonly List<Actor> _orbs = module.Enemies(OID.Aetheroplasm);
-
-    public IEnumerable<Actor> ActiveOrbs => _orbs.Where(x => !x.IsDead && !x.Rotation.AlmostEqual(default, Angle.DegToRad));
+    public static List<Actor> GetOrbs(BossModule module)
+    {
+        var orbs = module.Enemies((uint)OID.Aetheroplasm);
+        var count = orbs.Count;
+        if (count == 0)
+            return [];
+        // orbs spawn with rotation 0°, checking for a different angle makes sure the AI doesn't run into the wall trying to catch them
+        // since orbs are outside of the arena until they start rotating
+        var filteredorbs = new List<Actor>(count);
+        for (var i = 0; i < count; ++i)
+        {
+            var z = orbs[i];
+            if (!z.IsDead && !z.Rotation.AlmostEqual(default, Angle.DegToRad))
+                filteredorbs.Add(z);
+        }
+        return filteredorbs;
+    }
 
     public override void AddGlobalHints(GlobalHints hints)
     {
-        if (ActiveOrbs.Any())
+        if (GetOrbs(Module).Count != 0)
             hints.Add("Soak the orbs!");
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        // orbs spawn with rotation 0°, checking for a different angle makes sure the AI doesn't run into the wall trying to catch them
-        // since orbs are outside of the arena until they start rotating
-        Actor[] orbz = [.. ActiveOrbs];
-        var len = orbz.Length;
-        if (len != 0)
+        var orbs = GetOrbs(Module);
+        var count = orbs.Count;
+        if (count != 0)
         {
-            var orbs = new Func<WPos, float>[len];
+            var orbz = new Func<WPos, float>[count];
             hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Sprint), actor, ActionQueue.Priority.High);
-            for (var i = 0; i < len; ++i)
+            for (var i = 0; i < count; ++i)
             {
-                var o = orbz[i];
-                orbs[i] = ShapeDistance.InvertedRect(o.Position + 0.5f * o.Rotation.ToDirection(), new WDir(0f, 1f), 0.5f, 0.5f, 0.5f);
+                var o = orbs[i];
+                orbz[i] = ShapeDistance.InvertedRect(o.Position + 0.5f * o.Rotation.ToDirection(), new WDir(0f, 1f), 0.5f, 0.5f, 0.5f);
             }
-            hints.AddForbiddenZone(ShapeDistance.Intersection(orbs), DateTime.MaxValue);
+            hints.AddForbiddenZone(ShapeDistance.Intersection(orbz), DateTime.MaxValue);
         }
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        foreach (var orb in ActiveOrbs)
-            Arena.AddCircle(orb.Position, 1f, Colors.Safe);
+        var orbs = GetOrbs(Module);
+        var count = orbs.Count;
+        for (var i = 0; i < count; ++i)
+            Arena.AddCircle(orbs[i].Position, 1f, Colors.Safe);
     }
 }
 
