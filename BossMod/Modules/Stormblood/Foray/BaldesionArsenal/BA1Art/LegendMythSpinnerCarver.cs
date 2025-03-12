@@ -7,7 +7,7 @@ class LegendMythSpinnerCarver(BossModule module) : Components.GenericAOEs(module
     public readonly List<AOEInstance> AOEs = new(5);
     private bool mythcall;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = AOEs.Count;
         if (count == 0)

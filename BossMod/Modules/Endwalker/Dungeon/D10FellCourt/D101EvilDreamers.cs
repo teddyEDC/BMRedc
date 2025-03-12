@@ -32,7 +32,7 @@ class UniteMare3(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(12f);
     private readonly List<AOEInstance> _aoes = new(7);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var dreamers = Module.Enemies((uint)OID.EvilDreamer3);
         var count = dreamers.Count;
@@ -41,7 +41,7 @@ class UniteMare3(BossModule module) : Components.GenericAOEs(module)
         for (var i = 0; i < count; ++i)
         {
             if (dreamers[i].IsDead)
-                return _aoes;
+                return CollectionsMarshal.AsSpan(_aoes);
         }
         return [];
     }

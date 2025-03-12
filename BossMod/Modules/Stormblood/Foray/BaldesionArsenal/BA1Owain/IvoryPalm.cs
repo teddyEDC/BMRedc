@@ -4,7 +4,7 @@ class IvoryPalm(BossModule module) : Components.GenericGaze(module, inverted: tr
 {
     public readonly List<(Actor target, Actor source)> Tethers = new(2);
 
-    public override IEnumerable<Eye> ActiveEyes(int slot, Actor actor)
+    public override ReadOnlySpan<Eye> ActiveEyes(int slot, Actor actor)
     {
         var count = Tethers.Count;
         if (count == 0)
@@ -15,7 +15,7 @@ class IvoryPalm(BossModule module) : Components.GenericGaze(module, inverted: tr
             var tether = Tethers[i];
             if (tether.target == actor && !tether.source.IsDead) // apparently tethers don't get removed immediately upon death
             {
-                return [new(tether.source.Position)];
+                return new Eye[1] { new(tether.source.Position) };
             }
         }
         return [];
@@ -23,9 +23,12 @@ class IvoryPalm(BossModule module) : Components.GenericGaze(module, inverted: tr
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        foreach (var eye in ActiveEyes(slot, actor))
+        var eyes = ActiveEyes(slot, actor);
+        var len = eyes.Length;
+        for (var i = 0; i < len; ++i)
         {
-            if (HitByEye(actor, eye) != Inverted)
+            ref readonly var eye = ref eyes[i];
+            if (HitByEye(ref actor, eye) != Inverted)
             {
                 hints.Add("Face the hand to petrify it!");
                 break;

@@ -5,7 +5,7 @@ class BrightDarkAurora(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeRect rect = new(30f, 50f);
     public readonly List<AOEInstance> _aoes = new(2);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(_aoes);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -41,7 +41,7 @@ class AstralUmbralRays(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circleSmall = new(8f), circleBig = new(16f);
     public readonly List<AOEInstance> _aoes = new(9);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => _aoes;
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(_aoes);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

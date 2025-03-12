@@ -5,7 +5,7 @@ class BrightDarkAuroraExplosion(BossModule module) : Components.GenericAOEs(modu
     private static readonly AOEShapeCircle circle = new(8f);
     private readonly List<(Actor source, ulong target)> tetherByActor = new(8);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = tetherByActor.Count;
         if (count == 0)

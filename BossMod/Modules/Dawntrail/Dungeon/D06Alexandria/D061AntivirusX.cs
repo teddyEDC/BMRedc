@@ -39,7 +39,7 @@ class ImmuneResponseArenaChange(BossModule module) : Components.GenericAOEs(modu
     private static readonly AOEShapeCustom rect = new([new Rectangle(D061AntivirusX.ArenaCenter, 23f, 18f)], [new Rectangle(D061AntivirusX.ArenaCenter, 20f, 15f)]);
     private AOEInstance? _aoe;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.ImmuneResponseVisualSmall && Arena.Bounds == D061AntivirusX.StartingBounds)
@@ -64,7 +64,7 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCone coneBig = new(40f, 120f.Degrees());
     private readonly List<AOEInstance> _aoes = new(5);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = _aoes.Count;
         if (count == 0)

@@ -4,7 +4,7 @@ class Ozmaspheres(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCapsule capsule = new(6, 3);
 
-    private static List<Actor> Orbs(BossModule module)
+    private static List<Actor> GetOrbs(BossModule module)
     {
         var orbs = module.Enemies((uint)OID.Ozmasphere);
         var count = orbs.Count;
@@ -20,9 +20,9 @@ class Ozmaspheres(BossModule module) : Components.GenericAOEs(module)
         return orbz;
     }
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        var orbs = Orbs(Module);
+        var orbs = GetOrbs(Module);
         var count = orbs.Count;
         if (count == 0 || actor.Role == Role.Tank)
             return [];
@@ -37,7 +37,7 @@ class Ozmaspheres(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        var orbs = Orbs(Module);
+        var orbs = GetOrbs(Module);
         if (orbs.Count != 0)
         {
             if (actor.Role == Role.Tank)
@@ -49,7 +49,7 @@ class Ozmaspheres(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var orbs = Orbs(Module);
+        var orbs = GetOrbs(Module);
         var count = orbs.Count;
         if (count != 0)
         {
@@ -70,7 +70,7 @@ class Ozmaspheres(BossModule module) : Components.GenericAOEs(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        var orbs = Orbs(Module);
+        var orbs = GetOrbs(Module);
         var count = orbs.Count;
         if (count == 0)
             return;

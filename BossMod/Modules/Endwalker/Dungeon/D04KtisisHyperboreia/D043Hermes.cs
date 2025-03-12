@@ -55,7 +55,7 @@ class TrismegistosArenaChange(BossModule module) : Components.GenericAOEs(module
     private static readonly AOEShapeDonut donut = new(20f, 22f);
     private AOEInstance? _aoe;
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.Trismegistos && Arena.Bounds == D043Hermes.StartingBounds)
@@ -101,11 +101,11 @@ class TrueAeroIV3(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 
 class CosmicKiss(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.CosmicKiss), 10f);
 
-class TrueAeroIVLOS(BossModule module) : Components.CastLineOfSightAOE(module, ActionID.MakeSpell(AID.TrueAeroIVLOS), 50, false, true)
+class TrueAeroIVLOS(BossModule module) : Components.CastLineOfSightAOE(module, ActionID.MakeSpell(AID.TrueAeroIVLOS), 50f, false, true)
 {
     private readonly CosmicKiss _aoe = module.FindComponent<CosmicKiss>()!;
 
-    public override IEnumerable<Actor> BlockerActors()
+    public override ReadOnlySpan<Actor> BlockerActors()
     {
         var meteors = Module.Enemies((uint)OID.Meteor);
         var count = meteors.Count;
@@ -116,7 +116,7 @@ class TrueAeroIVLOS(BossModule module) : Components.CastLineOfSightAOE(module, A
                 var m = meteors[i];
                 if (m.ModelState.AnimState2 != 1)
                 {
-                    return [m];
+                    return new Actor[1] { m };
                 }
             }
             return [];

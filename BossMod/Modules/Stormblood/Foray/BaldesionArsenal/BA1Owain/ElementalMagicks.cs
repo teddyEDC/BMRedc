@@ -5,7 +5,7 @@ class ElementalMagicks(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCircle circle = new(13f);
     public readonly List<AOEInstance> AOEs = new(5);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => AOEs;
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(AOEs);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

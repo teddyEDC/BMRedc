@@ -1,5 +1,5 @@
 ﻿using ImGuiNET;
-
+using System.Runtime.CompilerServices;
 namespace BossMod;
 
 // note on coordinate systems:
@@ -103,14 +103,26 @@ public sealed class MiniArena(WPos center, ArenaBounds bounds)
     // this is useful for drawing on margins (TODO better api)
     public Vector2 RotatedCoords(Vector2 coords)
     {
-        var x = coords.X * _cameraCosAzimuth - coords.Y * _cameraSinAzimuth;
-        var y = coords.Y * _cameraCosAzimuth + coords.X * _cameraSinAzimuth;
+        var cx = coords.X;
+        var cy = coords.Y;
+        var x = cx * _cameraCosAzimuth - cy * _cameraSinAzimuth;
+        var y = cy * _cameraCosAzimuth + cx * _cameraSinAzimuth;
         return new(x, y);
     }
 
     private Vector2 WorldOffsetToScreenOffset(WDir worldOffset)
     {
-        return ScreenHalfSize * RotatedCoords(worldOffset.ToVec2()) / _bounds.Radius;
+        return ScreenHalfSize * RotatedCoords(new(worldOffset.X, worldOffset.Z)) / _bounds.Radius;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector2 TransformCoords(WDir worldOffset, float screenHalfSize, float cosAzimuth, float sinAzimuth, float invRadius)
+    {
+        var x0 = worldOffset.X;
+        var z0 = worldOffset.Z;
+        var x = x0 * cosAzimuth - z0 * sinAzimuth;
+        var z = z0 * cosAzimuth + x0 * sinAzimuth;
+        return screenHalfSize * new Vector2(x, z) * invRadius;
     }
 
     // unclipped primitive rendering that accept world-space positions; thin convenience wrappers around drawlist api
@@ -295,12 +307,25 @@ public sealed class MiniArena(WPos center, ArenaBounds bounds)
         var drawlist = ImGui.GetWindowDrawList();
         var restoreFlags = drawlist.Flags;
         drawlist.Flags &= ~ImDrawListFlags.AntiAliasedFill;
+
         var count = triangulation.Count;
+        var col = color != 0 ? color : Colors.AOE;
+        var center = ScreenCenter;
+
+        var cosAzimuth = _cameraCosAzimuth;
+        var sinAzimuth = _cameraSinAzimuth;
+        var screenHalfSize = ScreenHalfSize;
+        var invRadius = 1f / _bounds.Radius;
+
         for (var i = 0; i < count; ++i)
         {
             var tri = triangulation[i];
-            drawlist.AddTriangleFilled(ScreenCenter + WorldOffsetToScreenOffset(tri.A), ScreenCenter + WorldOffsetToScreenOffset(tri.B), ScreenCenter + WorldOffsetToScreenOffset(tri.C), color != 0 ? color : Colors.AOE);
+            var a = TransformCoords(tri.A, screenHalfSize, cosAzimuth, sinAzimuth, invRadius);
+            var b = TransformCoords(tri.B, screenHalfSize, cosAzimuth, sinAzimuth, invRadius);
+            var c = TransformCoords(tri.C, screenHalfSize, cosAzimuth, sinAzimuth, invRadius);
+            drawlist.AddTriangleFilled(center + a, center + b, center + c, col);
         }
+
         drawlist.Flags = restoreFlags;
     }
 
@@ -331,8 +356,9 @@ public sealed class MiniArena(WPos center, ArenaBounds bounds)
         var triangulation = _triCache[hash];
         if (triangulation == null)
         {
-            var adjustedContour = new WDir[contour.Length];
-            for (var i = 0; i < contour.Length; ++i)
+            var len = contour.Length;
+            var adjustedContour = new WDir[len];
+            for (var i = 0; i < len; ++i)
             {
                 adjustedContour[i] = contour[i] - Center;
             }

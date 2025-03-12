@@ -240,7 +240,7 @@ public sealed class ActionDefinitions : IDisposable
             RegisterBozja(i);
         for (var i = PomanderID.Safety; i < PomanderID.Count; ++i)
             RegisterDeepDungeon(new(ActionType.Pomander, (uint)i));
-        for (var i = 1u; i <= 3; i++)
+        for (var i = 1u; i <= 3; ++i)
             RegisterDeepDungeon(new(ActionType.Magicite, i));
 
         foreach (var act in typeof(EurekaActionID).GetEnumValues())

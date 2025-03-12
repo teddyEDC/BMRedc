@@ -73,7 +73,7 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeRect rect = new(40f, 10f);
     private static readonly WDir offset = new(0f, 20f);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = AOEs.Count;
         if (count == 0)
@@ -132,7 +132,7 @@ class Shatter(BossModule module) : Components.GenericAOEs(module)
     private readonly List<AOEInstance> _aoes = new(2);
     private static readonly AOEShapeRect rectCenter = new(40f, 10f), rectSides = new(42f, 11f, 4f);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = _aoes.Count;
         if (count == 0)

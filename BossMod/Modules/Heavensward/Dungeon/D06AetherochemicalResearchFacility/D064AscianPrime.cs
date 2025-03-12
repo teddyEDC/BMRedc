@@ -136,19 +136,19 @@ class Stars(BossModule module) : Components.GenericAOEs(module)
     private static readonly WPos _frozenStarShortTether = new(230f, 86f), _frozenStarLongTether = new(230f, 92f);
     private static readonly WPos _donut = new(230f, 79f), _circle1 = new(241f, 79f), _circle2 = new(219f, 79f);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         var count = _aoes.Count;
         if (count == 0)
             return [];
-        List<AOEInstance> aoes = new(count);
-        for (var i = 0; i < count; ++i)
-        {
-            var aoe = _aoes[i];
-            if ((aoe.Activation - _aoes[0].Activation).TotalSeconds <= 1d)
-                aoes.Add(aoe);
-        }
-        return aoes;
+
+        var deadline = _aoes[0].Activation.AddSeconds(1d);
+
+        var index = 0;
+        while (index < count && _aoes[index].Activation < deadline)
+            ++index;
+
+        return CollectionsMarshal.AsSpan(_aoes)[..index];
     }
 
     public override void OnActorCreated(Actor actor)
