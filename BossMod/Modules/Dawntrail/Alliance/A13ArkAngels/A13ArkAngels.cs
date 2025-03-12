@@ -11,9 +11,9 @@ class Raiton(BossModule module) : Components.RaidwideCast(module, ActionID.MakeS
 class Utsusemi(BossModule module) : Components.StretchTetherSingle(module, (uint)TetherID.Utsusemi, 10, needToKite: true);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, PrimaryActorOID = (uint)OID.BossGK, Contributors = "The Combat Reborn Team (Malediktus, LTS)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1015, NameID = 13640, SortOrder = 7, PlanLevel = 100)]
-public class A13ArkAngels(WorldState ws, Actor primary) : BossModule(ws, primary, new(865, -820), new ArenaBoundsCircle(34.5f))
+public class A13ArkAngels(WorldState ws, Actor primary) : BossModule(ws, primary, new(865f, -820f), new ArenaBoundsCircle(34.5f))
 {
-    public static readonly ArenaBoundsCircle DefaultBounds = new(25);
+    public static readonly ArenaBoundsCircle DefaultBounds = new(25f);
     public static readonly uint[] Bosses = [(uint)OID.BossHM, (uint)OID.BossEV, (uint)OID.BossTT, (uint)OID.BossMR, (uint)OID.BossGK];
 
     private Actor? _bossHM;

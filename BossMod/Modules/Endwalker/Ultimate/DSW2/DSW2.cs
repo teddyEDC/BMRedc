@@ -55,17 +55,43 @@ public class DSW2(WorldState ws, Actor primary) : BossModule(ws, primary, new(10
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        ArenaFeatures ??= StateMachine.ActivePhaseIndex == 0 ? Enemies(OID.ArenaFeatures).FirstOrDefault() : null;
-        _bossP3 ??= StateMachine.ActivePhaseIndex == 1 ? Enemies(OID.BossP3).FirstOrDefault() : null;
-        _leftEyeP4 ??= StateMachine.ActivePhaseIndex == 2 ? Enemies(OID.LeftEye).FirstOrDefault() : null;
-        _rightEyeP4 ??= StateMachine.ActivePhaseIndex == 2 ? Enemies(OID.RightEye).FirstOrDefault() : null;
-        _nidhoggP4 ??= StateMachine.ActivePhaseIndex == 2 ? Enemies(OID.NidhoggP4).FirstOrDefault() : null;
-        _serCharibert ??= StateMachine.ActivePhaseIndex == 3 ? Enemies(OID.SerCharibert).FirstOrDefault() : null;
-        _spear ??= StateMachine.ActivePhaseIndex == 3 ? Enemies(OID.SpearOfTheFury).FirstOrDefault() : null;
-        _bossP5 ??= StateMachine.ActivePhaseIndex == 4 ? Enemies(OID.BossP5).FirstOrDefault() : null;
-        _nidhoggP6 ??= StateMachine.ActivePhaseIndex == 5 ? Enemies(OID.NidhoggP6).FirstOrDefault() : null;
-        _hraesvelgrP6 ??= StateMachine.ActivePhaseIndex == 5 ? Enemies(OID.HraesvelgrP6).FirstOrDefault() : null;
-        _bossP7 ??= StateMachine.ActivePhaseIndex == 6 ? Enemies(OID.DragonKingThordan).FirstOrDefault() : null;
+        var enemyMappings = new (int phaseIndex, uint oid, Actor? field)[]
+        {
+            (0, (uint)OID.ArenaFeatures, ArenaFeatures),
+            (1, (uint)OID.BossP3, _bossP3),
+            (2, (uint)OID.LeftEye, _leftEyeP4),
+            (2, (uint)OID.RightEye, _rightEyeP4),
+            (2, (uint)OID.NidhoggP4, _nidhoggP4),
+            (3, (uint)OID.SerCharibert, _serCharibert),
+            (3, (uint)OID.SpearOfTheFury, _spear),
+            (4, (uint)OID.BossP5, _bossP5),
+            (5, (uint)OID.NidhoggP6, _nidhoggP6),
+            (5, (uint)OID.HraesvelgrP6, _hraesvelgrP6),
+            (6, (uint)OID.DragonKingThordan, _bossP7),
+        };
+
+        for (var i = 0; i < 11; ++i)
+        {
+            var (phaseIndex, oid, field) = enemyMappings[i];
+
+            if (field == null && StateMachine.ActivePhaseIndex == phaseIndex)
+            {
+                var enemies = Enemies(oid);
+                enemyMappings[i].field = enemies.Count != 0 ? enemies[0] : null;
+            }
+        }
+
+        ArenaFeatures = enemyMappings[0].field;
+        _bossP3 = enemyMappings[1].field;
+        _leftEyeP4 = enemyMappings[2].field;
+        _rightEyeP4 = enemyMappings[3].field;
+        _nidhoggP4 = enemyMappings[4].field;
+        _serCharibert = enemyMappings[5].field;
+        _spear = enemyMappings[6].field;
+        _bossP5 = enemyMappings[7].field;
+        _nidhoggP6 = enemyMappings[8].field;
+        _hraesvelgrP6 = enemyMappings[9].field;
+        _bossP7 = enemyMappings[10].field;
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
