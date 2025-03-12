@@ -28,7 +28,7 @@ abstract class LawOfTheTorch(BossModule module, AID aid) : Components.SimpleAOEs
 class LawOfTheTorch1(BossModule module) : LawOfTheTorch(module, AID.LawOfTheTorch1);
 class LawOfTheTorch2(BossModule module) : LawOfTheTorch(module, AID.LawOfTheTorch2);
 
-class SwiftsteelKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.SwiftsteelKB), 10f)
+class SwiftsteelKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.SwiftsteelKB), 10f)
 {
     private readonly Swiftsteel1 _aoe1 = module.FindComponent<Swiftsteel1>()!;
     private readonly Swiftsteel2 _aoe2 = module.FindComponent<Swiftsteel2>()!;
@@ -57,7 +57,7 @@ class SwiftsteelKB(BossModule module) : Components.KnockbackFromCastTarget(modul
 
 class Swiftsteel1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Swiftsteel1), 4f);
 class Swiftsteel2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Swiftsteel2), new AOEShapeDonut(8f, 20f));
-class Sparksteel1(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.Sparksteel1), GetVoidzones, 0.8f)
+class Sparksteel1(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.Sparksteel1), GetVoidzones, 0.8f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

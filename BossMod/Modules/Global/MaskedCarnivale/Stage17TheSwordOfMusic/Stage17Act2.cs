@@ -21,7 +21,7 @@ public enum AID : uint
 
 class GrandStrike(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GrandStrike), new AOEShapeRect(77.5f, 2f));
 class MagitekField(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.MagitekField));
-class MagitekRay(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.MagitekRay), GetVoidzones, 1.1f)
+class MagitekRay(BossModule module) : Components.VoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.MagitekRay), GetVoidzones, 1.1f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

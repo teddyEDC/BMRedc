@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.Savage.P10SPandaemonium;
 
-class Turrets(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.PealOfCondemnation), true, 1, stopAfterWall: true)
+class Turrets(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.PealOfCondemnation), true, 1, stopAfterWall: true)
 {
     private readonly Actor?[] _turrets = new Actor?[8]; // pairs in order of activation
     private DateTime _activation;
@@ -9,13 +9,13 @@ class Turrets(BossModule module) : Components.Knockback(module, ActionID.MakeSpe
     private const float _distance = 17;
     private static readonly AOEShapeRect _shape = new(50, 2.5f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         var turrets = ImminentTurretsWithTargets();
         var count = turrets.Count;
         if (count == 0)
             return [];
-        var sources = new List<Source>(count);
+        var sources = new List<Knockback>(count);
         for (var i = 0; i < count; ++i)
         {
             var t = turrets[i];

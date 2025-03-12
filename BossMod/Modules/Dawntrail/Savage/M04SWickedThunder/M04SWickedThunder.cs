@@ -6,11 +6,11 @@ class Soulshock(BossModule module) : Components.CastCounter(module, ActionID.Mak
 class Impact(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.Impact));
 class Cannonbolt(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.Cannonbolt));
 
-class CannonboltKB(BossModule module) : Components.Knockback(module, ignoreImmunes: true)
+class CannonboltKB(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true)
 {
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        return new Source[1] { new(Module.PrimaryActor.Position, 50f) };
+        return new Knockback[1] { new(Module.PrimaryActor.Position, 50f) };
     }
 }
 

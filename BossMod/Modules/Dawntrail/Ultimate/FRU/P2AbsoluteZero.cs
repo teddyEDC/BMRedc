@@ -2,13 +2,13 @@
 
 class P2AbsoluteZero(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.AbsoluteZeroAOE));
 
-class P2SwellingFrost(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.SwellingFrost), true)
+class P2SwellingFrost(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.SwellingFrost), true)
 {
     private readonly DateTime _activation = module.WorldState.FutureTime(3.2d);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        return new Source[1] { new(Arena.Center, 10f, _activation) };
+        return new Knockback[1] { new(Arena.Center, 10f, _activation) };
     }
 }
 
@@ -38,7 +38,7 @@ class P2HiemalStorm(BossModule module) : Components.SimpleAOEs(module, ActionID.
     }
 }
 
-class P2HiemalRay(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 4f, ActionID.MakeSpell(AID.HiemalRay), GetVoidzones, 0.7f)
+class P2HiemalRay(BossModule module) : Components.VoidzoneAtCastTarget(module, 4f, ActionID.MakeSpell(AID.HiemalRay), GetVoidzones, 0.7f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

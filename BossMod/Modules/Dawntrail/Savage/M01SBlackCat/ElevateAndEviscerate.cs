@@ -38,7 +38,7 @@ class ElevateAndEviscerateShockwave(BossModule module) : Components.GenericAOEs(
     }
 }
 
-class ElevateAndEviscerate(BossModule module) : Components.Knockback(module, ignoreImmunes: true, stopAfterWall: true)
+class ElevateAndEviscerate(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true, stopAfterWall: true)
 {
     private Actor? _nextTarget; // target selection icon appears before cast start
     public Actor? CurrentTarget; // for current mechanic
@@ -50,16 +50,16 @@ class ElevateAndEviscerate(BossModule module) : Components.Knockback(module, ign
     public override PlayerPriority CalcPriority(int pcSlot, Actor pc, int playerSlot, Actor player, ref uint customColor)
         => player == CurrentTarget ? PlayerPriority.Danger : PlayerPriority.Irrelevant;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (CurrentTarget != null && actor == CurrentTarget && CurrentKnockbackDistance > 0)
-            return new Source[] { new(Arena.Center, CurrentKnockbackDistance, CurrentDeadline, Direction: actor.Rotation, Kind: Kind.DirForward) };
+            return new Knockback[1] { new(Arena.Center, CurrentKnockbackDistance, CurrentDeadline, Direction: actor.Rotation, Kind: Kind.DirForward) };
         return [];
     }
 
     public override void Update()
     {
-        if (CurrentTarget != null && ActiveSources(0, CurrentTarget).Length != 0)
+        if (CurrentTarget != null && ActiveKnockbacks(0, CurrentTarget).Length != 0)
             Cache = CalculateMovements(0, CurrentTarget)[0].to;
         else if (CurrentTarget != null)
             Cache = CurrentTarget.Position;

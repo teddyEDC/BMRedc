@@ -15,7 +15,7 @@ class HiemalStormSpread(BossModule module) : Components.UniformStackSpread(modul
     }
 }
 
-class HiemalStormVoidzone(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class HiemalStormVoidzone(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {
@@ -38,14 +38,14 @@ class HiemalStormVoidzone(BossModule module) : Components.PersistentVoidzone(mod
 class SpiralPierce(BossModule module) : Components.BaitAwayTethers(module, new AOEShapeRect(50, 6), (uint)TetherID.SpiralPierce, ActionID.MakeSpell(AID.SpiralPierce));
 class DimensionalCollapse(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DimensionalCollapseAOE), 9f);
 
-class FaithUnmoving(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.FaithUnmoving), true)
+class FaithUnmoving(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.FaithUnmoving), true)
 {
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         var grinnauxs = Module.Enemies((uint)OID.SerGrinnaux);
         var grinnaux = grinnauxs.Count != 0 ? grinnauxs[0] : null;
         if (grinnaux != default)
-            return new Source[1] { new(grinnaux.Position, 16f) };
+            return new Knockback[1] { new(grinnaux.Position, 16f) };
         return [];
     }
 }

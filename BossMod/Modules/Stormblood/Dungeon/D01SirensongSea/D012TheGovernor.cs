@@ -29,13 +29,13 @@ public enum IconID : uint
     EnterNight = 22 // player
 }
 
-class EnterNightPull(BossModule module) : Components.Knockback(module)
+class EnterNightPull(BossModule module) : Components.GenericKnockback(module)
 {
     private (Actor, DateTime) target;
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (target.Item1 == actor)
-            return new Source[1] { new(Module.PrimaryActor.Position, 40f, target.Item2, default, default, Kind.TowardsOrigin) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 40f, target.Item2, default, default, Kind.TowardsOrigin) };
         return [];
     }
 

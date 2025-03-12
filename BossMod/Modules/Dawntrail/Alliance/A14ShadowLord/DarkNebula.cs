@@ -1,6 +1,6 @@
 namespace BossMod.Dawntrail.Alliance.A14ShadowLord;
 
-class DarkNebula(BossModule module) : Components.Knockback(module)
+class DarkNebula(BossModule module) : Components.GenericKnockback(module)
 {
     private const float Length = 4f;
     private const float HalfWidth = 1.75f;
@@ -16,13 +16,13 @@ class DarkNebula(BossModule module) : Components.Knockback(module)
         (pos => pos.AlmostEqual(new WPos(142f, 808f), 1), [1, 2], 135f.Degrees().ToDirection())  // -135°
     ];
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         var count = Casters.Count;
         if (count == 0)
             return [];
         var max = count > 2 ? 2 : count;
-        var sources = new Source[max];
+        var sources = new Knockback[max];
         for (var i = 0; i < max; ++i)
         {
             var caster = Casters[i];

@@ -109,7 +109,7 @@ class TotalWreck(BossModule module) : Components.SingleTargetCast(module, Action
 class AetherSprayWater(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AetherSprayWater));
 class AetherSprayFire(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AetherSprayFire), "Go into a bubble! (Raidwide)");
 
-class AetherSprayWaterKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.AetherSprayWater), 13f)
+class AetherSprayWaterKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AetherSprayWater), 13f)
 {
     private readonly QueerBubble _aoe = module.FindComponent<QueerBubble>()!;
     private static readonly Angle a60 = 60f.Degrees(), a10 = 10f.Degrees();

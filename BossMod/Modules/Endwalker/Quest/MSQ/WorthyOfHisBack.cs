@@ -260,7 +260,7 @@ class Enomotos(BossModule module) : Components.Exaflare(module, 6f, ActionID.Mak
 class Windage(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Windage), 5f);
 class AfflatusAzem(BossModule module) : Components.StandardChasingAOEs(module, new AOEShapeCircle(5f), ActionID.MakeSpell(AID.AfflatusAzemFirst), ActionID.MakeSpell(AID.AfflatusAzemChase), 5f, 2.1f, 5, true);
 class WindageSlow(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WindageSlow), 5f);
-class TrueHoly(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.TrueHoly), 20f)
+class TrueHoly(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.TrueHoly), 20f)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

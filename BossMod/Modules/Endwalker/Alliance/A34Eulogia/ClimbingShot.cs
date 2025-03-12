@@ -1,11 +1,11 @@
 namespace BossMod.Endwalker.Alliance.A34Eulogia;
 
-class ClimbingShot(BossModule module) : Components.Knockback(module)
+class ClimbingShot(BossModule module) : Components.GenericKnockback(module)
 {
     private readonly AsAboveSoBelow? _exaflare = module.FindComponent<AsAboveSoBelow>();
-    private Source? _knockback;
+    private Knockback? _knockback;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {

@@ -70,7 +70,7 @@ class MoogleThrust(BossModule module) : Components.SingleTargetCast(module, Acti
 class MementoMoogle(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MementoMoogle));
 class PomHolyBoss(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.PomHolyBoss));
 class ThousandKuponzeCharge(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.ThousandKuponzeCharge));
-class PomBog(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8f, ActionID.MakeSpell(AID.PomBog), GetVoidzones, 0.8f)
+class PomBog(BossModule module) : Components.VoidzoneAtCastTarget(module, 8f, ActionID.MakeSpell(AID.PomBog), GetVoidzones, 0.8f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

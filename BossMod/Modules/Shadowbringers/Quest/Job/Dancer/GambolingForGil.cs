@@ -18,15 +18,15 @@ public enum AID : uint
 
 class Foxshot(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.Foxshot), 2f);
 
-class FoxshotKB(BossModule module) : Components.Knockback(module, stopAtWall: true)
+class FoxshotKB(BossModule module) : Components.GenericKnockback(module, stopAtWall: true)
 {
     private Actor? _caster;
     private readonly Whirlwind _aoe = module.FindComponent<Whirlwind>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_caster is Actor c)
-            return new Source[1] { new(c.Position, 25f, Module.CastFinishAt(c.CastInfo)) };
+            return new Knockback[1] { new(c.Position, 25f, Module.CastFinishAt(c.CastInfo)) };
         return [];
     }
 
@@ -77,7 +77,7 @@ class FoxshotKB(BossModule module) : Components.Knockback(module, stopAtWall: tr
     }
 }
 
-class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class Whirlwind(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

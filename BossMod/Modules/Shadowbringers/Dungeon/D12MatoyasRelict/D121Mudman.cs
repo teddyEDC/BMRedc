@@ -47,7 +47,7 @@ public enum TetherID : uint
 
 class StoneAge(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.StoneAge));
 class HardRock(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.HardRock));
-class MudVoidzone(BossModule module) : Components.PersistentVoidzone(module, 5f, GetVoidzone)
+class MudVoidzone(BossModule module) : Components.Voidzone(module, 5f, GetVoidzone)
 {
     private static List<Actor> GetVoidzone(BossModule module) => module.Enemies((uint)OID.MudVoidzone);
 }

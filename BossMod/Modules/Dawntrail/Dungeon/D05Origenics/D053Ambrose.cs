@@ -68,13 +68,13 @@ class PsychicWaveArenaChange(BossModule module) : Components.GenericAOEs(module)
 class PsychicWave(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.PsychicWave));
 class Psychokinesis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Psychokinesis), new AOEShapeRect(70f, 6.5f));
 
-class ExtrasensoryExpulsion(BossModule module) : Components.Knockback(module, maxCasts: 1)
+class ExtrasensoryExpulsion(BossModule module) : Components.GenericKnockback(module, maxCasts: 1)
 {
-    public readonly List<Source> Sourcez = new(4);
+    public readonly List<Knockback> Sourcez = new(4);
     public static readonly AOEShapeRect RectNS = new(20f, 7.5f);
     public static readonly AOEShapeRect RectEW = new(15f, 10f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(Sourcez);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(Sourcez);
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {

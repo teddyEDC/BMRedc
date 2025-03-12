@@ -1,11 +1,11 @@
 namespace BossMod.Endwalker.Alliance.A33Oschon;
 
-class P1ClimbingShot(BossModule module) : Components.Knockback(module)
+class P1ClimbingShot(BossModule module) : Components.GenericKnockback(module)
 {
     private readonly P1Downhill? _downhill = module.FindComponent<P1Downhill>();
-    private Source? _knockback;
+    private Knockback? _knockback;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {

@@ -52,7 +52,7 @@ class MagitekRayL(BossModule module) : MagitekRay(module, AID.MagitekRayAOELeft)
 class HomingRay(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HomingRayAOE), 6f);
 class LaserFocus(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.LaserFocusAOE), 6f, 4, 4);
 
-class AethericBoom(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.AethericBoom), 30f, stopAtWall: true)
+class AethericBoom(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AethericBoom), 30f, stopAtWall: true)
 {
     public override void AddGlobalHints(GlobalHints hints)
     {

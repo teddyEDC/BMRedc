@@ -19,7 +19,7 @@ class EclipticMeteor(BossModule module) : Components.CastLineOfSightAOE(module, 
     }
 }
 class SelfDestruct(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SelfDestruct), 8.4f);
-class CharybdisAOE(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.CharybdisAOE), GetVoidzones, 0.1f)
+class CharybdisAOE(BossModule module) : Components.VoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.CharybdisAOE), GetVoidzones, 0.1f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

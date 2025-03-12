@@ -12,7 +12,7 @@ class MightySmite(BossModule module) : Components.SingleTargetCast(module, Actio
 class BitingWindBad(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BitingWindBad), 4f);
 
 class ShatteringSteel(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ShatteringSteel), "Get in bigger Whirlwind to dodge");
-class ViperPoisonPatterns(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.BitingWindBad), GetVoidzones, 0f)
+class ViperPoisonPatterns(BossModule module) : Components.VoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.BitingWindBad), GetVoidzones, 0f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

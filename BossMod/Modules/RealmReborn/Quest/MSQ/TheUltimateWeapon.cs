@@ -23,7 +23,7 @@ public enum AID : uint
     GripOfNight = 29337, // Boss->self, 6.0s cast, range 40 150-degree cone
 }
 
-class BurstFlare(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BurstFlare), 10f)
+class BurstFlare(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BurstFlare), 10f)
 {
     private readonly FireSphere _aoe = module.FindComponent<FireSphere>()!;
 
@@ -102,7 +102,7 @@ class ArenaChange(BossModule module) : Components.GenericAOEs(module)
 }
 
 class DarkThunder(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DarkThunder), 1f);
-class SeaOfPitch(BossModule module) : Components.PersistentVoidzone(module, 4f, GetVoidzones)
+class SeaOfPitch(BossModule module) : Components.Voidzone(module, 4f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

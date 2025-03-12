@@ -103,7 +103,7 @@ class VoidSlash : Components.SimpleAOEs
     }
 }
 
-class VacuumWave(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.VacuumWave), 5)
+class VacuumWave(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.VacuumWave), 5)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

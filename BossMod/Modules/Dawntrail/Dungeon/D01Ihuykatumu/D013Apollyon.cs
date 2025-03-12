@@ -51,7 +51,7 @@ public enum AID : uint
     BitingWind = 36761 // Helper->player, no cast, single-target
 }
 
-class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 4.5f, GetWhirlwind, 5f)
+class Whirlwind(BossModule module) : Components.Voidzone(module, 4.5f, GetWhirlwind, 5f)
 {
     private static List<Actor> GetWhirlwind(BossModule module) => module.Enemies((uint)OID.Whirlwind);
 }
@@ -63,7 +63,7 @@ class RazorZephyr(BossModule module) : Blades(module, AID.RazorZephyr);
 class BladesOfFamine(BossModule module) : Blades(module, AID.BladesOfFamine);
 
 class Levinsickle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Levinsickle), 4f);
-class LevinsickleSpark(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 4f, ActionID.MakeSpell(AID.LevinsickleSpark), GetVoidzones, 0.7f)
+class LevinsickleSpark(BossModule module) : Components.VoidzoneAtCastTarget(module, 4f, ActionID.MakeSpell(AID.LevinsickleSpark), GetVoidzones, 0.7f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

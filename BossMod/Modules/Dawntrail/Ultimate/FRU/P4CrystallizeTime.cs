@@ -283,19 +283,19 @@ class P4CrystallizeTimeDarkEruption(BossModule module) : Components.GenericBaitA
     }
 }
 
-class P4CrystallizeTimeDarkAero(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.CrystallizeTimeDarkAero)) // TODO: not sure whether it actually ignores immunes, if so need to warn about immunity
+class P4CrystallizeTimeDarkAero(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.CrystallizeTimeDarkAero)) // TODO: not sure whether it actually ignores immunes, if so need to warn about immunity
 {
     private readonly List<Actor> _sources = [];
     private DateTime _activation;
 
     private static readonly AOEShapeCircle _shape = new(15f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         var count = _sources.Count;
         if (count == 0)
             return [];
-        List<Source> sources = [];
+        List<Knockback> sources = [];
         for (var i = 0; i < count; ++i)
         {
             var s = _sources[i];
@@ -566,20 +566,20 @@ class P4CrystallizeTimeHints(BossModule module) : BossComponent(module)
     }
 }
 
-class P4CrystallizeTimeRewind(BossModule module) : Components.Knockback(module)
+class P4CrystallizeTimeRewind(BossModule module) : Components.GenericKnockback(module)
 {
     public bool RewindDone;
     public bool ReturnDone;
     private readonly P4CrystallizeTime? _ct = module.FindComponent<P4CrystallizeTime>();
     private readonly P4CrystallizeTimeTidalLight? _exalines = module.FindComponent<P4CrystallizeTimeTidalLight>();
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (!RewindDone && _ct != null && _exalines != null && _ct.Cleansed[slot])
         {
             var exas = _exalines.StartingPositions;
             var count = exas.Count;
-            var sources = new List<Source>();
+            var sources = new List<Knockback>();
             for (var i = 0; i < count; ++i)
             {
                 var s = exas[i];

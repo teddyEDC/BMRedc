@@ -1,10 +1,10 @@
 namespace BossMod.Dawntrail.Alliance.A11Prishe;
 
-class AuroralUppercut(BossModule module) : Components.Knockback(module, ignoreImmunes: true)
+class AuroralUppercut(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true)
 {
-    private Source? _source;
+    private Knockback? _source;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => _source != null && actor.FindStatus(SID.Knockback) == null ? Utils.ZeroOrOne(ref _source) : [];
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => _source != null && actor.FindStatus(SID.Knockback) == null ? Utils.ZeroOrOne(ref _source) : [];
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

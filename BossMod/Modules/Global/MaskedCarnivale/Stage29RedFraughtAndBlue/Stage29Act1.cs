@@ -33,7 +33,7 @@ public enum SID : uint
 }
 
 class FluidSwing(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.FluidSwing));
-class FluidSwingKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.FluidSwing), 50f, kind: Kind.DirForward);
+class FluidSwingKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.FluidSwing), 50f, kind: Kind.DirForward);
 class SeaOfFlames(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SeaOfFlames), 6f);
 class FireII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FireII), 5f);
 class PillarOfFlame(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PillarOfFlame), 8f);

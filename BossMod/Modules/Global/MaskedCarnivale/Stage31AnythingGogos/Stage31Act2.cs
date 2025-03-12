@@ -41,7 +41,7 @@ public enum SID : uint
 }
 
 class Charybdis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Charybdis), 8);
-class Maelstrom(BossModule module) : Components.PersistentVoidzone(module, 8f, GetMaelstrom)
+class Maelstrom(BossModule module) : Components.Voidzone(module, 8f, GetMaelstrom)
 {
     private static List<Actor> GetMaelstrom(BossModule module) => module.Enemies((uint)OID.Maelstrom);
 }
@@ -55,7 +55,7 @@ class GogoMeteor4(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 class GogoMeteor5(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GogoMeteor5), 16f);
 class GogoMeteorBig(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.GogoMeteor6), "Use Diamondback!");
 class Icestorm(BossModule module) : Components.RaidwideCastDelay(module, ActionID.MakeSpell(AID.Icestorm), ActionID.MakeSpell(AID.Icestorm2), 0.9f, "Raidwide + Frostbite + Heavy");
-class ThunderIII(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.GogoThunderIII), GetVoidzones, 0.8f)
+class ThunderIII(BossModule module) : Components.VoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.GogoThunderIII), GetVoidzones, 0.8f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

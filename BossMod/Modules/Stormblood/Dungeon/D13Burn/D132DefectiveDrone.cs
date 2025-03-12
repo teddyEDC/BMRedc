@@ -70,7 +70,7 @@ class AetherochemicalFlame(BossModule module) : Components.RaidwideCast(module, 
 class AetherochemicalResidue(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(5), (uint)IconID.Baitaway, ActionID.MakeSpell(AID.AetherochemicalResidue), 4.1f, true);
 class AditDriver(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AditDriver), new AOEShapeRect(33f, 3f));
 class AetherochemicalCoil(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.AetherochemicalCoil));
-class SludgeVoidzone(BossModule module) : Components.PersistentVoidzone(module, 2.5f, GetVoidzones)
+class SludgeVoidzone(BossModule module) : Components.Voidzone(module, 2.5f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

@@ -1,14 +1,14 @@
 ﻿namespace BossMod.RealmReborn.Extreme.Ex3Titan;
 
-// TODO: most of what's here should be handled by KnockbackFromCastTarget component...
-class Upheaval(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.Upheaval))
+// TODO: most of what's here should be handled by SimpleKnockbacks component...
+class Upheaval(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.Upheaval))
 {
     private DateTime _remainInPosition;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_remainInPosition > WorldState.CurrentTime)
-            return new Source[1] { new(Module.PrimaryActor.Position, 13f) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 13f) };
         return [];
     }
 

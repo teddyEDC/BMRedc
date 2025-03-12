@@ -38,7 +38,7 @@ class P5DeathOfTheHeavensLightningStorm : Components.UniformStackSpread
     }
 }
 
-class P5DeathOfTheHeavensHeavensflame(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.HeavensflameAOE))
+class P5DeathOfTheHeavensHeavensflame(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.HeavensflameAOE))
 {
     public bool KnockbackDone { get; private set; }
     private readonly WPos[] _playerAdjustedPositions = new WPos[PartyState.MaxPartySize];
@@ -52,9 +52,9 @@ class P5DeathOfTheHeavensHeavensflame(BossModule module) : Components.Knockback(
     private const float _aoeRadius = 10;
     private const float _tetherBreakDistance = 32; // TODO: verify...
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        return new Source[1] { new(Arena.Center, _knockbackDistance) };
+        return new Knockback[1] { new(Arena.Center, _knockbackDistance) };
     }
 
     public override void Update()

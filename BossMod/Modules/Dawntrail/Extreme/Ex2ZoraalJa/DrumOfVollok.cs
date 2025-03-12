@@ -27,11 +27,11 @@ class DrumOfVollokPlatforms(BossModule module) : BossComponent(module)
 
 class DrumOfVollok(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.DrumOfVollokAOE), 4f, 2, 2);
 
-class DrumOfVollokKnockback(BossModule module) : Components.Knockback(module, ignoreImmunes: true)
+class DrumOfVollokKnockback(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true)
 {
     private readonly DrumOfVollok? _main = module.FindComponent<DrumOfVollok>();
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_main == null)
             return [];
@@ -41,7 +41,7 @@ class DrumOfVollokKnockback(BossModule module) : Components.Knockback(module, ig
             if (_main.Stacks[i].Target == actor)
                 return [];
         }
-        var sources = new List<Source>();
+        var sources = new List<Knockback>();
         for (var i = 0; i < count; ++i)
         {
             var s = _main.Stacks[i];

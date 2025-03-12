@@ -1,21 +1,21 @@
 ﻿namespace BossMod.Dawntrail.Extreme.Ex3QueenEternal;
 
 class Aeroquell(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Aeroquell), 5f, 4);
-class AeroquellTwister(BossModule module) : Components.PersistentVoidzone(module, 5f, GetTwister)
+class AeroquellTwister(BossModule module) : Components.Voidzone(module, 5f, GetTwister)
 {
     private static List<Actor> GetTwister(BossModule module) => module.Enemies((uint)OID.Twister);
 }
 class MissingLink(BossModule module) : Components.Chains(module, (uint)TetherID.MissingLink, default, 25f);
 
-class WindOfChange(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.WindOfChange), true)
+class WindOfChange(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.WindOfChange), true)
 {
     private readonly Angle[] _directions = new Angle[PartyState.MaxPartySize];
     private DateTime _activation;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_directions[slot] != default)
-            return new Source[1] { new(actor.Position, 20f, _activation, null, _directions[slot], Kind.DirForward) };
+            return new Knockback[1] { new(actor.Position, 20f, _activation, null, _directions[slot], Kind.DirForward) };
         return [];
     }
 

@@ -34,14 +34,14 @@ class TenTonzeWaveCone(BossModule module) : TenTonzeCone(module, AID.TenTonzeWav
 class TenTonzeWaveDonut(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TenTonzeWaveDonut), new AOEShapeDonut(10f, 20f));
 class ZoomIn(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.ZoomIn), 4f);
 
-class ZoomInKB(BossModule module) : Components.Knockback(module) // actual knockback happens ~0.7s after snapshot
+class ZoomInKB(BossModule module) : Components.GenericKnockback(module) // actual knockback happens ~0.7s after snapshot
 {
     private DateTime _activation;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_activation != default)
-            return new Source[1] { new(Module.PrimaryActor.Position, 20f, _activation) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 20f, _activation) };
         return [];
     }
 

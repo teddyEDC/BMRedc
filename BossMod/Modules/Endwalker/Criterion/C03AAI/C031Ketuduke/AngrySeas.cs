@@ -16,12 +16,12 @@ class AngrySeasAOE(BossModule module) : Components.GenericAOEs(module)
 }
 
 // TODO: generalize
-class AngrySeasKnockback(BossModule module) : Components.Knockback(module)
+class AngrySeasKnockback(BossModule module) : Components.GenericKnockback(module)
 {
-    private readonly List<Source> _sources = [];
+    private readonly List<Knockback> _sources = [];
     private static readonly AOEShapeCone _shape = new(30f, 90f.Degrees());
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

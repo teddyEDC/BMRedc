@@ -77,7 +77,7 @@ class PainMire(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeS
     }
 }
 
-class BleedVoidzone(BossModule module) : Components.PersistentVoidzone(module, 8f, m => m.Enemies(OID.BleedVoidzone).Where(x => x.EventState != 7));
+class BleedVoidzone(BossModule module) : Components.Voidzone(module, 8f, m => m.Enemies(OID.BleedVoidzone).Where(x => x.EventState != 7));
 class TwistedTouch(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.TwistedTouch));
 class ChaosStorm(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ChaosStorm));
 class DarkDeluge(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DarkDeluge), 5f);

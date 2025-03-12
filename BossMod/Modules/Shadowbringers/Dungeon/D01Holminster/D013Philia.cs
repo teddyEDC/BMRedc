@@ -49,7 +49,7 @@ public enum SID : uint
     Fetters = 1849 // none->player, extra=0xEC4
 }
 
-class SludgeVoidzone(BossModule module) : Components.PersistentVoidzone(module, 9.8f, GetVoidzones)
+class SludgeVoidzone(BossModule module) : Components.Voidzone(module, 9.8f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

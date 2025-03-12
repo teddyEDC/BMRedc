@@ -64,7 +64,7 @@ class BloodyPuddle(BossModule module) : Components.GenericAOEs(module)
 class Torpedo(BossModule module) : Components.SingleTargetDelayableCast(module, ActionID.MakeSpell(AID.Torpedo));
 class RisingSeas(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.RisingSeas));
 
-class RisingSeasKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.RisingSeas), 20f, stopAtWall: true)
+class RisingSeasKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.RisingSeas), 20f, stopAtWall: true)
 {
     private readonly BloodyPuddle _aoe = module.FindComponent<BloodyPuddle>()!;
     private static readonly Angle cone = 37.5f.Degrees();

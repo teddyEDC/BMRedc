@@ -242,7 +242,7 @@ class FrostBreath(BossModule module) : BaitAway(module)
 
 class RimeWreath(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.RimeWreath));
 class TouchDown(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Touchdown), 15f);
-class IceVoidzone(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class IceVoidzone(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

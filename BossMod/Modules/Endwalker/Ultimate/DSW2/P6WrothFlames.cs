@@ -80,7 +80,7 @@ class P6AkhMorn(BossModule module) : Components.StackWithCastTargets(module, Act
     }
 }
 
-class P6AkhMornVoidzone(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class P6AkhMornVoidzone(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

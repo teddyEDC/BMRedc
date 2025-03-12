@@ -43,20 +43,20 @@ public enum TetherID : uint
     Magnetism = 38
 }
 
-class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes: true)
+class Magnetism(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true)
 {
-    public readonly Source?[] _sources = new Source?[4];
+    public readonly Knockback?[] _sources = new Knockback?[4];
     private readonly NerveGasRingAndAutoCannons _aoe1 = module.FindComponent<NerveGasRingAndAutoCannons>()!;
     private readonly Barofield _aoe2 = module.FindComponent<Barofield>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        if (_sources[slot] is Source source)
+        if (_sources[slot] is Knockback source)
         {
             var count = _aoe1.AOEs.Count;
             for (var i = 0; i < count; ++i)
                 if (_aoe1.AOEs[i].Shape == NerveGasRingAndAutoCannons.donut)
-                    return new Source[1] { source };
+                    return new Knockback[1] { source };
         }
         return [];
     }
@@ -107,7 +107,7 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_sources[slot] is Source source)
+        if (_sources[slot] is Knockback source)
         {
             var attract = source.Kind == Kind.TowardsOrigin;
             var pos = Module.PrimaryActor.Position;

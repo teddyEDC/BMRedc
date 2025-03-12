@@ -1,13 +1,13 @@
 namespace BossMod.RealmReborn.Trial.T09WhorleaterH;
 
-class BodySlamKB(BossModule module) : Components.Knockback(module, stopAtWall: true)
+class BodySlamKB(BossModule module) : Components.GenericKnockback(module, stopAtWall: true)
 {
-    private Source? _knockback;
+    private Knockback? _knockback;
     private float LeviathanZ;
     private readonly Hydroshot _aoe1 = module.FindComponent<Hydroshot>()!;
     private readonly Dreadstorm _aoe2 = module.FindComponent<Dreadstorm>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
 
     public override void Update()
     {

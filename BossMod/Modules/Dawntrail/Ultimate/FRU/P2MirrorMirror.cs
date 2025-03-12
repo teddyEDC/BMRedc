@@ -79,7 +79,7 @@ class P2MirrorMirrorHouseOfLight(BossModule module) : Components.GenericBaitAway
 
     private List<Source> CurrentSources => NumCasts == 0 ? FirstSources : SecondSources;
 
-    private static readonly AOEShapeCone _shape = new(60, 15.Degrees());
+    private static readonly AOEShapeCone _shape = new(60f, 15f.Degrees());
 
     public override void Update()
     {

@@ -118,18 +118,18 @@ class ForgedTrack(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class ForgedTrackKnockback(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.StormyEdgeKnockback))
+class ForgedTrackKnockback(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.StormyEdgeKnockback))
 {
     private readonly ForgedTrack? _main = module.FindComponent<ForgedTrack>();
 
     private static readonly AOEShapeRect _shape = new(20f, 10f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_main == null)
             return [];
         var count = _main.KnockbackAOEs.Count;
-        var sources = new Source[count * 2];
+        var sources = new Knockback[count * 2];
         var index = 0;
         for (var i = 0; i < count; ++i)
         {

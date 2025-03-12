@@ -65,12 +65,12 @@ class ApocalypticBolt(BossModule module) : Components.SimpleAOEs(module, ActionI
 class ApocalypticRoar(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ApocalypticRoar), new AOEShapeCone(36.2f, 60f.Degrees()));
 class TheRamsVoice(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TheRamsVoice), 8f);
 class TheDragonsVoice(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TheDragonsVoice), new AOEShapeDonut(6f, 30f));
-class Maelstrom(BossModule module) : Components.PersistentVoidzone(module, 8f, GetMaelstrom)
+class Maelstrom(BossModule module) : Components.Voidzone(module, 8f, GetMaelstrom)
 {
     private static List<Actor> GetMaelstrom(BossModule module) => module.Enemies((uint)OID.Maelstrom);
 }
 class Meteor(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Meteor), 15f);
-class MeteorVoidzone(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 10f, ActionID.MakeSpell(AID.Meteor), GetVoidzones, 1.2f)
+class MeteorVoidzone(BossModule module) : Components.VoidzoneAtCastTarget(module, 10f, ActionID.MakeSpell(AID.Meteor), GetVoidzones, 1.2f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

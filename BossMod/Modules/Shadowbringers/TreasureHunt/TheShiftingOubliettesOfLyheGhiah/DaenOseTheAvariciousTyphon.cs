@@ -53,7 +53,7 @@ class LingeringSnort(BossModule module) : Components.SimpleAOEs(module, ActionID
 class UnpleasantBreeze(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.UnpleasantBreeze), 6f);
 class Fireball(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.Fireball), 6f, 8, 8);
 
-class SnortsaultKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.SnortsaultKB), 20f, stopAtWall: true);
+class SnortsaultKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.SnortsaultKB), 20f, stopAtWall: true);
 class SnortsaultCircle(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly LingeringSnort _aoes = module.FindComponent<LingeringSnort>()!;

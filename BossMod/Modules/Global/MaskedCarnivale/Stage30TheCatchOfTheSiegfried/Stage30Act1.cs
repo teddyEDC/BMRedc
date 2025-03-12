@@ -32,9 +32,9 @@ class HyperdriveFirst(BossModule module) : Components.SimpleAOEs(module, ActionI
 class HyperdriveRest(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HyperdriveRest), 5f);
 class AnkleGraze(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.AnkleGraze), "Applies bind, prepare to use Excuviation!");
 
-class RubberBullet(BossModule module) : Components.Knockback(module)
+class RubberBullet(BossModule module) : Components.GenericKnockback(module)
 {
-    private Source? _knockback;
+    private Knockback? _knockback;
     private readonly Explosion _aoe = module.FindComponent<Explosion>()!;
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
@@ -50,7 +50,7 @@ class RubberBullet(BossModule module) : Components.Knockback(module)
         return !Module.InBounds(pos);
     }
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
 
     public override void OnActorCreated(Actor actor)
     {

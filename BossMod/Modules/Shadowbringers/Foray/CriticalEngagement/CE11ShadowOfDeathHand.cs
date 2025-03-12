@@ -56,11 +56,11 @@ class Helldive(BossModule module) : Components.StackWithCastTargets(module, Acti
 class BroadsideBarrage(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BroadsideBarrage), new AOEShapeRect(40f, 20f));
 class BlindsideBarrage(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BlindsideBarrage), "Raidwide + deathwall appears");
 class RollingBarrage(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RollingBarrageAOE), 8f);
-class Whirlwind(BossModule module) : Components.PersistentVoidzone(module, 4f, GetWhirlwind)
+class Whirlwind(BossModule module) : Components.Voidzone(module, 4f, GetWhirlwind)
 {
     private static List<Actor> GetWhirlwind(BossModule module) => module.Enemies((uint)OID.Whirlwind);
 }
-class Wind(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.WindVisual), 30f, kind: Kind.DirForward);
+class Wind(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.WindVisual), 30f, kind: Kind.DirForward);
 
 abstract class PiercingBarrage(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeRect(40f, 4f));
 class PiercingBarrageBoss(BossModule module) : PiercingBarrage(module, AID.PiercingBarrageBoss);

@@ -21,7 +21,7 @@ public enum AID : uint
     ApplyPrey = 27229 // Boss->player, 0.5s cast, single-target
 }
 
-class Twister(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Twister), 20, shape: new AOEShapeCircle(8f))
+class Twister(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Twister), 20, shape: new AOEShapeCircle(8f))
 {
     public override void AddGlobalHints(GlobalHints hints)
     {

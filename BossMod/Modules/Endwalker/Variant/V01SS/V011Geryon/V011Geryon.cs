@@ -15,13 +15,13 @@ class ColossalSwing(BossModule module) : Components.SimpleAOEs(module, ActionID.
 class SubterraneanShudder(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SubterraneanShudder));
 class RunawaySludge(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RunawaySludge), 9);
 
-class Shockwave(BossModule module) : Components.Knockback(module)
+class Shockwave(BossModule module) : Components.GenericKnockback(module)
 {
-    private readonly List<Source> _sources = [];
+    private readonly List<Knockback> _sources = [];
     private static readonly AOEShapeRect _shape = new(40f, 40f);
     private readonly RunawaySludge _aoe = module.FindComponent<RunawaySludge>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

@@ -26,7 +26,7 @@ class RegulaVanHydrusStates : StateMachineBuilder
 }
 
 class HandOfTheEmpire(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HandOfTheEmpire), 2f);
-class Voidzone(BossModule module) : Components.PersistentVoidzone(module, 8f, GetPuddles)
+class Voidzone(BossModule module) : Components.Voidzone(module, 8f, GetPuddles)
 {
     private static List<Actor> GetPuddles(BossModule module) => module.Enemies((uint)OID.Puddle);
 }

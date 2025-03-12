@@ -137,7 +137,7 @@ abstract class VeinSplitter(BossModule module, AID aid) : Components.SimpleAOEs(
 class VeinSplitter1(BossModule module) : VeinSplitter(module, AID.VeinSplitter1);
 class VeinSplitter2(BossModule module) : VeinSplitter(module, AID.VeinSplitter2);
 
-abstract class ArtOfTheSwell(BossModule module, AID aid) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(aid), 15f)
+abstract class ArtOfTheSwell(BossModule module, AID aid) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(aid), 15f)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

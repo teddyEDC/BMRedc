@@ -64,7 +64,7 @@ abstract class MediumRear(BossModule module, AID aid) : Components.SimpleAOEs(mo
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_kb1.Casters.Count == 0 && _kb2.Knockback == null)
+        if (_kb1.Casters.Count == 0 && _kb2.Source == null)
             base.AddAIHints(slot, actor, assignment, hints);
     }
 }
@@ -72,49 +72,49 @@ class MediumRear1(BossModule module) : MediumRear(module, AID.MediumRear1);
 class MediumRear2(BossModule module) : MediumRear(module, AID.MediumRear2);
 class NeerDoneWell(BossModule module) : MediumRear(module, AID.NeerDoneWell);
 
-class HuffAndPuff1(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.HuffAndPuff1), 15, true, stopAtWall: true, kind: Kind.DirForward)
+class HuffAndPuff1(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.HuffAndPuff1), 15, true, stopAtWall: true, kind: Kind.DirForward)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var source = Casters.Count != 0 ? Casters[0] : null;
-        if (source != default)
+        if (source != null)
             hints.AddForbiddenZone(ShapeDistance.InvertedCircle(source.Position, 5f));
     }
 }
 
-class HuffAndPuff2(BossModule module) : Components.Knockback(module, ignoreImmunes: true, stopAtWall: true)
+class HuffAndPuff2(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true, stopAtWall: true)
 {
-    private Source? _sourceCache;
-    public Source? Knockback;
+    private Knockback? _sourceCache;
+    public Knockback? Source;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref Knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref Source);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.HuffAndPuffVisual)
             _sourceCache = new(spell.LocXZ, 15f, default, null, spell.Rotation, Kind.DirForward);
         else if (_sourceCache != null && spell.Action.ID == (uint)AID.NeerDoneWell)
-            Knockback = _sourceCache.Value with { Activation = WorldState.FutureTime(5.4d), Distance = 50f };
+            Source = _sourceCache.Value with { Activation = WorldState.FutureTime(5.4d), Distance = 50f };
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if (_sourceCache != null && spell.Action.ID == (uint)AID.Explosion)
-            Knockback = _sourceCache.Value with { Activation = Module.CastFinishAt(spell, 10.9f) };
+            Source = _sourceCache.Value with { Activation = Module.CastFinishAt(spell, 10.9f) };
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (spell.Action.ID is (uint)AID.HuffAndPuff2 or (uint)AID.BlowItAllDown)
         {
-            Knockback = null;
+            Source = null;
             _sourceCache = null;
         }
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Knockback is Source kb)
+        if (Source is Knockback kb)
             hints.AddForbiddenZone(ShapeDistance.InvertedCircle(kb.Origin, 5f));
     }
 }

@@ -13,7 +13,7 @@ static class SlipperySoap
     };
 }
 
-class SlipperySoapCharge(BossModule module) : Components.Knockback(module)
+class SlipperySoapCharge(BossModule module) : Components.GenericKnockback(module)
 {
     private Actor? _chargeTarget;
     private Angle _chargeDir;
@@ -23,10 +23,10 @@ class SlipperySoapCharge(BossModule module) : Components.Knockback(module)
 
     public bool ChargeImminent => _chargeTarget != null;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_chargeTarget != null && _color == SlipperySoap.Color.Green)
-            return new Source[1] { new(Module.PrimaryActor.Position, 15f, _chargeResolve, _chargeShape, _chargeDir, Kind.DirForward) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 15f, _chargeResolve, _chargeShape, _chargeDir, Kind.DirForward) };
         else
             return [];
     }

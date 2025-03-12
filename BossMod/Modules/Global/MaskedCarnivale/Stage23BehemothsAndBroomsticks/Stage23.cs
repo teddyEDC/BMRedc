@@ -19,7 +19,7 @@ public enum AID : uint
 }
 
 class Charybdis(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Charybdis), 6f);
-class Maelstrom(BossModule module) : Components.PersistentVoidzone(module, 8f, GetMaelstrom)
+class Maelstrom(BossModule module) : Components.Voidzone(module, 8f, GetMaelstrom)
 {
     private static List<Actor> GetMaelstrom(BossModule module) => module.Enemies((uint)OID.Maelstrom);
 }

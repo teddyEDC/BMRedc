@@ -50,25 +50,25 @@ class SandblastVoidzone(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Landslip(BossModule module) : Components.Knockback(module)
+class Landslip(BossModule module) : Components.GenericKnockback(module)
 {
     public bool TowerDanger;
-    public readonly List<Source> Sourcez = new(4);
+    public readonly List<Knockback> Knockbacks = new(4);
     private static readonly AOEShapeRect rect = new(40f, 5f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(Sourcez);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(Knockbacks);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.Landslip)
-            Sourcez.Add(new(spell.LocXZ, 20f, Module.CastFinishAt(spell), rect, spell.Rotation, Kind.DirForward));
+            Knockbacks.Add(new(spell.LocXZ, 20f, Module.CastFinishAt(spell), rect, spell.Rotation, Kind.DirForward));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.Landslip)
         {
-            Sourcez.Clear();
+            Knockbacks.Clear();
             if (++NumCasts > 4)
                 TowerDanger = true;
         }
@@ -76,13 +76,13 @@ class Landslip(BossModule module) : Components.Knockback(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var count = Sourcez.Count;
+        var count = Knockbacks.Count;
         if (count == 0)
             return;
         var length = Arena.Bounds.Radius * 2; // casters are at the border, orthogonal to borders
         for (var i = 0; i < count; ++i)
         {
-            var c = Sourcez[i];
+            var c = Knockbacks[i];
             hints.AddForbiddenZone(ShapeDistance.Rect(c.Origin, c.Direction, length, 20f - length, 5f), c.Activation);
         }
     }
@@ -106,7 +106,7 @@ class Landslip(BossModule module) : Components.Knockback(module)
 }
 
 class EarthenGeyser(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.EarthenGeyser), 10f, 4, 4);
-class QuicksandVoidzone(BossModule module) : Components.PersistentVoidzone(module, 10f, GetVoidzone)
+class QuicksandVoidzone(BossModule module) : Components.Voidzone(module, 10f, GetVoidzone)
 {
     private static Actor[] GetVoidzone(BossModule module)
     {
@@ -200,9 +200,9 @@ class Towerfall(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_kb.Sourcez.Count != 0 & _aoes.Count == 2)
+        if (_kb.Knockbacks.Count != 0 & _aoes.Count == 2)
         {
-            var activation = _kb.Sourcez[0].Activation;
+            var activation = _kb.Knockbacks[0].Activation;
             var distance = MathF.Round(Math.Abs(_aoes[0].Origin.Z - _aoes[1].Origin.Z));
             var forbidden = new Func<WPos, float>[2];
             var check = distance is 10 or 30;

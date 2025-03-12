@@ -168,7 +168,7 @@ class CosmicKissRect(BossModule module) : Components.GenericAOEs(module)
 
 class CosmicKissRaidwide(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.CosmicKiss));
 
-class CosmicKissKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.CosmicKiss), 13f)
+class CosmicKissKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.CosmicKiss), 13f)
 {
     private static readonly Angle a90 = 90f.Degrees(), a45 = 45f.Degrees(), a180 = 180f.Degrees();
     private readonly ChaoticUndercurrent _aoe = module.FindComponent<ChaoticUndercurrent>()!;

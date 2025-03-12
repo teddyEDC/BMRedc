@@ -192,7 +192,7 @@ class DwarvenDischargeDonut(BossModule module) : DwarvenDischarge(module, new AO
 class DwarvenDischargeCircle(BossModule module) : DwarvenDischarge(module, new AOEShapeCircle(8f), (uint)OID.DwarvenChargeCircle, (uint)AID.DwarvenDischargeCircle, 8.1d);
 
 class AutomatonEscort(BossModule module) : Components.Adds(module, (uint)OID.AutomatonEscort);
-class SteamDome(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.SteamDome), 15f);
+class SteamDome(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.SteamDome), 15f);
 
 class DynamicSensoryJammer(BossModule module) : Components.StayMove(module, 3f)
 {

@@ -51,7 +51,7 @@ class Burst(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpel
 class CripplingBlow(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.CripplingBlow));
 class DeafeningBellow(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.DeafeningBellow));
 class AshenOuroboros(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AshenOuroboros), new AOEShapeDonut(11f, 20f));
-class BodySlam(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BodySlam), 10f)
+class BodySlam(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BodySlam), 10f)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

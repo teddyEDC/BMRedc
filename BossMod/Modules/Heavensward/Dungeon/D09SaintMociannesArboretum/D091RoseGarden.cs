@@ -169,7 +169,7 @@ class EarthyBreath(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class ResinVoidzone(BossModule module) : Components.PersistentVoidzone(module, 5f, GetVoidzones)
+class ResinVoidzone(BossModule module) : Components.Voidzone(module, 5f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

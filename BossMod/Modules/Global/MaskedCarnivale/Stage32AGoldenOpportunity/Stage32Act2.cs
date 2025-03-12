@@ -131,7 +131,7 @@ class GoldorQuake(BossModule module) : Components.ConcentricAOEs(module, _shapes
     }
 }
 
-class GoldorAeroIII(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GoldorAeroIII), 10f)
+class GoldorAeroIII(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.GoldorAeroIII), 10f)
 {
     private readonly GoldenCross _aoe = module.FindComponent<GoldenCross>()!;
 
@@ -150,9 +150,9 @@ class GoldorAeroIII(BossModule module) : Components.KnockbackFromCastTarget(modu
 }
 
 class GoldorAeroIIIRaidwide(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.GoldorAeroIII));
-class GoldorRush(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GoldorRush), 10f);
+class GoldorRush(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.GoldorRush), 10f);
 class GoldorRushRaidwide(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.GoldorRush));
-class TwentyFourCaratInhale(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.TwentyFourCaratInhale), 30f, kind: Kind.TowardsOrigin);
+class TwentyFourCaratInhale(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.TwentyFourCaratInhale), 30f, kind: Kind.TowardsOrigin);
 class GoldorGravity(BossModule module) : Components.RaidwideCastDelay(module, ActionID.MakeSpell(AID.GoldorGravity), ActionID.MakeSpell(AID.GoldorGravity2), 0.8f, "Dmg + Heavy debuff");
 class GoldorThunderIII(BossModule module) : Components.RaidwideCastDelay(module, ActionID.MakeSpell(AID.GoldorThunderIIIVisual), ActionID.MakeSpell(AID.GoldorThunderIII1), 0.8f, "Prepare to cleanse Electrocution");
 class GoldorThunderIII2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GoldorThunderIII2), 6f);

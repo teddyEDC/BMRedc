@@ -16,7 +16,7 @@ class AratamaPuddleBait(BossModule module) : Components.SpreadFromIcon(module, (
     }
 }
 
-class AratamaPuddleVoidzone(BossModule module) : Components.PersistentVoidzone(module, 4f, GetVoidzones)
+class AratamaPuddleVoidzone(BossModule module) : Components.Voidzone(module, 4f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

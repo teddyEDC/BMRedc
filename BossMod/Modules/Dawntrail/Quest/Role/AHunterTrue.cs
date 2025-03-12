@@ -96,7 +96,7 @@ class FallingDusk(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
     }
 }
 
-class DancingWind(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.DancingWind), 8f, kind: Kind.TowardsOrigin)
+class DancingWind(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.DancingWind), 8f, kind: Kind.TowardsOrigin)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

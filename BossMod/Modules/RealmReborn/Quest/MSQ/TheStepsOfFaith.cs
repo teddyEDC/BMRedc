@@ -136,7 +136,7 @@ class FireballSpread(BossModule module) : Components.SpreadFromCastTargets(modul
 class FireballAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FireballAOE), 6f);
 class Flamisphere(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Flamisphere), 10f);
 
-class BodySlam(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BodySlam), 20f, kind: Kind.DirForward, stopAtWall: true);
+class BodySlam(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BodySlam), 20f, kind: Kind.DirForward, stopAtWall: true);
 
 class FlameBreath(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.FlameBreathChannel))
 {
@@ -218,7 +218,7 @@ class Cauterize(BossModule module) : Components.GenericAOEs(module, ActionID.Mak
     }
 }
 
-class Touchdown(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Touchdown), 10f, stopAtWall: true);
+class Touchdown(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Touchdown), 10f, stopAtWall: true);
 
 class ScorchingBreath(BossModule module) : Components.GenericAOEs(module)
 {

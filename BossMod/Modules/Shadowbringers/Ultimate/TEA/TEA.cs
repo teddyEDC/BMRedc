@@ -10,7 +10,7 @@ class P2EyeOfTheChakram(BossModule module) : Components.SimpleAOEs(module, Actio
 class P2HawkBlasterOpticalSight(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HawkBlasterP2), 10f);
 class P2Photon(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.PhotonAOE));
 class P2SpinCrusher(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SpinCrusher), new AOEShapeCone(10f, 45f.Degrees()));
-class P2Drainage(BossModule module) : Components.PersistentVoidzone(module, 8f, GetVoidzones) // TODO: verify distance
+class P2Drainage(BossModule module) : Components.Voidzone(module, 8f, GetVoidzones) // TODO: verify distance
 {
     private static List<Actor> GetVoidzones(BossModule module) => module.Enemies((uint)OID.LiquidRage);
 }

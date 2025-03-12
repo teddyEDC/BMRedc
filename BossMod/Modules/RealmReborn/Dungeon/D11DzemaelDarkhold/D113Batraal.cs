@@ -24,7 +24,7 @@ class Desolation(BossModule module) : Components.SimpleAOEs(module, ActionID.Mak
 class AetherialSurge(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AetherialSurge), 6f);
 
 // note: actor 'dies' immediately after casting
-class SeaOfPitch(BossModule module) : Components.PersistentVoidzone(module, 4f, GetEnemies)
+class SeaOfPitch(BossModule module) : Components.Voidzone(module, 4f, GetEnemies)
 {
     private static Actor[] GetEnemies(BossModule module)
     {

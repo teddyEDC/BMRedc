@@ -95,7 +95,7 @@ class RightArmRayBuffed(BossModule module) : Components.GenericRotatingAOE(modul
     }
 }
 
-class RightArmRayVoidzone(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.RightArmRayVoidzone), GetVoidzones, 0.9f)
+class RightArmRayVoidzone(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.RightArmRayVoidzone), GetVoidzones, 0.9f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

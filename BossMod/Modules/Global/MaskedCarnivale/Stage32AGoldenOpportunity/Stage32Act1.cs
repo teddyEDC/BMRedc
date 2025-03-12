@@ -72,7 +72,7 @@ class GoldorQuake(BossModule module) : Components.ConcentricAOEs(module, _shapes
     }
 }
 
-class GoldorAeroIII(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GoldorAeroIII), 10f)
+class GoldorAeroIII(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.GoldorAeroIII), 10f)
 {
     private readonly Burn _aoe = module.FindComponent<Burn>()!;
 

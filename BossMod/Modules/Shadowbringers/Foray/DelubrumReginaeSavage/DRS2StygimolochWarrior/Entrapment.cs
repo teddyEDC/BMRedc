@@ -1,12 +1,12 @@
 ﻿namespace BossMod.Shadowbringers.Foray.DelubrumReginae.DRS2StygimolochWarrior;
 
-class EntrapmentAttract(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.EntrapmentAttract), true)
+class EntrapmentAttract(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.EntrapmentAttract), true)
 {
     private DateTime _activation;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        return new Source[1] { new(new(Arena.Center.X, Arena.Center.Z + Module.Bounds.Radius), 60f, _activation, Kind: Kind.TowardsOrigin) };
+        return new Knockback[1] { new(new(Arena.Center.X, Arena.Center.Z + Arena.Bounds.Radius), 60f, _activation, Kind: Kind.TowardsOrigin) };
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
