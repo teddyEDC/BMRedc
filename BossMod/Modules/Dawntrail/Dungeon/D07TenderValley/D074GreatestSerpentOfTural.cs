@@ -79,7 +79,7 @@ class DubiousTulidisasterArenaChange(BossModule module) : Components.GenericAOEs
 
 class ScreesOfFury(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(3), (uint)IconID.Tankbuster, ActionID.MakeSpell(AID.ScreesOfFury), 5.3f, true, tankbuster: true);
 
-class GreatestFlood(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GreatestFlood), 15f)
+class GreatestFlood(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.GreatestFlood), 15f)
 {
     private static readonly Angle a45 = 45f.Degrees();
 
@@ -168,7 +168,7 @@ class MightyBlorp1(BossModule module) : MightyBlorp(module, IconID.Stackmarker1,
 class MightyBlorp2(BossModule module) : MightyBlorp(module, IconID.Stackmarker2, AID.MightyBlorp2, 5f);
 class MightyBlorp3(BossModule module) : MightyBlorp(module, IconID.Stackmarker3, AID.MightyBlorp3, 4f);
 
-class SludgeVoidzone(BossModule module, float radius, OID oid) : Components.PersistentVoidzone(module, radius, m => m.Enemies(oid).Where(z => z.EventState != 7));
+class SludgeVoidzone(BossModule module, float radius, OID oid) : Components.Voidzone(module, radius, m => m.Enemies(oid).Where(z => z.EventState != 7));
 class SludgeVoidzone1(BossModule module) : SludgeVoidzone(module, 6f, OID.SludgeVoidzone1);
 class SludgeVoidzone2(BossModule module) : SludgeVoidzone(module, 5f, OID.SludgeVoidzone2);
 class SludgeVoidzone3(BossModule module) : SludgeVoidzone(module, 4f, OID.SludgeVoidzone3);

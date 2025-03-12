@@ -20,13 +20,13 @@ class SpinningDive(BossModule module) : Components.GenericAOEs(module) //TODO: F
     }
 }
 
-class SpinningDiveKB(BossModule module) : Components.Knockback(module, stopAtWall: true) //TODO: Find out how to detect spinning dives earlier eg. the water column telegraph
+class SpinningDiveKB(BossModule module) : Components.GenericKnockback(module, stopAtWall: true) //TODO: Find out how to detect spinning dives earlier eg. the water column telegraph
 {
-    private Source? _knockback;
+    private Knockback? _knockback;
     private readonly Hydroshot _aoe1 = module.FindComponent<Hydroshot>()!;
     private readonly Dreadstorm _aoe2 = module.FindComponent<Dreadstorm>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
 
     public override void OnActorCreated(Actor actor)
     {

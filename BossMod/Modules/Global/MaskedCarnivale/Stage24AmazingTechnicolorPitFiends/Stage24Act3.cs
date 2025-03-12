@@ -23,7 +23,7 @@ public enum AID : uint
 
 class MagicHammer(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.MagicHammer), 8f);
 class PageTear(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PageTear), new AOEShapeCone(8f, 45f.Degrees()));
-class VacuumBlade(BossModule module) : Components.PersistentVoidzone(module, 3f, GetVoidzones)
+class VacuumBlade(BossModule module) : Components.Voidzone(module, 3f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {
@@ -46,7 +46,7 @@ class VacuumBlade(BossModule module) : Components.PersistentVoidzone(module, 3f,
 
 class HeadDown(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.HeadDown), 4f);
 
-class HeadDownKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.HeadDown), 10f, kind: Kind.DirForward)
+class HeadDownKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.HeadDown), 10f, kind: Kind.DirForward)
 {
     private readonly VacuumBlade _aoe = module.FindComponent<VacuumBlade>()!;
 

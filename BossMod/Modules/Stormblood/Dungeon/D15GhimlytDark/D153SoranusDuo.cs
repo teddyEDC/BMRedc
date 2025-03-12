@@ -79,13 +79,13 @@ class ArtificialPlasmaJulia(BossModule module) : Components.RaidwideCast(module,
 
 class Crossbones(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.Crossbones), 2f);
 
-class CrossbonesKB(BossModule module) : Components.Knockback(module, stopAtWall: true)
+class CrossbonesKB(BossModule module) : Components.GenericKnockback(module, stopAtWall: true)
 {
     private DateTime _activation;
     private Actor? _caster;
     private readonly Bombardment _aoe = module.FindComponent<Bombardment>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => _caster != null ? new Source[1] { new(_caster.Position, 15f, _activation) } : [];
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => _caster != null ? new Knockback[1] { new(_caster.Position, 15f, _activation) } : [];
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {

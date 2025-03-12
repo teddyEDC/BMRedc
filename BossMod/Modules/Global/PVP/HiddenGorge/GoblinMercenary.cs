@@ -49,13 +49,13 @@ class GobspinSwipe(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Knockbacks(BossModule module) : Components.Knockback(module)
+class Knockbacks(BossModule module) : Components.GenericKnockback(module)
 {
     private static readonly AOEShapeCircle circle = new(8f);
     private static readonly AOEShapeDonut donut = new(5f, 30f);
-    private Source? _knockback;
+    private Knockback? _knockback;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

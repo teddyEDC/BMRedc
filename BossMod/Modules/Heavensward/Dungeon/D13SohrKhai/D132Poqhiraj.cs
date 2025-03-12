@@ -87,11 +87,11 @@ class ArenaChanges(BossModule module) : BossComponent(module)
 
 class GallopAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GallopAOE), new AOEShapeRect(40.5f, 1f));
 
-class GallopKB(BossModule module) : Components.Knockback(module)
+class GallopKB(BossModule module) : Components.GenericKnockback(module)
 {
     public static readonly float[] xPositions = [395.5f, 404.5f];
     private static readonly AOEShapeRect rect = new(4.5f, 20f);
-    private readonly List<Source> _sources = new(2);
+    private readonly List<Knockback> _sources = new(2);
     public readonly List<SafeWall> safeWalls = GenerateSafeWalls();
 
     private static List<SafeWall> GenerateSafeWalls()
@@ -107,7 +107,7 @@ class GallopKB(BossModule module) : Components.Knockback(module)
         return list;
     }
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

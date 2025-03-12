@@ -34,7 +34,7 @@ public enum IconID : uint
     NegativeChargeBoss = 290 // Boss
 }
 
-class Magnetism(BossModule module) : Components.Knockback(module)
+class Magnetism(BossModule module) : Components.GenericKnockback(module)
 {
     private readonly MagnetismCircleDonut? _aoe = module.FindComponent<MagnetismCircleDonut>();
     private enum MagneticPole { None, Plus, Minus }
@@ -52,12 +52,12 @@ class Magnetism(BossModule module) : Components.Knockback(module)
     private bool IsPull(Actor actor, Shape shape, MagneticPole pole)
         => (shape == Shape.Any || CurrentShape == shape) && CurrentPole == pole && statusOnActor.Contains((actor, (uint)(pole == MagneticPole.Plus ? SID.NegativeCharge : SID.PositiveCharge)));
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (IsKnockback(actor, Shape.Any, MagneticPole.Plus) || IsKnockback(actor, Shape.Any, MagneticPole.Minus))
-            return new Source[1] { new(Module.PrimaryActor.Position, 10f, activation) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 10f, activation) };
         else if (IsPull(actor, Shape.Any, MagneticPole.Plus) || IsPull(actor, Shape.Any, MagneticPole.Minus))
-            return new Source[1] { new(Module.PrimaryActor.Position, 10f, activation, Kind: Kind.TowardsOrigin) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 10f, activation, Kind: Kind.TowardsOrigin) };
         return [];
     }
 
@@ -136,7 +136,7 @@ class Magnetism(BossModule module) : Components.Knockback(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ActiveSources(slot, actor).Length != 0 && IsImmune(slot, ActiveSources(slot, actor)[0].Activation))
+        if (ActiveKnockbacks(slot, actor).Length != 0 && IsImmune(slot, ActiveKnockbacks(slot, actor)[0].Activation))
             return;
 
         Func<WPos, float>? forbidden = null;
@@ -186,7 +186,7 @@ class MagnetismCircleDonut(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var kb = _kb.ActiveSources(slot, actor);
+        var kb = _kb.ActiveKnockbacks(slot, actor);
         if (kb.Length == 0 || kb.Length != 0 && _kb.IsImmune(slot, kb[0].Activation))
             base.AddAIHints(slot, actor, assignment, hints);
     }

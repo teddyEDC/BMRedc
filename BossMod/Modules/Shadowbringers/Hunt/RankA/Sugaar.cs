@@ -50,17 +50,17 @@ class NumbingNoiseTailSnapRotating(BossModule module) : Components.GenericRotati
     }
 }
 
-class NumbingNoiseTailSnapAttract(BossModule module) : Components.Knockback(module)
+class NumbingNoiseTailSnapAttract(BossModule module) : Components.GenericKnockback(module)
 {
     private readonly NumbingNoiseTailSnapRotating _rotating = module.FindComponent<NumbingNoiseTailSnapRotating>()!;
     private DateTime _activation;
 
     private static readonly AOEShapeCircle _shape = new(30f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_activation != default)
-            return new Source[1] { new(Module.PrimaryActor.Position, 25f, _activation, _shape, default, Kind.TowardsOrigin, Module.PrimaryActor.HitboxRadius + actor.HitboxRadius) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 25f, _activation, _shape, default, Kind.TowardsOrigin, Module.PrimaryActor.HitboxRadius + actor.HitboxRadius) };
         else
             return [];
     }

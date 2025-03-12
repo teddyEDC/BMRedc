@@ -49,9 +49,9 @@ class MagitekBurst(BossModule module) : Components.SimpleAOEs(module, ActionID.M
 class BurnishedJoust(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.BurnishedJoust), 3f);
 
 // note: there are two casters, probably to avoid 32-target limit - we only want to show one
-class GustSlash(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.GustSlashAOE), 35f, true, 1, null, Kind.DirForward);
+class GustSlash(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.GustSlashAOE), 35f, true, 1, null, Kind.DirForward);
 
-class FireShot(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.FireShot), GetVoidzones, 0)
+class FireShot(BossModule module) : Components.VoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.FireShot), GetVoidzones, 0)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {
@@ -77,12 +77,12 @@ class RideDownAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 
 // note: there are two casters, probably to avoid 32-target limit - we only want to show one
 // TODO: generalize to reusable component
-class RideDownKnockback(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.RideDownAOE), false, 1)
+class RideDownKnockback(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.RideDownAOE), false, 1)
 {
-    private readonly List<Source> _sources = new(2);
+    private readonly List<Knockback> _sources = new(2);
     private static readonly AOEShapeCone _shape = new(30f, 90f.Degrees());
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

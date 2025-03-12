@@ -224,14 +224,14 @@ class P2DiamondDustSafespots(BossModule module) : BossComponent(module)
     private static bool IsCardinal(WDir off) => Math.Abs(off.X) < 1 || Math.Abs(off.Z) < 1;
 }
 
-class P2HeavenlyStrike(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.HeavenlyStrike))
+class P2HeavenlyStrike(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.HeavenlyStrike))
 {
     private readonly WDir[] _safeDirs = BuildSafeDirs(module);
     private readonly DateTime _activation = module.WorldState.FutureTime(3.9d);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        return new Source[1] { new(Arena.Center, 12, _activation) };
+        return new Knockback[1] { new(Arena.Center, 12, _activation) };
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -355,7 +355,7 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
     }
 }
 
-class P2SinboundHolyVoidzone(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class P2SinboundHolyVoidzone(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     public bool AIHintsEnabled = true;
 

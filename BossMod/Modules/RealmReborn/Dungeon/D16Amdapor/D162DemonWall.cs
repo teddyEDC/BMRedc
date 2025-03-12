@@ -18,7 +18,7 @@ public enum AID : uint
 class LiquefyCenter(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.LiquefyCenter), new AOEShapeRect(50f, 4f));
 class LiquefySides(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.LiquefySides), new AOEShapeRect(50f, 3.5f));
 
-class Repel(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Repel), 20f, true)
+class Repel(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Repel), 20f, true)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

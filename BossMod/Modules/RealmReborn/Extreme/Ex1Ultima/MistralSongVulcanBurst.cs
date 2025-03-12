@@ -33,8 +33,8 @@ class MistralSongVulcanBurst(BossModule module) : Components.GenericAOEs(module,
             var a1 = Angle.FromDirection(p1 - Module.PrimaryActor.Position);
             var a2 = Angle.FromDirection(p2 - Module.PrimaryActor.Position);
             if (a2.Rad > a1.Rad)
-                a2 -= 360.Degrees();
-            hints.AddForbiddenZone(ShapeDistance.Cone(Module.PrimaryActor.Position, 40, (a1 + a2) / 2, (a1 - a2) / 2), _resolve);
+                a2 -= 360f.Degrees();
+            hints.AddForbiddenZone(ShapeDistance.Cone(Module.PrimaryActor.Position, 40f, (a1 + a2) / 2, (a1 - a2) / 2), _resolve);
         }
         else
         {
@@ -46,8 +46,8 @@ class MistralSongVulcanBurst(BossModule module) : Components.GenericAOEs(module,
     {
         base.DrawArenaForeground(pcSlot, pc);
 
-        var adjPos = _burstImminent ? Arena.ClampToBounds(Components.Knockback.AwayFromSource(pc.Position, Module.PrimaryActor, 30f)) : pc.Position;
-        Components.Knockback.DrawKnockback(pc, adjPos, Arena);
+        var adjPos = _burstImminent ? Arena.ClampToBounds(Components.GenericKnockback.AwayFromSource(pc.Position, Module.PrimaryActor, 30f)) : pc.Position;
+        Components.GenericKnockback.DrawKnockback(pc, adjPos, Arena);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

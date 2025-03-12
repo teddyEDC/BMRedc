@@ -68,7 +68,7 @@ class Tornado(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSp
 class FourfoldSuffering(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FourfoldSuffering), new AOEShapeDonut(5f, 50f));
 class AncientAero(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AncientAero), new AOEShapeRect(42.4f, 3f));
 class AncientAeroIII(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AncientAeroIII));
-class AncientAeroIIIKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.AncientAeroIII), 10f, shape: new AOEShapeCircle(30f));
+class AncientAeroIIIKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AncientAeroIII), 10f, shape: new AOEShapeCircle(30f));
 
 class AglaopeStates : StateMachineBuilder
 {

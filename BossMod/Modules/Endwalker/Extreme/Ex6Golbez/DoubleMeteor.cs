@@ -1,14 +1,14 @@
 ﻿namespace BossMod.Endwalker.Extreme.Ex6Golbez;
 
-class DragonsDescent(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.DragonsDescent), ignoreImmunes: true)
+class DragonsDescent(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.DragonsDescent), ignoreImmunes: true)
 {
     private Actor? _source;
     private DateTime _activation;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_source != null && _source != actor)
-            return new Source[1] { new(_source.Position, 13f, _activation) };
+            return new Knockback[1] { new(_source.Position, 13f, _activation) };
         return [];
     }
 

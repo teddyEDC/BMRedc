@@ -1,11 +1,11 @@
 ﻿namespace BossMod.Dawntrail.Chaotic.Ch01CloudOfDarkness;
 
-class EnaeroEndeath(BossModule module) : Components.Knockback(module)
+class EnaeroEndeath(BossModule module) : Components.GenericKnockback(module)
 {
-    private Source? _source;
+    private Knockback? _source;
     private Kind _delayed;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _source);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _source);
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos) => _source?.Kind == Kind.TowardsOrigin ? (pos - _source.Value.Origin).LengthSq() <= 36f : !Module.InBounds(pos);
 
     public override void AddHints(int slot, Actor actor, TextHints hints)

@@ -1,19 +1,19 @@
 ﻿namespace BossMod.Endwalker.Savage.P10SPandaemonium;
 
-class WickedStep(BossModule module) : Components.Knockback(module, ignoreImmunes: true)
+class WickedStep(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true)
 {
     private readonly Actor?[] _towers = [null, null];
 
     private const float _towerRadius = 4;
     private const float _knockbackRadius = 36;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         var len = _towers.Length;
         if (len == 0)
             return [];
 
-        var sources = new List<Source>();
+        var sources = new List<Knockback>();
 
         for (var i = 0; i < len; ++i)
         {

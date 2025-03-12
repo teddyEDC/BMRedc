@@ -118,7 +118,7 @@ class PathogenicPowerAOE(BossModule module) : Components.GenericAOEs(module)
             _aoes.RemoveAt(0);
     }
 }
-class PathogenicPowerKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.PathogenicPowerKB), 13f)
+class PathogenicPowerKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.PathogenicPowerKB), 13f)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

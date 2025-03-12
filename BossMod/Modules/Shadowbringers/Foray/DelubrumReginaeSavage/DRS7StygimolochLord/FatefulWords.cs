@@ -1,14 +1,14 @@
 ﻿namespace BossMod.Shadowbringers.Foray.DelubrumReginae.DRS7StygimolochLord;
 
-class FatefulWords(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.FatefulWordsAOE), true)
+class FatefulWords(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.FatefulWordsAOE), true)
 {
     private readonly Kind[] _mechanics = new Kind[PartyState.MaxPartySize];
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         var kind = _mechanics[slot];
         if (kind != Kind.None)
-            return new Source[1] { new(Arena.Center, 6f, Module.CastFinishAt(Module.PrimaryActor.CastInfo), Kind: kind) };
+            return new Knockback[1] { new(Arena.Center, 6f, Module.CastFinishAt(Module.PrimaryActor.CastInfo), Kind: kind) };
         return [];
     }
 

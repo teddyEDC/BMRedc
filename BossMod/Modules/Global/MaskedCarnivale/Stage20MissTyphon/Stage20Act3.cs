@@ -25,11 +25,11 @@ class AquaBreath(BossModule module) : Components.SimpleAOEs(module, ActionID.Mak
 class Megavolt(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Megavolt), 11.1f);
 class Tentacle(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Tentacle), 8f);
 class Wallop(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Wallop), new AOEShapeRect(57.2f, 5f));
-class WallopKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Wallop), 20f, kind: Kind.AwayFromOrigin); //knockback actually delayed by 0.8s
+class WallopKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Wallop), 20f, kind: Kind.AwayFromOrigin); //knockback actually delayed by 0.8s
 class Fireball(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Fireball), 8f);
 class ImpSong(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.ImpSong), showNameInHint: true);
 class Snort(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.Snort), "Use Diamondback!");
-class SnortKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Snort), 30f, kind: Kind.AwayFromOrigin);  //knockback actually delayed by 0.7s
+class SnortKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Snort), 30f, kind: Kind.AwayFromOrigin);  //knockback actually delayed by 0.7s
 
 class Hints(BossModule module) : BossComponent(module)
 {

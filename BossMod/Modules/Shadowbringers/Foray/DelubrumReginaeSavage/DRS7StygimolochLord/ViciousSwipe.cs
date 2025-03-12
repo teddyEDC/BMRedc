@@ -1,12 +1,12 @@
 ﻿namespace BossMod.Shadowbringers.Foray.DelubrumReginae.DRS7StygimolochLord;
 
-class ViciousSwipe(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.ViciousSwipe))
+class ViciousSwipe(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.ViciousSwipe))
 {
-    private Source? _source = new(module.PrimaryActor.Position, 15, module.WorldState.FutureTime(module.StateMachine.ActiveState?.Duration ?? 0), _shape);
+    private Knockback? _source = new(module.PrimaryActor.Position, 15, module.WorldState.FutureTime(module.StateMachine.ActiveState?.Duration ?? 0), _shape);
 
     private static readonly AOEShapeCircle _shape = new(8f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _source);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _source);
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {

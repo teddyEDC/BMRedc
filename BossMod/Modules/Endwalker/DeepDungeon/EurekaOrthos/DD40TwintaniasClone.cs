@@ -23,7 +23,7 @@ public enum AID : uint
 }
 
 class Twister(BossModule module) : Components.CastTwister(module, 1.5f, (uint)OID.Twister, ActionID.MakeSpell(AID.TwisterVisual), 0.4f, 0.25f);
-class BitingWind(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.Gust), GetVoidzones, 0.9f)
+class BitingWind(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.Gust), GetVoidzones, 0.9f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {
@@ -80,7 +80,7 @@ class TwistingDive(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Turbine(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Turbine), 15f)
+class Turbine(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Turbine), 15f)
 {
     private readonly BitingWind _aoe = module.FindComponent<BitingWind>()!;
     private static readonly Angle a20 = 20f.Degrees();

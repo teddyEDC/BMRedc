@@ -92,13 +92,13 @@ class RestraintCollar(BossModule module) : BossComponent(module)
     }
 }
 
-class BigBoot(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.BigBoot), true, stopAtWall: true)
+class BigBoot(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.BigBoot), true, stopAtWall: true)
 {
     private Actor? _target;
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_target != null && _target == actor)
-            return new Source[1] { new(Module.PrimaryActor.Position, 15f) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 15f) };
         return [];
     }
 

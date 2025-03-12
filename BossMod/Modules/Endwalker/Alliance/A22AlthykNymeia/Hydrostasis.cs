@@ -1,12 +1,12 @@
 ﻿namespace BossMod.Endwalker.Alliance.A22AlthykNymeia;
 
-class Hydrostasis(BossModule module) : Components.Knockback(module)
+class Hydrostasis(BossModule module) : Components.GenericKnockback(module)
 {
-    private readonly List<Source> _sources = [];
+    private readonly List<Knockback> _sources = [];
 
     public bool Active => _sources.Count == 3 || NumCasts > 0;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Active ? CollectionsMarshal.AsSpan(_sources) : [];
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Active ? CollectionsMarshal.AsSpan(_sources) : [];
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

@@ -59,7 +59,7 @@ class P2SoarFlamingHalberd(BossModule module) : Components.UniformStackSpread(mo
     }
 }
 
-class P2SoarFlamingHalberdVoidzone(BossModule module) : Components.PersistentVoidzone(module, 8f, GetVoidzones)
+class P2SoarFlamingHalberdVoidzone(BossModule module) : Components.Voidzone(module, 8f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

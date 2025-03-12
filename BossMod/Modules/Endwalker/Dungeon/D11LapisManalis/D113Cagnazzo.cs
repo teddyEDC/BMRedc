@@ -103,7 +103,7 @@ class Antediluvian(BossModule module) : Components.SimpleAOEs(module, ActionID.M
 }
 
 class BodySlam(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BodySlam), 8f);
-class BodySlamKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BodySlamKB), 10f, true)
+class BodySlamKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BodySlamKB), 10f, true)
 {
     private readonly Antediluvian _aoe = module.FindComponent<Antediluvian>()!;
 

@@ -2,7 +2,7 @@
 
 class ByregotStrikeJump(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ByregotStrikeJump), 8f);
 class ByregotStrikeJumpCone(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ByregotStrikeJumpCone), 8f);
-class ByregotStrikeKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.ByregotStrikeKnockback), 18f);
+class ByregotStrikeKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.ByregotStrikeKnockback), 18f);
 
 class ByregotStrikeCone(BossModule module) : Components.GenericAOEs(module)
 {

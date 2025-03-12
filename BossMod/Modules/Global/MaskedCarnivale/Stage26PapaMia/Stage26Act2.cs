@@ -29,7 +29,7 @@ public enum IconID : uint
     BaitKnockback = 23, // player
 }
 
-class Thunderhead(BossModule module) : Components.PersistentVoidzone(module, 8f, GetVoidzones)
+class Thunderhead(BossModule module) : Components.Voidzone(module, 8f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {
@@ -50,15 +50,15 @@ class Thunderhead(BossModule module) : Components.PersistentVoidzone(module, 8f,
     }
 }
 
-class DadJoke(BossModule module) : Components.Knockback(module)
+class DadJoke(BossModule module) : Components.GenericKnockback(module)
 {
     private DateTime _activation;
     private readonly Thunderhead _aoe = module.FindComponent<Thunderhead>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_activation != default)
-            return new Source[1] { new(Module.PrimaryActor.Position, 15f, _activation, Direction: Angle.FromDirection(actor.Position - Module.PrimaryActor.Position), Kind: Kind.DirForward) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 15f, _activation, Direction: Angle.FromDirection(actor.Position - Module.PrimaryActor.Position), Kind: Kind.DirForward) };
         return [];
     }
 

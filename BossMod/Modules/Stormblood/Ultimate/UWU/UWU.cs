@@ -9,7 +9,7 @@ class P2Incinerate(BossModule module) : Components.Cleave(module, ActionID.MakeS
 class P3RockBuster(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.RockBuster), new AOEShapeCone(10.55f, 60f.Degrees()), [(uint)OID.Titan]); // TODO: verify angle
 class P3MountainBuster(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.MountainBuster), new AOEShapeCone(15.55f, 45f.Degrees()), [(uint)OID.Titan]); // TODO: verify angle
 class P3WeightOfTheLand(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WeightOfTheLandAOE), 6f);
-class P3Upheaval(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Upheaval), 24f, true);
+class P3Upheaval(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Upheaval), 24f, true);
 class P3Tumult(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.Tumult));
 class P4Blight(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.Blight));
 class P4HomingLasers(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.HomingLasers), 4f);
@@ -22,7 +22,7 @@ class P5AetherochemicalLaserRight(BossModule module) : P5AetherochemicalLaser(mo
 class P5AetherochemicalLaserLeft(BossModule module) : P5AetherochemicalLaser(module, AID.AetherochemicalLaserLeft);
 
 class P5LightPillar(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.LightPillarAOE), 3); // TODO: consider showing circle around baiter
-class P5AethericBoom(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.AethericBoom), 10);
+class P5AethericBoom(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AethericBoom), 10);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, PrimaryActorOID = (uint)OID.Garuda, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 539, PlanLevel = 70)]
 public class UWU : BossModule
@@ -32,7 +32,7 @@ public class UWU : BossModule
     private readonly List<Actor> _ultima;
     private Actor? _mainIfrit;
 
-    public List<Actor> Ifrits { get; }
+    public List<Actor> Ifrits;
 
     public Actor? Garuda() => PrimaryActor.IsDestroyed ? null : PrimaryActor;
     public Actor? Ifrit() => _mainIfrit;
@@ -52,8 +52,16 @@ public class UWU : BossModule
     {
         if (_mainIfrit == null && StateMachine.ActivePhaseIndex == 1)
         {
-            var b = Ifrits;
-            _mainIfrit = b.Count != 0 && b[0].IsTargetable ? b[0] : null;
+            var count = Ifrits.Count;
+            for (var i = 0; i < count; ++i)
+            {
+                var ifrit = Ifrits[i];
+                if (ifrit.IsTargetable)
+                {
+                    _mainIfrit = ifrit;
+                    return;
+                }
+            }
         }
     }
 

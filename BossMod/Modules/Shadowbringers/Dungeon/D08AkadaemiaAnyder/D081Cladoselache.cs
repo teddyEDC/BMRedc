@@ -30,7 +30,7 @@ class PelagicCleaver2(BossModule module) : Components.SimpleAOEs(module, ActionI
 class TidalGuillotine1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TidalGuillotine1), 13f);
 class TidalGuillotine2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TidalGuillotine2), 13f);
 class AquaticLance(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.AquaticLance), 8f);
-class AquaticLanceVoidzone(BossModule module) : Components.PersistentVoidzone(module, 8f, GetVoidzones)
+class AquaticLanceVoidzone(BossModule module) : Components.Voidzone(module, 8f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

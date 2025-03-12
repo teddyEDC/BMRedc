@@ -55,7 +55,7 @@ class DecimationArenaChange(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class ElectromagneticRepellant(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 9f, ActionID.MakeSpell(AID.ElectromagneticRepellant), GetVoidzone, 0.7f)
+class ElectromagneticRepellant(BossModule module) : Components.VoidzoneAtCastTarget(module, 9f, ActionID.MakeSpell(AID.ElectromagneticRepellant), GetVoidzone, 0.7f)
 {
     private static Actor[] GetVoidzone(BossModule module)
     {
@@ -77,7 +77,7 @@ class Elimination(BossModule module) : Components.BaitAwayCast(module, ActionID.
 class Decimation(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Decimation));
 class EclipsingExhaust(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.EclipsingExhaust));
 
-class EclipsingExhaustKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.EclipsingExhaust), 11f)
+class EclipsingExhaustKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.EclipsingExhaust), 11f)
 {
     private static readonly Angle a36 = 36f.Degrees();
     private readonly Peacefire _aoe = module.FindComponent<Peacefire>()!;

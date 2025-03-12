@@ -52,14 +52,14 @@ class ArcaneRevelation(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class DismissalOverruling(BossModule module) : Components.Knockback(module)
+class DismissalOverruling(BossModule module) : Components.GenericKnockback(module)
 {
     private Actor? _source;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_source != null)
-            return new Source[1] { new(_source.Position, 11f, Module.CastFinishAt(_source.CastInfo)) };
+            return new Knockback[1] { new(_source.Position, 11f, Module.CastFinishAt(_source.CastInfo)) };
         return [];
     }
 

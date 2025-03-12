@@ -89,7 +89,7 @@ class MorbidRetreat(BossModule module) : Components.ActionDrivenForcedMarch(modu
 
 class SomberMelody(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.SomberMelody));
 class VoidWaterIII(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VoidWaterIII), 8f);
-class Voidzone(BossModule module) : Components.PersistentVoidzone(module, 7f, GetVoidzones)
+class Voidzone(BossModule module) : Components.Voidzone(module, 7f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

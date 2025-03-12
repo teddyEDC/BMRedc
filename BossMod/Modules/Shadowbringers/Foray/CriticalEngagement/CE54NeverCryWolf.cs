@@ -49,7 +49,7 @@ class IcePillar(BossModule module) : Components.SimpleAOEs(module, ActionID.Make
 class PillarPierce(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PillarPierce), new AOEShapeRect(80f, 2f));
 class Shatter(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Shatter), 8f);
 
-class BracingWind(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BracingWind), 40f, false, 1, new AOEShapeRect(60f, 6f), Kind.DirForward)
+class BracingWind(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BracingWind), 40f, false, 1, new AOEShapeRect(60f, 6f), Kind.DirForward)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

@@ -18,7 +18,7 @@ public enum AID : uint
     TheRamsKeeper = 15081 // Boss->location, 6.0s cast, range 9 circle
 }
 
-class TheRamsKeeper(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 9f, ActionID.MakeSpell(AID.TheRamsKeeper), GetVoidzones, 0.9f)
+class TheRamsKeeper(BossModule module) : Components.VoidzoneAtCastTarget(module, 9f, ActionID.MakeSpell(AID.TheRamsKeeper), GetVoidzones, 0.9f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

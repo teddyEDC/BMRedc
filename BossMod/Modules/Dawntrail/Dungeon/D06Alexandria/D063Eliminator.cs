@@ -129,7 +129,7 @@ class Explosion : Components.SimpleAOEs
     }
 }
 
-class Impact(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Impact), 15f)
+class Impact(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Impact), 15f)
 {
     private static readonly Angle halfAngle = 45f.Degrees();
 

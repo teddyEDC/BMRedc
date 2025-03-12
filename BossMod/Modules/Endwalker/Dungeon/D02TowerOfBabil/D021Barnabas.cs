@@ -63,7 +63,7 @@ class ArenaChange(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes: true)
+class Magnetism(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true)
 {
     private readonly ElectromagneticRelease1 _aoe1 = module.FindComponent<ElectromagneticRelease1>()!;
     private readonly ElectromagneticRelease2 _aoe2 = module.FindComponent<ElectromagneticRelease2>()!;
@@ -85,9 +85,9 @@ class Magnetism(BossModule module) : Components.Knockback(module, ignoreImmunes:
     private bool IsPull(Actor actor, Shape shape, MagneticPole pole)
         => CurrentShape == shape && CurrentPole == pole && iconOnActor.Contains((actor, (uint)(pole == MagneticPole.Plus ? IconID.Minus : IconID.Plus)));
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        var sources = new List<Source>(2);
+        var sources = new List<Knockback>(2);
         if (IsKnockback(actor, Shape.Rect, MagneticPole.Plus) || IsKnockback(actor, Shape.Rect, MagneticPole.Minus))
         {
             sources.Add(new(Arena.Center, RectDistance, activation, _shape, rotation + offset, Kind.DirForward));

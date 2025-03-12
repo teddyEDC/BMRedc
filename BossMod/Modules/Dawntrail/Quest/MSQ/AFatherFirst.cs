@@ -159,15 +159,15 @@ class BurningSun(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class BrawlEnder(BossModule module) : Components.Knockback(module, stopAtWall: true)
+class BrawlEnder(BossModule module) : Components.GenericKnockback(module, stopAtWall: true)
 {
     private DateTime activation;
     private readonly FireVoidzone _aoe = module.FindComponent<FireVoidzone>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (activation != default)
-            return new Source[1] { new(actor.Position, 20f, activation, default, actor.Rotation, Kind.DirForward) };
+            return new Knockback[1] { new(actor.Position, 20f, activation, default, actor.Rotation, Kind.DirForward) };
         return [];
     }
 
@@ -201,7 +201,7 @@ abstract class TheThrill(BossModule module, AID aid) : Components.CastTowers(mod
 class TheThrill1(BossModule module) : TheThrill(module, AID.TheThrill1);
 class TheThrill2(BossModule module) : TheThrill(module, AID.TheThrill2);
 
-class FireVoidzone(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class FireVoidzone(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

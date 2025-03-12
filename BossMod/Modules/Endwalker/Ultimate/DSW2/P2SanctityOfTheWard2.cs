@@ -2,10 +2,10 @@
 
 class P2SanctityOfTheWard2HeavensStakeCircles(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HeavensStakeAOE), 7);
 class P2SanctityOfTheWard2HeavensStakeDonut(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HeavensStakeDonut), new AOEShapeDonut(15, 30));
-class P2SanctityOfTheWard2VoidzoneFire(BossModule module) : Components.PersistentVoidzone(module, 7, m => m.Enemies(OID.VoidzoneFire).Where(z => z.EventState != 7));
-class P2SanctityOfTheWard2VoidzoneIce(BossModule module) : Components.PersistentVoidzone(module, 7, m => m.Enemies(OID.VoidzoneIce).Where(z => z.EventState != 7));
+class P2SanctityOfTheWard2VoidzoneFire(BossModule module) : Components.Voidzone(module, 7, m => m.Enemies(OID.VoidzoneFire).Where(z => z.EventState != 7));
+class P2SanctityOfTheWard2VoidzoneIce(BossModule module) : Components.Voidzone(module, 7, m => m.Enemies(OID.VoidzoneIce).Where(z => z.EventState != 7));
 
-class P2SanctityOfTheWard2Knockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.FaithUnmoving), 16)
+class P2SanctityOfTheWard2Knockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.FaithUnmoving), 16)
 {
     private readonly DSW2Config _config = Service.Config.Get<DSW2Config>();
 

@@ -126,16 +126,16 @@ class RavenousGale(BossModule module) : Components.GenericAOEs(module)
 class TwinAgonies(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.TwinAgonies), "Heavy Tankbuster, use Manawall or tank mitigations");
 class WindsPeak(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.WindsPeak1), 5f);
 
-class WindsPeakKB(BossModule module) : Components.Knockback(module)
+class WindsPeakKB(BossModule module) : Components.GenericKnockback(module)
 {
     private DateTime Time;
     private bool watched;
     private DateTime _activation;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (watched && WorldState.CurrentTime < Time.AddSeconds(4.4d))
-            return new Source[1] { new(Module.PrimaryActor.Position, 15f, _activation) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 15f, _activation) };
         else
             return [];
     }

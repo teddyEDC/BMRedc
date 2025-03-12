@@ -133,7 +133,7 @@ class PricklyRight(BossModule module) : Prickly(module, AID.PricklyRight);
 class PricklyLeft(BossModule module) : Prickly(module, AID.PricklyLeft);
 
 class SucculentStomp(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.SucculentStomp), 6f, 4, 4);
-class BarrelBreaker(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BarrelBreaker), 20f)
+class BarrelBreaker(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BarrelBreaker), 20f)
 {
     private static readonly Angle a5 = 5f.Degrees(), a135 = 135f.Degrees(), a45 = 45f.Degrees();
     private readonly NeedleStormSuperstormHeavyWeightNeedles _aoe = module.FindComponent<NeedleStormSuperstormHeavyWeightNeedles>()!;

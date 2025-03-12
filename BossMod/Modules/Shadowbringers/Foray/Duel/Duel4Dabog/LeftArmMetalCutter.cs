@@ -41,12 +41,12 @@ class LeftArmMetalCutterAOE(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class LeftArmMetalCutterKnockback(BossModule module, AID aid, float distance) : Components.Knockback(module, ActionID.MakeSpell(aid))
+class LeftArmMetalCutterKnockback(BossModule module, AID aid, float distance) : Components.GenericKnockback(module, ActionID.MakeSpell(aid))
 {
     private readonly float _distance = distance;
-    private Source? _instance;
+    private Knockback? _instance;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _instance);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _instance);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

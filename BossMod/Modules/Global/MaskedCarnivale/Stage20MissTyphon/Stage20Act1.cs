@@ -15,7 +15,7 @@ public enum AID : uint
 
 class Fireball(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Fireball), 8f);
 class Snort(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.Snort), "Use Diamondback!");
-class SnortKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Snort), 30f, kind: Kind.AwayFromOrigin, stopAtWall: true); // knockback actually delayed by 0.7s
+class SnortKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Snort), 30f, kind: Kind.AwayFromOrigin, stopAtWall: true); // knockback actually delayed by 0.7s
 
 class Hints(BossModule module) : BossComponent(module)
 {

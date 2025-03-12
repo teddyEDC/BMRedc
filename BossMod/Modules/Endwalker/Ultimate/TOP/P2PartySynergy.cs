@@ -211,11 +211,11 @@ class P2PartySynergyOpticalLaser(BossModule module) : Components.GenericAOEs(mod
     }
 }
 
-class P2PartySynergyDischarger(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.Discharger))
+class P2PartySynergyDischarger(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.Discharger))
 {
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
-        return new Source[1] { new(Arena.Center, 13f) }; // TODO: activation
+        return new Knockback[1] { new(Arena.Center, 13f) }; // TODO: activation
     }
 }
 

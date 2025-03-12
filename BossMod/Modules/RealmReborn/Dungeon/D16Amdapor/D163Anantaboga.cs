@@ -86,7 +86,7 @@ class PlagueDance(BossModule module) : BossComponent(module)
     }
 }
 
-class BubonicCloud(BossModule module) : Components.PersistentVoidzone(module, 11.5f, GetDarkNova)
+class BubonicCloud(BossModule module) : Components.Voidzone(module, 11.5f, GetDarkNova)
 {
     private static List<Actor> GetDarkNova(BossModule module) => module.Enemies((uint)OID.DarkNova);
 }

@@ -152,7 +152,7 @@ class PalladionStack : Components.UniformStackSpread
     }
 }
 
-class PalladionVoidzone(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.PalladionAOE), GetVoidzones, 0.9f)
+class PalladionVoidzone(BossModule module) : Components.VoidzoneAtCastTarget(module, 6f, ActionID.MakeSpell(AID.PalladionAOE), GetVoidzones, 0.9f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

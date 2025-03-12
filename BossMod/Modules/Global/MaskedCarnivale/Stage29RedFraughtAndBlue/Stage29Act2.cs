@@ -46,23 +46,23 @@ public enum SID : uint
 }
 
 class BigSplash(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BigSplashFirst), "Diamondback! (Multiple raidwides + knockbacks)");
-class BigSplashKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.BigSplashFirst), 25f);
+class BigSplashKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BigSplashFirst), 25f);
 class Cascade(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Cascade), "Raidwide + Tornados spawn");
 class WateryGrasp(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.WateryGrasp), "Spawns hands. Focus left hand first.");
 class Throttle(BossModule module) : Components.CastHint(module, ActionID.MakeSpell(AID.Throttle), "Prepare to use Excuviation to remove debuff");
 class FluidSwing(BossModule module) : Components.CastInterruptHint(module, ActionID.MakeSpell(AID.FluidSwing));
-class FluidSwingKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.FluidSwing), 50f, kind: Kind.DirForward);
+class FluidSwingKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.FluidSwing), 50f, kind: Kind.DirForward);
 
 abstract class ProteanWave(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(39f, 15f.Degrees()));
 class ProteanWave1(BossModule module) : ProteanWave(module, AID.ProteanWave1);
 class ProteanWave3(BossModule module) : ProteanWave(module, AID.ProteanWave3);
 
-class KnockbackPull(BossModule module) : Components.Knockback(module)
+class KnockbackPull(BossModule module) : Components.GenericKnockback(module)
 {
-    private Source? _knockback;
+    private Knockback? _knockback;
     private readonly FluidConvectionDynamic _aoe = module.FindComponent<FluidConvectionDynamic>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _knockback);
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {

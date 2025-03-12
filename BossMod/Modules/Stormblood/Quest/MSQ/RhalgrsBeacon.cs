@@ -78,15 +78,15 @@ class TerminusEst(BossModule module) : Components.GenericAOEs(module, ActionID.M
     }
 }
 
-class Gunblade(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.Gunblade), stopAtWall: true)
+class Gunblade(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.Gunblade), stopAtWall: true)
 {
     private Actor? _caster;
     private readonly ChoppingBlock _aoe = module.FindComponent<ChoppingBlock>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_caster is Actor c)
-            return new Source[1] { new(c.Position, 10f, Module.CastFinishAt(c.CastInfo)) };
+            return new Knockback[1] { new(c.Position, 10f, Module.CastFinishAt(c.CastInfo)) };
         return [];
     }
 
@@ -123,7 +123,7 @@ class Gunblade(BossModule module) : Components.Knockback(module, ActionID.MakeSp
     }
 }
 
-class ChoppingBlock(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.ChoppingBlock1), GetVoidzones, 0f)
+class ChoppingBlock(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.ChoppingBlock1), GetVoidzones, 0f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

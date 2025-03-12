@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Endwalker.Extreme.Ex5Rubicante;
 
-class ArchInferno(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.ArchInferno), GetVoidzone, 0f)
+class ArchInferno(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.ArchInferno), GetVoidzone, 0f)
 {
     private static Actor[] GetVoidzone(BossModule module)
     {

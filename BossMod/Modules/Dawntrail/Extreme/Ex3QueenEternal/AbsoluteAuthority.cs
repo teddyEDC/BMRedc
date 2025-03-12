@@ -62,4 +62,4 @@ class AbsoluteAuthorityHeel(BossModule module) : Components.GenericStackSpread(m
     }
 }
 
-class AbsoluteAuthorityKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.AbsoluteAuthorityKnockback), 30, kind: Kind.DirForward);
+class AbsoluteAuthorityKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AbsoluteAuthorityKnockback), 30, kind: Kind.DirForward);

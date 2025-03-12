@@ -29,7 +29,7 @@ public enum AID : uint
     Overcharge = 1435 // SixthCohortVanguard->self, 2.5s cast, range 8+R 120-degree cone
 }
 
-class GarleanFire(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 8f, ActionID.MakeSpell(AID.GarleanFire), GetVoidzones, 0.2f)
+class GarleanFire(BossModule module) : Components.VoidzoneAtCastTarget(module, 8f, ActionID.MakeSpell(AID.GarleanFire), GetVoidzones, 0.2f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

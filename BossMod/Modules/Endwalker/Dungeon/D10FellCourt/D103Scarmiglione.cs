@@ -203,9 +203,9 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class VacuumWave(BossModule module) : Components.Knockback(module, ignoreImmunes: true)
+class VacuumWave(BossModule module) : Components.GenericKnockback(module, ignoreImmunes: true)
 {
-    private Source? _source;
+    private Knockback? _source;
     public readonly List<SafeWall> safeWalls =
     [
         new(new(-36.947f, -278.523f), new(-45.457f, -281.453f)), // ENVC 0B
@@ -222,7 +222,7 @@ class VacuumWave(BossModule module) : Components.Knockback(module, ignoreImmunes
         new(new(-24.543f, -281.453f), new(-33.053f, -278.523f)), // ENVC 0A
     ];
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => Utils.ZeroOrOne(ref _source);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => Utils.ZeroOrOne(ref _source);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

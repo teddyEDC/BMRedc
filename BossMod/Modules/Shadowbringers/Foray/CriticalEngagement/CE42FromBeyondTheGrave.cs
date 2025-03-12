@@ -90,7 +90,7 @@ class GallowsMarch(BossModule module) : Components.StatusDrivenForcedMarch(modul
     }
 }
 
-class ShockSphere(BossModule module) : Components.PersistentVoidzone(module, 7f, GetSpheres)
+class ShockSphere(BossModule module) : Components.Voidzone(module, 7f, GetSpheres)
 {
     private static List<Actor> GetSpheres(BossModule module) => module.Enemies((uint)OID.ShockSphere);
 }

@@ -1,13 +1,13 @@
 ﻿namespace BossMod.Endwalker.Savage.P8S1Hephaistos;
 
-class QuadrupedalImpact(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.QuadrupedalImpactAOE), true)
+class QuadrupedalImpact(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.QuadrupedalImpactAOE), true)
 {
     private WPos? _source;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_source != null)
-            return new Source[1] { new(_source.Value, 30f) }; // TODO: activation
+            return new Knockback[1] { new(_source.Value, 30f) }; // TODO: activation
         return [];
     }
 
@@ -124,26 +124,26 @@ class BlazingFootfalls(BossModule module) : BossComponent(module)
         {
             // draw knockback from first trailblaze
             var adjPos = pc.Position + _trailblazeKnockbackDistance * new WDir(pc.Position.X < Arena.Center.X ? -1 : 1, 0);
-            Components.Knockback.DrawKnockback(pc, adjPos, Arena);
+            Components.GenericKnockback.DrawKnockback(pc, adjPos, Arena);
         }
         if (NumMechanicsDone == 2)
         {
             // draw knockback from second trailblaze
             var adjPos = pc.Position + _trailblazeKnockbackDistance * new WDir(0, pc.Position.Z < Arena.Center.Z ? -1 : 1);
-            Components.Knockback.DrawKnockback(pc, adjPos, Arena);
+            Components.GenericKnockback.DrawKnockback(pc, adjPos, Arena);
         }
 
         if (!_firstCrush && NumMechanicsDone == 1)
         {
             // draw knockback from first impact
-            var adjPos = Components.Knockback.AwayFromSource(pc.Position, Arena.Center + Arena.Bounds.Radius * new WDir(_firstSafeLeft ? -1 : 1, 0), _impactKnockbackRadius);
-            Components.Knockback.DrawKnockback(pc, adjPos, Arena);
+            var adjPos = Components.GenericKnockback.AwayFromSource(pc.Position, Arena.Center + Arena.Bounds.Radius * new WDir(_firstSafeLeft ? -1 : 1, 0), _impactKnockbackRadius);
+            Components.GenericKnockback.DrawKnockback(pc, adjPos, Arena);
         }
         if (_firstCrush && NumMechanicsDone == 3)
         {
             // draw knockback from second impact
-            var adjPos = Components.Knockback.AwayFromSource(pc.Position, Arena.Center + Arena.Bounds.Radius * new WDir(0, _secondSafeTop ? -1 : 1), _impactKnockbackRadius);
-            Components.Knockback.DrawKnockback(pc, adjPos, Arena);
+            var adjPos = Components.GenericKnockback.AwayFromSource(pc.Position, Arena.Center + Arena.Bounds.Radius * new WDir(0, _secondSafeTop ? -1 : 1), _impactKnockbackRadius);
+            Components.GenericKnockback.DrawKnockback(pc, adjPos, Arena);
         }
     }
 

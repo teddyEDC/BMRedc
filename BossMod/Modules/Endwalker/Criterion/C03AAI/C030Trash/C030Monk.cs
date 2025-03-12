@@ -1,13 +1,13 @@
 ﻿namespace BossMod.Endwalker.VariantCriterion.C03AAI.C030Trash1;
 
-class Hydroshot(BossModule module) : Components.Knockback(module)
+class Hydroshot(BossModule module) : Components.GenericKnockback(module)
 {
     private Actor? _caster;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_caster?.CastInfo?.TargetID == actor.InstanceID)
-            return new Source[1] { new(_caster.Position, 10f, Module.CastFinishAt(_caster.CastInfo)) };
+            return new Knockback[1] { new(_caster.Position, 10f, Module.CastFinishAt(_caster.CastInfo)) };
         return [];
     }
 

@@ -27,7 +27,7 @@ class Exhaust(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSp
 class AutoCannons(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AutoCannons), new AOEShapeRect(42f, 2.5f));
 class SpawnReservoir(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SpawnReservoir), 3f);
 
-class ClockworkReservoir(BossModule module) : Components.PersistentVoidzone(module, 3f, GetVoidzones)
+class ClockworkReservoir(BossModule module) : Components.Voidzone(module, 3f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

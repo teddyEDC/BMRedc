@@ -16,7 +16,7 @@ public enum AID : uint
 }
 
 class BoulderClap(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.BoulderClap), new AOEShapeCone(14f, 60f.Degrees()));
-class EarthenHeart(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(AID.EarthenHeart), GetVoidzones, 1.2f)
+class EarthenHeart(BossModule module) : Components.VoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(AID.EarthenHeart), GetVoidzones, 1.2f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

@@ -125,7 +125,7 @@ class P3WaveRepeater(BossModule module) : Components.ConcentricAOEs(module, _sha
     }
 }
 
-class P3IntermissionVoidzone(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class P3IntermissionVoidzone(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

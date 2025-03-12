@@ -1,9 +1,9 @@
-﻿using static BossMod.Components.Knockback;
+﻿using static BossMod.Components.GenericKnockback;
 
 namespace BossMod.Components;
 
 // generic knockback/attract component; it's a cast counter for convenience
-public abstract class Knockback(BossModule module, ActionID aid = new(), bool ignoreImmunes = false, int maxCasts = int.MaxValue, bool stopAtWall = false, bool stopAfterWall = false, List<SafeWall>? safeWalls = null) : CastCounter(module, aid)
+public abstract class GenericKnockback(BossModule module, ActionID aid = new(), bool ignoreImmunes = false, int maxCasts = int.MaxValue, bool stopAtWall = false, bool stopAfterWall = false, List<SafeWall>? safeWalls = null) : CastCounter(module, aid)
 {
     public enum Kind
     {
@@ -16,7 +16,7 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
         DirRight, // directional knockback - forward along source's direction - 90 degrees
     }
 
-    public record struct Source(
+    public record struct Knockback(
         WPos Origin,
         float Distance,
         DateTime Activation = default,
@@ -64,7 +64,7 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
     public static void DrawKnockback(Actor actor, WPos adjPos, MiniArena arena) => DrawKnockback(actor.Position, adjPos, actor.Rotation, arena);
 
     // note: if implementation returns multiple sources, it is assumed they are applied sequentially (so they should be pre-sorted in activation order)
-    public abstract ReadOnlySpan<Source> ActiveSources(int slot, Actor actor);
+    public abstract ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor);
 
     // called to determine whether we need to show hint
     public virtual bool DestinationUnsafe(int slot, Actor actor, WPos pos) => !StopAtWall && !Module.InBounds(pos);
@@ -130,7 +130,7 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
         var movements = new List<(WPos, WPos)>();
         var from = actor.Position;
         var count = 0;
-        foreach (var s in ActiveSources(slot, actor))
+        foreach (var s in ActiveKnockbacks(slot, actor))
         {
             if (IsImmune(slot, s.Activation))
                 continue; // this source won't affect player due to immunity
@@ -199,8 +199,8 @@ public abstract class Knockback(BossModule module, ActionID aid = new(), bool ig
 
 // generic 'knockback from/attract to cast target' component
 // TODO: knockback is really applied when effectresult arrives rather than when actioneffect arrives, this is important for ai hints (they can reposition too early otherwise)
-public class KnockbackFromCastTarget(BossModule module, ActionID aid, float distance, bool ignoreImmunes = false, int maxCasts = int.MaxValue, AOEShape? shape = null, Kind kind = Kind.AwayFromOrigin, float minDistance = 0, bool minDistanceBetweenHitboxes = false, bool stopAtWall = false, bool stopAfterWall = false, List<SafeWall>? safeWalls = null)
-    : Knockback(module, aid, ignoreImmunes, maxCasts, stopAtWall, stopAfterWall, safeWalls)
+public class SimpleKnockbacks(BossModule module, ActionID aid, float distance, bool ignoreImmunes = false, int maxCasts = int.MaxValue, AOEShape? shape = null, Kind kind = Kind.AwayFromOrigin, float minDistance = 0, bool minDistanceBetweenHitboxes = false, bool stopAtWall = false, bool stopAfterWall = false, List<SafeWall>? safeWalls = null)
+    : GenericKnockback(module, aid, ignoreImmunes, maxCasts, stopAtWall, stopAfterWall, safeWalls)
 {
     public readonly float Distance = distance;
     public readonly AOEShape? Shape = shape;
@@ -209,12 +209,12 @@ public class KnockbackFromCastTarget(BossModule module, ActionID aid, float dist
     public readonly bool MinDistanceBetweenHitboxes = minDistanceBetweenHitboxes;
     public readonly List<Actor> Casters = [];
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         var count = Casters.Count;
         if (count == 0)
             return [];
-        var sources = new Source[count];
+        var knockbacks = new Knockback[count];
         for (var i = 0; i < count; ++i)
         {
             var c = Casters[i];
@@ -222,15 +222,15 @@ public class KnockbackFromCastTarget(BossModule module, ActionID aid, float dist
             var minDist = MinDistance + (MinDistanceBetweenHitboxes ? actor.HitboxRadius + c.HitboxRadius : 0);
             if (c.CastInfo!.TargetID == c.InstanceID)
             {
-                sources[i] = new(c.CastInfo.LocXZ, Distance, Module.CastFinishAt(c.CastInfo), Shape, c.CastInfo.Rotation, KnockbackKind, minDist);
+                knockbacks[i] = new(c.CastInfo.LocXZ, Distance, Module.CastFinishAt(c.CastInfo), Shape, c.CastInfo.Rotation, KnockbackKind, minDist);
             }
             else
             {
                 var origin = c.CastInfo.LocXZ;
-                sources[i] = new(origin, Distance, Module.CastFinishAt(c.CastInfo), Shape, Angle.FromDirection(origin - c.Position), KnockbackKind, minDist);
+                knockbacks[i] = new(origin, Distance, Module.CastFinishAt(c.CastInfo), Shape, Angle.FromDirection(origin - c.Position), KnockbackKind, minDist);
             }
         }
-        return sources;
+        return knockbacks;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

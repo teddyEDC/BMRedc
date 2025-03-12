@@ -30,7 +30,7 @@ class DragonsBreath(BossModule module) : Breath(module, AID.DragonsBreath);
 
 class RamsVoice(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.RamsVoice), 9.7f);
 class DragonsVoice(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.DragonsVoice), new AOEShapeDonut(8f, 30f));
-class RamsKeeper(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(AID.RamsKeeper), GetVoidzones, 0.8f)
+class RamsKeeper(BossModule module) : Components.VoidzoneAtCastTarget(module, 6, ActionID.MakeSpell(AID.RamsKeeper), GetVoidzones, 0.8f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {
@@ -51,7 +51,7 @@ class RamsKeeper(BossModule module) : Components.PersistentVoidzoneAtCastTarget(
     }
 }
 
-class ChaoticChorus(BossModule module) : Components.PersistentVoidzone(module, 6f, GetEnemies)
+class ChaoticChorus(BossModule module) : Components.Voidzone(module, 6f, GetEnemies)
 {
     private static Actor[] GetEnemies(BossModule module)
     {

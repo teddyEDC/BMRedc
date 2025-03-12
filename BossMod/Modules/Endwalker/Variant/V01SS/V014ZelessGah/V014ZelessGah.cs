@@ -8,7 +8,7 @@ class CastShadowNext(BossModule module) : Components.SimpleAOEs(module, ActionID
 
 class FiresteelFracture(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FiresteelFracture), new AOEShapeCone(50, 45.Degrees()));
 
-class InfernGaleKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Unknown2), 20, shape: new AOEShapeCircle(80));
+class InfernGaleKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Unknown2), 20, shape: new AOEShapeCircle(80));
 
 class ShowOfStrength(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ShowOfStrength));
 

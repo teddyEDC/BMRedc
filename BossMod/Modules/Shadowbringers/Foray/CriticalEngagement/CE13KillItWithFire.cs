@@ -37,7 +37,7 @@ public enum SID : uint
     JealousAnaphylaxis = 2302, // Helper->player, extra=0x0
 }
 
-class Pheromones(BossModule module) : Components.PersistentVoidzone(module, 4f, GetVoidzones, 3f)
+class Pheromones(BossModule module) : Components.Voidzone(module, 4f, GetVoidzones, 3f)
 {
     private static List<Actor> GetVoidzones(BossModule module) => module.Enemies((uint)OID.Pheromones);
 }

@@ -1,13 +1,13 @@
 ﻿namespace BossMod.Endwalker.Unreal.Un4Zurvan;
 
-class P2DemonsClawKnockback(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.DemonsClaw), true)
+class P2DemonsClawKnockback(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.DemonsClaw), true)
 {
     private Actor? _caster;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_caster?.CastInfo?.TargetID == actor.InstanceID)
-            return new Source[1] { new(_caster.Position, 17f, Module.CastFinishAt(_caster.CastInfo)) };
+            return new Knockback[1] { new(_caster.Position, 17f, Module.CastFinishAt(_caster.CastInfo)) };
         return [];
     }
 

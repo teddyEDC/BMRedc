@@ -1,6 +1,6 @@
 namespace BossMod.Stormblood.Foray.BaldesionArsenal.BA4ProtoOzma;
 
-class Holy(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Holy), 3f)
+class Holy(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Holy), 3f)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
@@ -9,7 +9,7 @@ class Holy(BossModule module) : Components.KnockbackFromCastTarget(module, Actio
     }
 }
 
-class ShootingStar(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.ShootingStar), 8f, shape: new AOEShapeCircle(26f))
+class ShootingStar(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.ShootingStar), 8f, shape: new AOEShapeCircle(26f))
 {
     private readonly TransitionAttacks _aoe = module.FindComponent<TransitionAttacks>()!;
     private static readonly Angle a60 = 60f.Degrees(), am60 = -60.Degrees(), a180 = 180.Degrees(), a120 = 120f.Degrees(), am120 = -120f.Degrees(), a30 = 30f.Degrees();

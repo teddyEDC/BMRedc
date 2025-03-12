@@ -72,7 +72,7 @@ class TargetSearch(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class LockOn(BossModule module) : Components.PersistentVoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.LockOn), GetVoidzones, 0.7f)
+class LockOn(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.LockOn), GetVoidzones, 0.7f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

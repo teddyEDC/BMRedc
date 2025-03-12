@@ -17,11 +17,11 @@ class BurningChains(BossModule module) : Components.Chains(module, (uint)TetherI
 class SerZephirin(BossModule module) : Components.Adds(module, (uint)OID.SerZephirin);
 
 class BossReappear(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.BossReappear));
-class LightOfAscalon(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.LightOfAscalon), true)
+class LightOfAscalon(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.LightOfAscalon), true)
 {
-    private readonly List<Source> _sources = [];
+    private readonly List<Knockback> _sources = [];
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {

@@ -20,19 +20,19 @@ public enum AID : uint
 }
 
 class Fireball(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Fireball), 8f);
-class Snort(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.Snort), 15f, stopAtWall: true);
+class Snort(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.Snort), 15f, stopAtWall: true);
 
-class Fungah(BossModule module) : Components.Knockback(module, stopAtWall: true)
+class Fungah(BossModule module) : Components.GenericKnockback(module, stopAtWall: true)
 {
     private DateTime _activation;
     private bool otherpatterns;
     private static readonly AOEShapeCone cone = new(12.5f, 45f.Degrees());
     private readonly Explosion _aoe = module.FindComponent<Explosion>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_activation != default || otherpatterns)
-            return new Source[1] { new(Module.PrimaryActor.Position, 15f, _activation, cone, Direction: Angle.FromDirection(actor.Position - Module.PrimaryActor.Position)) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 15f, _activation, cone, Direction: Angle.FromDirection(actor.Position - Module.PrimaryActor.Position)) };
         return [];
     }
 

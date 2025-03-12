@@ -180,7 +180,7 @@ class WildAnguish2(BossModule module) : Components.GenericTowers(module)
     public override void AddHints(int slot, Actor actor, TextHints hints) { }
 }
 
-class WildRageKnockback(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.WildRageKnockback), 15)
+class WildRageKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.WildRageKnockback), 15)
 {
     private static readonly Angle a10 = 10f.Degrees(), a45 = 45f.Degrees();
 

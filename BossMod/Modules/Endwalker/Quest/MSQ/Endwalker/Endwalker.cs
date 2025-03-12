@@ -79,7 +79,7 @@ class VeilAsunder(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 class MortalCoil(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.MortalCoilVisual), new AOEShapeDonut(8f, 20f));
 class DiamondDust(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.DiamondDustVisual), "Raidwide. Turns floor to ice.");
 class DeadGaze(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.DeadGazeVisual));
-class TidalWave2(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.TidalWaveVisual2), 25f, kind: Kind.DirForward, stopAtWall: true);
+class TidalWave2(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.TidalWaveVisual2), 25f, kind: Kind.DirForward, stopAtWall: true);
 class SwiftAsShadow(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.SwiftAsShadow), 1f);
 class Extinguishment(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ExtinguishmentVisual), new AOEShapeDonut(10f, 30f));
 class TheEdgeUnbound2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TheEdgeUnbound2), 10f);

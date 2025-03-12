@@ -315,7 +315,7 @@ class ScarletFeverArenaChange(BossModule module) : Components.GenericAOEs(module
     }
 }
 
-class MesmerizingMelody(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.MesmerizingMelody), KnockbackDistance, kind: Kind.TowardsOrigin)
+class MesmerizingMelody(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.MesmerizingMelody), KnockbackDistance, kind: Kind.TowardsOrigin)
 {
     public const int KnockbackDistance = 11;
     public const float SafeDistance = Ex7Suzaku.OuterRadius - Ex7Suzaku.InnerRadius - KnockbackDistance - 0.5f;
@@ -328,7 +328,7 @@ class MesmerizingMelody(BossModule module) : Components.KnockbackFromCastTarget(
     }
 }
 
-class RuthlessRefrain(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.RuthlessRefrain), MesmerizingMelody.KnockbackDistance, kind: Kind.AwayFromOrigin)
+class RuthlessRefrain(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.RuthlessRefrain), MesmerizingMelody.KnockbackDistance, kind: Kind.AwayFromOrigin)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {

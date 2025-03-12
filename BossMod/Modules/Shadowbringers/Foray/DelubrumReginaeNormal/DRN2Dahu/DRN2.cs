@@ -6,14 +6,14 @@ class Firebreathe(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 class HeadDown(BossModule module) : Components.ChargeAOEs(module, ActionID.MakeSpell(AID.HeadDown), 2f);
 class HuntersClaw(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HuntersClaw), 8f);
 
-class FeralHowl(BossModule module) : Components.Knockback(module)
+class FeralHowl(BossModule module) : Components.GenericKnockback(module)
 {
     private Actor? _source;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_source != null)
-            return new Source[1] { new(_source.Position, 30f, Module.CastFinishAt(_source.CastInfo)) };
+            return new Knockback[1] { new(_source.Position, 30f, Module.CastFinishAt(_source.CastInfo)) };
         return [];
     }
 

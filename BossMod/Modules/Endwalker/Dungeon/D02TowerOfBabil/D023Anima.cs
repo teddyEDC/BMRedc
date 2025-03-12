@@ -111,7 +111,7 @@ class BoundlessPain(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Gravitons(BossModule module) : Components.PersistentVoidzone(module, 1f, GetVoidzones)
+class Gravitons(BossModule module) : Components.Voidzone(module, 1f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

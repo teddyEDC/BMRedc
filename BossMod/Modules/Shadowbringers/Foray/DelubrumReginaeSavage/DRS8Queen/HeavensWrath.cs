@@ -3,12 +3,12 @@
 class HeavensWrathAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HeavensWrathVisual), new AOEShapeRect(60f, 50f));
 
 // TODO: generalize
-class HeavensWrathKnockback(BossModule module) : Components.Knockback(module)
+class HeavensWrathKnockback(BossModule module) : Components.GenericKnockback(module)
 {
-    private readonly List<Source> _sources = new(2);
+    private readonly List<Knockback> _sources = new(2);
     private static readonly AOEShapeCone _shape = new(30f, 90f.Degrees());
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

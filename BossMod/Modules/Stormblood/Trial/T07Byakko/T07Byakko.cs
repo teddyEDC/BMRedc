@@ -16,7 +16,7 @@ class DistantClap(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 
 class HighestStakes(BossModule module) : Components.StackWithIcon(module, (uint)IconID.Stackmarker, ActionID.MakeSpell(AID.HighestStakes2), 6f, 5f, 7, 7);
 
-class AratamaForce(BossModule module) : Components.PersistentVoidzone(module, 2f, GetVoidzones, 2)
+class AratamaForce(BossModule module) : Components.Voidzone(module, 2f, GetVoidzones, 2)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

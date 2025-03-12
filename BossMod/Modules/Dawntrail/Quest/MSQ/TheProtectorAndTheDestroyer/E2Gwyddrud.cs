@@ -91,7 +91,7 @@ class VioletVoltage(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class RoaringBoltKB(BossModule module) : Components.KnockbackFromCastTarget(module, ActionID.MakeSpell(AID.RoaringBoltKB), 12f, stopAtWall: true)
+class RoaringBoltKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.RoaringBoltKB), 12f, stopAtWall: true)
 {
     private readonly RoaringBolt _aoe = module.FindComponent<RoaringBolt>()!;
     private static readonly Angle a25 = 25f.Degrees();

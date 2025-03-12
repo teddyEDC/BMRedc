@@ -152,11 +152,11 @@ class FortuneFluxAOE(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class FortuneFluxKnockback(BossModule module) : Components.Knockback(module)
+class FortuneFluxKnockback(BossModule module) : Components.GenericKnockback(module)
 {
     private readonly FortuneFluxOrder? _order = module.FindComponent<FortuneFluxOrder>();
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_order == null || _order.Mechanics.Count <= _order.NumComplete)
             return [];
@@ -175,7 +175,7 @@ class FortuneFluxKnockback(BossModule module) : Components.Knockback(module)
         if (count == 0)
             return [];
 
-        var sources = new Source[count];
+        var sources = new Knockback[count];
         var index = 0;
 
         for (var i = _order.NumComplete; i < countM; ++i)

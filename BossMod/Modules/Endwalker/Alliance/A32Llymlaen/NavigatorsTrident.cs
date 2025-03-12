@@ -43,14 +43,14 @@ class DireStraits(BossModule module) : Components.GenericAOEs(module)
 
 class NavigatorsTridentAOE(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.NavigatorsTridentAOE), new AOEShapeRect(40f, 5f));
 
-class NavigatorsTridentKnockback(BossModule module) : Components.Knockback(module)
+class NavigatorsTridentKnockback(BossModule module) : Components.GenericKnockback(module)
 {
     private readonly SerpentsTide? _serpentsTide = module.FindComponent<SerpentsTide>();
-    private readonly List<Source> _sources = new(2);
+    private readonly List<Knockback> _sources = new(2);
 
     private static readonly AOEShapeCone _shape = new(30f, 90f.Degrees());
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor) => CollectionsMarshal.AsSpan(_sources);
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {

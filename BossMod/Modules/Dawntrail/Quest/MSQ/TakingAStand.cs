@@ -162,15 +162,15 @@ class SelfSacrifice(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Kickdown(BossModule module) : Components.Knockback(module)
+class Kickdown(BossModule module) : Components.GenericKnockback(module)
 {
     private DateTime activation;
     private readonly MagickedStandard _aoe = module.FindComponent<MagickedStandard>()!;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (activation != default)
-            return new Source[1] { new(Module.PrimaryActor.Position, 18f, activation) };
+            return new Knockback[1] { new(Module.PrimaryActor.Position, 18f, activation) };
         return [];
     }
 
@@ -202,7 +202,7 @@ class Kickdown(BossModule module) : Components.Knockback(module)
     }
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var sources = ActiveSources(slot, actor);
+        var sources = ActiveKnockbacks(slot, actor);
         if (sources.Length == 0)
             return;
 

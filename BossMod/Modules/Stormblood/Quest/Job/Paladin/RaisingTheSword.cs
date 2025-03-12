@@ -18,15 +18,15 @@ public enum AID : uint
 
 class VictorySlash(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VictorySlash), new AOEShapeCone(6.5f, 60f.Degrees()));
 class ShudderingSwipeCone(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ShudderingSwipeAOE), new AOEShapeCone(60f, 15f.Degrees()));
-class ShudderingSwipeKB(BossModule module) : Components.Knockback(module, ActionID.MakeSpell(AID.ShudderingSwipeCast), stopAtWall: true)
+class ShudderingSwipeKB(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.ShudderingSwipeCast), stopAtWall: true)
 {
     private readonly TheFourWinds _aoe = module.FindComponent<TheFourWinds>()!;
     private Actor? _caster;
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_caster is Actor c)
-            return new Source[1] { new(c.Position, 10f, Module.CastFinishAt(c.CastInfo), null, c.AngleTo(actor), Kind.DirForward) };
+            return new Knockback[1] { new(c.Position, 10f, Module.CastFinishAt(c.CastInfo), null, c.AngleTo(actor), Kind.DirForward) };
         return [];
     }
 
@@ -63,7 +63,7 @@ class ShudderingSwipeKB(BossModule module) : Components.Knockback(module, Action
     }
 }
 class NaldsWhisper(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.NaldsWhisper), 20f);
-class TheFourWinds(BossModule module) : Components.PersistentVoidzone(module, 6f, GetVoidzones)
+class TheFourWinds(BossModule module) : Components.Voidzone(module, 6f, GetVoidzones)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {

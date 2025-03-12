@@ -84,27 +84,27 @@ class BarbarousBarrageTowers(BossModule module) : Components.GenericTowers(modul
     }
 }
 
-class BarbarousBarrageKnockback(BossModule module) : Components.Knockback(module)
+class BarbarousBarrageKnockback(BossModule module) : Components.GenericKnockback(module)
 {
     private readonly BarbarousBarrageTowers? _towers = module.FindComponent<BarbarousBarrageTowers>();
     private static readonly AOEShapeCircle _shape = new(4f);
 
-    public override ReadOnlySpan<Source> ActiveSources(int slot, Actor actor)
+    public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
     {
         if (_towers != null)
         {
             var towers = _towers.Towers;
             var count = towers.Count;
-            var sources = new Source[count];
+            var sources = new Knockback[count];
             for (var i = 0; i < count; ++i)
             {
                 var t = towers[i];
                 var dist = t.MinSoakers switch
                 {
-                    4 => 23,
-                    2 => 19,
-                    8 => 15,
-                    _ => 0
+                    4 => 23f,
+                    2 => 19f,
+                    8 => 15f,
+                    _ => default
                 };
                 sources[i] = new(t.Position, dist, t.Activation, _shape);
             }
