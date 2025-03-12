@@ -54,7 +54,7 @@ class DoReMisery(BossModule module) : Components.GenericAOEs(module)
         {
             var aoe = _aoes[i];
             if (aoe.Shape == _shapeBehind && _caster != null)
-                _aoes[i] = new(_shapeBehind, _caster.Position, _caster.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
+                aoes[i] = new(_shapeBehind, _caster.Position, _caster.Rotation, aoe.Activation, aoe.Color, aoe.Risky);
             else
                 aoes[i] = aoe;
         }

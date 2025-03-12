@@ -25,9 +25,10 @@ class QuadrupleCrossingProtean(BossModule module) : Components.GenericBaitAway(m
 
             var len = party.Length;
             var max = len > 4 ? 4 : len;
-            for (var i = 0; i < len; ++i)
+            for (var i = 0; i < max; ++i)
             {
-                CurrentBaits.Add(new(Origin, party[i], _shape, _activation));
+                ref readonly var p = ref party[i];
+                CurrentBaits.Add(new(Origin, p, _shape, _activation));
             }
         }
     }
@@ -104,7 +105,7 @@ class QuadrupleCrossingProtean(BossModule module) : Components.GenericBaitAway(m
         {
             var origin = source.Position + 10f * (source.Rotation + _jumpDirection).ToDirection();
             Origin = new(0, 0, -1, "", 0, ActorType.None, Class.None, 0, new(origin.X, source.PosRot.Y, origin.Z, source.PosRot.W));
-            _activation = WorldState.FutureTime(17);
+            _activation = WorldState.FutureTime(17d);
         }
     }
 }
@@ -113,7 +114,7 @@ class QuadrupleCrossingAOE(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = new(8);
     private bool ready;
-    private static readonly AOEShapeCone _shape = new(100, 22.5f.Degrees());
+    private static readonly AOEShapeCone _shape = new(100f, 22.5f.Degrees());
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -124,7 +125,7 @@ class QuadrupleCrossingAOE(BossModule module) : Components.GenericAOEs(module)
         for (var i = 0; i < count; ++i)
         {
             var aoe = _aoes[i];
-            _aoes[i] = i < 4 ? count > 4 ? aoe with { Color = Colors.Danger } : aoe : aoe with { Risky = false };
+            aoes[i] = i < 4 ? count > 4 ? aoe with { Color = Colors.Danger } : aoe : aoe with { Risky = false };
         }
         return aoes;
     }

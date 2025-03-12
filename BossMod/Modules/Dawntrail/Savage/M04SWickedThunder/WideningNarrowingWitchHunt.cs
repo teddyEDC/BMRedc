@@ -79,9 +79,11 @@ class WideningNarrowingWitchHuntBait(BossModule module) : Components.GenericBait
                 }
                 party = [.. newTargets];
             }
+            len = party.Length;
             for (var i = 0; i < len; ++i)
             {
-                CurrentBaits.Add(new(Module.PrimaryActor, party[i], _shape, _activation));
+                ref readonly var p = ref party[i];
+                CurrentBaits.Add(new(Module.PrimaryActor, p, _shape, _activation));
             }
         }
     }
