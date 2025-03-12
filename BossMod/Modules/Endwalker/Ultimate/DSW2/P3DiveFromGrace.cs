@@ -281,7 +281,7 @@ class P3DiveFromGrace(BossModule module) : Components.CastTowers(module, ActionI
         var state = _playerStates[slot];
         if (state.JumpOrder == CurrentBaitOrder())
         {
-            var origin = Module.Center;
+            var origin = Arena.Center;
             if (state.JumpOrder == 2)
                 origin += DirectionForStack() * 0.8f; // TODO: the coefficient is arbitrary
 

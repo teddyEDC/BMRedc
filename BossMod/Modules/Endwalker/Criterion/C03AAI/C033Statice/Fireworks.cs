@@ -210,7 +210,7 @@ class Fireworks1Hints(BossModule module) : BossComponent(module)
         // staffs are always in cardinals at radius 8
         foreach (var b in _bombs.ActiveBombs)
         {
-            var offset = b.Position - Module.Center;
+            var offset = b.Position - Arena.Center;
             if (offset.Z < -14)
                 _pattern.Set(0); // N
             else if (offset.Z < -4)
@@ -315,12 +315,12 @@ class Fireworks2Hints(BossModule module) : BossComponent(module)
         if (_fireworks?.Spreads.Count > 0)
         {
             foreach (var dir in SafeSpots(pcSlot, pc))
-                Arena.AddCircle(Module.Center + 19f * dir.ToDirection(), 1f, Colors.Safe);
+                Arena.AddCircle(Arena.Center + 19f * dir.ToDirection(), 1f, Colors.Safe);
         }
         else if (_relNorth != null)
         {
             // show rel north before assignments are done
-            Arena.AddCircle(Module.Center + 19f * _relNorth.Value.ToDirection(), 1f, Colors.Enemy);
+            Arena.AddCircle(Arena.Center + 19f * _relNorth.Value.ToDirection(), 1f, Colors.Enemy);
         }
     }
 

@@ -33,8 +33,8 @@ class P5WrathOfTheHeavensSkywardLeap(BossModule module) : Components.UniformStac
         var relNorth = Module.Enemies(OID.Vedrfolnir).FirstOrDefault();
         if (relNorth == null)
             return default;
-        var dirToNorth = Angle.FromDirection(relNorth.Position - Module.Center);
-        return Module.Center + 20 * (dirToNorth + 60.Degrees()).ToDirection();
+        var dirToNorth = Angle.FromDirection(relNorth.Position - Arena.Center);
+        return Arena.Center + 20 * (dirToNorth + 60.Degrees()).ToDirection();
     }
 }
 

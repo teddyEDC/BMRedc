@@ -21,7 +21,7 @@ class PlanarTactics(BossModule module) : Components.GenericAOEs(module)
         ref var p = ref Players[pcSlot];
         if (p.StartingOffsets != null)
             foreach (var off in p.StartingOffsets)
-                Arena.AddCircle(Module.Center + off, 1, Colors.Safe);
+                Arena.AddCircle(Arena.Center + off, 1, Colors.Safe);
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
@@ -55,7 +55,7 @@ class PlanarTactics(BossModule module) : Components.GenericAOEs(module)
     {
         WDir safeCornerOffset = default;
         foreach (var m in Mines)
-            safeCornerOffset -= m.Origin - Module.Center;
+            safeCornerOffset -= m.Origin - Arena.Center;
         var relSouth = (safeCornerOffset + safeCornerOffset.OrthoL()) / 16f;
         var relWest = relSouth.OrthoR();
         var off1 = 5f * relSouth + 13f * relWest;

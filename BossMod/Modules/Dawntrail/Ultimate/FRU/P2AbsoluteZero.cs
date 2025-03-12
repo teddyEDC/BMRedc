@@ -115,7 +115,7 @@ class P2Intermission(BossModule module) : Components.GenericBaitAway(module)
         {
             // cardinals - bait puddles accurately
             var assignedDir = (180f - 45f * clockSpot).Degrees();
-            var assignedPosition = Module.Center + 15f * assignedDir.ToDirection(); // crystal is at R=15
+            var assignedPosition = Arena.Center + 15f * assignedDir.ToDirection(); // crystal is at R=15
             var assignedCrystal = CrystalsOfLight.FirstOrDefault(c => c.Position.AlmostEqual(assignedPosition, 2f));
             if (assignedCrystal != null)
             {

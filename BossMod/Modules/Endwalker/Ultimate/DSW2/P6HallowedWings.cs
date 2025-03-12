@@ -170,7 +170,7 @@ class P6HallowedPlume2(BossModule module) : P6HallowedPlume(module)
             _ => 1
         };
         var safeSpotCenter = Arena.Center;
-        safeSpotCenter.Z -= zCoeff * (_wings.AOE.Value.Origin.Z - Module.Center.Z);
+        safeSpotCenter.Z -= zCoeff * (_wings.AOE.Value.Origin.Z - Arena.Center.Z);
 
         var shouldBait = actor.Role == Role.Tank;
         var stayFar = shouldBait == _far;

@@ -11,7 +11,7 @@ class P2SanctityOfTheWard2Knockback(BossModule module) : Components.SimpleKnockb
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_config.P2Sanctity2AutomaticAntiKB && Casters.Count > 0 && !actor.Position.InCircle(Module.Center, 12))
+        if (_config.P2Sanctity2AutomaticAntiKB && Casters.Count > 0 && !actor.Position.InCircle(Arena.Center, 12))
         {
             var action = actor.Class.GetClassCategory() is ClassCategory.Healer or ClassCategory.Caster ? ActionID.MakeSpell(ClassShared.AID.Surecast) : ActionID.MakeSpell(ClassShared.AID.ArmsLength);
             hints.ActionsToExecute.Push(action, actor, ActionQueue.Priority.High, Casters.FirstOrDefault()?.CastInfo?.NPCRemainingTime ?? 0);
@@ -182,7 +182,7 @@ class P2SanctityOfTheWard2Towers1(BossModule module) : Components.CastTowers(mod
 
     public int ClassifyTower(WPos tower)
     {
-        var offset = tower - Module.Center;
+        var offset = tower - Arena.Center;
         var dir = Angle.FromDirection(offset);
         if (offset.LengthSq() < 7 * 7)
         {
@@ -596,7 +596,7 @@ class P2SanctityOfTheWard2Towers2(BossModule module) : Components.CastTowers(mod
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         base.OnEventCast(caster, spell);
-        if ((AID)spell.Action.ID == AID.Conviction2AOE && !spell.TargetXZ.InCircle(Module.Center, 7))
+        if ((AID)spell.Action.ID == AID.Conviction2AOE && !spell.TargetXZ.InCircle(Arena.Center, 7))
         {
             // we assign towers to prey role players according to the quadrant they were soaking their tower - this handles unexpected swaps on first towers gracefully
             foreach (var t in spell.Targets)
@@ -604,7 +604,7 @@ class P2SanctityOfTheWard2Towers2(BossModule module) : Components.CastTowers(mod
                 var slot = Raid.FindSlot(t.ID);
                 if (Raid[slot]?.Class.IsSupport() == _preyOnTH)
                 {
-                    var towerOffset = spell.TargetXZ - Module.Center;
+                    var towerOffset = spell.TargetXZ - Arena.Center;
                     var towerIndex = towerOffset.Z switch
                     {
                         < -10 => 0, // N tower
@@ -621,7 +621,7 @@ class P2SanctityOfTheWard2Towers2(BossModule module) : Components.CastTowers(mod
 
     private int ClassifyTower(WPos tower)
     {
-        var offset = tower - Module.Center;
+        var offset = tower - Arena.Center;
         var dir = Angle.FromDirection(offset);
         return (4 - (int)MathF.Round(dir.Rad / MathF.PI * 4)) % 8;
     }

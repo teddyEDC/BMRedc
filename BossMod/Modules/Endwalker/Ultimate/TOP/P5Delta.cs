@@ -49,7 +49,7 @@ class P5Delta(BossModule module) : BossComponent(module)
             Arena.AddLine(pc.Position, partner.Position, Colors.Danger);
 
         foreach (var safeSpot in SafeSpotOffsets(pcSlot))
-            Arena.AddCircle(Module.Center + safeSpot, 1, Colors.Safe);
+            Arena.AddCircle(Arena.Center + safeSpot, 1, Colors.Safe);
     }
 
     public override void OnActorCreated(Actor actor)
@@ -179,7 +179,7 @@ class P5Delta(BossModule module) : BossComponent(module)
                 _ => default
             };
             if (rotation != default)
-                ArmRotations[ArmIndex(actor.Position - Module.Center)] = rotation;
+                ArmRotations[ArmIndex(actor.Position - Arena.Center)] = rotation;
         }
     }
 
@@ -195,7 +195,7 @@ class P5Delta(BossModule module) : BossComponent(module)
     private void InitAssignments()
     {
         // 1. assign initial inner/outer
-        float slotToOffsetX(int slot) => _eyeDir.OrthoR().Dot((Raid[slot]?.Position ?? Module.Center) - Module.Center);
+        float slotToOffsetX(int slot) => _eyeDir.OrthoR().Dot((Raid[slot]?.Position ?? Arena.Center) - Arena.Center);
         float pairToOffsetX((int s1, int s2) slots) => Math.Abs(slotToOffsetX(slots.s1) + slotToOffsetX(slots.s2));
         var outerLocal = _localTethers.MaxBy(pairToOffsetX);
         var outerRemote = _remoteTethers.MaxBy(pairToOffsetX);

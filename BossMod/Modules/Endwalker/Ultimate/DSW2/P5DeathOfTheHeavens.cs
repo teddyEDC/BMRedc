@@ -60,7 +60,7 @@ class P5DeathOfTheHeavensHeavensflame(BossModule module) : Components.GenericKno
     public override void Update()
     {
         foreach (var (slot, player) in Raid.WithSlot(false, true, true))
-            _playerAdjustedPositions[slot] = !KnockbackDone ? AwayFromSource(player.Position, Module.Center, _knockbackDistance) : player.Position;
+            _playerAdjustedPositions[slot] = !KnockbackDone ? AwayFromSource(player.Position, Arena.Center, _knockbackDistance) : player.Position;
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
@@ -113,7 +113,7 @@ class P5DeathOfTheHeavensHeavensflame(BossModule module) : Components.GenericKno
         if (spell.Action.ID == (uint)AID.WingsOfSalvationAOE)
         {
             _cleanses.Add(spell.LocXZ);
-            _relSouth += spell.LocXZ - Module.Center;
+            _relSouth += spell.LocXZ - Arena.Center;
         }
     }
 

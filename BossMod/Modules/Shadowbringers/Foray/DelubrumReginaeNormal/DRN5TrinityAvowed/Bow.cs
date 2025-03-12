@@ -85,7 +85,7 @@ class ShimmeringShot(BossModule module, float spawnToActivation) : TemperatureAO
 
     public bool ActorUnsafeAt(Actor actor, WPos pos)
     {
-        var offset = pos - Module.Center;
+        var offset = pos - Arena.Center;
         var posInFlames = _pattern switch
         {
             Pattern.EWNormal or Pattern.EWInverted => offset.X > -15,

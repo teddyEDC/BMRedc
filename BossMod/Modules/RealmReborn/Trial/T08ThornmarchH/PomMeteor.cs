@@ -27,7 +27,7 @@ class PomMeteor(BossModule module) : BossComponent(module)
         if (_cometsLeft > 0)
         {
             foreach (var i in _activeTowers.SetBits())
-                hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center + _towerOffsets[i], _cometAvoidRadius));
+                hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center + _towerOffsets[i], _cometAvoidRadius));
         }
         else
         {
@@ -44,12 +44,12 @@ class PomMeteor(BossModule module) : BossComponent(module)
             {
                 if (!_activeTowers[soakedTower])
                     soakedTower += 4;
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.Center + _towerOffsets[soakedTower], _towerRadius), _towerActivation);
+                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Arena.Center + _towerOffsets[soakedTower], _towerRadius), _towerActivation);
             }
             else
             {
                 foreach (var i in _activeTowers.SetBits())
-                    hints.AddForbiddenZone(ShapeDistance.Circle(Module.Center + _towerOffsets[i], _towerRadius), _towerActivation);
+                    hints.AddForbiddenZone(ShapeDistance.Circle(Arena.Center + _towerOffsets[i], _towerRadius), _towerActivation);
             }
         }
     }
@@ -57,7 +57,7 @@ class PomMeteor(BossModule module) : BossComponent(module)
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         foreach (var i in _activeTowers.SetBits())
-            Arena.AddCircle(Module.Center + _towerOffsets[i], _towerRadius, _soakedTowers[i] ? Colors.Safe : 0);
+            Arena.AddCircle(Arena.Center + _towerOffsets[i], _towerRadius, _soakedTowers[i] ? Colors.Safe : 0);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

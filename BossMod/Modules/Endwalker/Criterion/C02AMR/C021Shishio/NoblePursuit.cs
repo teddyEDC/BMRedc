@@ -63,7 +63,7 @@ class NoblePursuit(BossModule module) : Components.GenericAOEs(module)
                 if (Math.Abs(nextDir.Z) < 0.1f)
                     nextDir.Z = 0;
                 nextDir = nextDir.Normalized();
-                var ts = Module.Center + nextDir.Sign() * Module.Bounds.Radius - _posAfterLastCharge;
+                var ts = Arena.Center + nextDir.Sign() * Arena.Bounds.Radius - _posAfterLastCharge;
                 var t = Math.Min(nextDir.X != 0f ? ts.X / nextDir.X : float.MaxValue, nextDir.Z != 0f ? ts.Z / nextDir.Z : float.MaxValue);
                 _charges.Add(new(new AOEShapeRect(t, _chargeHalfWidth), _posAfterLastCharge, Angle.FromDirection(nextDir), _charges[^1].Activation.AddSeconds(1.4d)));
                 _posAfterLastCharge += nextDir * t;

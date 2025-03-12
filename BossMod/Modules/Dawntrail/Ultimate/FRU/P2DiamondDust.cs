@@ -292,14 +292,14 @@ class P2SinboundHoly(BossModule module) : Components.UniformStackSpread(module, 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var master = actor.Role != Role.Healer ? Stacks.MinBy(s => (s.Target.Position - actor.Position).LengthSq()).Target : null;
-        if (master != null && ((master.Position - actor.Position).LengthSq() > 100 || (master.Position - Module.Center).LengthSq() < 196))
+        if (master != null && ((master.Position - actor.Position).LengthSq() > 100 || (master.Position - Arena.Center).LengthSq() < 196))
             master = null; // our closest healer is too far away or too close to center, something is wrong (maybe kb didn't finish yet, or healer fucked up)
 
         // determine movement speed and direction
         // baseline is towards safety (opposite boss), or CW (arbitrary) if there's no obvious safe direction
         // however, if we're non-healer, it is overridden by healer's decision (we can slide over later)
         var moveQuickly = _destinationDir == default;
-        var preferredDir = !moveQuickly ? _destinationDir : (actor.Position - Module.Center).Normalized().OrthoR();
+        var preferredDir = !moveQuickly ? _destinationDir : (actor.Position - Arena.Center).Normalized().OrthoR();
         moveQuickly &= NumCasts > 0; // don't start moving while waiting for first cast
 
         if (master != null)
@@ -451,7 +451,7 @@ class P2TwinStillnessSilence(BossModule module) : Components.GenericAOEs(module)
                 zoneList.ForbidCircle(z.Position, 6f);
 
             // now find closest allowed zone
-            var actorDir = Angle.FromDirection(actor.Position - Module.Center);
+            var actorDir = Angle.FromDirection(actor.Position - Arena.Center);
             var closest = zoneList.Allowed(5.Degrees()).MinBy(z => actorDir.DistanceToRange(z.min, z.max).Abs().Rad);
             if (closest != default)
             {

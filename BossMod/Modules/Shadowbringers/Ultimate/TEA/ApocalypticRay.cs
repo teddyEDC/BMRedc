@@ -24,7 +24,7 @@ class ApocalypticRay(BossModule module, bool faceCenter) : Components.GenericAOE
                 Source = caster;
                 if (_faceCenter)
                 {
-                    _rotation = Angle.FromDirection(Module.Center - caster.Position);
+                    _rotation = Angle.FromDirection(Arena.Center - caster.Position);
                 }
                 else
                 {

@@ -313,7 +313,7 @@ class P3HelloWorld(BossModule module) : Components.GenericTowers(module)
         // find midpoint for defamation towers
         WDir defamationMid = default;
         foreach (var i in _defamationTowers.SetBits())
-            defamationMid += Towers[i].Position - Module.Center;
+            defamationMid += Towers[i].Position - Arena.Center;
         var defamationMidDir = Angle.FromDirection(defamationMid);
 
         switch (RoleForNextTowers(slot))
