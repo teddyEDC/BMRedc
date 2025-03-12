@@ -34,33 +34,54 @@ public class FRU(WorldState ws, Actor primary) : BossModule(ws, primary, arena.C
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        var enemyMappings = new (int phaseIndex, uint oid, Actor? field)[]
+        if (_bossP2 == null)
         {
-            (1, (uint)OID.BossP2, _bossP2),
-            (1, (uint)OID.IceVeil, _iceVeil),
-            (2, (uint)OID.BossP3, _bossP3),
-            (2, (uint)OID.UsurperOfFrostP4, _bossP4Usurper),
-            (2, (uint)OID.OracleOfDarknessP4, _bossP4Oracle),
-            (3, (uint)OID.BossP5, _bossP5),
-        };
-
-        for (var i = 0; i < 6; ++i)
-        {
-            var (phaseIndex, oid, field) = enemyMappings[i];
-
-            if (field == null && StateMachine.ActivePhaseIndex == phaseIndex)
+            if (StateMachine.ActivePhaseIndex == 1)
             {
-                var enemies = Enemies(oid);
-                enemyMappings[i].field = enemies.Count != 0 ? enemies[0] : null;
+                var b = Enemies((uint)OID.BossP2);
+                _bossP2 = b.Count != 0 ? b[0] : null;
             }
         }
-
-        _bossP2 = enemyMappings[0].field;
-        _iceVeil = enemyMappings[1].field;
-        _bossP3 = enemyMappings[2].field;
-        _bossP4Usurper = enemyMappings[3].field;
-        _bossP4Oracle = enemyMappings[4].field;
-        _bossP5 = enemyMappings[5].field;
+        if (_iceVeil == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 1)
+            {
+                var b = Enemies((uint)OID.IceVeil);
+                _iceVeil = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_bossP3 == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 2)
+            {
+                var b = Enemies((uint)OID.BossP3);
+                _bossP3 = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_bossP4Usurper == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 2)
+            {
+                var b = Enemies((uint)OID.UsurperOfFrostP4);
+                _bossP4Usurper = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_bossP4Oracle == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 4)
+            {
+                var b = Enemies((uint)OID.OracleOfDarknessP4);
+                _bossP4Oracle = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_bossP5 == null)
+        {
+            if (StateMachine.ActivePhaseIndex >= 4)
+            {
+                var b = Enemies((uint)OID.BossP5);
+                _bossP5 = b.Count != 0 ? b[0] : null;
+            }
+        }
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)

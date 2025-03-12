@@ -26,33 +26,54 @@ public class TOP(WorldState ws, Actor primary) : BossModule(ws, primary, new(100
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        var enemyMappings = new (int phaseIndex, uint oid, Actor? field, bool allowLaterPhases)[]
+        if (_opticalUnit == null)
         {
-            (0, (uint)OID.OpticalUnit, _opticalUnit, false),
-            (1, (uint)OID.OmegaM, _omegaM, false),
-            (1, (uint)OID.OmegaF, _omegaF, false),
-            (2, (uint)OID.BossP3, _bossP3, false),
-            (4, (uint)OID.BossP5, _bossP5, false),
-            (4, (uint)OID.BossP6, _bossP6, true),
-        };
-
-        for (var i = 0; i < 6; ++i)
-        {
-            var (phaseIndex, oid, field, allowLaterPhases) = enemyMappings[i];
-
-            if (field == null && (allowLaterPhases ? StateMachine.ActivePhaseIndex >= phaseIndex : StateMachine.ActivePhaseIndex == phaseIndex))
+            if (StateMachine.ActivePhaseIndex == 0)
             {
-                var enemies = Enemies(oid);
-                enemyMappings[i].field = enemies.Count != 0 ? enemies[0] : null;
+                var b = Enemies((uint)OID.OpticalUnit);
+                _opticalUnit = b.Count != 0 ? b[0] : null;
             }
         }
-
-        _opticalUnit = enemyMappings[0].field;
-        _omegaM = enemyMappings[1].field;
-        _omegaF = enemyMappings[2].field;
-        _bossP3 = enemyMappings[3].field;
-        _bossP5 = enemyMappings[4].field;
-        _bossP6 = enemyMappings[5].field;
+        if (_omegaM == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 1)
+            {
+                var b = Enemies((uint)OID.OmegaM);
+                _omegaM = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_omegaF == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 1)
+            {
+                var b = Enemies((uint)OID.OmegaF);
+                _omegaF = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_bossP3 == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 2)
+            {
+                var b = Enemies((uint)OID.BossP3);
+                _bossP3 = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_bossP5 == null)
+        {
+            if (StateMachine.ActivePhaseIndex == 4)
+            {
+                var b = Enemies((uint)OID.BossP5);
+                _bossP5 = b.Count != 0 ? b[0] : null;
+            }
+        }
+        if (_bossP6 == null)
+        {
+            if (StateMachine.ActivePhaseIndex >= 4)
+            {
+                var b = Enemies((uint)OID.BossP6);
+                _bossP6 = b.Count != 0 ? b[0] : null;
+            }
+        }
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)

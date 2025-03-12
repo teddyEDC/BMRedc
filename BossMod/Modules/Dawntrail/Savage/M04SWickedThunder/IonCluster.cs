@@ -50,7 +50,7 @@ class ElectronStream(BossModule module) : Components.GenericAOEs(module)
     private BitMask _positron;
     private BitMask _negatron;
 
-    private static readonly AOEShapeRect _shape = new(40, 5);
+    private static readonly AOEShapeRect _shape = new(40f, 5f);
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {

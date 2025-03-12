@@ -11,7 +11,7 @@ class Electray(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorCreated(Actor actor)
     {
         if (actor.OID == (uint)OID.GunBattery)
-            AOEs.Add(new(_shape, actor.Position, actor.Rotation, WorldState.FutureTime(6.8d)));
+            AOEs.Add(new(_shape, WPos.ClampToGrid(actor.Position), actor.Rotation, WorldState.FutureTime(6.8d), ActorID: actor.InstanceID));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -19,7 +19,16 @@ class Electray(BossModule module) : Components.GenericAOEs(module)
         if (spell.Action.ID == (uint)AID.Electray)
         {
             ++NumCasts;
-            AOEs.RemoveAll(aoe => aoe.Origin.AlmostEqual(caster.Position, 1f));
+            var count = AOEs.Count;
+            var id = caster.InstanceID;
+            for (var i = 0; i < count; ++i)
+            {
+                if (AOEs[i].ActorID == id)
+                {
+                    AOEs.RemoveAt(i);
+                    return;
+                }
+            }
         }
     }
 }

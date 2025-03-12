@@ -4,29 +4,29 @@ class ElectropeEdgeWitchgleam(BossModule module) : Components.GenericAOEs(module
 {
     private AOEInstance? _aoe;
 
-    private static readonly AOEShapeCross _shape = new(60, 2.5f);
+    private static readonly AOEShapeCross _shape = new(60f, 2.5f);
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.ElectropeEdgeWitchgleam)
-            _aoe = new(_shape, caster.Position, 45.Degrees(), Module.CastFinishAt(spell, 1.2f));
+        if (spell.Action.ID == (uint)AID.ElectropeEdgeWitchgleam)
+            _aoe = new(_shape, spell.LocXZ, 45f.Degrees(), Module.CastFinishAt(spell, 1.2f));
     }
 }
 
-class ElectropeEdgeSpark1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ElectropeEdgeSpark1), new AOEShapeRect(10, 5));
-class ElectropeEdgeSpark2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ElectropeEdgeSpark2), new AOEShapeRect(30, 15));
+class ElectropeEdgeSpark1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ElectropeEdgeSpark1), new AOEShapeRect(10f, 5f));
+class ElectropeEdgeSpark2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ElectropeEdgeSpark2), new AOEShapeRect(30f, 15f));
 
-abstract class ElectropeEdgeSidewise(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(60, 90.Degrees()));
+abstract class ElectropeEdgeSidewise(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), new AOEShapeCone(60f, 90f.Degrees()));
 class ElectropeEdgeSidewiseSparkR(BossModule module) : ElectropeEdgeSidewise(module, AID.ElectropeEdgeSidewiseSparkR);
 class ElectropeEdgeSidewiseSparkL(BossModule module) : ElectropeEdgeSidewise(module, AID.ElectropeEdgeSidewiseSparkL);
 
-class ElectropeEdgeStar(BossModule module) : Components.UniformStackSpread(module, 6, 6, alwaysShowSpreads: true)
+class ElectropeEdgeStar(BossModule module) : Components.UniformStackSpread(module, 6f, default, alwaysShowSpreads: true)
 {
     public override void OnStatusGain(Actor actor, ActorStatus status)
     {
-        if ((SID)status.ID == SID.Marker)
+        if (status.ID == (uint)SID.Marker)
         {
             switch (status.Extra)
             {
@@ -38,7 +38,7 @@ class ElectropeEdgeStar(BossModule module) : Components.UniformStackSpread(modul
                     AddStacks(targets.Actors(), status.ExpireAt.AddSeconds(1));
                     break;
                 case 0x2F1:
-                    AddSpreads(Raid.WithoutSlot(true, true, true), status.ExpireAt.AddSeconds(1));
+                    AddSpreads(Raid.WithoutSlot(true, true, true), status.ExpireAt.AddSeconds(1d));
                     break;
             }
         }

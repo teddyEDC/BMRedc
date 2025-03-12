@@ -5,7 +5,7 @@ class AetherialConversion(BossModule module) : Components.CastCounter(module, de
     public enum Mechanic { None, AOE, Knockback }
 
     public Mechanic CurMechanic;
-    public int FirstOffsetX;
+    public float FirstOffsetX;
 
     public override void AddGlobalHints(GlobalHints hints)
     {
@@ -15,12 +15,12 @@ class AetherialConversion(BossModule module) : Components.CastCounter(module, de
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        var (mechanic, firstOffset) = (AID)spell.Action.ID switch
+        var (mechanic, firstOffset) = spell.Action.ID switch
         {
-            AID.AetherialConversionHitLR => (Mechanic.AOE, -10),
-            AID.AetherialConversionKnockbackLR => (Mechanic.Knockback, -10),
-            AID.AetherialConversionHitRL => (Mechanic.AOE, +10),
-            AID.AetherialConversionKnockbackRL => (Mechanic.Knockback, +10),
+            (uint)AID.AetherialConversionHitLR => (Mechanic.AOE, -10f),
+            (uint)AID.AetherialConversionKnockbackLR => (Mechanic.Knockback, -10f),
+            (uint)AID.AetherialConversionHitRL => (Mechanic.AOE, +10f),
+            (uint)AID.AetherialConversionKnockbackRL => (Mechanic.Knockback, +10f),
             _ => default
         };
         if (mechanic != default)
@@ -32,7 +32,7 @@ class AetherialConversion(BossModule module) : Components.CastCounter(module, de
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.TailThrust or AID.SwitchOfTides)
+        if (spell.Action.ID is (uint)AID.TailThrust or (uint)AID.SwitchOfTides)
             ++NumCasts;
     }
 }
@@ -46,7 +46,7 @@ class AetherialConversionTailThrust(BossModule module) : Components.GenericAOEs(
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
         if (_comp?.CurMechanic == AetherialConversion.Mechanic.AOE && _comp.NumCasts < 2)
-            return new AOEInstance[1] { new(_shape, Arena.Center + new WDir(_comp.NumCasts == 0 ? _comp.FirstOffsetX : -_comp.FirstOffsetX, 0), default) };
+            return new AOEInstance[1] { new(_shape, WPos.ClampToGrid(Arena.Center + new WDir(_comp.NumCasts == 0 ? _comp.FirstOffsetX : -_comp.FirstOffsetX, 0)), default) };
         return [];
     }
 }

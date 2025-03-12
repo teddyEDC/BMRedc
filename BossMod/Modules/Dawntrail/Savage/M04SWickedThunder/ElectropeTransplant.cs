@@ -4,7 +4,7 @@ class FulminousField(BossModule module) : Components.GenericAOEs(module)
 {
     private Angle _dir;
     private DateTime _activation;
-
+    private WPos _pos;
     public bool Active => _activation != default;
 
     private static readonly AOEShapeCone _shape = new(30f, 15f.Degrees());
@@ -15,7 +15,8 @@ class FulminousField(BossModule module) : Components.GenericAOEs(module)
         {
             var aoes = new AOEInstance[8];
             for (var i = 0; i < 8; ++i)
-                aoes[i] = new(_shape, Arena.Center, _dir + i * 45f.Degrees(), _activation);
+                aoes[i] = new(_shape, _pos, _dir + i * 45f.Degrees(), _activation);
+            return aoes;
         }
         return [];
     }
@@ -25,6 +26,7 @@ class FulminousField(BossModule module) : Components.GenericAOEs(module)
         if (spell.Action.ID == (uint)AID.FulminousField)
         {
             _dir = spell.Rotation;
+            _pos = spell.LocXZ;
             _activation = Module.CastFinishAt(spell);
         }
     }
@@ -35,7 +37,7 @@ class FulminousField(BossModule module) : Components.GenericAOEs(module)
         {
             ++NumCasts;
             _dir = caster.Rotation + 22.5f.Degrees();
-            _activation = WorldState.FutureTime(3);
+            _activation = WorldState.FutureTime(3d);
         }
     }
 }
