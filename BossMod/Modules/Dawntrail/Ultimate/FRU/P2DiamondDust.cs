@@ -72,12 +72,12 @@ class P2DiamondDustHouseOfLight(BossModule module) : Components.GenericBaitAway(
         if (_source != null && ForbiddenPlayers.Any())
         {
             var party = Raid.WithoutSlot(false, true, true);
-            party.Sort((a, b) =>
-                {
-                    var distA = (a.Position - _source.Position).LengthSq();
-                    var distB = (b.Position - _source.Position).LengthSq();
-                    return distA.CompareTo(distB);
-                });
+            Array.Sort(party, (a, b) =>
+            {
+                var distA = (a.Position - _source.Position).LengthSq();
+                var distB = (b.Position - _source.Position).LengthSq();
+                return distA.CompareTo(distB);
+            });
 
             var len = party.Length;
             var max = len > 4 ? 4 : len;

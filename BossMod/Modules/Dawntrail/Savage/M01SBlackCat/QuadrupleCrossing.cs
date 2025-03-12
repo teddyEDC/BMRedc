@@ -8,7 +8,7 @@ class QuadrupleCrossingProtean(BossModule module) : Components.GenericBaitAway(m
     private Actor? _clone;
     private Angle _jumpDirection;
 
-    private static readonly AOEShapeCone _shape = new(100, 22.5f.Degrees());
+    private static readonly AOEShapeCone _shape = new(100f, 22.5f.Degrees());
 
     public override void Update()
     {
@@ -16,7 +16,7 @@ class QuadrupleCrossingProtean(BossModule module) : Components.GenericBaitAway(m
         if (Origin != null && _activation != default)
         {
             var party = Raid.WithoutSlot(false, true, true);
-            party.Sort((a, b) =>
+            Array.Sort(party, (a, b) =>
                 {
                     var distA = (a.Position - Origin.Position).LengthSq();
                     var distB = (b.Position - Origin.Position).LengthSq();
