@@ -61,26 +61,11 @@ class WideningNarrowingWitchHuntBait(BossModule module) : Components.GenericBait
                     return distA.CompareTo(distB);
                 });
             var len = party.Length;
-            if (CurMechanic == Mechanic.Near)
-            {
-                List<Actor> newTargets = [];
-                for (var i = 0; i < Math.Min(2, len); ++i)
-                {
-                    newTargets.Add(party[i]);
-                }
-                party = [.. newTargets];
-            }
-            else
-            {
-                List<Actor> newTargets = [];
-                for (var i = Math.Max(0, len - 2); i < len; ++i)
-                {
-                    newTargets.Add(party[i]);
-                }
-                party = [.. newTargets];
-            }
-            len = party.Length;
-            for (var i = 0; i < len; ++i)
+            var isNear = CurMechanic == Mechanic.Near;
+            var startIndex = isNear ? 0 : Math.Max(0, len - 2);
+            var endIndex = isNear ? Math.Min(2, len) : len;
+
+            for (var i = startIndex; i < endIndex; ++i)
             {
                 ref readonly var p = ref party[i];
                 CurrentBaits.Add(new(Module.PrimaryActor, p, _shape, _activation));

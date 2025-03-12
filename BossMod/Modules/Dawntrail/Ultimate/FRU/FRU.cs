@@ -34,12 +34,33 @@ public class FRU(WorldState ws, Actor primary) : BossModule(ws, primary, arena.C
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        _bossP2 ??= StateMachine.ActivePhaseIndex == 1 ? Enemies(OID.BossP2).FirstOrDefault() : null;
-        _iceVeil ??= StateMachine.ActivePhaseIndex == 1 ? Enemies(OID.IceVeil).FirstOrDefault() : null;
-        _bossP3 ??= StateMachine.ActivePhaseIndex == 2 ? Enemies(OID.BossP3).FirstOrDefault() : null;
-        _bossP4Usurper ??= StateMachine.ActivePhaseIndex == 2 ? Enemies(OID.UsurperOfFrostP4).FirstOrDefault() : null;
-        _bossP4Oracle ??= StateMachine.ActivePhaseIndex == 2 ? Enemies(OID.OracleOfDarknessP4).FirstOrDefault() : null;
-        _bossP5 ??= StateMachine.ActivePhaseIndex == 3 ? Enemies(OID.BossP5).FirstOrDefault() : null;
+        var enemyMappings = new (int phaseIndex, uint oid, Actor? field)[]
+        {
+            (1, (uint)OID.BossP2, _bossP2),
+            (1, (uint)OID.IceVeil, _iceVeil),
+            (2, (uint)OID.BossP3, _bossP3),
+            (2, (uint)OID.UsurperOfFrostP4, _bossP4Usurper),
+            (2, (uint)OID.OracleOfDarknessP4, _bossP4Oracle),
+            (3, (uint)OID.BossP5, _bossP5),
+        };
+
+        for (var i = 0; i < 6; ++i)
+        {
+            var (phaseIndex, oid, field) = enemyMappings[i];
+
+            if (field == null && StateMachine.ActivePhaseIndex == phaseIndex)
+            {
+                var enemies = Enemies(oid);
+                enemyMappings[i].field = enemies.Count != 0 ? enemies[0] : null;
+            }
+        }
+
+        _bossP2 = enemyMappings[0].field;
+        _iceVeil = enemyMappings[1].field;
+        _bossP3 = enemyMappings[2].field;
+        _bossP4Usurper = enemyMappings[3].field;
+        _bossP4Oracle = enemyMappings[4].field;
+        _bossP5 = enemyMappings[5].field;
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)

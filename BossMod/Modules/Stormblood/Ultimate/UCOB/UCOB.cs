@@ -20,8 +20,19 @@ public class UCOB(WorldState ws, Actor primary) : BossModule(ws, primary, defaul
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        _nael ??= StateMachine.ActivePhaseIndex >= 0 ? Enemies(OID.NaelDeusDarnus)[0] : null;
-        _bahamutPrime ??= StateMachine.ActivePhaseIndex >= 0 ? Enemies(OID.BahamutPrime)[0] : null;
+        if (StateMachine.ActivePhaseIndex >= 0)
+        {
+            if (_nael == null)
+            {
+                var b = Enemies((uint)OID.NaelDeusDarnus);
+                _nael = b.Count != 0 ? b[0] : null;
+            }
+            if (_bahamutPrime == null)
+            {
+                var b = Enemies((uint)OID.BahamutPrime);
+                _bahamutPrime = b.Count != 0 ? b[0] : null;
+            }
+        }
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)

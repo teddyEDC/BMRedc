@@ -36,9 +36,9 @@ public class UWU : BossModule
 
     public Actor? Garuda() => PrimaryActor.IsDestroyed ? null : PrimaryActor;
     public Actor? Ifrit() => _mainIfrit;
-    public Actor? Titan() => _titan.FirstOrDefault();
-    public Actor? Lahabrea() => _lahabrea.FirstOrDefault();
-    public Actor? Ultima() => _ultima.FirstOrDefault();
+    public Actor? Titan() => _titan.Count != 0 ? _titan[0] : null;
+    public Actor? Lahabrea() => _lahabrea.Count != 0 ? _lahabrea[0] : null;
+    public Actor? Ultima() => _ultima.Count != 0 ? _ultima[0] : null;
 
     public UWU(WorldState ws, Actor primary) : base(ws, primary, new(100f, 100f), new ArenaBoundsCircle(20f))
     {
@@ -50,8 +50,11 @@ public class UWU : BossModule
 
     protected override void UpdateModule()
     {
-        if (StateMachine.ActivePhaseIndex == 1)
-            _mainIfrit ??= Ifrits.FirstOrDefault(a => a.IsTargetable);
+        if (_mainIfrit == null && StateMachine.ActivePhaseIndex == 1)
+        {
+            var b = Ifrits;
+            _mainIfrit = b.Count != 0 && b[0].IsTargetable ? b[0] : null;
+        }
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)

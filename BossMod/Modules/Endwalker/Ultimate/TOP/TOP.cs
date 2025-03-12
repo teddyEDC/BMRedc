@@ -26,12 +26,33 @@ public class TOP(WorldState ws, Actor primary) : BossModule(ws, primary, new(100
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        _opticalUnit ??= StateMachine.ActivePhaseIndex == 0 ? Enemies((uint)OID.OpticalUnit)[0] : null;
-        _omegaM ??= StateMachine.ActivePhaseIndex == 1 ? Enemies((uint)OID.OmegaM)[0] : null;
-        _omegaF ??= StateMachine.ActivePhaseIndex == 1 ? Enemies((uint)OID.OmegaF)[0] : null;
-        _bossP3 ??= StateMachine.ActivePhaseIndex == 2 ? Enemies((uint)OID.BossP3)[0] : null;
-        _bossP5 ??= StateMachine.ActivePhaseIndex == 4 ? Enemies((uint)OID.BossP5)[0] : null;
-        _bossP6 ??= StateMachine.ActivePhaseIndex >= 4 ? Enemies((uint)OID.BossP6)[0] : null;
+        var enemyMappings = new (int phaseIndex, uint oid, Actor? field, bool allowLaterPhases)[]
+        {
+            (0, (uint)OID.OpticalUnit, _opticalUnit, false),
+            (1, (uint)OID.OmegaM, _omegaM, false),
+            (1, (uint)OID.OmegaF, _omegaF, false),
+            (2, (uint)OID.BossP3, _bossP3, false),
+            (4, (uint)OID.BossP5, _bossP5, false),
+            (4, (uint)OID.BossP6, _bossP6, true),
+        };
+
+        for (var i = 0; i < 6; ++i)
+        {
+            var (phaseIndex, oid, field, allowLaterPhases) = enemyMappings[i];
+
+            if (field == null && (allowLaterPhases ? StateMachine.ActivePhaseIndex >= phaseIndex : StateMachine.ActivePhaseIndex == phaseIndex))
+            {
+                var enemies = Enemies(oid);
+                enemyMappings[i].field = enemies.Count != 0 ? enemies[0] : null;
+            }
+        }
+
+        _opticalUnit = enemyMappings[0].field;
+        _omegaM = enemyMappings[1].field;
+        _omegaF = enemyMappings[2].field;
+        _bossP3 = enemyMappings[3].field;
+        _bossP5 = enemyMappings[4].field;
+        _bossP6 = enemyMappings[5].field;
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
