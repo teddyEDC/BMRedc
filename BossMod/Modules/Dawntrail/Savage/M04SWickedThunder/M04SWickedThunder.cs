@@ -40,7 +40,7 @@ public class M04SWickedThunder(WorldState ws, Actor primary) : BossModule(ws, pr
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        if (_bossP2 == null && StateMachine.ActivePhaseIndex >= 0)
+        if (_bossP2 == null)
         {
             var b = Enemies((uint)OID.BossP2);
             _bossP2 = b.Count != 0 ? b[0] : null;

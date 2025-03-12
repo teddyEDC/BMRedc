@@ -45,13 +45,13 @@ class SwordQuiverLaceration(BossModule module) : Components.CastCounter(module, 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         var dir = Angle.FromDirection(actor.Position - Arena.Center);
-        var clipped = Raid.WithoutSlot(false, true, true).Exclude(actor).InShape(_shape, Module.Center, dir).CountByCondition(p => p.Class.IsSupport() == actor.Class.IsSupport());
+        var clipped = Raid.WithoutSlot(false, true, true).Exclude(actor).InShape(_shape, Arena.Center, dir).CountByCondition(p => p.Class.IsSupport() == actor.Class.IsSupport());
         if (clipped.match != 0 || clipped.mismatch != 1)
             hints.Add("Spread by roles!");
     }
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        _shape.Outline(Arena, Arena.Center, Angle.FromDirection(pc.Position - Module.Center));
+        _shape.Outline(Arena, Arena.Center, Angle.FromDirection(pc.Position - Arena.Center));
     }
 }

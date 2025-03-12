@@ -45,7 +45,7 @@ public class TEA : BossModule
     private Actor? _perfectAlex;
     public Actor? PerfectAlex() => _perfectAlex;
 
-    public TEA(WorldState ws, Actor primary) : base(ws, primary, new(100, 100), new ArenaBoundsCircle(20))
+    public TEA(WorldState ws, Actor primary) : base(ws, primary, new(100f, 100f), new ArenaBoundsCircle(20f))
     {
         _liquidHand = Enemies((uint)OID.LiquidHand);
         _trueHeart = Enemies((uint)OID.TrueHeart);
@@ -55,10 +55,26 @@ public class TEA : BossModule
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...
         // the problem is that on wipe, any actor can be deleted and recreated in the same frame
-        _bruteJustice ??= StateMachine.ActivePhaseIndex >= 0 ? Enemies((uint)OID.BruteJustice)[0] : null;
-        _cruiseChaser ??= StateMachine.ActivePhaseIndex >= 0 ? Enemies((uint)OID.CruiseChaser)[0] : null;
-        _alexPrime ??= StateMachine.ActivePhaseIndex >= 0 ? Enemies((uint)OID.AlexanderPrime)[0] : null;
-        _perfectAlex ??= StateMachine.ActivePhaseIndex >= 0 ? Enemies((uint)OID.PerfectAlexander)[0] : null;
+        if (_bruteJustice == null)
+        {
+            var b = Enemies((uint)OID.BruteJustice);
+            _bruteJustice = b.Count != 0 ? b[0] : null;
+        }
+        if (_cruiseChaser == null)
+        {
+            var b = Enemies((uint)OID.CruiseChaser);
+            _cruiseChaser = b.Count != 0 ? b[0] : null;
+        }
+        if (_alexPrime == null)
+        {
+            var b = Enemies((uint)OID.AlexanderPrime);
+            _alexPrime = b.Count != 0 ? b[0] : null;
+        }
+        if (_perfectAlex == null)
+        {
+            var b = Enemies((uint)OID.PerfectAlexander);
+            _perfectAlex = b.Count != 0 ? b[0] : null;
+        }
     }
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
