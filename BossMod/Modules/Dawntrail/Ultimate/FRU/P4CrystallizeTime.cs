@@ -165,7 +165,7 @@ class P4CrystallizeTimeDragonHead(BossModule module) : BossComponent(module)
             {
                 var p = _puddles[i];
                 if (p.puddle.EventState != 7)
-                    Arena.ZoneCircle(p.puddle.Position, 1f, p.soaker == pcAssignment ? Colors.SafeFromAOE : Colors.AOE);
+                    Arena.ZoneCircle(p.puddle.Position, 1f, p.soaker == pcAssignment ? Colors.SafeFromAOE : 0);
             }
         }
     }

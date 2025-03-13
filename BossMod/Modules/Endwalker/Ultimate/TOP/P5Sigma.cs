@@ -306,11 +306,25 @@ class P5SigmaTowers(BossModule module) : Components.GenericTowers(module)
         }
     }
 
-    private void AssignPlayers(P5Sigma sigma, ref Tower tower, params Angle[] angles)
+    private static void AssignPlayers(P5Sigma sigma, ref Tower tower, params Angle[] angles)
     {
-        for (var i = 0; i < sigma.Players.Length; ++i)
-            if (!angles.Any(a => a.AlmostEqual(sigma.Players[i].SpreadAngle, 0.1f)))
-                tower.ForbiddenSoakers.Set(i);
+        var len = sigma.Players.Length;
+        var len2 = angles.Length;
+        for (var i = 0; i < len; ++i)
+        {
+            var found = false;
+            ref readonly var sigmaP = ref sigma.Players[i].SpreadAngle;
+            for (var j = 0; j < len2; ++j)
+            {
+                if (angles[j].AlmostEqual(sigmaP, 0.1f))
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                tower.ForbiddenSoakers[i] = true;
+        }
     }
 }
 
@@ -327,21 +341,21 @@ class P5SigmaRearLasers(BossModule module) : Components.GenericRotatingAOE(modul
             return;
         var rot = iconID switch
         {
-            (uint)IconID.RotateCW => -9.Degrees(),
-            (uint)IconID.RotateCCW => 9.Degrees(),
+            (uint)IconID.RotateCW => -9f.Degrees(),
+            (uint)IconID.RotateCCW => 9f.Degrees(),
             _ => default
         };
         if (rot == default)
             return;
         StartingDir = actor.Rotation;
         Rotation = rot;
-        Sequences.Add(new(_shape, WPos.ClampToGrid(actor.Position), actor.Rotation, rot, WorldState.FutureTime(10.1d), 0.6f, 14));
+        Sequences.Add(new(_shape, actor.Position, actor.Rotation, rot, WorldState.FutureTime(10.1d), 0.6f, 14, 9));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (spell.Action.ID is (uint)AID.RearLasersFirst or (uint)AID.RearLasersRest)
-            ++NumCasts;
+            AdvanceSequence(0, WorldState.CurrentTime);
     }
 }
 
