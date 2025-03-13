@@ -92,9 +92,8 @@ class OneTwoPawShade(BossModule module) : Components.GenericAOEs(module)
         if (_aoes.Count < 4 && tether.ID == (uint)TetherID.Soulshade)
         {
             var pos = WPos.ClampToGrid(source.Position);
-            var act = WorldState.FutureTime(20.3d);
-            _aoes.Add(new(_shape, pos, source.Rotation + _firstDirection, act));
-            _aoes.Add(new(_shape, pos, source.Rotation - _firstDirection, act));
+            _aoes.Add(new(_shape, pos, source.Rotation + _firstDirection, WorldState.FutureTime(20.3d)));
+            _aoes.Add(new(_shape, pos, source.Rotation - _firstDirection, WorldState.FutureTime(23.3d)));
             _aoes.SortBy(aoe => aoe.Activation);
         }
     }
