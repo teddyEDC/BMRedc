@@ -12,9 +12,9 @@ class P3GrandOctet(BossModule module) : Components.GenericAOEs(module)
     private readonly int[] _baitOrder = new int[PartyState.MaxPartySize];
     public int NumBaitsAssigned = 1; // reserve for lunar dive
 
-    private static readonly AOEShapeRect _shapeNaelTwin = new(60, 4);
-    private static readonly AOEShapeRect _shapeBahamut = new(60, 6);
-    private static readonly AOEShapeRect _shapeDrake = new(52, 10);
+    private static readonly AOEShapeRect _shapeNaelTwin = new(60f, 4f);
+    private static readonly AOEShapeRect _shapeBahamut = new(60f, 6f);
+    private static readonly AOEShapeRect _shapeDrake = new(52f, 10f);
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(AOEs);
 
@@ -170,16 +170,16 @@ class P3GrandOctet(BossModule module) : Components.GenericAOEs(module)
         _ => _shapeDrake
     };
 
-    private static AOEShapeRect? CastShape(ActionID aid) => (AID)aid.ID switch
+    private static AOEShapeRect? CastShape(ActionID aid) => aid.ID switch
     {
-        AID.Cauterize1 => _shapeDrake,
-        AID.Cauterize2 => _shapeDrake,
-        AID.Cauterize3 => _shapeDrake,
-        AID.Cauterize4 => _shapeDrake,
-        AID.Cauterize5 => _shapeDrake,
-        AID.LunarDive => _shapeNaelTwin,
-        AID.TwistingDive => _shapeNaelTwin,
-        AID.MegaflareDive => _shapeBahamut,
+        (uint)AID.Cauterize1 => _shapeDrake,
+        (uint)AID.Cauterize2 => _shapeDrake,
+        (uint)AID.Cauterize3 => _shapeDrake,
+        (uint)AID.Cauterize4 => _shapeDrake,
+        (uint)AID.Cauterize5 => _shapeDrake,
+        (uint)AID.LunarDive => _shapeNaelTwin,
+        (uint)AID.TwistingDive => _shapeNaelTwin,
+        (uint)AID.MegaflareDive => _shapeBahamut,
         _ => null
     };
 }

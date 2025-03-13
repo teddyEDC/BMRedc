@@ -10,7 +10,7 @@ class P4UltimatePredation(BossModule module) : BossComponent(module)
     private readonly ArcList _first = new(new(), _dodgeRadius);
     private readonly ArcList _second = new(new(), _dodgeRadius);
 
-    private const float _dodgeRadius = 19;
+    private const float _dodgeRadius = 19f;
     private static readonly Angle _dodgeCushion = 2.5f.Degrees();
 
     public override void AddMovementHints(int slot, Actor actor, MovementHints movementHints)
@@ -88,18 +88,18 @@ class P4UltimatePredation(BossModule module) : BossComponent(module)
         if (garuda == null || titan == null || ifrit == null || ultima == null)
             return;
 
-        _first.ForbidInfiniteRect(titan.Position, titan.Rotation, 3);
-        _first.ForbidInfiniteRect(titan.Position, titan.Rotation + 45.Degrees(), 3);
-        _first.ForbidInfiniteRect(titan.Position, titan.Rotation - 45.Degrees(), 3);
-        _second.ForbidInfiniteRect(titan.Position, titan.Rotation + 22.5f.Degrees(), 3);
-        _second.ForbidInfiniteRect(titan.Position, titan.Rotation - 22.5f.Degrees(), 3);
-        _second.ForbidInfiniteRect(titan.Position, titan.Rotation + 90.Degrees(), 3);
-        _first.ForbidInfiniteRect(ifrit.Position, ifrit.Rotation, 9);
-        _second.ForbidInfiniteRect(Arena.Center - new WDir(Arena.Bounds.Radius, 0), 90.Degrees(), 5);
-        _second.ForbidInfiniteRect(Arena.Center - new WDir(0, Arena.Bounds.Radius), 0.Degrees(), 5);
-        _first.ForbidCircle(garuda.Position, 20);
-        _second.ForbidCircle(garuda.Position, 20);
-        _second.ForbidCircle(ultima.Position, 14);
+        _first.ForbidInfiniteRect(titan.Position, titan.Rotation, 3f);
+        _first.ForbidInfiniteRect(titan.Position, titan.Rotation + 45f.Degrees(), 3f);
+        _first.ForbidInfiniteRect(titan.Position, titan.Rotation - 45f.Degrees(), 3f);
+        _second.ForbidInfiniteRect(titan.Position, titan.Rotation + 22.5f.Degrees(), 3f);
+        _second.ForbidInfiniteRect(titan.Position, titan.Rotation - 22.5f.Degrees(), 3f);
+        _second.ForbidInfiniteRect(titan.Position, titan.Rotation + 90f.Degrees(), 3f);
+        _first.ForbidInfiniteRect(ifrit.Position, ifrit.Rotation, 9f);
+        _second.ForbidInfiniteRect(Arena.Center - new WDir(Arena.Bounds.Radius, default), 90f.Degrees(), 5f);
+        _second.ForbidInfiniteRect(Arena.Center - new WDir(default, Arena.Bounds.Radius), default, 5f);
+        _first.ForbidCircle(garuda.Position, 20f);
+        _second.ForbidCircle(garuda.Position, 20f);
+        _second.ForbidCircle(ultima.Position, 14f);
 
         var safespots = EnumeratePotentialSafespots();
         var (a1, a2) = safespots.MinBy(AngularDistance);
