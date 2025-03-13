@@ -357,7 +357,7 @@ public struct NavigationDecision
         for (var i = 0; i < len; ++i)
         {
             ref var z = ref zones[i];
-            if (z.shapeDistance(p) <= threshold)
+            if (z.shapeDistance(p) < threshold)
                 return z.g;
         }
         return float.MaxValue;

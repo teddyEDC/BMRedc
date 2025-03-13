@@ -142,8 +142,8 @@ class GreatFlood(BossModule module) : Components.SimpleKnockbacks(module, Action
 class Allfire(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeRect rect = new(10f, 5f);
-    public readonly List<AOEInstance> AOEs = new(16);
     private static readonly AOEShapeRect safespot = new(15f, 10f, InvertForbiddenZone: true);
+    public readonly List<AOEInstance> AOEs = new(16);
     private bool first = true;
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
@@ -154,18 +154,17 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
 
         if (!first)
             return CollectionsMarshal.AsSpan(AOEs);
-        else
+
+        var max = count >= 12 ? 12 : count == 8 ? 8 : 4;
+        var aoes = new AOEInstance[max];
+        var act0 = AOEs[0].Activation;
+        var color = Colors.Danger;
+        for (var i = 0; i < max; ++i)
         {
-            var max = count >= 12 ? 12 : count == 8 ? 8 : 4;
-            var aoes = new AOEInstance[max];
-            var act0 = AOEs[0].Activation;
-            for (var i = 0; i < max; ++i)
-            {
-                var aoe = AOEs[i];
-                aoes[i] = (aoe.Activation - act0).TotalSeconds < 1d ? aoe with { Color = count > 4 ? Colors.Danger : 0 } : aoe with { Risky = false };
-            }
-            return aoes;
+            var aoe = AOEs[i];
+            aoes[i] = (aoe.Activation - act0).TotalSeconds < 1d ? aoe with { Color = count > 4 ? color : 0 } : aoe with { Risky = false };
         }
+        return aoes;
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -184,7 +183,7 @@ class Allfire(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (AOEs.Count != 0 && spell.Action.ID is (uint)AID.Allfire1 or (uint)AID.Allfire2 or (uint)AID.Allfire3)
+        if (AOEs.Count != 0 && spell.Action.ID is (uint)AID.Allfire1 or (uint)AID.Allfire2 or (uint)AID.Allfire3 or (uint)AID.GreatFlood)
         {
             AOEs.RemoveAt(0);
             if (AOEs.Count == 0)

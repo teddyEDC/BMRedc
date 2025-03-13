@@ -49,7 +49,7 @@ class P3Apocalypse(BossModule module) : Components.GenericAOEs(module)
     {
         if (actor.OID == (uint)OID.ApocalypseLight)
         {
-            if (actor.Position.AlmostEqual(Arena.Center, 1))
+            if (actor.Position.AlmostEqual(Arena.Center, 1f))
             {
                 if (Starting == null)
                     Starting = actor.Rotation;
@@ -75,7 +75,7 @@ class P3Apocalypse(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class P3ApocalypseDarkWater(BossModule module) : Components.UniformStackSpread(module, 6, 0, 4, 4, includeDeadTargets: true)
+class P3ApocalypseDarkWater(BossModule module) : Components.UniformStackSpread(module, 6f, default, 4, 4, includeDeadTargets: true)
 {
     public struct State
     {

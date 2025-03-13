@@ -21,15 +21,15 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
     private int _numYellowTethers;
     private DateTime _nextImminent = module.WorldState.FutureTime(21.9f - 2.5f); // approx 2.5s before next step resolves
 
-    public const float RangeHintOut = 12; // explosion radius is 8
-    public const float RangeHintStack = 1;
+    public const float RangeHintOut = 12f; // explosion radius is 8
+    public const float RangeHintStack = 1f;
     public const float RangeHintLaser = 9.5f; // hourglass location
-    public const float RangeHintDarkEruption = 9; // radius is 6, especially for fire-order 2 has to be < 9.5, otherwise will be clipped by own laser
-    public const float RangeHintDarkWater = 1;
-    public const float RangeHintEye = 2;
-    public const float RangeHintChill = -1; // simplifies looking outside and hitting boss
+    public const float RangeHintDarkEruption = 9f; // radius is 6, especially for fire-order 2 has to be < 9.5, otherwise will be clipped by own laser
+    public const float RangeHintDarkWater = 1f;
+    public const float RangeHintEye = 2f;
+    public const float RangeHintChill = -1f; // simplifies looking outside and hitting boss
 
-    public Angle LaserRotationAt(WPos pos) => LaserRotations.FirstOrDefault(r => r.origin.Position.AlmostEqual(pos, 1)).rotation;
+    public Angle LaserRotationAt(WPos pos) => LaserRotations.FirstOrDefault(r => r.origin.Position.AlmostEqual(pos, 1f)).rotation;
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
@@ -37,8 +37,18 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
             return;
 
         var isSupport = actor.Class.IsSupport();
-        var hint = string.Join(" > ", Enumerable.Range(NumCasts, 7 - NumCasts).Select(i => Hint(States[slot], isSupport, i)));
-        hints.Add(hint, false);
+        var hintBuilder = new StringBuilder();
+
+        for (var i = NumCasts; i < 7; ++i)
+        {
+            if (i > NumCasts)
+            {
+                hintBuilder.Append(" > ");
+            }
+            hintBuilder.Append(Hint(States[slot], isSupport, i));
+        }
+
+        hints.Add(hintBuilder.ToString(), false);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
@@ -52,7 +62,7 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
                     if (WorldState.CurrentTime < _nextImminent)
                     {
                         // there's still time, around maxmelee at assigned direction
-                        hints.AddForbiddenZone(ShapeDistance.InvertedCircle(SafeSpot(slot, 9), 1), _nextImminent);
+                        hints.AddForbiddenZone(ShapeDistance.InvertedCircle(SafeSpot(slot, 9f), 1f), _nextImminent);
                     }
                     else
                     {
@@ -60,7 +70,7 @@ class P3UltimateRelativity(BossModule module) : Components.CastCounter(module, d
                         var avoidBlizzard = NumCasts == 2;
                         foreach (var (i, p) in Raid.WithSlot(false, true, true).Exclude(slot))
                         {
-                            var avoidRadius = avoidBlizzard && States[i].HaveDarkBlizzard ? 12 : 8;
+                            var avoidRadius = avoidBlizzard && States[i].HaveDarkBlizzard ? 12f : 8f;
                             hints.AddForbiddenZone(ShapeDistance.Circle(p.Position, avoidRadius));
                         }
                         var lasers = Module.FindComponent<P3UltimateRelativitySinboundMeltdownAOE>();

@@ -29,8 +29,7 @@ class Landslide(BossModule module) : Components.GenericAOEs(module)
             aoes[4] = new(ShapeHelper, predPos, predRot - 135f.Degrees(), PredictedActivation);
             return aoes;
         }
-        else
-            return CollectionsMarshal.AsSpan(_aoes);
+        return CollectionsMarshal.AsSpan(_aoes);
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
