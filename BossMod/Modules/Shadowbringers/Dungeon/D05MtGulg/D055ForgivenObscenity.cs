@@ -92,16 +92,7 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeRect rect = new(40f, 2.5f);
     private static readonly WPos[] positionsSet1 = [new(-227.5f, 253f), new(-232.5f, 251.5f)];
     private static readonly WPos[] positionsSet2 = [new(-252.5f, 253f), new(-247.5f, 251.5f)];
-    private static readonly WPos[] positionsSet3 = [new(-242.5f, 253f), new(-237.5f, 253)];
-    private static readonly WPos[] positionsSet4 = [new(-252.5f, 253f), new(-227.5f, 253)];
     private readonly List<AOEInstance> _aoes = new(6);
-
-    private bool AreCastersInPositions(WPos[] positions)
-    {
-        return _casters.Count >= 2 && positions.Length == 2 &&
-               (_casters[0].Position == positions[0] && _casters[1].Position == positions[1] ||
-                _casters[0].Position == positions[1] && _casters[1].Position == positions[0]);
-    }
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
@@ -109,11 +100,12 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
         if (count == 0)
             return [];
         var max = count > 4 ? 4 : count;
+        var act0 = _aoes[0].Activation;
         var aoes = new AOEInstance[max];
         for (var i = 0; i < max; ++i)
         {
             var aoe = _aoes[i];
-            if (i < 2)
+            if (aoe.Activation == act0)
                 aoes[i] = count > 2 ? aoe with { Color = Colors.Danger } : aoe;
             else
                 aoes[i] = aoe with { Risky = false };
@@ -126,42 +118,32 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
         if (actor.OID == (uint)OID.Rings)
         {
             _casters.Add(actor);
-            if (AreCastersInPositions(positionsSet1) || AreCastersInPositions(positionsSet2))
+            var count = _casters.Count;
+            if (count < 2)
+                return;
+            var inSet1Or2 = AreCastersInPositions(positionsSet1) || AreCastersInPositions(positionsSet2);
+            switch (count)
             {
-                if (_casters.Count == 2)
-                {
-                    _aoes.Add(new(rect, _casters[0].Position, 180f.Degrees(), _activation.AddSeconds(7.1f)));
-                    _aoes.Add(new(rect, _casters[1].Position, 180f.Degrees(), _activation.AddSeconds(7.6f)));
-                }
-                if (_casters.Count == 4)
-                {
-                    _aoes.Add(new(rect, _casters[2].Position, 180f.Degrees(), _activation.AddSeconds(8.1f)));
-                    _aoes.Add(new(rect, _casters[3].Position, 180f.Degrees(), _activation.AddSeconds(8.6f)));
-                }
-                if (_casters.Count == 6)
-                {
-                    _aoes.Add(new(rect, _casters[4].Position, 180f.Degrees(), _activation.AddSeconds(9.1f)));
-                    _aoes.Add(new(rect, _casters[5].Position, 180f.Degrees(), _activation.AddSeconds(11.1f)));
-                }
+                case 2:
+                    AddAOE(_casters[0], 7.1d);
+                    AddAOE(_casters[1], inSet1Or2 ? 7.6d : 7.1d);
+                    break;
+                case 4:
+                    AddAOE(_casters[2], 8.1d);
+                    AddAOE(_casters[3], inSet1Or2 ? 8.6d : 8.1d);
+                    break;
+                case 6:
+                    AddAOE(_casters[4], 9.1d);
+                    AddAOE(_casters[5], inSet1Or2 ? 9.1d : 11.1d);
+                    break;
             }
-            else if (AreCastersInPositions(positionsSet3) || AreCastersInPositions(positionsSet4))
-            {
-                if (_casters.Count == 2)
-                {
-                    _aoes.Add(new(rect, _casters[0].Position, 180f.Degrees(), _activation.AddSeconds(7.1f)));
-                    _aoes.Add(new(rect, _casters[1].Position, 180f.Degrees(), _activation.AddSeconds(7.1f)));
-                }
-                if (_casters.Count == 4)
-                {
-                    _aoes.Add(new(rect, _casters[2].Position, 180f.Degrees(), _activation.AddSeconds(8.1f)));
-                    _aoes.Add(new(rect, _casters[3].Position, 180f.Degrees(), _activation.AddSeconds(8.1f)));
-                }
-                if (_casters.Count == 6)
-                {
-                    _aoes.Add(new(rect, _casters[4].Position, 180f.Degrees(), _activation.AddSeconds(11.11f)));
-                    _aoes.Add(new(rect, _casters[5].Position, 180f.Degrees(), _activation.AddSeconds(11.1f)));
-                }
-            }
+        }
+        void AddAOE(Actor caster, double delay) => _aoes.Add(new(rect, WPos.ClampToGrid(caster.Position), Angle.AnglesCardinals[2], _activation.AddSeconds(delay)));
+        bool AreCastersInPositions(WPos[] positions)
+        {
+            var caster0 = _casters[0].Position;
+            var caster1 = _casters[1].Position;
+            return caster0 == positions[0] && caster1 == positions[1] || caster0 == positions[1] && caster1 == positions[0];
         }
     }
 
@@ -252,10 +234,12 @@ class D055ForgivenObscenityStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 659, NameID = 8262)]
-public class D055ForgivenObscenity(WorldState ws, Actor primary) : BossModule(ws, primary, new(-240, 237), ArenaRect)
+public class D055ForgivenObscenity(WorldState ws, Actor primary) : BossModule(ws, primary, arenaCenter, ArenaRect)
 {
-    public static readonly ArenaBounds ArenaRect = new ArenaBoundsRect(14.5f, 19.5f);
-    public static readonly ArenaBounds ArenaCircle = new ArenaBoundsCircle(15);
+    private static readonly WPos arenaCenter = new(-240f, 237f);
+    public static readonly ArenaBoundsRect ArenaRect = new(14.5f, 19.5f);
+    public static readonly ArenaBoundsComplex ArenaCircle = new([new Polygon(arenaCenter, 15f, 64)])
+;
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor, allowDeadAndUntargetable: true);

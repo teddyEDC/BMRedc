@@ -44,7 +44,7 @@ class SeduceOld(BossModule module) : Components.GenericAOEs(module)
 
     public override void Update()
     {
-        if (closedAOE != null && closedChests.Count == 0)
+        if (closedAOE == null)
         {
             var helpers = Module.Enemies((uint)OID.Helper);
             var countH = helpers.Count;
@@ -88,7 +88,7 @@ class SeduceOld(BossModule module) : Components.GenericAOEs(module)
                 if (state == 0x00040008)
                 {
                     var countC = closedChests.Count;
-                    for (var j = 0; j < countC; ++i)
+                    for (var j = 0; j < countC; ++j)
                     {
                         if (c.Position == closedChests[j].Center)
                         {
@@ -101,7 +101,7 @@ class SeduceOld(BossModule module) : Components.GenericAOEs(module)
                 else if (state == 0x00100020)
                 {
                     var countO = openChests.Count;
-                    for (var j = 0; j < countO; ++i)
+                    for (var j = 0; j < countO; ++j)
                     {
                         if (c.Position == openChests[j].Center)
                         {
@@ -146,7 +146,7 @@ class SeduceOld(BossModule module) : Components.GenericAOEs(module)
 
 class SeduceCoriolisKick(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeCircle circle = new(13);
+    private static readonly AOEShapeCircle circle = new(13f);
     public AOEInstance? AOE;
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref AOE);

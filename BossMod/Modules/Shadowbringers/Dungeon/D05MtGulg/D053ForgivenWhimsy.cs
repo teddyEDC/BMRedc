@@ -32,7 +32,7 @@ public enum AID : uint
 
 class PerfectContrition(BossModule module) : Components.GenericAOEs(module)
 {
-    private static readonly AOEShapeDonut donut = new(5, 15);
+    private static readonly AOEShapeDonut donut = new(5f, 15f);
     private readonly List<AOEInstance> _aoes = [];
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(_aoes);
