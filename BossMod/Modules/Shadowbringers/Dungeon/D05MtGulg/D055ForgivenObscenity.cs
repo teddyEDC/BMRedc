@@ -55,17 +55,19 @@ class Orbs(BossModule module) : Components.GenericAOEs(module, default, "GTFO fr
         for (var i = 0; i < count; ++i)
         {
             var o = _orbs[i];
-            for (var j = 0; j < countR; ++i)
+            var found = false;
+            for (var j = 0; j < countR; ++j)
             {
                 var ring = rings[j];
                 if (ring.Position.InRect(o.Position, 20f * o.Rotation.ToDirection(), Radius))
                 {
                     aoes[i] = new(capsule with { Length = (ring.Position - o.Position).Length() }, o.Position, o.Rotation);
+                    found = true;
                     break;
                 }
-                else if (j == countR)
-                    aoes[i] = new(circle, o.Position);
             }
+            if (!found)
+                aoes[i] = new(circle, o.Position);
         }
         return aoes;
     }
@@ -79,7 +81,7 @@ class Orbs(BossModule module) : Components.GenericAOEs(module, default, "GTFO fr
     public override void OnActorEAnim(Actor actor, uint state)
     {
         if (state == 0x00040008)
-            _orbs.RemoveAll(t => t.Position.AlmostEqual(actor.Position, 1f));
+            _orbs.RemoveAll(t => t.Position.AlmostEqual(actor.Position, 4f));
     }
 }
 
@@ -87,92 +89,80 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
 {
     private DateTime _activation;
     private readonly List<Actor> _casters = new(6);
-    private static readonly AOEShapeRect rect = new(100f, 2.5f);
+    private static readonly AOEShapeRect rect = new(40f, 2.5f);
     private static readonly WPos[] positionsSet1 = [new(-227.5f, 253f), new(-232.5f, 251.5f)];
     private static readonly WPos[] positionsSet2 = [new(-252.5f, 253f), new(-247.5f, 251.5f)];
     private static readonly WPos[] positionsSet3 = [new(-242.5f, 253f), new(-237.5f, 253)];
     private static readonly WPos[] positionsSet4 = [new(-252.5f, 253f), new(-227.5f, 253)];
+    private readonly List<AOEInstance> _aoes = new(6);
 
     private bool AreCastersInPositions(WPos[] positions)
     {
-        var caster0 = _casters[0].Position;
-        var caster1 = _casters[1].Position;
-        return _casters.Count >= 2 &&
-               (caster0 == positions[0] && caster1 == positions[1] || caster0 == positions[1] && caster1 == positions[0]);
+        return _casters.Count >= 2 && positions.Length == 2 &&
+               (_casters[0].Position == positions[0] && _casters[1].Position == positions[1] ||
+                _casters[0].Position == positions[1] && _casters[1].Position == positions[0]);
     }
+
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        var count = _casters.Count;
+        var count = _aoes.Count;
         if (count == 0)
             return [];
-
-        var inSet1Or2 = AreCastersInPositions(positionsSet1) || AreCastersInPositions(positionsSet2);
-        var inSet3Or4 = AreCastersInPositions(positionsSet3) || AreCastersInPositions(positionsSet4);
-
-        if (!inSet1Or2 && !inSet3Or4)
-            return [];
-
-        var aoeCount = 0;
-        if (count > 2)
-            aoeCount += (NumCasts == 0 ? 1 : 0) + (NumCasts is 0 or 1 ? 1 : 0);
-        if (count > 4 && NumCasts is 0 or 1)
-            aoeCount += 2;
-        if (count > 4)
-            aoeCount += (NumCasts == 2 ? 1 : 0) + (NumCasts is 2 or 3 ? 1 : 0);
-        if (count == 6 && NumCasts is 2 or 3)
-            aoeCount += 2;
-        if (count == 6)
-            aoeCount += (NumCasts == 4 ? 1 : 0) + (NumCasts is 4 or 5 ? 1 : 0);
-
-        if (aoeCount == 0)
-            return [];
-
-        var aoes = new AOEInstance[aoeCount];
-        var index = 0;
-
-        if (count > 2)
+        var max = count > 4 ? 4 : count;
+        var aoes = new AOEInstance[max];
+        for (var i = 0; i < max; ++i)
         {
-            if (NumCasts == 0)
-                aoes[index++] = new(rect, _casters[0].Position, default, _activation.AddSeconds(7.1f), Colors.Danger);
-            if (NumCasts is 0 or 1)
-                aoes[index++] = new(rect, _casters[1].Position, default, _activation.AddSeconds(inSet1Or2 ? 7.6f : 7.1f), Colors.Danger);
+            var aoe = _aoes[i];
+            if (i < 2)
+                aoes[i] = count > 2 ? aoe with { Color = Colors.Danger } : aoe;
+            else
+                aoes[i] = aoe with { Risky = false };
         }
-
-        if (count > 4)
-        {
-            if (NumCasts is 0 or 1)
-            {
-                aoes[index++] = new(rect, _casters[2].Position, default, _activation.AddSeconds(8.1f), Risky: false);
-                aoes[index++] = new(rect, _casters[3].Position, default, _activation.AddSeconds(inSet1Or2 ? 8.6f : 8.1f), Risky: false);
-            }
-            if (NumCasts == 2)
-                aoes[index++] = new(rect, _casters[2].Position, default, _activation.AddSeconds(8.1f), Colors.Danger);
-            if (NumCasts is 2 or 3)
-                aoes[index++] = new(rect, _casters[3].Position, default, _activation.AddSeconds(inSet1Or2 ? 8.6f : 8.1f), Colors.Danger);
-        }
-
-        if (count == 6)
-        {
-            if (NumCasts is 2 or 3)
-            {
-                aoes[index++] = new(rect, _casters[4].Position, default, _activation.AddSeconds(inSet1Or2 ? 9.1f : 11.1f), Risky: false);
-                aoes[index++] = new(rect, _casters[5].Position, default, _activation.AddSeconds(11.1f), Risky: false);
-            }
-            if (NumCasts == 4)
-                aoes[index++] = new(rect, _casters[4].Position, default, _activation.AddSeconds(inSet1Or2 ? 9.1f : 11.1f), Colors.Danger);
-            if (NumCasts is 4 or 5)
-                aoes[index++] = new(rect, _casters[5].Position, default, _activation.AddSeconds(11.1f), Colors.Danger);
-        }
-
-        for (var i = 0; i < aoeCount; ++i)
-            aoes[i].Origin = WPos.ClampToGrid(aoes[i].Origin);
         return aoes;
     }
 
     public override void OnActorCreated(Actor actor)
     {
         if (actor.OID == (uint)OID.Rings)
+        {
             _casters.Add(actor);
+            if (AreCastersInPositions(positionsSet1) || AreCastersInPositions(positionsSet2))
+            {
+                if (_casters.Count == 2)
+                {
+                    _aoes.Add(new(rect, _casters[0].Position, 180f.Degrees(), _activation.AddSeconds(7.1f)));
+                    _aoes.Add(new(rect, _casters[1].Position, 180f.Degrees(), _activation.AddSeconds(7.6f)));
+                }
+                if (_casters.Count == 4)
+                {
+                    _aoes.Add(new(rect, _casters[2].Position, 180f.Degrees(), _activation.AddSeconds(8.1f)));
+                    _aoes.Add(new(rect, _casters[3].Position, 180f.Degrees(), _activation.AddSeconds(8.6f)));
+                }
+                if (_casters.Count == 6)
+                {
+                    _aoes.Add(new(rect, _casters[4].Position, 180f.Degrees(), _activation.AddSeconds(9.1f)));
+                    _aoes.Add(new(rect, _casters[5].Position, 180f.Degrees(), _activation.AddSeconds(11.1f)));
+                }
+            }
+            else if (AreCastersInPositions(positionsSet3) || AreCastersInPositions(positionsSet4))
+            {
+                if (_casters.Count == 2)
+                {
+                    _aoes.Add(new(rect, _casters[0].Position, 180f.Degrees(), _activation.AddSeconds(7.1f)));
+                    _aoes.Add(new(rect, _casters[1].Position, 180f.Degrees(), _activation.AddSeconds(7.1f)));
+                }
+                if (_casters.Count == 4)
+                {
+                    _aoes.Add(new(rect, _casters[2].Position, 180f.Degrees(), _activation.AddSeconds(8.1f)));
+                    _aoes.Add(new(rect, _casters[3].Position, 180f.Degrees(), _activation.AddSeconds(8.1f)));
+                }
+                if (_casters.Count == 6)
+                {
+                    _aoes.Add(new(rect, _casters[4].Position, 180f.Degrees(), _activation.AddSeconds(11.11f)));
+                    _aoes.Add(new(rect, _casters[5].Position, 180f.Degrees(), _activation.AddSeconds(11.1f)));
+                }
+            }
+        }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -181,6 +171,8 @@ class GoldChaser(BossModule module) : Components.GenericAOEs(module)
             _activation = WorldState.CurrentTime;
         else if (spell.Action.ID == (uint)AID.VenaAmoris)
         {
+            if (_aoes.Count != 0)
+                _aoes.RemoveAt(0);
             if (++NumCasts == 6)
             {
                 _casters.Clear();
