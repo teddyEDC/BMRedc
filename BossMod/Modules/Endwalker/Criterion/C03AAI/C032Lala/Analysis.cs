@@ -8,7 +8,7 @@ class Analysis(BossModule module) : BossComponent(module)
     {
         Angle? offset = status.ID switch
         {
-            (uint)SID.FrontUnseen => default,
+            (uint)SID.FrontUnseen => new Angle(),
             (uint)SID.BackUnseen => 180f.Degrees(),
             (uint)SID.LeftUnseen => 90f.Degrees(),
             (uint)SID.RightUnseen => -90f.Degrees(),

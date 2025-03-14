@@ -45,7 +45,7 @@ public class WickedCannon(BossModule module) : Components.GenericAOEs(module)
             var rotation = extra switch
             {
                 0x2D3 => 180f.Degrees(),
-                0x2D4 => default,
+                0x2D4 => Angle.AnglesCardinals[1],
                 _ => default
             };
             _aoes.Add(new(rect, Module.PrimaryActor.Position, rotation, WorldState.FutureTime(currentDelays[_aoes.Count])));
