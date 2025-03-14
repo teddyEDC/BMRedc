@@ -11,8 +11,8 @@ class P2WanderingShot(BossModule module) : Components.GenericAOEs(module, Action
     {
         var coords = spell.Action.ID switch
         {
-            (uint)AID.WanderingShotN or (uint)AID.WanderingVolleyN => WPos.ClampToGrid(new(0f, 740f)),
-            (uint)AID.WanderingShotS or (uint)AID.WanderingVolleyS => WPos.ClampToGrid(new(0f, 760f)),
+            (uint)AID.WanderingShotN or (uint)AID.WanderingVolleyN => WPos.ClampToGrid(new(default, 740f)),
+            (uint)AID.WanderingShotS or (uint)AID.WanderingVolleyS => WPos.ClampToGrid(new(default, 760f)),
             _ => default
         };
         if (coords != default)

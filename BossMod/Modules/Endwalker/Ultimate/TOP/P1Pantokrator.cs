@@ -45,7 +45,7 @@ class P1FlameThrower(BossModule module) : Components.GenericAOEs(module)
             {
                 > 15f and < 45f or > -165f and < -135f => -60f.Degrees(),
                 > 45f and < 75f or > -135f and < -105f => -30f.Degrees(),
-                > 75f and < 105f or > -105f and < -75f => default,
+                > 75f and < 105f or > -105f and < -75f => new Angle(),
                 > 105f and < 135f or > -75f and < -45f => 30f.Degrees(),
                 > 135f and < 165f or > -45f and < -15f => 60f.Degrees(),
                 _ => -90f.Degrees(), // assume groups go CW

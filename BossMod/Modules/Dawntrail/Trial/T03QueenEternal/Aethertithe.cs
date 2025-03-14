@@ -14,7 +14,7 @@ class Aethertithe(BossModule module) : Components.GenericAOEs(module)
         Angle? angle = state switch
         {
             0x04000100 => -55f.Degrees(),
-            0x08000100 => default,
+            0x08000100 => new Angle(),
             0x10000100 => 55f.Degrees(),
             _ => null
         };

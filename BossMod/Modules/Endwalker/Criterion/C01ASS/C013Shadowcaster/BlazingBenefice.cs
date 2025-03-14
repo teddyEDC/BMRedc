@@ -23,13 +23,16 @@ abstract class BlazingBenifice(BossModule module, uint aid, uint oid) : Componen
     public override void OnActorCreated(Actor actor)
     {
         if (actor.OID == oid)
-            _aoes.Add(new(rect, actor.Position, actor.Rotation, WorldState.FutureTime(21.7d)));
+            _aoes.Add(new(rect, WPos.ClampToGrid(actor.Position), actor.Rotation, WorldState.FutureTime(21.7d)));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (_aoes.Count != 0 && spell.Action.ID == aid)
+        {
             _aoes.RemoveAt(0);
+            ++NumCasts;
+        }
     }
 }
 

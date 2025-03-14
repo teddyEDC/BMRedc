@@ -36,7 +36,6 @@ public enum IconID : uint
 
 class MagitektSlashRotation(BossModule module) : Components.GenericRotatingAOE(module)
 {
-    private static readonly Angle a60 = 60.Degrees();
     private Angle _increment;
     private Angle _rotation;
     private DateTime _activation;
@@ -46,8 +45,8 @@ class MagitektSlashRotation(BossModule module) : Components.GenericRotatingAOE(m
     {
         var increment = iconID switch
         {
-            (uint)IconID.RotateCW => -a60,
-            (uint)IconID.RotateCCW => a60,
+            (uint)IconID.RotateCW => -60f.Degrees(),
+            (uint)IconID.RotateCCW => 60f.Degrees(),
             _ => default
         };
         if (increment != default)
