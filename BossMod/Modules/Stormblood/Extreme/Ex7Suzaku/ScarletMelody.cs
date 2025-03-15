@@ -1,37 +1,5 @@
 namespace BossMod.Stormblood.Extreme.Ex7Suzaku;
 
-public enum Direction { Unset = -1, North = 0, East = 1, South = 2, West = 3 };
-
-class RapturousEcho(BossModule module) : BossComponent(module)
-{
-    private const float _radius = 1.5f;
-    private readonly List<Actor> _orbs = [];
-
-    public override void DrawArenaForeground(int pcSlot, Actor pc)
-    {
-        foreach (var orb in _orbs)
-            Arena.AddCircle(orb.Position, _radius, Colors.Object);
-    }
-
-    public override void OnActorCreated(Actor actor)
-    {
-        if ((OID)actor.OID == OID.RapturousEcho)
-            _orbs.Add(actor);
-    }
-
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
-    {
-        if ((OID)caster.OID == OID.RapturousEcho && (AID)spell.Action.ID is AID.ScarletHymnPlayer or AID.ScarletHymnBoss)
-            _orbs.Remove(caster);
-    }
-
-    public override void OnActorDestroyed(Actor actor)
-    {
-        if ((OID)actor.OID == OID.RapturousEcho)
-            _orbs.Remove(actor);
-    }
-}
-
 public class RapturousEchoTowers(BossModule module) : Components.GenericTowers(module)
 {
     private readonly int party = module.Raid.WithoutSlot(true, false, false).Length;
@@ -75,7 +43,8 @@ public class RapturousEchoTowers(BossModule module) : Components.GenericTowers(m
 
 class ScarletMelody(BossModule module) : BossComponent(module)
 {
-    private readonly Dictionary<ulong, (WPos Position, Angle direction)> _towerData = [];
+    private readonly Dictionary<ulong, (WPos Position, Angle direction, DateTime time)> _towerData = [];
+    private static readonly Angle a175 = 175f.Degrees();
 
     public override void OnActorEAnim(Actor actor, uint state)
     {
@@ -85,12 +54,12 @@ class ScarletMelody(BossModule module) : BossComponent(module)
         {
             0x00080004 => new Angle(), // north
             0x02000100 => -90f.Degrees(), // east
-            0x00400020 => 189f.Degrees(), // south
+            0x00400020 => 180f.Degrees(), // south
             0x10000800 => 90f.Degrees(), // west
             _ => null
         };
         if (direction != null)
-            _towerData[actor.InstanceID] = (actor.Position, direction.Value);
+            _towerData[actor.InstanceID] = (actor.Position, direction.Value, WorldState.FutureTime(1d));
         else
             _towerData.Remove(actor.InstanceID);
     }
@@ -105,7 +74,7 @@ class ScarletMelody(BossModule module) : BossComponent(module)
             var value = tower.Value;
             if (actor.Position.InCircle(value.Position, 1f))
             {
-                hints.ForbiddenDirections.Add((value.direction, 175f.Degrees(), WorldState.CurrentTime));
+                hints.ForbiddenDirections.Add((value.direction, a175, value.time));
                 return;
             }
         }

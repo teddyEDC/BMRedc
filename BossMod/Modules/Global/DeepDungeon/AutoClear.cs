@@ -1,7 +1,5 @@
 ﻿using BossMod.Pathfinding;
 using ImGuiNET;
-using System.IO;
-using System.Reflection;
 
 using static FFXIVClientStructs.FFXIV.Client.Game.InstanceContent.InstanceContentDeepDungeon;
 
