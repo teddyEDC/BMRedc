@@ -12,16 +12,19 @@ class PlanarTactics(BossModule module) : Components.GenericAOEs(module)
     public List<AOEInstance> Mines = [];
     public PlayerState[] Players = new PlayerState[4];
 
-    private static readonly AOEShapeRect _shape = new(4, 4, 4);
+    private static readonly AOEShapeRect _shape = new(8f, 4f);
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(Mines);
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        ref var p = ref Players[pcSlot];
+        ref readonly var p = ref Players[pcSlot];
         if (p.StartingOffsets != null)
-            foreach (var off in p.StartingOffsets)
-                Arena.AddCircle(Arena.Center + off, 1, Colors.Safe);
+        {
+            var len = p.StartingOffsets.Length;
+            for (var i = 0; i < len; ++i)
+                Arena.AddCircle(Arena.Center + p.StartingOffsets[i], 1f, Colors.Safe);
+        }
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
@@ -54,17 +57,28 @@ class PlanarTactics(BossModule module) : Components.GenericAOEs(module)
     private void InitSafespots()
     {
         WDir safeCornerOffset = default;
-        foreach (var m in Mines)
-            safeCornerOffset -= m.Origin - Arena.Center;
+        var count = Mines.Count;
+        for (var i = 0; i < count; ++i)
+            safeCornerOffset -= Mines[i].Origin + new WDir(0, 4) - Arena.Center;
         var relSouth = (safeCornerOffset + safeCornerOffset.OrthoL()) / 16f;
         var relWest = relSouth.OrthoR();
         var off1 = 5f * relSouth + 13f * relWest;
         var off2a = 3f * relSouth + 13f * relWest;
         var off2b = -8f * relSouth + 16f * relWest;
         var off3 = 13f * relSouth - 8f * relWest;
-        var sumStacks = Players.Sum(p => p.StackTarget ? p.SubtractiveStacks : 0); // can be 3 (1+2), 4 (2+2 or 1+3) or 5 (2+3)
-        foreach (ref var p in Players.AsSpan())
+        var sumStacks = 0;
+        var len = Players.Length;
+
+        for (var i = 0; i < len; ++i)
         {
+            ref readonly var p = ref Players[i];
+            if (p.StackTarget)
+                sumStacks += p.SubtractiveStacks;
+        }
+
+        for (var i = 0; i < len; ++i)
+        {
+            ref var p = ref Players[i];
             p.StartingOffsets = (p.SubtractiveStacks, sumStacks) switch
             {
                 (1, _) => [off1],

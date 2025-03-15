@@ -1,6 +1,6 @@
 namespace BossMod.Stormblood.Extreme.Ex7Suzaku;
 
-class ScarletFeverArenaChange(BossModule module) : Components.GenericAOEs(module)
+class ArenaChange(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCircle circle = new(3.5f);
     private AOEInstance? _aoe;

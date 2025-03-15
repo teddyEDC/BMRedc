@@ -130,7 +130,7 @@ class Magnetism(BossModule module) : Components.GenericKnockback(module, ignoreI
 
                 // prevent KB through death zone in center
                 if (Intersect.RayCircle(p, kb, pos, 5f) < 99f)
-                    return 0;
+                    return 0f;
 
                 return all(p + kb * 10f);
             }, source.Activation);
