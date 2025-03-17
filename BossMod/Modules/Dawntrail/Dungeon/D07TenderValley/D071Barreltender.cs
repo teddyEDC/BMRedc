@@ -136,7 +136,6 @@ class SucculentStomp(BossModule module) : Components.StackWithCastTargets(module
 class BarrelBreaker(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.BarrelBreaker), 20f)
 {
     private static readonly Angle a5 = 5f.Degrees(), a135 = 135f.Degrees(), a45 = 45f.Degrees();
-    private readonly NeedleStormSuperstormHeavyWeightNeedles _aoe = module.FindComponent<NeedleStormSuperstormHeavyWeightNeedles>()!;
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
@@ -160,14 +159,19 @@ class BarrelBreaker(BossModule module) : Components.SimpleKnockbacks(module, Act
             hints.AddForbiddenZone(ShapeDistance.Intersection(forbidden), Module.CastFinishAt(source.CastInfo));
         }
     }
+
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {
-        var aoes = _aoe.ActiveAOEs(slot, actor);
-        var len = aoes.Length;
-        for (var i = 0; i < len; ++i)
+        var aoe = Module.FindComponent<NeedleStormSuperstormHeavyWeightNeedles>();
+        if (aoe != null)
         {
-            if (aoes[i].Check(pos))
-                return true;
+            var aoes = aoe.ActiveAOEs(slot, actor);
+            var len = aoes.Length;
+            for (var i = 0; i < len; ++i)
+            {
+                if (aoes[i].Check(pos))
+                    return true;
+            }
         }
         return !Module.InBounds(pos);
     }
