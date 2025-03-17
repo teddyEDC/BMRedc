@@ -32,7 +32,7 @@ abstract class PayThePiper : Components.GenericForcedMarch
 {
     private readonly float _offset;
 
-    public PayThePiper(BossModule module, float offset) : base(module)
+    protected PayThePiper(BossModule module, float offset) : base(module)
     {
         _offset = offset;
         OverrideDirection = true;
