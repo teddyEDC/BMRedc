@@ -149,6 +149,8 @@ public sealed record class ActionDefinition(ActionID ID)
 // note that it is associated to a specific worldstate, so that it can be used for things like action conditions
 public sealed class ActionDefinitions : IDisposable
 {
+    private static readonly ActionTweaksConfig _config = Service.Config.Get<ActionTweaksConfig>();
+
     private readonly Lumina.Excel.ExcelSheet<Lumina.Excel.Sheets.Action> _actionsSheet = Service.LuminaSheet<Lumina.Excel.Sheets.Action>()!;
     private readonly Lumina.Excel.ExcelSheet<Lumina.Excel.Sheets.Item> _itemsSheet = Service.LuminaSheet<Lumina.Excel.Sheets.Item>()!;
     private readonly Lumina.Excel.ExcelSheet<Lumina.Excel.RawRow> _cjcSheet = Service.LuminaGameData!.Excel.GetSheet<Lumina.Excel.RawRow>(null, "ClassJobCategory")!;
@@ -271,7 +273,7 @@ public sealed class ActionDefinitions : IDisposable
     // TODO should we check if dash trajectory will cross any zones with imminent activation?
     public static bool PreventDashIfDangerous(WorldState _, Actor player, Actor? target, AIHints hints)
     {
-        if (target == null || !Service.Config.Get<ActionTweaksConfig>().PreventDangerousDash)
+        if (target == null || !_config.PreventDangerousDash)
             return false;
 
         // if there are pending knockbacks, god only knows where we would be sent after using a gapcloser

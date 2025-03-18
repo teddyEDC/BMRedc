@@ -6,15 +6,18 @@ public class DispelComponent(BossModule module, uint statusID, ActionID action =
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        foreach (var t in Targets)
-            if (hints.FindEnemy(t) is { } target)
+        var count = Targets.Count;
+        if (count == 0)
+            return;
+        for (var i = 0; i < count; ++i)
+            if (hints.FindEnemy(Targets[i]) is AIHints.Enemy target)
                 target.ShouldBeDispelled = true;
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         if (Targets.Count > 0)
-            hints.Add("Dispel!", false);
+            hints.Add("Dispel!");
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)

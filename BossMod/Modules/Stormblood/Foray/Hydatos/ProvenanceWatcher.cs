@@ -14,7 +14,7 @@ public enum AID : uint
 {
     AutoAttack = 14983, // Boss->player, no cast, single-target
     TheScarletPrice = 15001, // Boss->player, 5.0s cast, range 3 circle
-    TheScarletWhisper = 15000, // Boss->self, 4.0s cast, range 10+R ?-degree cone
+    TheScarletWhisper = 15000, // Boss->self, 4.0s cast, range 10+R 120-degree cone
     Reforge = 14987, // Boss->self, 5.0s cast, single-target
     EuhedralSwat = 14992, // Helper4->self, 6.0s cast, range 100 width 26 rect
     Touchdown = 14993, // Boss->self, no cast, range 50 circle
@@ -22,42 +22,44 @@ public enum AID : uint
     PillarPierce = 15344, // Icicle->self, 4.0s cast, range 50+R width 10 rect
     Thunderstorm = 15005, // Helper3->location, 3.0s cast, range 5 circle
     IceAndLevin = 14997, // Boss->self, 5.0s cast, single-target
-    Chillstorm = 15006, // Helper3->self, no cast, range ?-40 donut
+    Chillstorm = 15006, // Helper3->self, no cast, range 11-40 donut
     IceAndWind = 14996, // Boss->self, 5.0s cast, single-target
     Charybdis = 15002, // Helper2->location, no cast, range 6 circle
     HotTailFirst = 14999, // Boss->self, 5.0s cast, range 65+R width 16 rect
     HotTailSecond = 15007, // Boss->self, no cast, range 65+R width 16 rect
     AkhMornFirst = 14994, // Boss->players, 5.0s cast, range 6 circle
     AkhMornRest = 14995, // Boss->players, no cast, range 6 circle
-    DiffractiveBreak = 14998, // Boss->self, 4.0s cast, range 40 circle
+    DiffractiveBreak = 14998 // Boss->self, 4.0s cast, range 40 circle
 }
 
-class TheScarletPrice(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.TheScarletPrice), new AOEShapeCircle(3), true, true);
-class TheScarletWhisper(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TheScarletWhisper), new AOEShapeCone(22, 60.Degrees()));
-class EuhedralSwat(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.EuhedralSwat), new AOEShapeRect(100, 13));
+class TheScarletPrice(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.TheScarletPrice), new AOEShapeCircle(3f), true, true);
+class TheScarletWhisper(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TheScarletWhisper), new AOEShapeCone(22f, 60f.Degrees()));
+class EuhedralSwat(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.EuhedralSwat), new AOEShapeRect(100f, 13f));
 class Touchdown(BossModule module) : Components.RaidwideInstant(module, ActionID.MakeSpell(AID.Touchdown), 3.1f)
 {
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         base.OnEventCast(caster, spell);
 
-        if (Activation == default && (AID)spell.Action.ID == AID.EuhedralSwat)
+        if (Activation == default && spell.Action.ID == (uint)AID.EuhedralSwat)
             Activation = WorldState.FutureTime(Delay);
     }
 }
-class PillarImpact(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PillarImpact), new AOEShapeCircle(6.5f));
+class PillarImpact(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PillarImpact), 6.5f);
 class PillarPierce(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.PillarPierce), new AOEShapeRect(52.5f, 5));
-class Thunderstorm(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Thunderstorm), 5);
+class Thunderstorm(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Thunderstorm), 5f);
+
 class IceAndLevin(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.Chillstorm))
 {
     private AOEInstance? _aoe;
+    private static readonly AOEShapeDonut donut = new(11f, 40f);
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.IceAndLevin)
-            _aoe = new(new AOEShapeDonut(11, 40), Module.PrimaryActor.Position, Activation: Module.CastFinishAt(spell).AddSeconds(1));
+        if (spell.Action.ID == (uint)AID.IceAndLevin)
+            _aoe = new(donut, spell.LocXZ, default, Module.CastFinishAt(spell, 1f));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -66,61 +68,89 @@ class IceAndLevin(BossModule module) : Components.GenericAOEs(module, ActionID.M
             _aoe = null;
     }
 }
-class Charybdis(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.Charybdis))
+class Charybdis(BossModule module) : Components.GenericAOEs(module)
 {
-    private class C(int CastsLeft, Actor Actor, DateTime Activation) { public int CastsLeft = CastsLeft; public Actor Actor = Actor; public DateTime Activation = Activation; }
+    private static readonly AOEShapeCircle circle = new(6f);
 
-    private readonly Dictionary<ulong, C> Casters = [];
+    private readonly List<(ulong, WPos, DateTime, int)> casters = [];
 
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Casters.Values.Select(c => new AOEInstance(new AOEShapeCircle(6), c.Actor.Position, Activation: c.Activation));
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        var count = casters.Count;
+        if (count == 0)
+            return [];
+        var aoes = new AOEInstance[count];
+        for (var i = 0; i < count; ++i)
+        {
+            var c = casters[i];
+            aoes[i] = new(circle, WPos.ClampToGrid(c.Item2), default, c.Item3);
+        }
+        return aoes;
+    }
 
     public override void OnActorCreated(Actor actor)
     {
         if (actor.OID == (uint)OID.Charybdis)
-            Casters[actor.InstanceID] = new(19, actor, WorldState.FutureTime(4));
+            casters.Add((actor.InstanceID, WPos.ClampToGrid(actor.Position), WorldState.FutureTime(4d), 19));
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (spell.Action == WatchedAction && Casters.TryGetValue(caster.InstanceID, out var c))
+        if (spell.Action.ID == (uint)AID.Charybdis)
         {
-            if (--c.CastsLeft == 0)
-                Casters.Remove(caster.InstanceID);
+            var count = casters.Count;
+            var id = caster.InstanceID;
+            for (var i = 0; i < count; ++i)
+            {
+                var c = casters[i];
+                if (c.Item1 == id)
+                {
+                    if (--c.Item4 == 0)
+                    {
+                        casters.RemoveAt(i);
+                        return;
+                    }
+                }
+            }
         }
     }
 }
-class HotTail(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HotTailFirst), new AOEShapeRect(77, 8));
+
+class HotTail(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HotTailFirst), new AOEShapeRect(77f, 8f));
+
 class HotTailSecond(BossModule module) : Components.GenericAOEs(module)
 {
-    public override IEnumerable<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(_aoe);
+    private static readonly AOEShapeRect rect = new(77f, 8f, 77f);
+
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
 
     private AOEInstance? _aoe;
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.HotTailFirst)
-            _aoe = new(new AOEShapeRect(77, 8, 77), caster.Position, caster.Rotation, WorldState.FutureTime(3.1f));
+        if (spell.Action.ID == (uint)AID.HotTailFirst)
+            _aoe = new(rect, caster.Position, spell.Rotation, WorldState.FutureTime(3.1d));
 
-        if ((AID)spell.Action.ID == AID.HotTailSecond)
+        else if (spell.Action.ID == (uint)AID.HotTailSecond)
             _aoe = null;
     }
 }
 
 class AkhMorn(BossModule module) : Components.GenericStackSpread(module)
 {
-    private int CastsLeft;
+    private int castsLeft;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.AkhMornFirst && WorldState.Actors.Find(spell.TargetID) is { } target)
+        if (spell.Action.ID == (uint)AID.AkhMornFirst)
         {
-            Stacks.Add(new(target, 6, activation: Module.CastFinishAt(spell)));
-            CastsLeft = 3;
+            Stacks.Add(new(WorldState.Actors.Find(spell.TargetID)!, 6f, activation: Module.CastFinishAt(spell)));
+            castsLeft = 3;
         }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID == AID.AkhMornRest && --CastsLeft == 0)
+        if (spell.Action.ID == (uint)AID.AkhMornRest && --castsLeft == 0)
             Stacks.Clear();
     }
 }
@@ -141,11 +171,9 @@ class ProvenanceWatcherStates : StateMachineBuilder
             .ActivateOnEnter<Charybdis>()
             .ActivateOnEnter<HotTail>()
             .ActivateOnEnter<HotTailSecond>()
-            .ActivateOnEnter<AkhMorn>()
-            ;
+            .ActivateOnEnter<AkhMorn>();
     }
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.WIP, GroupType = BossModuleInfo.GroupType.EurekaNM, GroupID = 639, NameID = 1423, Contributors = "xan", SortOrder = 10)]
-public class ProvenanceWatcher(WorldState ws, Actor primary) : BossModule(ws, primary, new(564.0466f, -568.6868f), new ArenaBoundsCircle(51.5f, MapResolution: 1));
-
+public class ProvenanceWatcher(WorldState ws, Actor primary) : BossModule(ws, primary, new(564.0466f, -568.6868f), new ArenaBoundsCircle(51.5f, 1f, true));

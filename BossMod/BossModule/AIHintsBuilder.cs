@@ -16,7 +16,7 @@ public sealed class AIHintsBuilder : IDisposable
     private ArenaBoundsCircle? _activeFateBounds;
     private static readonly HashSet<uint> ignore = [27503, 33626]; // action IDs that the AI should ignore
     private static readonly PartyRolesConfig _config = Service.Config.Get<PartyRolesConfig>();
-    private static readonly Dictionary<uint, (byte, byte, byte, uint, string, string, string, int, bool)> _spellCache = [];
+    private static readonly Dictionary<uint, (byte, byte, byte, uint, string, string, string, int, bool, uint)> _spellCache = [];
 
     public AIHintsBuilder(WorldState ws, BossModuleManager bmm, ZoneModuleManager zmm)
     {
@@ -176,30 +176,31 @@ public sealed class AIHintsBuilder : IDisposable
             return;
         if (actor.Type is not ActorType.Enemy and not ActorType.Helper || actor.IsAlly)
             return;
-        var actionID = actor.CastInfo!.Action.ID;
+        var castInfo = actor.CastInfo!;
+        var actionID = castInfo.Action.ID;
         if (ignore.Contains(actionID))
             return;
 
         var data = GetSpellData(actionID);
 
         // gaze
-        if (data.VFX.RowId == 25)
+        if (data.VFX == 25)
         {
-            if (GuessShape(data, actor) is AOEShape sh)
-                _activeGazes[actor.InstanceID] = (actor, _ws.Actors.Find(actor.CastInfo.TargetID), sh);
+            if (GuessShape(ref data, ref actor) is AOEShape sh)
+                _activeGazes[actor.InstanceID] = (actor, _ws.Actors.Find(castInfo.TargetID), sh);
             return;
         }
-    
-        if (!actor.CastInfo!.IsSpell() || data.CastType == 1)
+
+        if (!castInfo.IsSpell() || data.CastType == 1)
             return;
         if (data.CastType is 2 or 5 && data.EffectRange >= RaidwideSize)
             return;
-        if (GuessShape(data, actor) is not AOEShape shape)
+        if (GuessShape(ref data, ref actor) is not AOEShape shape)
         {
-            Service.Log($"[AutoHints] Unknown cast type {data.CastType} for {actor.CastInfo.Action}");
+            Service.Log($"[AutoHints] Unknown cast type {data.CastType} for {castInfo.Action}");
             return;
         }
-        var target = _ws.Actors.Find(actor.CastInfo.TargetID);
+        var target = _ws.Actors.Find(castInfo.TargetID);
         _activeAOEs[actor.InstanceID] = (actor, target, shape, data.CastType == 8);
     }
 
@@ -209,7 +210,7 @@ public sealed class AIHintsBuilder : IDisposable
         _activeGazes.Remove(actor.InstanceID);
     }
 
-    private static Angle DetermineConeAngle((byte, byte, byte, uint RowId, string Name, string PathAlly, string Path, int Pos, bool Omen) data)
+    private static Angle DetermineConeAngle(ref (byte, byte, byte, uint RowId, string Name, string PathAlly, string Path, int Pos, bool Omen, uint) data)
     {
         if (!data.Omen)
         {
@@ -226,30 +227,30 @@ public sealed class AIHintsBuilder : IDisposable
         return angle.Degrees();
     }
 
-    private static AOEShape? GuessShape(Lumina.Excel.Sheets.Action data, Actor actor) => data.CastType switch
+    private static AOEShape? GuessShape(ref (byte CastType, byte EffectRange, byte XAxisModifier, uint, string, string, string, int, bool, uint) data, ref Actor actor) => data.CastType switch
     {
-            2 => new AOEShapeCircle(data.EffectRange), // used for some point-blank aoes and enemy location-targeted - does not add caster hitbox
-            3 => new AOEShapeCone(data.EffectRange + actor.HitboxRadius, DetermineConeAngle(data) * HalfWidth),
-            4 => new AOEShapeRect(data.EffectRange + actor.HitboxRadius, data.XAxisModifier * HalfWidth),
-            5 => new AOEShapeCircle(data.EffectRange + actor.HitboxRadius),
-            //6 => custom shapes
-            //7 => new AOEShapeCircle(data.EffectRange), - used for player ground-targeted circles a-la asylum
-            8 => new AOEShapeRect((actor.CastInfo!.LocXZ - actor.Position).Length(), data.XAxisModifier * HalfWidth),
-            10 => new AOEShapeDonut(3, data.EffectRange),
-            11 => new AOEShapeCross(data.EffectRange, data.XAxisModifier * HalfWidth),
-            12 => new AOEShapeRect(data.EffectRange, data.XAxisModifier * HalfWidth),
-            13 => new AOEShapeCone(data.EffectRange, DetermineConeAngle(data) * HalfWidth),
-            _ => null
+        2 => new AOEShapeCircle(data.EffectRange), // used for some point-blank aoes and enemy location-targeted - does not add caster hitbox
+        3 => new AOEShapeCone(data.EffectRange + actor.HitboxRadius, DetermineConeAngle(ref data) * HalfWidth),
+        4 => new AOEShapeRect(data.EffectRange + actor.HitboxRadius, data.XAxisModifier * HalfWidth),
+        5 => new AOEShapeCircle(data.EffectRange + actor.HitboxRadius),
+        //6 => custom shapes
+        //7 => new AOEShapeCircle(data.EffectRange), - used for player ground-targeted circles a-la asylum
+        8 => new AOEShapeRect((actor.CastInfo!.LocXZ - actor.Position).Length(), data.XAxisModifier * HalfWidth),
+        10 => new AOEShapeDonut(3, data.EffectRange),
+        11 => new AOEShapeCross(data.EffectRange, data.XAxisModifier * HalfWidth),
+        12 => new AOEShapeRect(data.EffectRange, data.XAxisModifier * HalfWidth),
+        13 => new AOEShapeCone(data.EffectRange, DetermineConeAngle(ref data) * HalfWidth),
+        _ => null
     };
 
-    private static (byte CastType, byte EffectRange, byte XAxisModifier, uint RowId, string Name, string PathAlly, string path, int pos, bool Omen) GetSpellData(uint actionID)
+    private static (byte CastType, byte EffectRange, byte XAxisModifier, uint RowId, string Name, string PathAlly, string path, int pos, bool Omen, uint VFX) GetSpellData(uint actionID)
     {
         if (_spellCache.TryGetValue(actionID, out var actionRow))
             return actionRow;
         var row = Service.LuminaRow<Lumina.Excel.Sheets.Action>(actionID);
-        (byte, byte, byte, uint, string, string, string, int, bool)? data;
+        (byte, byte, byte, uint, string, string, string, int, bool, uint)? data;
         var omenPath = row!.Value.Omen.Value.Path.ToString();
-        data = (row.Value.CastType, row.Value.EffectRange, row.Value.XAxisModifier, row.Value.RowId, row.Value.Name.ToString(), row.Value.Omen.Value.PathAlly.ToString(), omenPath, omenPath.IndexOf("fan", StringComparison.Ordinal), row.Value.Omen.ValueNullable != null);
+        data = (row.Value.CastType, row.Value.EffectRange, row.Value.XAxisModifier, row.Value.RowId, row.Value.Name.ToString(), row.Value.Omen.Value.PathAlly.ToString(), omenPath, omenPath.IndexOf("fan", StringComparison.Ordinal), row.Value.Omen.ValueNullable != null, row.Value.VFX.RowId);
         return _spellCache[actionID] = data!.Value;
     }
 }

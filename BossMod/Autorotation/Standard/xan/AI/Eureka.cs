@@ -32,7 +32,7 @@ public class EurekaAI(RotationModuleManager manager, Actor player) : AIBase(mana
         return def;
     }
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         if (strategy.Option(Track.Platebearer).As<PBIgnore>() == PBIgnore.Enabled && Player.Statuses.Any(s => s.ID == (uint)SID.WisdomOfThePlatebearer))
             Hints.ForbiddenZones.Clear();

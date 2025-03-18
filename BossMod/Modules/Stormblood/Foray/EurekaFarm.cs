@@ -24,12 +24,15 @@ public class EurekaConfig : ConfigNode
     [PropertySlider(0, 30, Speed = 0.1f)]
     public int MaxPullCount = 10;
 
+    [PropertyDisplay("Show auto farm window")]
+    public bool ShowAutoFarmWindow = false;
+
     public bool AssistMode;
 }
 
 public abstract class EurekaZone<NM> : ZoneModule where NM : struct, Enum
 {
-    protected readonly EurekaConfig _globalConfig = Service.Config.Get<EurekaConfig>();
+    protected static readonly EurekaConfig _globalConfig = Service.Config.Get<EurekaConfig>();
 
     public readonly string Zone;
 
@@ -59,7 +62,7 @@ public abstract class EurekaZone<NM> : ZoneModule where NM : struct, Enum
         base.Dispose(disposing);
     }
 
-    public override bool WantDrawExtra() => true;
+    public override bool WantDrawExtra() => _globalConfig.ShowAutoFarmWindow;
 
     public override string WindowName() => $"{Zone}###Eureka module";
 
