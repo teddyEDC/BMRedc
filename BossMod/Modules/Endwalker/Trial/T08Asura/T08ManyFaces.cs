@@ -13,7 +13,7 @@ class ManyFaces(BossModule module) : Components.GenericAOEs(module)
         {
             (uint)AID.TheFaceOfDelightA or (uint)AID.TheFaceOfWrathB => Angle.AnglesCardinals[2],
             (uint)AID.TheFaceOfDelightB or (uint)AID.TheFaceOfWrathC => Angle.AnglesCardinals[1],
-            (uint)AID.TheFaceOfWrathA or (uint)AID.TheFaceOfDelightC => Angle.AnglesCardinals[3],
+            (uint)AID.TheFaceOfDelightC or (uint)AID.TheFaceOfWrathA => Angle.AnglesCardinals[3],
             _ => null
         };
 
