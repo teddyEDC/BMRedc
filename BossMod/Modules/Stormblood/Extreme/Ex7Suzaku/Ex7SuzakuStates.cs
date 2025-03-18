@@ -172,7 +172,7 @@ class Ex7SuzakuStates : StateMachineBuilder
             .DeactivateOnExit<WellOfFlame>();
         ComponentCondition<RekindleP2>(id + 0x30, 1f, comp => comp.Spreads.Count == 0, "Spreads resolve")
             .DeactivateOnExit<RekindleP2>();
-        float[] delays = [6.1f, 1.25f, 1.25f, 1.25f, 0.45f, 1.25f, 1.25f, 1.25f, 5.3f, 1.25f, 1.25f, 1.25f, 0.65f, 1.25f, 1.25f, 1.25f];
+        float[] delays = [6.1f, 1.25f, 1.25f, 1.25f, 0.45f, 1.25f, 1.25f, 0.25f, 5.3f, 1.25f, 1.25f, 1.25f, 0.65f, 1.25f, 1.25f, 1.25f];
         for (var i = 0; i < 4; ++i)
         {
             var casts = i + 1;
@@ -188,6 +188,10 @@ class Ex7SuzakuStates : StateMachineBuilder
         {
             var casts = i + 1;
             ComponentCondition<Hotspot>(id + 0x90 + (uint)((casts - 4) * 0x10), delays[i], comp => comp.NumCasts == casts, $"Hotspot {casts}");
+            if (i == 6)
+            {
+                ComponentCondition<PayThePiperHotspotCombo>(id + 0xC1, 1f, comp => comp.NumActiveForcedMarches == 0, "Forced march ends");
+            }
         }
         MesmerizingMelodyRuthlessRefrain(id + 0xE0, 5.8f)
             .DeactivateOnEnter<PayThePiperHotspotCombo>();
