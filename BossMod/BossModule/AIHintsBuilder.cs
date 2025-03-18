@@ -1,4 +1,4 @@
-﻿namespace BossMod;
+namespace BossMod;
 
 // utility that recalculates ai hints based on different data sources (eg active bossmodule, etc)
 // when there is no active bossmodule (eg in outdoor or on trash), we try to guess things based on world state (eg actor casts)
@@ -11,7 +11,8 @@ public sealed class AIHintsBuilder : IDisposable
     private readonly BossModuleManager _bmm;
     private readonly ZoneModuleManager _zmm;
     private readonly EventSubscriptions _subscriptions;
-    private readonly Dictionary<ulong, (Actor Caster, Actor? Target, AOEShape Shape)> _activeAOEs = [];
+    private readonly Dictionary<ulong, (Actor Caster, Actor? Target, AOEShape Shape, bool IsCharge)> _activeAOEs = [];
+    private readonly Dictionary<ulong, (Actor Caster, Actor? Target, AOEShape Shape)> _activeGazes = [];
     private ArenaBoundsCircle? _activeFateBounds;
     private static readonly HashSet<uint> ignore = [27503, 33626]; // action IDs that the AI should ignore
     private static readonly PartyRolesConfig _config = Service.Config.Get<PartyRolesConfig>();
@@ -149,10 +150,23 @@ public sealed class AIHintsBuilder : IDisposable
 
         foreach (var aoe in _activeAOEs.Values)
         {
-            var target = aoe.Caster.CastInfo!.LocXZ;
-            var rot = aoe.Caster.CastInfo!.Rotation;
-            var finishAt = _ws.FutureTime(aoe.Caster.CastInfo.NPCRemainingTime);
-            hints.AddForbiddenZone(aoe.Shape, target, rot, finishAt);
+            var caster = aoe.Caster.CastInfo!;
+            var target = caster.LocXZ;
+            var rot = caster.Rotation;
+            var finishAt = _ws.FutureTime(caster.NPCRemainingTime);
+            if (aoe.IsCharge)
+                hints.AddForbiddenZone(aoe.Shape, WPos.ClampToGrid(aoe.Caster.Position), rot, finishAt);
+            else
+                hints.AddForbiddenZone(aoe.Shape, target, rot, finishAt);
+        }
+
+        foreach (var gaze in _activeGazes.Values)
+        {
+            var target = gaze.Target?.Position ?? gaze.Caster.CastInfo!.LocXZ;
+            var rot = gaze.Caster.CastInfo!.Rotation;
+            var finishAt = _ws.FutureTime(gaze.Caster.CastInfo.NPCRemainingTime);
+            if (gaze.Shape.Check(player.Position, target, rot))
+                hints.ForbiddenDirections.Add((Angle.FromDirection(target - player.Position), 45.Degrees(), finishAt));
         }
     }
 
@@ -165,39 +179,35 @@ public sealed class AIHintsBuilder : IDisposable
         var actionID = actor.CastInfo!.Action.ID;
         if (ignore.Contains(actionID))
             return;
-        var spell = actor.CastInfo!.IsSpell();
-        if (!spell)
-            return;
+
         var data = GetSpellData(actionID);
-        if (data.CastType == 1)
+
+        // gaze
+        if (data.VFX.RowId == 25)
+        {
+            if (GuessShape(data, actor) is AOEShape sh)
+                _activeGazes[actor.InstanceID] = (actor, _ws.Actors.Find(actor.CastInfo.TargetID), sh);
+            return;
+        }
+    
+        if (!actor.CastInfo!.IsSpell() || data.CastType == 1)
             return;
         if (data.CastType is 2 or 5 && data.EffectRange >= RaidwideSize)
             return;
-        AOEShape? shape = data.CastType switch
-        {
-            2 => new AOEShapeCircle(data.EffectRange), // used for some point-blank aoes and enemy location-targeted - does not add caster hitbox
-            3 => new AOEShapeCone(data.EffectRange + actor.HitboxRadius, DetermineConeAngle(data) * HalfWidth),
-            4 => new AOEShapeRect(data.EffectRange + actor.HitboxRadius, data.XAxisModifier * HalfWidth),
-            5 => new AOEShapeCircle(data.EffectRange + actor.HitboxRadius),
-            //6 => custom shapes
-            //7 => new AOEShapeCircle(data.EffectRange), - used for player ground-targeted circles a-la asylum
-            8 => new AOEShapeRect((actor.CastInfo!.LocXZ - actor.Position).Length(), data.XAxisModifier * HalfWidth),
-            10 => new AOEShapeDonut(3, data.EffectRange),
-            11 => new AOEShapeCross(data.EffectRange, data.XAxisModifier * HalfWidth),
-            12 => new AOEShapeRect(data.EffectRange, data.XAxisModifier * HalfWidth),
-            13 => new AOEShapeCone(data.EffectRange, DetermineConeAngle(data) * HalfWidth),
-            _ => null
-        };
-        if (shape == null)
+        if (GuessShape(data, actor) is not AOEShape shape)
         {
             Service.Log($"[AutoHints] Unknown cast type {data.CastType} for {actor.CastInfo.Action}");
             return;
         }
         var target = _ws.Actors.Find(actor.CastInfo.TargetID);
-        _activeAOEs[actor.InstanceID] = (actor, target, shape);
+        _activeAOEs[actor.InstanceID] = (actor, target, shape, data.CastType == 8);
     }
 
-    private void OnCastFinished(Actor actor) => _activeAOEs.Remove(actor.InstanceID);
+    private void OnCastFinished(Actor actor)
+    {
+        _activeAOEs.Remove(actor.InstanceID);
+        _activeGazes.Remove(actor.InstanceID);
+    }
 
     private static Angle DetermineConeAngle((byte, byte, byte, uint RowId, string Name, string PathAlly, string Path, int Pos, bool Omen) data)
     {
@@ -215,6 +225,22 @@ public sealed class AIHintsBuilder : IDisposable
         }
         return angle.Degrees();
     }
+
+    private static AOEShape? GuessShape(Lumina.Excel.Sheets.Action data, Actor actor) => data.CastType switch
+    {
+            2 => new AOEShapeCircle(data.EffectRange), // used for some point-blank aoes and enemy location-targeted - does not add caster hitbox
+            3 => new AOEShapeCone(data.EffectRange + actor.HitboxRadius, DetermineConeAngle(data) * HalfWidth),
+            4 => new AOEShapeRect(data.EffectRange + actor.HitboxRadius, data.XAxisModifier * HalfWidth),
+            5 => new AOEShapeCircle(data.EffectRange + actor.HitboxRadius),
+            //6 => custom shapes
+            //7 => new AOEShapeCircle(data.EffectRange), - used for player ground-targeted circles a-la asylum
+            8 => new AOEShapeRect((actor.CastInfo!.LocXZ - actor.Position).Length(), data.XAxisModifier * HalfWidth),
+            10 => new AOEShapeDonut(3, data.EffectRange),
+            11 => new AOEShapeCross(data.EffectRange, data.XAxisModifier * HalfWidth),
+            12 => new AOEShapeRect(data.EffectRange, data.XAxisModifier * HalfWidth),
+            13 => new AOEShapeCone(data.EffectRange, DetermineConeAngle(data) * HalfWidth),
+            _ => null
+    };
 
     private static (byte CastType, byte EffectRange, byte XAxisModifier, uint RowId, string Name, string PathAlly, string path, int pos, bool Omen) GetSpellData(uint actionID)
     {
