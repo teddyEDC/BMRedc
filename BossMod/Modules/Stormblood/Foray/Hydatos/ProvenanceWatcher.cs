@@ -98,18 +98,17 @@ class Charybdis(BossModule module) : Components.GenericAOEs(module)
     {
         if (spell.Action.ID == (uint)AID.Charybdis)
         {
-            var count = casters.Count;
             var id = caster.InstanceID;
-            for (var i = 0; i < count; ++i)
+            var aoes = CollectionsMarshal.AsSpan(casters);
+            var len = aoes.Length;
+            for (var i = 0; i < len; ++i)
             {
-                var c = casters[i];
+                ref var c = ref aoes[i];
                 if (c.Item1 == id)
                 {
                     if (--c.Item4 == 0)
-                    {
                         casters.RemoveAt(i);
-                        return;
-                    }
+                    return;
                 }
             }
         }

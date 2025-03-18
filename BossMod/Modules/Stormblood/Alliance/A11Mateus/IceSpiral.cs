@@ -61,17 +61,25 @@ class IceSpiral(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         if (count == 0)
             return [];
-        var max = count - NumCasts > 20 ? 20 : count - NumCasts;
-        var aoes = new AOEInstance[max];
-        for (var i = NumCasts; i < NumCasts + max; ++i)
+        var max = count > 20 ? 20 : count;
+        var aoes = CollectionsMarshal.AsSpan(_aoes);
+        var last = count - 1;
+        var maxC = Math.Min(max, count - NumCasts);
+        var maxI = NumCasts + maxC;
+
+        for (var i = NumCasts; i < maxI; ++i)
         {
-            var aoe = _aoes[i];
+            ref var aoe = ref aoes[i];
             if (i == NumCasts)
-                aoes[i - NumCasts] = i < count - 1 ? aoe with { Color = Colors.Danger } : aoe;
+            {
+                if (i != last)
+                    aoe.Color = Colors.Danger;
+                aoe.Risky = true;
+            }
             else
-                aoes[i - NumCasts] = aoe;
+                aoe.Risky = false;
         }
-        return aoes;
+        return aoes.Slice(NumCasts, maxC);
     }
 
     public override void OnActorCreated(Actor actor)
