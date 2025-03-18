@@ -70,14 +70,8 @@ class IceSpiral(BossModule module) : Components.GenericAOEs(module)
         for (var i = NumCasts; i < maxI; ++i)
         {
             ref var aoe = ref aoes[i];
-            if (i == NumCasts)
-            {
-                if (i != last)
-                    aoe.Color = Colors.Danger;
-                aoe.Risky = true;
-            }
-            else
-                aoe.Risky = false;
+            if (i == NumCasts && i != last)
+                aoe.Color = Colors.Danger;
         }
         return aoes.Slice(NumCasts, maxC);
     }
