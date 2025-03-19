@@ -73,7 +73,7 @@ class AetherstockAbyssalSmog(BossModule module) : Components.GenericAOEs(module)
                 break;
             case (uint)AID.AbyssalSmog1:
             case (uint)AID.AbyssalSmog2:
-                var position = Module.PrimaryActor.Position;
+                var position = spell.LocXZ;
                 AOEShape? shape = currentAetherspark == Aetherspark.Thunderspark ? circle : currentAetherspark == Aetherspark.CyclonicRing ? donut : null;
                 _aoes.Add(new(cone, position, spell.Rotation, Module.CastFinishAt(spell)));
                 if (shape != null)
