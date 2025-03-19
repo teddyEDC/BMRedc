@@ -62,7 +62,7 @@ class RamsDragonVoice(BossModule module) : Components.GenericAOEs(module)
         {
             var aoes = new AOEInstance[countS];
             var shapes = CollectionsMarshal.AsSpan(_shapes);
-            var pos = Module.PrimaryActor.Position;
+            var pos = WPos.ClampToGrid(Module.PrimaryActor.Position);
             for (var i = 0; i < countS; ++i)
             {
                 ref readonly var shape = ref shapes[i];

@@ -14,7 +14,7 @@ class MesmerizingMelody(BossModule module) : Components.SimpleKnockbacks(module,
     }
 }
 
-class RuthlessRefrain(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.RuthlessRefrain), 11f, kind: Kind.AwayFromOrigin)
+class RuthlessRefrain(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.RuthlessRefrain), 11f)
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
@@ -23,7 +23,7 @@ class RuthlessRefrain(BossModule module) : Components.SimpleKnockbacks(module, A
         {
             var act = Module.CastFinishAt(source.CastInfo);
             if (!IsImmune(slot, act))
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(source.Position, 11f), act);
+                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(source.Position, 9f), act);
         }
     }
 }
