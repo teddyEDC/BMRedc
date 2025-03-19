@@ -63,16 +63,9 @@ class IceSpiral(BossModule module) : Components.GenericAOEs(module)
             return [];
         var max = count > 20 ? 20 : count;
         var aoes = CollectionsMarshal.AsSpan(_aoes);
-        var last = count - 1;
         var maxC = Math.Min(max, count - NumCasts);
-        var maxI = NumCasts + maxC;
-
-        for (var i = NumCasts; i < maxI; ++i)
-        {
-            ref var aoe = ref aoes[i];
-            if (i == NumCasts && i != last)
-                aoe.Color = Colors.Danger;
-        }
+        if (NumCasts < 227)
+            aoes[NumCasts].Color = Colors.Danger;
         return aoes.Slice(NumCasts, maxC);
     }
 

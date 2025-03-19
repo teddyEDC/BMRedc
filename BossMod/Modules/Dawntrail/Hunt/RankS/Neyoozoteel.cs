@@ -71,15 +71,9 @@ class SapSpiller(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         if (count == 0)
             return [];
-        var aoes = new AOEInstance[count];
-        for (var i = 0; i < count; ++i)
-        {
-            var aoe = _aoes[i];
-            if (i == 0)
-                aoes[i] = count > 1 ? aoe with { Color = Colors.Danger } : aoe;
-            else
-                aoes[i] = aoe;
-        }
+        var aoes = CollectionsMarshal.AsSpan(_aoes);
+        if (count > 1)
+            aoes[0].Color = Colors.Danger;
         return aoes;
     }
 

@@ -373,8 +373,8 @@ public class SpreadFromIcon(BossModule module, uint icon, ActionID aid, float ra
 {
     public override void Update()
     {
-        var count = Spreads.Count;
-        for (var i = 0; i < count; ++i)
+        var count = Spreads.Count - 1;
+        for (var i = count; i >= 0; --i)
         {
             if (Spreads[i].Target.IsDead)
             {

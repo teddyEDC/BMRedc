@@ -8,6 +8,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 872, // Boss->player, no cast, single-target
+
     HigherPower1 = 39095, // Boss->self, 2.0s cast, single-target, spin x3
     HigherPower2 = 39096, // Boss->self, 2.0s cast, single-target, spin x4
     HigherPower3 = 39097, // Boss->self, 2.0s cast, single-target, spin x5
@@ -56,7 +57,7 @@ class SpinShock(BossModule module) : Components.GenericRotatingAOE(module)
                 AddSequence(-90f.Degrees());
                 break;
         }
-        void AddSequence(Angle increment) => Sequences.Add(new(cone, WPos.ClampToGrid(caster.Position), spell.Rotation, increment, Module.CastFinishAt(spell), 2.7f, Spins));
+        void AddSequence(Angle increment) => Sequences.Add(new(cone, spell.LocXZ, spell.Rotation, increment, Module.CastFinishAt(spell), 2.7f, Spins));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
