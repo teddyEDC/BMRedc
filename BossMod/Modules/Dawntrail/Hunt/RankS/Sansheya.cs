@@ -43,7 +43,7 @@ class Boiling(BossModule module) : Components.StayMove(module)
     {
         if (status.ID == (uint)SID.Boiling && Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
-            _boiling.Set(Raid.FindSlot(actor.InstanceID));
+            _boiling[Raid.FindSlot(actor.InstanceID)] = true;
             PlayerStates[slot] = new(Requirement.Stay, status.ExpireAt);
         }
     }
@@ -53,7 +53,7 @@ class Boiling(BossModule module) : Components.StayMove(module)
         if (Raid.FindSlot(actor.InstanceID) is var slot && slot >= 0)
         {
             if (status.ID == (uint)SID.Boiling)
-                _boiling.Clear(Raid.FindSlot(actor.InstanceID));
+                _boiling[Raid.FindSlot(actor.InstanceID)] = false;
             else if (status.ID == (uint)SID.Pyretic)
                 PlayerStates[slot] = default;
         }
@@ -80,16 +80,20 @@ class TwinscorchedHaloVeil(BossModule module) : Components.GenericAOEs(module)
         if (count == 0)
             return [];
         var max = count > 2 ? 2 : count;
-        var aoes = new AOEInstance[max];
+        var aoes = CollectionsMarshal.AsSpan(_aoes);
         for (var i = 0; i < max; ++i)
         {
-            var aoe = _aoes[i];
+            ref var aoe = ref aoes[i];
             if (i == 0)
-                aoes[i] = count > 1 ? aoe with { Color = Colors.Danger } : aoe;
-            else
-                aoes[i] = aoe with { Risky = aoe.Shape != cone };
+            {
+                if (count > 1)
+                    aoe.Color = Colors.Danger;
+                aoe.Risky = true;
+            }
+            else if (aoe.Shape != cone)
+                aoe.Risky = false;
         }
-        return aoes;
+        return aoes[..max];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
