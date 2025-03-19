@@ -38,8 +38,9 @@ class ExecutionModel(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         if (count == 0)
             return [];
+        var max = count > 2 ? 2 : count;
         var aoes = CollectionsMarshal.AsSpan(_aoes);
-        for (var i = 0; i < count; ++i)
+        for (var i = 0; i < max; ++i)
         {
             ref var aoe = ref aoes[i];
             if (i == 0)
@@ -51,7 +52,7 @@ class ExecutionModel(BossModule module) : Components.GenericAOEs(module)
             else
                 aoe.Risky = false;
         }
-        return aoes;
+        return aoes[..max];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)

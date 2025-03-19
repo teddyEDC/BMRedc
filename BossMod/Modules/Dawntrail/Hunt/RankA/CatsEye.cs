@@ -27,12 +27,14 @@ class BloodshotGaze(BossModule module) : Components.GenericGaze(module)
 
     public override ReadOnlySpan<Eye> ActiveEyes(int slot, Actor actor)
     {
-        static Eye[] TryGetEye(Components.GenericStackSpread comp)
+        Eye[] TryGetEye(Components.GenericStackSpread comp)
         {
             var count = comp.Stacks.Count;
             if (count == 0)
                 return [];
             var stack = CollectionsMarshal.AsSpan(comp.Stacks)[0];
+            if (stack.Target == actor)
+                return [];
             return [new(stack.Target.Position, stack.Activation)];
         }
         var stack = TryGetEye(_stack);
