@@ -133,8 +133,11 @@ class JaggedEdge(BossModule module) : Components.SpreadFromCastTargets(module, A
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (_aoe.AOE != null && !IsSpreadTarget(actor))
+        if (_aoe.AOE != null && Spreads.Count != 0 && !IsSpreadTarget(actor))
+        {
+            hints.AddForbiddenZone(ShapeDistance.InvertedRect(Module.PrimaryActor.Position, Module.PrimaryActor.Rotation, default, 1f, 50f), Spreads[0].Activation);
             return;
+        }
         base.AddAIHints(slot, actor, assignment, hints);
     }
 }
