@@ -118,11 +118,14 @@ class BodySlamKB(BossModule module) : Components.SimpleKnockbacks(module, Action
         }
         return !Module.InBounds(pos);
     }
+
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var source = Casters.Count != 0 ? Casters[0] : null;
-        if (source != null && _aoe.NumCasts >= 4)
+        if (Casters.Count != 0 && _aoe.NumCasts >= 4)
+        {
+            var source = Casters[0];
             hints.AddForbiddenZone(ShapeDistance.InvertedCircle(source.Position, 10f), Module.CastFinishAt(source.CastInfo));
+        }
     }
 }
 
