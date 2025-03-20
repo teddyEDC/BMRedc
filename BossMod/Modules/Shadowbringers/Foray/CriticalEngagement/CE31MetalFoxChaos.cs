@@ -85,7 +85,7 @@ class MagitekBitLasers(BossModule module) : Components.GenericAOEs(module)
         }
         else if (spell.Action.ID == (uint)AID.LaserShower)
         {
-            startrotation = spell.Rotation;
+            startrotation = caster.Rotation;
             Type = Types.LaserShower;
             _times = [_time, _time.AddSeconds(6.5d), _time.AddSeconds(8.3d), _time.AddSeconds(10.1d)];
         }

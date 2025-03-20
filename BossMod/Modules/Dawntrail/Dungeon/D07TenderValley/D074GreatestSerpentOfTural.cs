@@ -131,7 +131,7 @@ class GreatestLabyrinth(BossModule module) : Components.GenericAOEs(module)
         void AddAOEs(int index)
         {
             _aoes.Add(new(forbiddenShapes[index], Arena.Center));
-            _aoes.Add(new(safeShapes[index], Arena.Center, default, WorldState.FutureTime(115d), Colors.SafeFromAOE));
+            _aoes.Add(new(safeShapes[index], Arena.Center, default, WorldState.FutureTime(10d), Colors.SafeFromAOE));
         }
         switch (state)
         {
