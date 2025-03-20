@@ -4,9 +4,9 @@ class MesmerizingMelody(BossModule module) : Components.SimpleKnockbacks(module,
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var source = Casters.Count != 0 ? Casters[0] : null;
-        if (source != null)
+        if (Casters.Count != 0)
         {
+            var source = Casters[0];
             var act = Module.CastFinishAt(source.CastInfo);
             if (!IsImmune(slot, act))
                 hints.AddForbiddenZone(ShapeDistance.Circle(source.Position, 14.5f), act);
@@ -18,9 +18,9 @@ class RuthlessRefrain(BossModule module) : Components.SimpleKnockbacks(module, A
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var source = Casters.Count != 0 ? Casters[0] : null;
-        if (source != null)
+        if (Casters.Count != 0)
         {
+            var source = Casters[0];
             var act = Module.CastFinishAt(source.CastInfo);
             if (!IsImmune(slot, act))
                 hints.AddForbiddenZone(ShapeDistance.InvertedCircle(source.Position, 9f), act);

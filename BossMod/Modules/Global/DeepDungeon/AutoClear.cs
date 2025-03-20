@@ -564,7 +564,7 @@ public abstract class AutoClear : ZoneModule
             }
         }
 
-        if (!isStunned && pomanderToUseHere is PomanderID p2 && player.FindStatus((uint)SID.ItemPenalty) == null)
+        if (Config.AllowPomander && !isStunned && pomanderToUseHere is PomanderID p2 && player.FindStatus((uint)SID.ItemPenalty) == null)
             hints.ActionsToExecute.Push(new ActionID(ActionType.Pomander, (uint)p2), null, ActionQueue.Priority.VeryHigh);
 
         Actor? wantCoffer = null;
@@ -696,7 +696,7 @@ public abstract class AutoClear : ZoneModule
                     hints.GoalZones.Add(p =>
                     {
                         var dist = (p - d.Source.Position).Length();
-                        return dist >= desiredDistance ? 100f : 0f;
+                        return dist >= desiredDistance ? 100f : default;
                     });
                 }
             }
