@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Unreal.Un1Byakko;
+﻿namespace BossMod.Stormblood.Extreme.Ex6Byakko;
 
 class StateOfShock(BossModule module) : Components.CastCounter(module, ActionID.MakeSpell(AID.StateOfShockSecond))
 {

@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Unreal.Un1Byakko;
+﻿namespace BossMod.Stormblood.Extreme.Ex6Byakko;
 
 class VoiceOfThunder(BossModule module) : BossComponent(module)
 {

@@ -1,4 +1,4 @@
-﻿namespace BossMod.Dawntrail.Unreal.Un1Byakko;
+﻿namespace BossMod.Stormblood.Extreme.Ex6Byakko;
 
 class UnrelentingAnguish(BossModule module) : Components.Voidzone(module, 2f, GetVoidzones, 2f)
 {
@@ -81,6 +81,8 @@ class GaleForce(BossModule module) : Components.BaitAwayIcon(module, new AOEShap
 
 class VacuumClaw(BossModule module) : Components.Voidzone(module, 12f, GetVoidzones)
 {
+    public bool Active = true;
+
     private static Actor[] GetVoidzones(BossModule module)
     {
         var enemies = module.Enemies((uint)OID.VacuumClaw);
@@ -102,6 +104,7 @@ class VacuumClaw(BossModule module) : Components.Voidzone(module, 12f, GetVoidzo
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         if (spell.Action.ID == (uint)AID.VacuumClaw)
-            ++NumCasts;
+            if (++NumCasts == 13 * GetVoidzones(Module).Length) // 1-3 voidzones depending on player count
+                Active = false;
     }
 }

@@ -39,7 +39,7 @@ public enum NPCYell : ushort
 class DoReMisery(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = new(3);
-    private List<AOEShape> _shapes = new(3);
+    private AOEShape[] shapes = [];
     private static readonly AOEShapeCircle circle = new(12f);
     private static readonly AOEShapeDonut donut = new(10f, 40f);
     private static readonly AOEShapeCone cone = new(40f, 135f.Degrees());
@@ -94,10 +94,10 @@ class DoReMisery(BossModule module) : Components.GenericAOEs(module)
     {
         if (spell.Action.ID is (uint)AID.DoReMisery1 or (uint)AID.DoReMisery2 or (uint)AID.DoReMisery3)
         {
-            var count = _shapes.Count;
-            for (var i = 0; i < count; ++i)
-                AddAOE(_shapes[i], i * 3.2f);
-            _shapes.Clear();
+            var len = shapes.Length;
+            for (var i = 0; i < len; ++i)
+                AddAOE(shapes[i], i * 3.2f);
+            shapes = [];
             void AddAOE(AOEShape shape, float delay)
             => _aoes.Add(new(shape, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell, 1.2f + delay)));
         }
@@ -111,7 +111,7 @@ class DoReMisery(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorNpcYell(Actor actor, ushort id)
     {
-        _shapes = id switch
+        shapes = id switch
         {
             (ushort)NPCYell.Chirp => [circle],
             (ushort)NPCYell.ChirpRibbit => [circle, donut],
