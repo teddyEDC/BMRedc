@@ -69,7 +69,10 @@ class Heatstroke(BossModule module) : Components.StayMove(module, 3f)
     {
         base.AddHints(slot, actor, hints);
         if (_heatstroke[slot])
-            hints.Add($"Heatstroke on you in {(actor.FindStatus((uint)SID.Heatstroke)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
+        {
+            var remaining = (PlayerStates[slot].Activation - WorldState.CurrentTime).TotalSeconds;
+            hints.Add($"Heatstroke on you in {remaining:f1}s. (Pyretic!)", remaining < 3d);
+        }
     }
 }
 
@@ -101,7 +104,10 @@ class ColdSweats(BossModule module) : Components.StayMove(module, 3)
     {
         base.AddHints(slot, actor, hints);
         if (_coldsweats[slot])
-            hints.Add($"Cold Sweats on you in {(actor.FindStatus((uint)SID.ColdSweats)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Freezing!)");
+        {
+            var remaining = (PlayerStates[slot].Activation - WorldState.CurrentTime).TotalSeconds;
+            hints.Add($"Cold Sweats on you in {remaining:f1}s. (Freezing!)", remaining < 3d);
+        }
     }
 }
 

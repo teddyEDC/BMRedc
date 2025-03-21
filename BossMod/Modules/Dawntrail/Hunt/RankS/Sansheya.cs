@@ -63,7 +63,10 @@ class Boiling(BossModule module) : Components.StayMove(module)
     {
         base.AddHints(slot, actor, hints);
         if (_boiling[slot])
-            hints.Add($"Boiling on you in {(actor.FindStatus(SID.Boiling)!.Value.ExpireAt - WorldState.CurrentTime).TotalSeconds:f1}s. (Pyretic!)");
+        {
+            var remaining = (PlayerStates[slot].Activation - WorldState.CurrentTime).TotalSeconds;
+            hints.Add($"Boiling on you in {remaining:f1}s. (Pyretic!)", remaining < 3d);
+        }
     }
 }
 
@@ -115,9 +118,9 @@ class TwinscorchedHaloVeil(BossModule module) : Components.GenericAOEs(module)
         }
         void AddAOEs(AOEShape? secondaryShape)
         {
-            var position = Module.PrimaryActor.Position;
+            var position = spell.LocXZ;
             _aoes.Add(new(cone, position, spell.Rotation, Module.CastFinishAt(spell)));
-            _aoes.Add(new(cone, position, spell.Rotation + 180.Degrees(), Module.CastFinishAt(spell, 2.3f)));
+            _aoes.Add(new(cone, position, spell.Rotation + 180f.Degrees(), Module.CastFinishAt(spell, 2.3f)));
             if (secondaryShape != null)
                 _aoes.Add(new(secondaryShape, position, default, Module.CastFinishAt(spell, 4.5f)));
         }
@@ -142,7 +145,7 @@ class TwinscorchedHaloVeil(BossModule module) : Components.GenericAOEs(module)
 
 class HaloOfHeat1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HaloOfHeat1), new AOEShapeDonut(10f, 40f));
 class VeilOfHeat1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.VeilOfHeat1), 15f);
-class FiresDomain(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.FiresDomain), 3);
+class FiresDomain(BossModule module) : Components.BaitAwayChargeCast(module, ActionID.MakeSpell(AID.FiresDomain), 3f);
 class CaptiveBolt(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.CaptiveBolt), 6f, 8);
 class PyreOfRebirth(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.PyreOfRebirth));
 class CullingBlade(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.CullingBlade));

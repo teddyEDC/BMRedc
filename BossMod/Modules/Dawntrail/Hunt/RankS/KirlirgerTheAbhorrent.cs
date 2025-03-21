@@ -43,7 +43,7 @@ class DiscordantFlourish1(BossModule module) : Flourish(module, AID.DiscordantFl
 class DiscordantFlourish2(BossModule module) : Flourish(module, AID.DiscordantFlourish2);
 class DiscordantFlourish3(BossModule module) : Flourish(module, AID.DiscordantFlourish3);
 
-class Fullmoon(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 20);
+class Fullmoon(BossModule module, AID aid) : Components.SimpleAOEs(module, ActionID.MakeSpell(aid), 20f);
 class FullmoonFuryCircle1(BossModule module) : Fullmoon(module, AID.FullmoonFuryCircle1);
 class FullmoonFuryCircle2(BossModule module) : Fullmoon(module, AID.FullmoonFuryCircle2);
 class DiscordantMoonCircle(BossModule module) : Fullmoon(module, AID.DiscordantMoonCircle);
