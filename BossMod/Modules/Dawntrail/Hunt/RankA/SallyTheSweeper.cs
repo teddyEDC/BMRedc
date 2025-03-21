@@ -49,7 +49,7 @@ class ExecutionModel(BossModule module) : Components.GenericAOEs(module)
                     aoe.Color = Colors.Danger;
                 aoe.Risky = true;
             }
-            else
+            else if (aoe.Shape != cross)
                 aoe.Risky = false;
         }
         return aoes[..max];

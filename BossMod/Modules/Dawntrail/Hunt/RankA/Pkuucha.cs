@@ -16,7 +16,8 @@ public enum AID : uint
     GlidingSwoop = 39757, //  Boss->self, 3.5s cast, range 18 width 16 rect
     MarchingSamba = 39797, //  Boss->self, 5.0s cast, single-target
     PeckingFlurryFirst = 39760, //  Boss->self, 5.0s cast, range 40 circle
-    PeckingFlurryRest = 39761 // Boss->self, no cast, range 40 circle
+    PeckingFlurryRest = 39761, // Boss->self, no cast, range 40 circle
+    DeadlySwoop = 39799 // Boss->player, no cast, single-target, deadly ability if caught in samba mechanic
 }
 
 class GlidingSwoop(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.GlidingSwoop), new AOEShapeRect(18f, 8f));
@@ -52,7 +53,7 @@ class MesmerizingMarchStirringSamba(BossModule module) : Components.GenericAOEs(
                 break;
             case (uint)AID.MarchingSamba:
                 AddAOE(circle, 1.7f);
-                AddAOE(circle, 5.7f);
+                AddAOE(cone, 5.7f);
                 break;
         }
     }
@@ -61,6 +62,13 @@ class MesmerizingMarchStirringSamba(BossModule module) : Components.GenericAOEs(
     {
         if (_aoes.Count != 0 && spell.Action.ID is (uint)AID.MesmerizingMarch1 or (uint)AID.MesmerizingMarch2 or (uint)AID.StirringSamba1 or (uint)AID.StirringSamba2)
             _aoes.RemoveAt(0);
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        base.AddAIHints(slot, actor, assignment, hints);
+        // stay close to the middle
+        hints.AddForbiddenZone(ShapeDistance.InvertedCircle(Module.PrimaryActor.Position, 14f));
     }
 }
 

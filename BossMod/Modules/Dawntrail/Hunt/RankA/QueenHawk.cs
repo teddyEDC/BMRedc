@@ -33,11 +33,9 @@ class ResonantBuzzMarch(BossModule module) : Components.StatusDrivenForcedMarch(
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {
-        var aoes = _aoe.ActiveAOEs(slot, actor);
-        var len = aoes.Length;
-        for (var i = 0; i < len; ++i)
+        if (_aoe.AOE is Components.GenericAOEs.AOEInstance aoe)
         {
-            if (aoes[i].Check(pos))
+            if (aoe.Check(pos))
                 return true;
         }
         return false;
@@ -60,11 +58,11 @@ class FrenziedSting(BossModule module) : Components.SingleTargetCast(module, Act
 
 class BeeBeAOE(BossModule module) : Components.GenericAOEs(module)
 {
-    private AOEInstance? _aoe;
+    public AOEInstance? AOE;
     private static readonly AOEShapeCircle _shapeCircle = new(12f);
     private static readonly AOEShapeDonut _shapeDonut = new(10f, 40f);
 
-    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref AOE);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -75,13 +73,13 @@ class BeeBeAOE(BossModule module) : Components.GenericAOEs(module)
             _ => null
         };
         if (shape != null)
-            _aoe = new(shape, spell.LocXZ, default, Module.CastFinishAt(spell, 0.8f));
+            AOE = new(shape, spell.LocXZ, default, Module.CastFinishAt(spell, 0.8f));
     }
 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
         if (status.ID is (uint)SID.BeeBeGone or (uint)SID.BeeBeHere)
-            _aoe = null;
+            AOE = null;
     }
 }
 

@@ -78,14 +78,18 @@ class Stonecarver(BossModule module) : Components.GenericAOEs(module)
         var count = AOEs.Count;
         if (count == 0)
             return [];
-        var aoes = new AOEInstance[count];
+        var aoes = CollectionsMarshal.AsSpan(AOEs);
         for (var i = 0; i < count; ++i)
         {
-            var aoe = AOEs[i];
+            ref var aoe = ref aoes[i];
             if (i == 0)
-                aoes[i] = count != 1 ? aoe with { Color = Colors.Danger } : aoe;
+            {
+                if (count != 1)
+                    aoe.Color = Colors.Danger;
+                aoe.Risky = true;
+            }
             else
-                aoes[i] = aoe with { Risky = false };
+                aoe.Risky = false;
         }
         return aoes;
     }
