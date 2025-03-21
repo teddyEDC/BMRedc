@@ -72,7 +72,7 @@ class DoReMisery(BossModule module) : Components.GenericAOEs(module)
         if (count > 0)
         {
             var sb = new StringBuilder(18);
-            for (var i = 0; i < _aoes.Count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var shapeHint = _aoes[i].Shape switch
                 {

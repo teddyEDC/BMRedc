@@ -86,7 +86,7 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
                 var isDonuts = aoe0.Shape == donut && aoe.Shape == donut;
                 var isConeWithDelay = (aoe.Shape == coneBig || aoe.Shape == coneSmall) && (aoe.Activation - aoe0.Activation).TotalSeconds > 2d;
                 var isCross = aoe0.Shape == cross;
-                var isFrontDonutAndConeSmall = aoe.Origin.AlmostEqual(Arena.Center, 1f) && aoe.Shape == donut && aoe0.Shape == coneSmall;
+                var isFrontDonutAndConeSmall = aoe.Origin == Arena.Center && aoe.Shape == donut && aoe0.Shape == coneSmall;
                 var isRisky = !isDonuts && !isConeWithDelay && !isFrontDonutAndConeSmall || isCross;
                 aoe.Risky = isRisky;
             }
@@ -109,7 +109,7 @@ class PathoCircuitCrossPurge(BossModule module) : Components.GenericAOEs(module)
         {
             AOEShape shape = actor.OID == (int)OID.InterferonR ? donut : cross;
             var activationTime = _aoes.Count == 0 ? WorldState.FutureTime(9.9d) : _aoes[0].Activation.AddSeconds(2.5d * _aoes.Count);
-            AddAOE(new(shape, actor.Position, default, activationTime));
+            AddAOE(new(shape, actor.Position, default, activationTime)); // intentionally not using quantized values here
         }
     }
 
