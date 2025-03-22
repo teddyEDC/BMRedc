@@ -89,7 +89,7 @@ public class SimpleAOEs(BossModule module, ActionID aid, AOEShape shape, int max
         for (var i = 0; i < max; ++i)
         {
             ref var aoe = ref aoes[i];
-            var color = (hasMaxDangerColor && i < MaxDangerColor) ? Colors.Danger : 0u;
+            var color = (hasMaxDangerColor && i < MaxDangerColor) ? Colors.Danger : default;
             var risky = Risky && (MaxRisky == null || i < MaxRisky);
 
             if (RiskyWithSecondsLeft != 0)
