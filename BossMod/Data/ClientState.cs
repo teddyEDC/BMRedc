@@ -289,7 +289,7 @@ public sealed class ClientState
     public Event<OpMoveSpeedChange> MoveSpeedChanged = new();
     public sealed record class OpMoveSpeedChange(float Speed) : WorldState.Operation
     {
-        protected override void Exec(WorldState ws)
+        protected override void Exec(ref WorldState ws)
         {
             ws.Client.MoveSpeed = Speed;
             ws.Client.MoveSpeedChanged.Fire(this);
