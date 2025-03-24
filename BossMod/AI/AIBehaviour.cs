@@ -165,6 +165,10 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
         if (_followMaster && AIPreset == null)
         {
+            if (forceDestination != null && forceDestination.OID != 0u && autorot.Hints.PathfindMapBounds.Contains(forceDestination.Position - autorot.Hints.PathfindMapCenter))
+            {
+                autorot.Hints.GoalZones.Add(autorot.Hints.GoalProximity(forceDestination.Position, 5f, 100f));
+            }
             var target = autorot.WorldState.Actors.Find(player.TargetID);
             if (!_config.FollowTarget || _config.FollowTarget && target == null)
                 autorot.Hints.GoalZones.Add(autorot.Hints.GoalSingleTarget(master, Positional.Any, _config.MaxDistanceToSlot - 0.5f));
