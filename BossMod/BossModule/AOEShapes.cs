@@ -318,12 +318,12 @@ public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnl
         {
             var part = combinedPolygon.Parts[i];
             var exteriorEdges = part.ExteriorEdges;
-            var exteriorCount = exteriorEdges.Count;
-            for (var j = 0; j < exteriorCount; ++j)
+            var exteriorLen = exteriorEdges.Length;
+            for (var j = 0; j < exteriorLen; ++j)
             {
                 var (start, end) = exteriorEdges[j];
                 arena.PathLineTo(origin + start);
-                if (j != exteriorCount - 1)
+                if (j != exteriorLen - 1)
                     arena.PathLineTo(origin + end);
             }
             MiniArena.PathStroke(true, color);
@@ -332,12 +332,12 @@ public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnl
             for (var k = 0; k < lenHoles; ++k)
             {
                 var interiorEdges = part.InteriorEdges(part.Holes[k]);
-                var interiorCount = interiorEdges.Count;
-                for (var j = 0; j < interiorCount; ++j)
+                var interiorLen = interiorEdges.Length;
+                for (var j = 0; j < interiorLen; ++j)
                 {
                     var (start, end) = interiorEdges[j];
                     arena.PathLineTo(origin + start);
-                    if (j != interiorCount - 1)
+                    if (j != interiorLen - 1)
                         arena.PathLineTo(origin + end);
                 }
                 MiniArena.PathStroke(true, color);

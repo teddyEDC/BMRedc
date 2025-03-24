@@ -153,14 +153,12 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             return new() { LeewaySeconds = float.MaxValue };
 
         Actor? forceDestination = null;
-        var forceDestinationRange = _config.MaxDistanceToSlot;
         var interactTarget = autorot.Hints.InteractWithTarget;
         if (_followMaster)
             forceDestination = master;
         else if (interactTarget != null)
         {
             forceDestination = interactTarget;
-            forceDestinationRange = 3.5f;
         }
 
         _followMaster = interactTarget == null && (_config.FollowDuringCombat || !master.InCombat || (_masterPrevPos - _masterMovementStart).LengthSq() > 100f) && (_config.FollowDuringActiveBossModule || autorot.Bossmods.ActiveModule?.StateMachine.ActiveState == null) && (_config.FollowOutOfCombat || master.InCombat);
@@ -181,7 +179,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
         }
         if (forceDestination != null && autorot.Hints.PathfindMapBounds.Contains(forceDestination.Position - autorot.Hints.PathfindMapCenter))
         {
-            autorot.Hints.GoalZones.Add(autorot.Hints.GoalSingleTarget(forceDestination, forceDestinationRange, 100f));
+            autorot.Hints.GoalZones.Add(autorot.Hints.GoalProximity(forceDestination.Position, 5f, 100f));
             return await Task.Run(() => NavigationDecision.Build(_naviCtx, WorldState, autorot.Hints, player)).ConfigureAwait(false);
         }
 
