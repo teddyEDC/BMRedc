@@ -83,7 +83,7 @@ class RadiantFlourish(BossModule module) : Components.GenericAOEs(module)
                 AddAOE(_aoes[1].Origin);
                 _aoes.RemoveRange(0, 2);
 
-                void AddAOE(WPos origin) => _aoes.Add(new(circle, WPos.ClampToGrid(WPos.RotateAroundOrigin(90f, Arena.Center, origin)), default, activation));
+                void AddAOE(WPos origin) => _aoes.Add(new(circle, WPos.ClampToGrid(WPos.RotateAroundOrigin(90f, A13Azeyma.NormalCenter, origin)), default, activation));
             }
         }
     }

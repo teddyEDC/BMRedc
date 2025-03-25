@@ -193,7 +193,8 @@ public enum OperandType
 public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnlyList<Shape>? DifferenceShapes = null, IReadOnlyList<Shape>? Shapes2 = null, bool InvertForbiddenZone = false, OperandType Operand = OperandType.Union, WPos Origin = default) : AOEShape
 {
     public RelSimplifiedComplexPolygon? Polygon;
-    private PolygonWithHolesDistanceFunction? shapeDistance;
+    private PolygonWithHolesDistanceFunction shapeDistance;
+    private bool isShapeDistanceInitialized;
     private readonly int hashkey = CreateCacheKey(Shapes1, Shapes2 ?? [], DifferenceShapes ?? [], Operand, Origin);
     private static readonly Dictionary<int, RelSimplifiedComplexPolygon> cache = [];
     private static readonly LinkedList<int> cacheOrder = new();
@@ -313,10 +314,11 @@ public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnl
     public override void Outline(MiniArena arena, WPos origin, Angle rotation, uint color = 0)
     {
         var combinedPolygon = Polygon ?? GetCombinedPolygon(origin);
-        var count = combinedPolygon.Parts.Count;
+        var parts = combinedPolygon.Parts;
+        var count = parts.Count;
         for (var i = 0; i < count; ++i)
         {
-            var part = combinedPolygon.Parts[i];
+            var part = parts[i];
             var exteriorEdges = part.ExteriorEdges;
             var exteriorLen = exteriorEdges.Length;
             for (var j = 0; j < exteriorLen; ++j)
@@ -327,11 +329,11 @@ public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnl
                     arena.PathLineTo(origin + end);
             }
             MiniArena.PathStroke(true, color);
-
-            var lenHoles = part.Holes.Length;
+            var holes = part.Holes;
+            var lenHoles = holes.Length;
             for (var k = 0; k < lenHoles; ++k)
             {
-                var interiorEdges = part.InteriorEdges(part.Holes[k]);
+                var interiorEdges = part.InteriorEdges(holes[k]);
                 var interiorLen = interiorEdges.Length;
                 for (var j = 0; j < interiorLen; ++j)
                 {
@@ -347,8 +349,13 @@ public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnl
 
     public override Func<WPos, float> Distance(WPos origin, Angle rotation)
     {
-        shapeDistance ??= new PolygonWithHolesDistanceFunction(origin, Polygon ?? GetCombinedPolygon(origin));
-        return InvertForbiddenZone ? shapeDistance.Value.InvertedDistance : shapeDistance.Value.Distance;
+        if (!isShapeDistanceInitialized)
+        {
+            shapeDistance = new PolygonWithHolesDistanceFunction(origin, Polygon ?? GetCombinedPolygon(origin));
+            isShapeDistanceInitialized = true;
+        }
+        ref readonly var distance = ref shapeDistance;
+        return InvertForbiddenZone ? distance.InvertedDistance : distance.Distance;
     }
 }
 
