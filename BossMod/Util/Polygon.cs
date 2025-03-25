@@ -245,7 +245,6 @@ public record class RelSimplifiedComplexPolygon(List<RelPolygonWithHoles> Parts)
 
     // constructors for simple polygon
     public RelSimplifiedComplexPolygon(List<WDir> simpleVertices) : this([new RelPolygonWithHoles(simpleVertices)]) { }
-    public RelSimplifiedComplexPolygon(IEnumerable<WDir> simpleVertices) : this([new RelPolygonWithHoles([.. simpleVertices])]) { }
 
     // build a triangulation of the polygon
     public List<RelTriangle> Triangulate()

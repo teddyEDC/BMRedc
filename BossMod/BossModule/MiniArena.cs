@@ -389,15 +389,17 @@ public sealed class MiniArena(WPos center, ArenaBounds bounds)
     public void Border(uint color)
     {
         var dl = ImGui.GetWindowDrawList();
-        var count = _bounds.ShapeSimplified.Parts.Count;
+        var parts = _bounds.ShapeSimplified.Parts;
+        var count = parts.Count;
         for (var i = 0; i < count; ++i)
         {
-            var part = _bounds.ShapeSimplified.Parts[i];
+            var part = parts[i];
             Vector2? lastPoint = null;
-            var exteriorLen = part.Exterior.Length;
+            var partExt = part.Exterior;
+            var exteriorLen = partExt.Length;
             for (var j = 0; j < exteriorLen; ++j)
             {
-                var offset = part.Exterior[j];
+                var offset = partExt[j];
                 var currentPoint = ScreenCenter + WorldOffsetToScreenOffset(offset);
                 if (lastPoint != currentPoint)
                     dl.PathLineTo(currentPoint);
@@ -405,13 +407,13 @@ public sealed class MiniArena(WPos center, ArenaBounds bounds)
             }
 
             dl.PathStroke(color, ImDrawFlags.Closed, 2);
-
-            var lenHoles = part.Holes.Length;
+            var holes = part.Holes;
+            var lenHoles = holes.Length;
             for (var l = 0; l < lenHoles; ++l)
             {
                 lastPoint = null;
 
-                var holeInteriorPoints = part.Interior(part.Holes[l]);
+                var holeInteriorPoints = part.Interior(holes[l]);
                 var interiorLen = holeInteriorPoints.Length;
                 for (var k = 0; k < interiorLen; ++k)
                 {

@@ -12,7 +12,7 @@ class SoulVessel(BossModule module) : Components.Adds(module, (uint)OID.SoulVess
 class Twingaze(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Twingaze), new AOEShapeCone(60f, 15f.Degrees()));
 class MagmaticSpell(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.MagmaticSpellAOE), 6f, 8);
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 866, NameID = 11286, SortOrder = 6, PlanLevel = 90)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 866, NameID = 11286, SortOrder = 6, PlanLevel = 90)]
 public class A14Naldthal(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     private static readonly ArenaBoundsComplex arena = new([new Polygon(new(750f, -750f), 29f, 180)]);
