@@ -100,7 +100,7 @@ public sealed record class AOEShapeCross(float Length, float HalfWidth, Angle Di
 {
     public override string ToString() => $"Cross: l={Length:f3}, w={HalfWidth * 2}, off={DirectionOffset}, ifz={InvertForbiddenZone}";
     public override bool Check(WPos position, WPos origin, Angle rotation) => position.InCross(origin, rotation + DirectionOffset, Length, HalfWidth);
-    public override void Draw(MiniArena arena, WPos origin, Angle rotation, uint color = 0) => arena.ZonePoly((GetType(), origin, rotation + DirectionOffset, Length, HalfWidth), ContourPoints(origin, rotation), color);
+    public override void Draw(MiniArena arena, WPos origin, Angle rotation, uint color = 0) => arena.ZonePoly(((byte)0x01, origin, rotation + DirectionOffset, Length, HalfWidth), ContourPoints(origin, rotation), color);
     public override void Outline(MiniArena arena, WPos origin, Angle rotation, uint color = 0)
     {
         var points = ContourPoints(origin, rotation);
@@ -356,18 +356,5 @@ public sealed record class AOEShapeCustom(IReadOnlyList<Shape> Shapes1, IReadOnl
         }
         ref readonly var distance = ref shapeDistance;
         return InvertForbiddenZone ? distance.InvertedDistance : distance.Distance;
-    }
-}
-
-public sealed record class AOEShapeCustomAlt(RelSimplifiedComplexPolygon Poly, Angle DirectionOffset = default, bool InvertForbiddenZone = false) : AOEShape
-{
-    public override string ToString() => $"Custom: off={DirectionOffset}, ifz={InvertForbiddenZone}";
-    public override bool Check(WPos position, WPos origin, Angle rotation) => Poly.Contains((position - origin).Rotate(-rotation - DirectionOffset));
-    public override void Draw(MiniArena arena, WPos origin, Angle rotation, uint color = 0) => arena.ZoneComplex(origin, rotation + DirectionOffset, Poly, color);
-    public override void Outline(MiniArena arena, WPos origin, Angle rotation, uint color = 0) => arena.AddComplexPolygon(origin, (rotation + DirectionOffset).ToDirection(), Poly, color);
-    public override Func<WPos, float> Distance(WPos origin, Angle rotation)
-    {
-        return InvertForbiddenZone ? new PolygonWithHolesDistanceFunction(origin, Poly.Transform(default, (-rotation - DirectionOffset).ToDirection())).InvertedDistance
-        : new PolygonWithHolesDistanceFunction(origin, Poly.Transform(default, (-rotation - DirectionOffset).ToDirection())).Distance;
     }
 }

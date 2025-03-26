@@ -122,7 +122,7 @@ sealed class WorldStateGameSync : IDisposable
         _processPacketRSVDataHook.Enable();
         Service.Log($"[WSG] ProcessPacketRSVData address = 0x{_processPacketRSVDataHook.Address:X}");
 
-        _processSystemLogMessageHook = Service.Hook.HookFromSignature<ProcessSystemLogMessageDelegate>("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B6 43 28", ProcessSystemLogMessageDetour);
+        _processSystemLogMessageHook = Service.Hook.HookFromSignature<ProcessSystemLogMessageDelegate>("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B6 46 28", ProcessSystemLogMessageDetour);
         _processSystemLogMessageHook.Enable();
         Service.Log($"[WSG] ProcessSystemLogMessage address = 0x{_processSystemLogMessageHook.Address:X}");
 
@@ -130,7 +130,7 @@ sealed class WorldStateGameSync : IDisposable
         _processPacketOpenTreasureHook.Enable();
         Service.Log($"[WSG] ProcessPacketOpenTreasure address = 0x{_processPacketOpenTreasureHook.Address:X}");
 
-        _processPacketFateInfoHook = Service.Hook.HookFromSignature<ProcessPacketFateInfoDelegate>("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B7 4B 10 48 8D 53 12 41 B8 ?? ?? ?? ??", ProcessPacketFateInfoDetour);
+        _processPacketFateInfoHook = Service.Hook.HookFromSignature<ProcessPacketFateInfoDelegate>("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B7 4E 10 48 8D 56 12 41 B8 ?? ?? ?? ??", ProcessPacketFateInfoDetour);
         _processPacketFateInfoHook.Enable();
         Service.Log($"[WSG] ProcessPacketFateInfo address = 0x{_processPacketFateInfoHook.Address:X}");
 
@@ -176,10 +176,10 @@ sealed class WorldStateGameSync : IDisposable
         {
             _ws.Execute(new WorldState.OpZoneChange(Service.ClientState.TerritoryType, GameMain.Instance()->CurrentContentFinderConditionId));
         }
-        if (_ws.Network.IDScramble != Network.IDScramble.Delta)
-        {
-            _ws.Execute(new NetworkState.OpIDScramble(Network.IDScramble.Delta));
-        }
+        // if (_ws.Network.IDScramble != Network.IDScramble.Delta)
+        // {
+        //     _ws.Execute(new NetworkState.OpIDScramble(Network.IDScramble.Delta));
+        // }
 
         for (var i = 0; i < _globalOps.Count; ++i)
         {
