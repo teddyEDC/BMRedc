@@ -29,7 +29,7 @@ class Hotspot(BossModule module) : Components.GenericAOEs(module)
             }
             else
             {
-                aoe.Risky = _kb == null || _kb != null && _kb.State.Count != 0;
+                aoe.Risky = _kb != null && _kb.State.Count != 0;
             }
         }
         return aoes.Slice(NumCasts, maxC);
