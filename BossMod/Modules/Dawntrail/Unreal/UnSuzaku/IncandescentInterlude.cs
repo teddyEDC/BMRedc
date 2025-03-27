@@ -4,7 +4,6 @@ class IncandescentInterlude(BossModule module) : Components.GenericTowers(module
 {
     private BitMask _forbidden;
     public readonly List<Tower> TowerCache = new(4);
-    private static readonly WPos cardinalTowers = new(100f, 84f);
     private readonly RuthlessRefrain _kb = module.FindComponent<RuthlessRefrain>()!;
 
     public override void OnActorCreated(Actor actor)
@@ -42,21 +41,9 @@ class IncandescentInterlude(BossModule module) : Components.GenericTowers(module
         if (_kb.Casters.Count != 0)
         {
             var towers = Module.Enemies((uint)OID.Towers);
-            var count = towers.Count;
-            var found = false;
-            for (var i = 0; i < count; ++i)
-            {
-                var t = towers[i];
-                if (t.Position == cardinalTowers)
-                {
-                    found = true;
-                    break;
-                }
-            }
             var forbidden = new Func<WPos, float>[4];
-            var check = found && _forbidden[slot] || !found && !_forbidden[slot];
             for (var i = 0; i < 4; ++i)
-                forbidden[i] = ShapeDistance.Cone(UnSuzaku.ArenaCenter, 20f, check ? Angle.AnglesCardinals[i] : Angle.AnglesIntercardinals[i], 35f.Degrees());
+                forbidden[i] = ShapeDistance.Cone(UnSuzaku.ArenaCenter, 20f, _forbidden[slot] ? Angle.AnglesCardinals[i] : Angle.AnglesIntercardinals[i], 35f.Degrees());
             hints.AddForbiddenZone(ShapeDistance.Union(forbidden), Module.CastFinishAt(_kb.Casters[0].CastInfo));
         }
     }

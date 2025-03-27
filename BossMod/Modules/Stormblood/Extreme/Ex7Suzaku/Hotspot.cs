@@ -29,7 +29,7 @@ class Hotspot(BossModule module) : Components.GenericAOEs(module)
             }
             else
             {
-                aoe.Risky = _kb == null || _kb != null && _kb.State.Count != 0;
+                aoe.Risky = _kb != null && _kb.State.Count != 0;
             }
         }
         return aoes.Slice(NumCasts, maxC);
@@ -52,11 +52,11 @@ class Hotspot(BossModule module) : Components.GenericAOEs(module)
             var helper = Module.Enemies((uint)OID.Helper2);
             var rot = helper.Count != 0 ? Angle.FromDirection(helper[0].Position - Ex7Suzaku.ArenaCenter) : default;
             var roundedrot = (MathF.Round(rot.Deg / 12f) * 12f).Degrees();
-            GetAOES(roundedrot);
+            GetAOES(roundedrot + 180f.Degrees(), -2.2d);
         }
     }
 
-    private void GetAOES(Angle startrot, double delay = default)
+    private void GetAOES(Angle startrot, double delay)
     {
         var songs = Module.Enemies(_songs);
         var count = songs.Count;
