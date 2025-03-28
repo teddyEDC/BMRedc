@@ -38,8 +38,6 @@ public enum IconID : uint
 
 public enum TetherID : uint
 {
-    CoordinateBit1 = 321, // CoordinateBit2->Boss
-    CoordinateBit2 = 322, // CoordinateBit2->Boss
     OrbTeleport = 282 // CoordinateBit2->Orb
 }
 
