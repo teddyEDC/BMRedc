@@ -276,10 +276,8 @@ class DebugGraphics
 
         var altitude = MathF.Asin(camera->ViewMatrix.M23);
         ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted("Camera Altitude");
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(altitude.Radians().ToString());
+        ImGui.TableNextColumn(); ImGui.TextUnformatted("Camera Altitude");
+        ImGui.TableNextColumn(); ImGui.TextUnformatted(altitude.Radians().ToString());
 
         var azimuth = MathF.Atan2(camera->ViewMatrix.M13, camera->ViewMatrix.M33);
         ImGui.TableNextRow();
@@ -362,7 +360,7 @@ class DebugGraphics
 
         ImGui.Checkbox("Circle", ref _overlayCircle);
         ImGui.DragFloat2("Center", ref _overlayCenter);
-        ImGui.DragFloat2("Step", ref _overlayStep);
+        ImGui.DragFloat2("Step", ref _overlayStep, 0.25f, 1, 10);
         ImGui.DragFloat2("Max offset", ref _overlayMaxOffset);
 
         var rotationDegrees = _overlayRotation.Deg;
