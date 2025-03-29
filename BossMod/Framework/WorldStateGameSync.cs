@@ -578,8 +578,8 @@ sealed class WorldStateGameSync : IDisposable
                 var slot = FindFreePartySlot(PartyState.MaxAllianceSize, PartyState.MaxAllies);
                 if (slot > 0)
                     UpdatePartySlot(slot, new PartyState.Member(0, actor.InstanceID, false, actor.Name));
-                else
-                    Service.Log($"[WorldState] Failed to find empty slot for allied NPC {actor.InstanceID:X}");
+                // else
+                //     Service.Log($"[WorldState] Failed to find empty slot for allied NPC {actor.InstanceID:X}");
             }
         }
     }
