@@ -1,5 +1,4 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.Game.Group;
-using System.Runtime.InteropServices;
 
 namespace BossMod;
 
