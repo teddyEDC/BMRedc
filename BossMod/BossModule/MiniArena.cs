@@ -11,9 +11,6 @@ public sealed class MiniArena(WPos center, ArenaBounds bounds)
 {
     public static readonly BossModuleConfig Config = Service.Config.Get<BossModuleConfig>();
     private WPos _center = center;
-#pragma warning disable IDE0032
-    private ArenaBounds _bounds = bounds;
-#pragma warning restore IDE0032
     private readonly TriangulationCache _triCache = new();
 
     public WPos Center
@@ -31,16 +28,16 @@ public sealed class MiniArena(WPos center, ArenaBounds bounds)
 
     public ArenaBounds Bounds
     {
-        get => _bounds;
+        get;
         set
         {
-            if (!ReferenceEquals(_bounds, value))
+            if (!ReferenceEquals(field, value))
             {
-                _bounds = value;
+                field = value;
                 _triCache.Invalidate();
             }
         }
-    }
+    } = bounds;
 
     public float ScreenHalfSize => 150 * Config.ArenaScale;
     public float ScreenMarginSize => 20 * Config.ArenaScale;
