@@ -276,8 +276,10 @@ class DebugGraphics
 
         var altitude = MathF.Asin(camera->ViewMatrix.M23);
         ImGui.TableNextRow();
-        ImGui.TableNextColumn(); ImGui.TextUnformatted("Camera Altitude");
-        ImGui.TableNextColumn(); ImGui.TextUnformatted(altitude.Radians().ToString());
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Camera Altitude");
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted(altitude.Radians().ToString());
 
         var azimuth = MathF.Atan2(camera->ViewMatrix.M13, camera->ViewMatrix.M33);
         ImGui.TableNextRow();
