@@ -11,30 +11,30 @@ class Platforms(BossModule module) : BossComponent(module)
     private const float HexaNeighbourDistX = HexaCenterToSideCornerX * 2;
     private const float HexaNeighbourDistZ = HexaPlatformSide * 1.5f;
 
-    private static readonly WPos ClosestPlatformCenter = new(0.6f, -374); // (0,0) on hexa grid
-    private static readonly (int, int)[] HexaPlatforms = [(0, 0), (0, 1), (1, 1), (0, 2), (1, 2), (2, 2), (3, 2), (0, 3), (1, 3), (2, 3), (1, 4), (2, 4)];
-    private static readonly (int, int) OctaPlatform = (3, 4);
-    public static readonly WPos[] HexaPlatformCenters = CreateHexaPlatformCenters();
+    private static readonly WPos closestPlatformCenter = new(0.6f, -374); // (0,0) on hexa grid
+    private static readonly (int, int)[] hexaPlatforms = [(0, 0), (0, 1), (1, 1), (0, 2), (1, 2), (2, 2), (3, 2), (0, 3), (1, 3), (2, 3), (1, 4), (2, 4)];
+    private static readonly (int, int) octaPlatform = (3, 4);
+    public static readonly WPos[] hexaPlatformCenters = CreateHexaPlatformCenters();
     private static WPos[] CreateHexaPlatformCenters()
     {
         var centers = new WPos[12];
         for (var i = 0; i < 12; ++i)
         {
-            centers[i] = HexaCenter(HexaPlatforms[i]);
+            centers[i] = HexaCenter(hexaPlatforms[i]);
         }
         return centers;
     }
     private static readonly WDir OctaCenterOffset = 0.5f * new WDir(OctaPlatformShort, OctaPlatformLong - HexaPlatformSide);
-    private static readonly WPos OctaPlatformCenter = HexaCenter(OctaPlatform) - OctaCenterOffset;
+    private static readonly WPos OctaPlatformCenter = HexaCenter(octaPlatform) - OctaCenterOffset;
 
     // it is possible to move from platform if height difference is < 0.5, or jump if height difference is < 2
     public static readonly float[] PlatformHeights = [4.5f, 0.9f, 0.5f, -0.7f, -0.3f, 0.1f, 0.5f, 1.7f, 1.3f, 0.9f, 2.1f, 2.5f, 4.9f];
-    private static readonly (int lower, int upper)[] HighEdges = [(1, 0), (3, 7), (4, 7), (9, 12), (11, 12)];
-    private static readonly (int lower, int upper)[] JumpEdges = [(3, 1), (4, 1), (4, 2), (4, 8), (5, 8), (5, 9), (8, 10), (8, 11), (9, 11)];
+    private static readonly (int lower, int upper)[] highEdges = [(1, 0), (3, 7), (4, 7), (9, 12), (11, 12)];
+    private static readonly (int lower, int upper)[] jumpEdges = [(3, 1), (4, 1), (4, 2), (4, 8), (5, 8), (5, 9), (8, 10), (8, 11), (9, 11)];
 
-    private static readonly BitMask AllPlatforms = new(0x1FFF);
+    private static readonly BitMask allPlatforms = new(0x1FFF);
 
-    private static WPos HexaCenter((int x, int y) c) => ClosestPlatformCenter - new WDir(c.x * HexaNeighbourDistX + ((c.y & 1) != 0 ? HexaCenterToSideCornerX : 0), c.y * HexaNeighbourDistZ);
+    private static WPos HexaCenter((int x, int y) c) => closestPlatformCenter - new WDir(c.x * HexaNeighbourDistX + ((c.y & 1) != 0 ? HexaCenterToSideCornerX : 0), c.y * HexaNeighbourDistZ);
     private static readonly WDir[] HexaCornerOffsets = [
         new(HexaCenterToSideCornerX, -HexaCenterToSideCornerZ),
         new(HexaCenterToSideCornerX, HexaCenterToSideCornerZ),
@@ -45,7 +45,7 @@ class Platforms(BossModule module) : BossComponent(module)
     ];
 
     public static readonly Func<WPos, float>[] PlatformShapes = InitializePlatformShapes();
-    private static readonly Func<WPos, float>[] HighEdgeShapes = InitializeHighEdgeShapes();
+    private static readonly Func<WPos, float>[] highEdgeShapes = InitializeHighEdgeShapes();
 
     private static Func<WPos, float>[] InitializePlatformShapes()
     {
@@ -62,13 +62,13 @@ class Platforms(BossModule module) : BossComponent(module)
         var highEdgeShapes = new Func<WPos, float>[5];
         for (var i = 0; i < 5; ++i)
         {
-            var e = HexaEdge(HighEdges[i].lower, HighEdges[i].upper);
+            var e = HexaEdge(highEdges[i].lower, highEdges[i].upper);
             highEdgeShapes[i] = ShapeDistance.Rect(e.Item1, e.Item2, 0);
         }
         return highEdgeShapes;
     }
 
-    private static readonly (WPos p, WDir d, float l)[] JumpEdgeSegments = GenerateSegments();
+    private static readonly (WPos p, WDir d, float l)[] jumpEdgeSegments = GenerateSegments();
 
     private static (WPos p, WDir d, float l)[] GenerateSegments()
     {
@@ -76,7 +76,7 @@ class Platforms(BossModule module) : BossComponent(module)
 
         for (var i = 0; i < 9; ++i)
         {
-            ref readonly var e = ref JumpEdges[i];
+            ref readonly var e = ref jumpEdges[i];
             var edge = HexaEdge(e.lower, e.upper);
             var direction = (edge.Item2 - edge.Item1).Normalized();
             var length = (edge.Item2 - edge.Item1).Length();
@@ -110,12 +110,12 @@ class Platforms(BossModule module) : BossComponent(module)
         ];
     }
 
-    private static WPos[] PlatformPoly(int index) => index < 12 ? HexaPoly(HexaPlatformCenters[index]) : OctaPoly();
+    private static WPos[] PlatformPoly(int index) => index < 12 ? HexaPoly(hexaPlatformCenters[index]) : OctaPoly();
 
     private static (WPos, WPos) HexaEdge(int from, int to)
     {
-        var (x1, y1) = from < 12 ? HexaPlatforms[from] : OctaPlatform;
-        var (x2, y2) = to < 12 ? HexaPlatforms[to] : OctaPlatform;
+        var (x1, y1) = from < 12 ? hexaPlatforms[from] : octaPlatform;
+        var (x2, y2) = to < 12 ? hexaPlatforms[to] : octaPlatform;
         var (o1, o2) = (x2 - x1, y2 - y1, y1 & 1) switch
         {
             (-1, 0, _) => (0, 1),
@@ -134,7 +134,7 @@ class Platforms(BossModule module) : BossComponent(module)
     {
         for (var i = 0; i < 9; ++i)
         {
-            var e = JumpEdgeSegments[i];
+            var e = jumpEdgeSegments[i];
             var n = e.d.OrthoL();
             var dirDot = d.Dot(n);
             if (dirDot < 0.05f)
@@ -167,8 +167,8 @@ class Platforms(BossModule module) : BossComponent(module)
 
             for (var i = 0; i < 5; ++i)
             {
-                var e = HighEdges[i];
-                var f = HighEdgeShapes[i];
+                var e = highEdges[i];
+                var f = highEdgeShapes[i];
 
                 if (actor.PosRot.Y + 0.1f < PlatformHeights[e.upper])
                 {
@@ -185,7 +185,7 @@ class Platforms(BossModule module) : BossComponent(module)
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        foreach (var i in (ActivePlatforms ^ AllPlatforms).SetBits())
+        foreach (var i in (ActivePlatforms ^ allPlatforms).SetBits())
             Arena.AddPolygon(PlatformPoly(i), Colors.Border);
         foreach (var i in ActivePlatforms.SetBits())
             Arena.AddPolygon(PlatformPoly(i), Colors.Enemy);
@@ -195,7 +195,7 @@ class Platforms(BossModule module) : BossComponent(module)
     {
         if (actor.OID == (uint)OID.Platform)
         {
-            var i = Array.FindIndex(HexaPlatformCenters, c => actor.Position.InCircle(c, 2));
+            var i = Array.FindIndex(hexaPlatformCenters, c => actor.Position.InCircle(c, 2));
             if (i == -1)
                 i = 12;
             var active = state == 2;

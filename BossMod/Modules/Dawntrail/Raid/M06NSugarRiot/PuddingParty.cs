@@ -1,4 +1,4 @@
-namespace BossMod.Dawntrail.Raid.M06SugarRiot;
+namespace BossMod.Dawntrail.Raid.M06NSugarRiot;
 
 class PuddingParty(BossModule module) : Components.UniformStackSpread(module, 6f, default, 8, 8)
 {

@@ -1,10 +1,9 @@
-namespace BossMod.Dawntrail.Raid.M06SugarRiot;
+namespace BossMod.Dawntrail.Raid.M06NSugarRiot;
 
 class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 {
     private bool _risky = true;
     private AOEInstance? _aoe;
-    private static readonly Square[] defaultSquare = [new(M06SugarRiot.ArenaCenter, 20f)];
     private static readonly PolygonCustom polygonNorth = new([new(100.628f, 79.853f), new(100.525f, 80.108f), new(100.425f, 80.365f), new(100.327f, 80.622f),
     new(100.231f, 80.88f), new(100.138f, 81.139f), new(100.046f, 81.398f), new(99.956f, 81.658f), new(99.869f, 81.919f),
     new(99.784f, 82.181f), new(99.701f, 82.443f), new(99.62f, 82.706f), new(99.541f, 82.97f), new(99.464f, 83.234f),
@@ -84,11 +83,11 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     new(90.241f, 107.381f), new(90.448f, 107.294f)]);
     private static readonly PolygonCustom[] combined = [polygonNorth, polygonWest, polygonEast, polygonMiddle];
     private static readonly AOEShapeCustom riverAOE = new(combined);
-    public static readonly ArenaBoundsComplex riverArena = new(defaultSquare, combined);
-    private static readonly (WPos, WPos)[] JumpEdges = [(new(97.639f, 93.016f), new(103.923f, 93.843f)), (new(104.243f, 88.842f), new(98.459f, 88.081f)),
+    private static readonly ArenaBoundsComplex riverArena = new([new Square(M06NSugarRiot.ArenaCenter, 20f)], combined);
+    private static readonly (WPos, WPos)[] jumpEdges = [(new(97.639f, 93.016f), new(103.923f, 93.843f)), (new(104.243f, 88.842f), new(98.459f, 88.081f)),
     (new(94.940f, 105.074f), new(92.739f, 99.759f)), (new(88.216f, 101.905f), new(90.321f, 106.986f)), (new(106.924f, 101.845f), new(103.371f, 106.475f)),
     (new(107.389f, 109.451f), new(111.042f, 104.691f))];
-    private static readonly (WPos p, WDir d, float l)[] JumpEdgeSegments = GenerateSegments();
+    private static readonly (WPos p, WDir d, float l)[] jumpEdgeSegments = GenerateSegments();
 
     private bool active;
 
@@ -114,8 +113,8 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
                 _aoe = null;
                 break;
             case 0x08000004u:
-                Arena.Bounds = M06SugarRiot.DefaultArena;
-                Arena.Center = M06SugarRiot.ArenaCenter;
+                Arena.Bounds = M06NSugarRiot.DefaultArena;
+                Arena.Center = M06NSugarRiot.ArenaCenter;
                 break;
         }
     }
@@ -175,7 +174,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     {
         for (var i = 0; i < 6; ++i)
         {
-            var e = JumpEdgeSegments[i];
+            ref readonly var e = ref jumpEdgeSegments[i];
             var n = e.d.OrthoL();
             var dirDot = d.Dot(n);
             if (dirDot < 0.05f)
@@ -198,7 +197,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
 
         for (var i = 0; i < 6; ++i)
         {
-            ref readonly var edge = ref JumpEdges[i];
+            ref readonly var edge = ref jumpEdges[i];
             var direction = (edge.Item2 - edge.Item1).Normalized();
             var length = (edge.Item2 - edge.Item1).Length();
             segments[i] = (edge.Item1, direction, length);

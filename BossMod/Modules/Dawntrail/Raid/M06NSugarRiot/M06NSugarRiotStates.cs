@@ -1,8 +1,8 @@
-namespace BossMod.Dawntrail.Raid.M06SugarRiot;
+namespace BossMod.Dawntrail.Raid.M06NSugarRiot;
 
-class M06SugarRiotStates : StateMachineBuilder
+class M06NSugarRiotStates : StateMachineBuilder
 {
-    public M06SugarRiotStates(BossModule module) : base(module)
+    public M06NSugarRiotStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<ArenaChanges>()
