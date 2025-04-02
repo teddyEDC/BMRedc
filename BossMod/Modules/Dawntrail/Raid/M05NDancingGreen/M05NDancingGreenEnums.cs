@@ -24,6 +24,7 @@ public enum AID : uint
     TwoSnapTwistFirst5 = 42197, // Boss->self, 5.0s cast, range 20 width 40 rect
     TwoSnapTwistFirst6 = 42700, // Boss->self, 5.0s cast, range 20 width 40 rect
     TwoSnapTwistFirst7 = 42703, // Boss->self, 5.0s cast, range 20 width 40 rect
+    TwoSnapTwistFirst8 = 42198, // Boss->self, 5.0s cast, range 20 width 40 rect
     TwoSnapTwist2 = 42705, // Helper->self, 1.5s cast, range 25 width 50 rect
     TwoSnapTwist3 = 42706, // Helper->self, 3.5s cast, range 25 width 50 rect
     FourSnapTwistFirst1 = 42719, // Boss->self, 5.0s cast, range 20 width 40 rect
