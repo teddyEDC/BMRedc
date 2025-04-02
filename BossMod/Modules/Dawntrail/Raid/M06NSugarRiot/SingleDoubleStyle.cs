@@ -1,4 +1,4 @@
-namespace BossMod.Dawntrail.Raid.M06SugarRiot;
+namespace BossMod.Dawntrail.Raid.M06NSugarRiot;
 
 class SingleDoubleStyle(BossModule module) : Components.GenericAOEs(module)
 {
