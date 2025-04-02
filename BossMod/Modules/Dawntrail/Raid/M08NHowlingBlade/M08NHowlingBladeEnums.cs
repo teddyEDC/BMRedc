@@ -116,14 +116,10 @@ public enum AID : uint
     RoaringWind = 43397, // Helper->self, 2.5s cast, range 40 width 8 rect
 
     TrackingTremorsVisual = 42210, // Boss->self, 5.0s cast, single-target
-    TrackingTremors = 42211, // Helper->players, no cast, range 6 circle, stack x5, 5s after icon
+    TrackingTremors = 42211 // Helper->players, no cast, range 6 circle, stack x5, 5s after icon
 }
 
 public enum IconID : uint
 {
-    _Gen_Icon_598 = 598, // player->self
-    _Gen_Icon_62 = 62, // player->self
-    _Gen_Icon_376 = 376, // player->self
-    _Gen_Icon_93 = 93, // player->self
-    TrackingTremors = 316, // player->self
+    TrackingTremors = 316 // player->self
 }
