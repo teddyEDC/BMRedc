@@ -20,8 +20,8 @@ class LetsDance(BossModule module) : Components.GenericAOEs(module)
                 var roundedrot = (int)aoes[i].Rotation.Deg;
                 var shapeHint = roundedrot switch
                 {
-                    -89 => "Left",
-                    90 => "Right",
+                    89 => "Left",
+                    -90 => "Right",
                     _ => ""
                 };
                 sb.Append(shapeHint);
@@ -105,8 +105,8 @@ class LetsDanceRemix(BossModule module) : LetsDance(module)
                 var roundedrot = (int)aoes[i].Rotation.Deg;
                 var shapeHint = roundedrot switch
                 {
-                    -89 => "Left",
-                    90 => "Right",
+                    89 => "Left",
+                    -90 => "Right",
                     180 => "Back",
                     0 => "Front",
                     _ => ""
