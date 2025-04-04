@@ -133,9 +133,15 @@ class FlipToABSide(BossModule module) : Components.GenericBaitAway(module, defau
     private static readonly AOEShapeCone cone = new(60f, 22.5f.Degrees());
     private static readonly AOEShapeRect rect = new(50f, 4f);
 
+    public override void AddGlobalHints(GlobalHints hints)
+    {
+        if (Source != null && _aoe.AOEs.Count == 0 && _aoe.NumCasts == 0)
+            hints.Add($"Stored: {(_lightparty ? "Light party" : "Role")} stack");
+    }
+
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (Source != null)
+        if (Source != null && (_aoe.AOEs.Count != 0 || _aoe.NumCasts > 0))
         {
             var pcDir = Angle.FromDirection(actor.Position - Source.Position);
             var party = Raid.WithoutSlot(false, true, true);
@@ -193,7 +199,7 @@ class FlipToABSide(BossModule module) : Components.GenericBaitAway(module, defau
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        if (Source != null && _aoe.AOEs.Count != 0)
+        if (Source != null && (_aoe.AOEs.Count != 0 || _aoe.NumCasts > 0))
         {
             var pcDir = Angle.FromDirection(pc.Position - Source.Position);
             ActiveShape.Outline(Arena, Source.Position, pcDir, Colors.Safe);

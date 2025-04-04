@@ -2,8 +2,9 @@ namespace BossMod.Dawntrail.Savage.M05SDancingGreen;
 
 class WavelengthAlphaBeta(BossModule module) : BossComponent(module)
 {
-    private readonly (DateTime Expiration, Actor Actor, DateTime ExpirationReal)[] expirationBySlot = new (DateTime, Actor, DateTime)[8]; // first expiration is rounded to find matching partner more easily
+    private readonly (int Order, Actor Actor, DateTime Expiration)[] expirationBySlot = new (int, Actor, DateTime)[8];
     private int numCasts;
+    private DateTime firstActivation;
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
@@ -12,17 +13,19 @@ class WavelengthAlphaBeta(BossModule module) : BossComponent(module)
             ref readonly var player = ref expirationBySlot[slot];
 
             bool? inRisk = null;
+            if (player != default)
+                hints.Add($"Order: {player.Order} -", false);
             for (var i = 0; i < 8; ++i)
             {
                 ref readonly var exp = ref expirationBySlot[i];
                 if (exp == default || slot == i)
                     continue;
-                var remaining = Math.Max(0d, (exp.ExpirationReal - WorldState.CurrentTime).TotalSeconds);
+                var remaining = Math.Max(0d, (exp.Expiration - WorldState.CurrentTime).TotalSeconds);
                 var check = remaining < 5d;
                 var partner = exp.Actor;
-                if (exp.Expiration == player.Expiration)
+                if (exp.Order == player.Order)
                 {
-                    hints.Add($"Stack with: {partner.Name} in {remaining:f0}s", check);
+                    hints.Add($"Partner: {partner.Name} in {remaining:f0}s", check);
                 }
                 else if (check)
                 {
@@ -39,17 +42,17 @@ class WavelengthAlphaBeta(BossModule module) : BossComponent(module)
     {
         if (numCasts == 8)
         {
-            ref readonly var player = ref expirationBySlot[pcSlot].Expiration;
+            ref readonly var player = ref expirationBySlot[pcSlot].Order;
             for (var i = 0; i < 8; ++i)
             {
                 ref readonly var exp = ref expirationBySlot[i];
                 if (exp == default || pcSlot == i)
                     continue;
-                var remaining = Math.Max(0d, (exp.ExpirationReal - WorldState.CurrentTime).TotalSeconds) < 5d;
+                var remaining = Math.Max(0d, (exp.Expiration - WorldState.CurrentTime).TotalSeconds) < 5d;
                 var partner = exp.Actor;
                 if (!remaining)
                     continue;
-                if (exp.Expiration == player)
+                if (exp.Order == player)
                 {
                     Arena.AddCircle(partner.Position, 2f, Colors.Safe);
                 }
@@ -67,7 +70,16 @@ class WavelengthAlphaBeta(BossModule module) : BossComponent(module)
             var slot = WorldState.Party.FindSlot(actor.InstanceID);
             if (slot < 0)
                 return;
-            expirationBySlot[slot] = (status.ExpireAt.Round(TimeSpan.FromSeconds(1d)), actor, status.ExpireAt);
+            if (firstActivation == default)
+                firstActivation = WorldState.FutureTime(27.5d);
+            var order = (status.ExpireAt - firstActivation).TotalSeconds switch
+            {
+                < 4 => 1,
+                < 9 => 2,
+                < 14 => 3,
+                _ => 4
+            };
+            expirationBySlot[slot] = (order, actor, status.ExpireAt);
         }
     }
 
