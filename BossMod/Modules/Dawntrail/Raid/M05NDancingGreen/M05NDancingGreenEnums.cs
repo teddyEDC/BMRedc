@@ -5,7 +5,6 @@ public enum OID : uint
     Boss = 0x47B6, // R4.998
     Frogtourage = 0x47B7, // R3.142
     Spotlight = 0x47B8, // R1.0
-    Helper2 = 0x100F8C, // R0.5
     Helper = 0x233C
 }
 
@@ -86,6 +85,7 @@ public enum AID : uint
     MoonburnVisualEnd = 42782, // Frogtourage->self, 1.0s cast, single-target
     Moonburn1 = 42784, // Helper->self, 10.5s cast, range 40 width 15 rect
     Moonburn2 = 42783, // Helper->self, 10.5s cast, range 40 width 15 rect
+
     EighthBeatsVisual = 42754, // Boss->self, 5.0s cast, single-target
     EighthBeats = 42755 // Helper->player, 5.0s cast, range 5 circle, spread
 }
