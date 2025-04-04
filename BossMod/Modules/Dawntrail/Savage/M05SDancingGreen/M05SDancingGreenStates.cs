@@ -107,26 +107,32 @@ class M05SDancingGreenStates : StateMachineBuilder
             .ActivateOnEnter<GetDownCone>()
             .ActivateOnEnter<LetsDance>()
             .ActivateOnEnter<WavelengthAlphaBeta>();
-        ComponentCondition<GetDownBait>(id + 0x20u, 0.4f, comp => comp.NumCasts != 0, "Bait 1");
-        ComponentCondition<GetDownBait>(id + 0x30u, 2.4f, comp => comp.NumCasts == 2, "Bait 2 + donut + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x40u, 2.4f, comp => comp.NumCasts == 3, "Bait 3 + circle + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x50u, 2.4f, comp => comp.NumCasts == 4, "Bait 4 + donut + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x60u, 2.4f, comp => comp.NumCasts == 5, "Bait 5 + circle + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x70u, 2.4f, comp => comp.NumCasts == 6, "Bait 6 + donut + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x80u, 2.4f, comp => comp.NumCasts == 7, "Bait 7 + circle + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x80u, 2.4f, comp => comp.NumCasts == 8, "Bait 8 + donut + cone repeat")
-            .DeactivateOnExit<GetDownBait>();
+        for (var i = 1; i <= 8; ++i)
+        {
+            var offset = id + (uint)(0x10 * (i + 1));
+            var time = i == 1 ? 0.3f : 2.4f;
+            var pattern = i % 2 == 0 ? "donut" : "circle";
+            var desc = i == 1 ? "Bait 1" : $"Bait {i} + {pattern} + cone repeat";
+            var casts = i;
+
+            var cond = ComponentCondition<GetDownBait>(offset, time, comp => comp.NumCasts == casts, desc);
+            if (i == 8)
+                cond.DeactivateOnExit<GetDownBait>();
+        }
+
         ComponentCondition<GetDownCone>(id + 0x90u, 2.5f, comp => comp.NumCasts == 8, "Cone repeat")
             .DeactivateOnExit<GetDownCone>()
             .DeactivateOnExit<GetDownOutIn>();
-        ComponentCondition<LetsDance>(id + 0xA0u, 8.4f, comp => comp.NumCasts != 0, "Halfroom cleave 1");
-        ComponentCondition<LetsDance>(id + 0xB0u, 2.4f, comp => comp.NumCasts == 2, "Stack 1 + Halfroom cleave 2");
-        ComponentCondition<LetsDance>(id + 0xC0u, 2.4f, comp => comp.NumCasts == 3, "Halfroom cleave 3");
-        ComponentCondition<LetsDance>(id + 0xD0u, 2.4f, comp => comp.NumCasts == 4, "Stack 2 + Halfroom cleave 4");
-        ComponentCondition<LetsDance>(id + 0xE0u, 2.4f, comp => comp.NumCasts == 5, "Halfroom cleave 5");
-        ComponentCondition<LetsDance>(id + 0xF0u, 2.4f, comp => comp.NumCasts == 6, "Stack 3 + Halfroom cleave 6");
-        ComponentCondition<LetsDance>(id + 0x100u, 2.4f, comp => comp.NumCasts == 7, "Halfroom cleave 7");
-        ComponentCondition<LetsDance>(id + 0x110u, 2.4f, comp => comp.NumCasts == 8, "Stack 4 + Halfroom cleave 8");
+
+        for (var i = 1; i <= 8; ++i)
+        {
+            var offset = id + 0xA0u + (uint)((i - 1) * 0x10);
+            var time = i == 1 ? 8.4f : 2.4f;
+            var desc = (i % 2 == 0 ? $"Stack {i / 2} + " : "") + $"Halfroom cleave {i}";
+            var casts = i;
+            ComponentCondition<LetsDance>(offset, time, comp => comp.NumCasts == casts, desc);
+        }
+
         Cast(id + 0x120u, AID.LetsPose, 3.2f, 5f, "Raidwide")
             .DeactivateOnExit<LetsDance>()
             .DeactivateOnExit<WavelengthAlphaBeta>();
@@ -205,26 +211,29 @@ class M05SDancingGreenStates : StateMachineBuilder
             .ActivateOnEnter<GetDownBait>()
             .ActivateOnEnter<GetDownCone>()
             .ActivateOnEnter<LetsDanceRemix>();
-        ComponentCondition<GetDownBait>(id + 0x20u, 0.4f, comp => comp.NumCasts != 0, "Bait 1");
-        ComponentCondition<GetDownBait>(id + 0x30u, 2.4f, comp => comp.NumCasts == 2, "Bait 2 + donut + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x40u, 2.4f, comp => comp.NumCasts == 3, "Bait 3 + circle + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x50u, 2.4f, comp => comp.NumCasts == 4, "Bait 4 + donut + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x60u, 2.4f, comp => comp.NumCasts == 5, "Bait 5 + circle + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x70u, 2.4f, comp => comp.NumCasts == 6, "Bait 6 + donut + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x80u, 2.4f, comp => comp.NumCasts == 7, "Bait 7 + circle + cone repeat");
-        ComponentCondition<GetDownBait>(id + 0x80u, 2.4f, comp => comp.NumCasts == 8, "Bait 8 + donut + cone repeat")
-            .DeactivateOnExit<GetDownBait>();
+        for (var i = 1; i <= 8; ++i)
+        {
+            var offset = id + (uint)(0x10 * (i + 1));
+            var time = i == 1 ? 0.3f : 2.4f;
+            var pattern = i % 2 == 0 ? "donut" : "circle";
+            var desc = i == 1 ? "Bait 1" : $"Bait {i} + {pattern} + cone repeat";
+            var casts = i;
+
+            var cond = ComponentCondition<GetDownBait>(offset, time, comp => comp.NumCasts == casts, desc);
+            if (i == 8)
+                cond.DeactivateOnExit<GetDownBait>();
+        }
+
         ComponentCondition<GetDownCone>(id + 0x90u, 2.5f, comp => comp.NumCasts == 8, "Cone repeat")
             .DeactivateOnExit<GetDownCone>()
             .DeactivateOnExit<GetDownOutIn>();
-        ComponentCondition<LetsDanceRemix>(id + 0xA0u, 8.4f, comp => comp.NumCasts != 0, "Halfroom cleave 1");
-        ComponentCondition<LetsDanceRemix>(id + 0xB0u, 1.5f, comp => comp.NumCasts == 2, "Halfroom cleave 2");
-        ComponentCondition<LetsDanceRemix>(id + 0xC0u, 1.5f, comp => comp.NumCasts == 3, "Halfroom cleave 3");
-        ComponentCondition<LetsDanceRemix>(id + 0xD0u, 1.5f, comp => comp.NumCasts == 4, "Halfroom cleave 4");
-        ComponentCondition<LetsDanceRemix>(id + 0xE0u, 1.5f, comp => comp.NumCasts == 5, "Halfroom cleave 5");
-        ComponentCondition<LetsDanceRemix>(id + 0xF0u, 1.5f, comp => comp.NumCasts == 6, "Halfroom cleave 6");
-        ComponentCondition<LetsDanceRemix>(id + 0x100u, 1.5f, comp => comp.NumCasts == 7, "Halfroom cleave 7");
-        ComponentCondition<LetsDanceRemix>(id + 0x110u, 1.5f, comp => comp.NumCasts == 8, "Halfroom cleave 8");
+        for (var i = 1; i <= 8; ++i)
+        {
+            var offset = id + 0xA0u + (uint)((i - 1) * 0x10);
+            var casts = i;
+            var desc = $"Halfroom cleave {i}";
+            ComponentCondition<LetsDanceRemix>(offset, i == 1 ? 8.4f : 1.5f, comp => comp.NumCasts == casts, desc);
+        }
         Cast(id + 0x120u, AID.LetsPoseRemix, 2.2f, 5f, "Raidwide")
             .DeactivateOnExit<LetsDanceRemix>();
     }
