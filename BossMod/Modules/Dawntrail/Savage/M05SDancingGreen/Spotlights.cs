@@ -53,7 +53,7 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
 
         var (spotlights, spotlights2) = GetSpotlightSets(pattern, set);
 
-        var (forbiddenFirst, forbiddenSecond) = GetForbiddenBitMasks();
+        var (forbiddenFirst, forbiddenSecond) = ForbiddenBitMasks;
 
         for (var i = 0; i < 4; ++i)
         {
@@ -75,20 +75,23 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
         return spotlights;
     }
 
-    protected (BitMask, BitMask) GetForbiddenBitMasks()
+    protected (BitMask, BitMask) ForbiddenBitMasks
     {
-        BitMask forbiddenFirst = new();
-        BitMask forbiddenSecond = new();
-
-        for (var i = 0; i < 8; ++i)
+        get
         {
-            if (_orders[i] == 2)
-                forbiddenFirst[i] = true;
-            else
-                forbiddenSecond[i] = true;
-        }
+            BitMask forbiddenFirst = new();
+            BitMask forbiddenSecond = new();
 
-        return (forbiddenFirst, forbiddenSecond);
+            for (var i = 0; i < 8; ++i)
+            {
+                if (_orders[i] == 2)
+                    forbiddenFirst[i] = true;
+                else
+                    forbiddenSecond[i] = true;
+            }
+
+            return (forbiddenFirst, forbiddenSecond);
+        }
     }
 
     public override void OnStatusGain(Actor actor, ActorStatus status)
@@ -130,7 +133,7 @@ class Spotlights2(BossModule module) : Spotlights1(module)
                 var spotlights1 = set ? spotlightSet2 : spotlightSet1;
                 var spotlights2 = set ? spotlightSet1 : spotlightSet2;
 
-                var (forbiddenFirst, forbiddenSecond) = GetForbiddenBitMasks();
+                var (forbiddenFirst, forbiddenSecond) = ForbiddenBitMasks;
 
                 for (var i = 0; i < 4; ++i)
                 {
