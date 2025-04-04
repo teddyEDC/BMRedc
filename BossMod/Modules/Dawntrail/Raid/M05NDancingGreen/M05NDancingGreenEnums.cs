@@ -40,7 +40,7 @@ public enum AID : uint
     FourSnapTwist5 = 42725, // Helper->self, 3.5s cast, range 25 width 50 rect
 
     DeepCutVisual = 42694, // Boss->self, 5.0s cast, single-target, tankbuster
-    DeepCut = 42695, // Helper->self, no cast, range 60 50-degree cone
+    DeepCut = 42695, // Helper->self, no cast, range 60 45-degree cone
 
     FunkyFloorVisual = 42741, // Boss->self, 2.5+0,5s cast, single-target, checkerboard
     FunkyFloor = 42742, // Helper->self, no cast, ???
