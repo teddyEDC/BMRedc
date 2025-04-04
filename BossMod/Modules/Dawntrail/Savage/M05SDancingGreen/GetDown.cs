@@ -5,7 +5,7 @@ class GetDownCone(BossModule module) : Components.SimpleAOEs(module, ActionID.Ma
 class GetDownOutIn(BossModule module) : Components.GenericAOEs(module)
 {
     public readonly List<AOEInstance> AOEs = new(8);
-    private static readonly AOEShapeCircle circle = new(7);
+    private static readonly AOEShapeCircle circle = new(7f);
     private static readonly AOEShapeDonut donut = new(5f, 40f);
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => AOEs.Count != 0 ? CollectionsMarshal.AsSpan(AOEs)[..1] : [];

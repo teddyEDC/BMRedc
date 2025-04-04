@@ -67,7 +67,7 @@ class WavelengthAlphaBeta(BossModule module) : BossComponent(module)
             var slot = WorldState.Party.FindSlot(actor.InstanceID);
             if (slot < 0)
                 return;
-            expirationBySlot[slot] = (status.ExpireAt.Round(TimeSpan.FromSeconds(2)), actor, status.ExpireAt);
+            expirationBySlot[slot] = (status.ExpireAt.Round(TimeSpan.FromSeconds(1d)), actor, status.ExpireAt);
         }
     }
 
