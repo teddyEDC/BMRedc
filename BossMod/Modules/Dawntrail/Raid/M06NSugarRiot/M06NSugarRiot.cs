@@ -1,3 +1,5 @@
+using static BossMod.Dawntrail.Raid.SugarRiotSharedBounds.SugarRiotSharedBounds;
+
 namespace BossMod.Dawntrail.Raid.M06NSugarRiot;
 
 class SprayPain : Components.SimpleAOEs
@@ -21,8 +23,4 @@ class TasteOfFire(BossModule module) : Components.StackWithCastTargets(module, A
 class MousseMural(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MousseMural));
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1021, NameID = 13822)]
-public class M06NSugarRiot(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, DefaultArena)
-{
-    public static readonly WPos ArenaCenter = new(100f, 100f);
-    public static readonly ArenaBoundsSquare DefaultArena = new(20f);
-}
+public class M06NSugarRiot(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, DefaultArena);

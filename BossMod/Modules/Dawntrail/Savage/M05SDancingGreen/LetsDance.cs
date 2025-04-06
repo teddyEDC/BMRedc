@@ -13,15 +13,15 @@ class LetsDance(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         if (count > 0)
         {
-            var sb = new StringBuilder(4 * count - 1 + count * 5);
+            var sb = new StringBuilder(4 * count - 1 + count * 4);
             var aoes = CollectionsMarshal.AsSpan(_aoes);
             for (var i = 0; i < count; i++)
             {
                 var roundedrot = (int)aoes[i].Rotation.Deg;
                 var shapeHint = roundedrot switch
                 {
-                    89 => "Left",
-                    -90 => "Right",
+                    89 => "East",
+                    -90 => "West",
                     _ => ""
                 };
                 sb.Append(shapeHint);
@@ -105,10 +105,10 @@ class LetsDanceRemix(BossModule module) : LetsDance(module)
                 var roundedrot = (int)aoes[i].Rotation.Deg;
                 var shapeHint = roundedrot switch
                 {
-                    89 => "Left",
-                    -90 => "Right",
-                    180 => "Back",
-                    0 => "Front",
+                    89 => "East",
+                    -90 => "West",
+                    180 => "North",
+                    0 => "South",
                     _ => ""
                 };
                 sb.Append(shapeHint);

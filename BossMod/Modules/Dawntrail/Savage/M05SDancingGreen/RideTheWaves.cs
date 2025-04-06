@@ -33,7 +33,7 @@ class RideTheWaves(BossModule module) : Components.GenericAOEs(module)
                     0x00800080u => 200 - p.x,
                     _ => default
                 };
-                AOEs.Add(new(p.shape, new WPos(finalX, p.y) + (!_config.FullExaflarePattern ? new WDir(default, -35f) : default)));
+                AOEs.Add(new(p.shape, new WPos(finalX, p.y) + (_config.MovingExaflares ? new WDir(default, -35f) : default)));
             }
         }
     }
@@ -48,7 +48,7 @@ class RideTheWaves(BossModule module) : Components.GenericAOEs(module)
             for (var i = 0; i < 8; ++i)
             {
                 ref var aoe = ref aoes[i];
-                if (!_config.FullExaflarePattern || NumCasts > 7)
+                if (_config.MovingExaflares || NumCasts > 7)
                 {
                     var origin = aoe.Origin;
                     aoe.Origin = new(origin.X, origin.Z + 5f);

@@ -10,15 +10,15 @@ class TwoThreeFourSnapTwistDropTheNeedle(BossModule module) : Components.Generic
         var count = AOEs.Count;
         if (count > 0)
         {
-            var sb = new StringBuilder(13);
+            var sb = new StringBuilder(12);
             var aoes = CollectionsMarshal.AsSpan(AOEs);
             for (var i = 0; i < count; i++)
             {
                 var roundedrot = MathF.Round(aoes[i].Rotation.Normalized().Deg);
                 var shapeHint = roundedrot switch
                 {
-                    -90 => "Left",
-                    90 => "Right",
+                    -90 => "West",
+                    90 => "East",
                     _ => ""
                 };
                 sb.Append(shapeHint);
@@ -178,14 +178,14 @@ class FlipToABSide(BossModule module) : Components.GenericBaitAway(module, defau
             }
             if (_lightparty)
             {
-                hints.Add("Light party stack!", _aoe.AOEs.Count != 0 && healers != 1 && tanks != 1 && dps != 2);
+                hints.Add("Light party stack!", healers != 1 || tanks != 1 || dps != 2);
             }
             else
             {
                 var condTank = tanks == 2 && healers == 0 && dps == 0;
                 var condHealer = healers == 2 && tanks == 0 && dps == 0;
                 var condDps = dps == 4 && healers == 0 && tanks == 0;
-                hints.Add("Role stack!", _aoe.AOEs.Count != 0 && actor.Role == Role.Healer ? !condHealer : actor.Role == Role.Tank ? !condTank : !condDps);
+                hints.Add("Role stack!", actor.Role == Role.Healer ? !condHealer : actor.Role == Role.Tank ? !condTank : !condDps);
             }
         }
     }
