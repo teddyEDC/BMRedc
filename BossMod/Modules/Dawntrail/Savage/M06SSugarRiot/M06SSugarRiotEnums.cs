@@ -138,12 +138,9 @@ public enum IconID : uint
 
 public enum TetherID : uint
 {
-    _Gen_Tether_324 = 324, // player/StickyPudding->Boss
     ActivateMechanicDoubleStyle1 = 319, // HeavenBomb/player/SweetShot/MouthwateringMorbol/PaintBomb/CandiedSuccubus->Boss
     ActivateMechanicDoubleStyle2 = 320, // CandiedSuccubus/player/SweetShot/MouthwateringMorbol->Boss
-    _Gen_Tether_337 = 337, // _Gen_->Boss
-    WaterIII = 17, // FeatherRay->player
-    _Gen_Tether_45 = 45, // Yan->Boss
+    WaterIII = 17 // FeatherRay->player
 }
 
 public enum SID : uint
@@ -155,16 +152,5 @@ public enum SID : uint
     MousseMine = 4453, // Helper->player, extra=0x0
     BurningUp = 4448, // none->player, extra=0x0
     Sweltering = 4449, // none->player, extra=0x0
-    HeatingUp = 4454, // none->player, extra=0x0
-    _Gen_DamageDown = 2911, // Helper->player, extra=0x0
-    _Gen_FireResistanceDownII = 4383, // Helper->player, extra=0x0
-    _Gen_SixFulmsUnder = 567, // none->player, extra=0x361
-    _Gen_HuffyCat = 4457, // none->GimmeCat, extra=0x1/0x2
-    _Gen_VulnerabilityUp = 3361, // FeatherRay->player, extra=0x0
-    _Gen_Bind = 3625, // Jabberwock->player, extra=0x0
-    _Gen_LightningResistanceDownII = 4456, // none->player, extra=0x0
-    _Gen_FireResistanceUp = 4455, // none->player, extra=0x0
-    _Gen_Dropsy = 3075, // none->player, extra=0x0
-    _Gen_Dropsy2 = 3076, // none->player, extra=0x0
-    _Gen_SustainedDamage = 4149, // Helper->player, extra=0x1
+    HeatingUp = 4454 // none->player, extra=0x0
 }
