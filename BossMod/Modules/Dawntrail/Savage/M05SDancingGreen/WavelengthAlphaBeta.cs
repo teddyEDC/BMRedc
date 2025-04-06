@@ -74,9 +74,9 @@ class WavelengthAlphaBeta(BossModule module) : BossComponent(module)
                 firstActivation = WorldState.FutureTime(27.5d);
             var order = (status.ExpireAt - firstActivation).TotalSeconds switch
             {
-                < 4 => 1,
-                < 9 => 2,
-                < 14 => 3,
+                < 4d => 1,
+                < 9d => 2,
+                < 14d => 3,
                 _ => 4
             };
             expirationBySlot[slot] = (order, actor, status.ExpireAt);
