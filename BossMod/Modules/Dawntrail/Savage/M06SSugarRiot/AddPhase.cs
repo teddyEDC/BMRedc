@@ -26,6 +26,15 @@ class Adds(BossModule module) : Components.AddsMulti(module, [(uint)OID.Mu, (uin
         }
     }
 
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
+    {
+        Arena.Actors(Module.Enemies((uint)OID.Jabberwock), Colors.Danger);
+        Arena.Actors(Module.Enemies((uint)OID.FeatherRay), Colors.Other1);
+        Arena.Actors(Module.Enemies((uint)OID.Mu), Colors.Other2);
+        Arena.Actors(Module.Enemies((uint)OID.GimmeCat), Colors.Object);
+        Arena.Actors(Module.Enemies((uint)OID.Yan), Colors.Other4);
+    }
+
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
         if (id == 0x11D1)
