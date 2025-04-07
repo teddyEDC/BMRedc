@@ -10,43 +10,26 @@ class SingleDoubleStyle1(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
     {
-        switch (tether.ID)
+        if (tether.ID is (uint)TetherID.ActivateMechanicDoubleStyle1 or (uint)TetherID.ActivateMechanicDoubleStyle2)
         {
-            case (uint)TetherID.ActivateMechanicDoubleStyle1:
-                HandleDoubleStyle1(source);
-                break;
-            case (uint)TetherID.ActivateMechanicDoubleStyle2:
-                HandleDoubleStyle2(source);
-                break;
-        }
-    }
-
-    private void HandleDoubleStyle1(Actor source)
-    {
-        switch (source.OID)
-        {
-            case (uint)OID.PaintBomb:
-                AddAOE(circle, source.Position, 13.1d);
-                break;
-            case (uint)OID.HeavenBomb:
-                AddAOE(circle, source.Position + 16f * source.Rotation.ToDirection(), 13.1d);
-                break;
-            case (uint)OID.SweetShot:
-                HandleSweetShot(source, 7.2d);
-                break;
-        }
-    }
-
-    private void HandleDoubleStyle2(Actor source)
-    {
-        switch (source.OID)
-        {
-            case (uint)OID.MouthwateringMorbol:
-                AddAOE(cone, source.Position, 13.1d, source.Rotation);
-                break;
-            case (uint)OID.CandiedSuccubus:
-                AddAOE(circleBig, source.Position, 13.1d, source.Rotation);
-                break;
+            switch (source.OID)
+            {
+                case (uint)OID.PaintBomb:
+                    AddAOE(circle, source.Position, 13.1d);
+                    break;
+                case (uint)OID.HeavenBomb:
+                    AddAOE(circle, source.Position + 16f * source.Rotation.ToDirection(), 13.1d);
+                    break;
+                case (uint)OID.SweetShot:
+                    HandleSweetShot(source, 7.2d);
+                    break;
+                case (uint)OID.MouthwateringMorbol:
+                    AddAOE(cone, source.Position, 13.1d, source.Rotation);
+                    break;
+                case (uint)OID.CandiedSuccubus:
+                    AddAOE(circleBig, source.Position, 13.1d, source.Rotation);
+                    break;
+            }
         }
     }
 
