@@ -1,4 +1,4 @@
-﻿namespace BossMod.RealmReborn.Dungeon.D02TheTamTaraDeepcroft.D022GalvanthTheDominator;
+﻿namespace BossMod.RealmReborn.Dungeon.D02Deepcroft.D022GalvanthTheDominator;
 
 public enum OID : uint
 {

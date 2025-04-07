@@ -1,4 +1,4 @@
-﻿namespace BossMod.RealmReborn.Dungeon.D02TheTamTaraDeepcroft.D021VoidSoulcounter;
+﻿namespace BossMod.RealmReborn.Dungeon.D02Deepcroft.D021VoidSoulcounter;
 
 public enum OID : uint
 {
