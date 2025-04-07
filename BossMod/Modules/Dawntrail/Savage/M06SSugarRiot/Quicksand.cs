@@ -113,6 +113,8 @@ class QuicksandDoubleStyleHeavenBomb(BossModule module) : Components.GenericKnoc
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {
+        if (!Module.InBounds(pos))
+            return true;
         var comp = Module.FindComponent<Quicksand>();
         if (comp != null)
         {
@@ -124,7 +126,7 @@ class QuicksandDoubleStyleHeavenBomb(BossModule module) : Components.GenericKnoc
                     return true;
             }
         }
-        return !Module.InBounds(pos);
+        return false;
     }
 }
 

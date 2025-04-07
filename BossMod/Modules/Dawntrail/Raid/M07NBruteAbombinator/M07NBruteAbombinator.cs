@@ -1,3 +1,5 @@
+using static BossMod.Dawntrail.Raid.BruteAmbombinatorSharedBounds.BruteAmbombinatorSharedBounds;
+
 namespace BossMod.Dawntrail.Raid.M07NBruteAbombinator;
 
 class BrutalImpact(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BrutalImpact));
@@ -62,14 +64,8 @@ class NeoBombarianSpecialKB(BossModule module) : Components.SimpleKnockbacks(mod
 class PulpSmash(BossModule module) : Components.StackWithIcon(module, (uint)IconID.PulpSmash, ActionID.MakeSpell(AID.PulpSmash), 6f, 5.2f, 8, 8);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1023, NameID = 13756)]
-public class M07NBruteAbombinator(WorldState ws, Actor primary) : BossModule(ws, primary, firstCenter, DefaultArena)
+public class M07NBruteAbombinator(WorldState ws, Actor primary) : BossModule(ws, primary, FirstCenter, DefaultArena)
 {
-    private static readonly WPos firstCenter = new(100f, 100f);
-    public static readonly WPos FinalCenter = new(100f, 5f);
-    public static readonly ArenaBoundsSquare DefaultArena = new(20f);
-    public static readonly ArenaBoundsRect RectArena = new(12.5f, 25f);
-    public static readonly ArenaBoundsComplex KnockbackArena = new([new Square(firstCenter, 20f), new Rectangle(FinalCenter, 12.5f, 25f)]);
-
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
