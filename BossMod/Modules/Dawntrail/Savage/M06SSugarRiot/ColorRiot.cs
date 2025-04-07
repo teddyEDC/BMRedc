@@ -33,6 +33,7 @@ class ColorRiot(BossModule module) : Components.GenericBaitAway(module, default,
             return;
 
         var (closest, furthest) = GetTargets();
+        base.AddHints(slot, actor, hints);
 
         if (actor.Role != Role.Tank)
         {
@@ -46,8 +47,6 @@ class ColorRiot(BossModule module) : Components.GenericBaitAway(module, default,
                 hints.Add("Move closer to boss!");
                 return;
             }
-
-            base.AddHints(slot, actor, hints);
             return;
         }
 
