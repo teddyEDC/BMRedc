@@ -2,8 +2,13 @@
 
 public enum OID : uint
 {
+    // Boss
     Boss = 0x477A, // x1
+
+    // Adds
     DungWespe = 0x477B, // spawn during fight
+
+    // EventObj
     Platform1 = 0x1E87E2, // x1, EventObj type; eventstate 0 if active, 7 if inactive
     Platform2 = 0x1E87E3, // x1, EventObj type; eventstate 0 if active, 7 if inactive
     Platform3 = 0x1E87E4, // x1, EventObj type; eventstate 0 if active, 7 if inactive
@@ -11,14 +16,14 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    //Boss
+    // Boss
     AutoAttackBoss = 870, // Boss->player, no cast
     Triclip = 42231, // Boss->player, 5.0s cast, tankbuster
     Mow = 42232, // Boss->self, 2.5s cast, range 8.25 120-degree cone aoe
     FrightfulRoar = 42233, // Boss->self, 3.0s cast, range 6.0 aoe
     MortalRay = 42229, // Boss->self, 3.0s cast, raidwide doom debuff
 
-    //DungWespe
+    // DungWespe
     AutoAttackWespe = 871, // DungWespe->player, no cast
     FinalSting = 42230 // DungWespe->player, 3.0s cast
 }
@@ -28,7 +33,6 @@ public enum SID : uint
     Doom = 1970 // Boss->player, extra=0x0
 }
 
-//class Triclip(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.Triclip), new AOEShapeRect(5.25f, 2f));
 class Triclip(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.Triclip));
 class Mow(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Mow), new AOEShapeCone(8.25f, 60f.Degrees()));
 class FrightfulRoar(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FrightfulRoar), 6.0f);

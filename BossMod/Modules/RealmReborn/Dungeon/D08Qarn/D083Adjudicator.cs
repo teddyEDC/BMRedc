@@ -1,24 +1,25 @@
-﻿using BossMod.Dawntrail.Dungeon.D09YuweyawataFieldStation.D092OverseerKanilokka;
-
-namespace BossMod.RealmReborn.Dungeon.D08Qarn.D083Adjudicator;
+﻿namespace BossMod.RealmReborn.Dungeon.D08Qarn.D083Adjudicator;
 
 public enum OID : uint
 {
+    // Boss
     Boss = 0x477E, // x1
+
+    // Adds
     MythrilVerge1 = 0x477F, // Summoned during fight (VergeLine attacks)
     MythrilVerge2 = 0x4780, // Summoned during fight (VergePulse attacks)
 }
 
 public enum AID : uint
 {
-    //Boss
+    // Boss
     AutoAttack = 872, // Boss->player, no cast
     LoomingJudgement = 42245, // Boss->player, 5.0s cast, tankbuster
     CreepingDarkness = 42247, // Boss->self, 5.0s cast, raidwide
     DarkII = 42248, // Boss->self, 6.0s cast, range 40 120-degree cone aoe
     Dark = 42246, // Boss->player, 3.0s cast, range 5 circle aoe
 
-    //MythrilVerge 1st summons
+    // MythrilVerge
     SelfDestruct = 42242, // MythrilVerge->self, 3.0s cast, raidwide
     VergeLine = 42244, // MythrilVerge->self, 4.0s cast, range 60.6 width 4 rect aoe
     VergePulse = 42241 // MythrilVerge->self, 20.0s cast, range 60.6 width 4 rect aoe
@@ -56,8 +57,7 @@ public class D083Adjudicator(WorldState ws, Actor primary) : BossModule(ws, prim
         {
             e.Priority = (OID)e.Actor.OID switch
             {
-                OID.MythrilVerge2 => 3,
-                OID.MythrilVerge1 => 2,
+                OID.MythrilVerge1 or OID.MythrilVerge2 => 2,
                 OID.Boss => 1,
                 _ => 0
             };

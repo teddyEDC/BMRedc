@@ -2,13 +2,14 @@
 
 public enum OID : uint
 {
+    // Boss
     Boss = 0x477C, // x1
     GolemSoulstone = 0x477D // x1, Part type, and more spawn during fight
 }
 
 public enum AID : uint
 {
-    //Boss
+    // Boss
     AutoAttack = 872, // Boss->player, no cast
     BoulderClap = 42234, // Boss->self, 2.5s cast, range 14.2 120-degree cone aoe
     TrueGrit = 42235, // Boss->self, 3.0s cast, range 14.2 120-degree cone aoe
