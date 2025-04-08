@@ -1,4 +1,3 @@
-using Dalamud.Game.ClientState.Conditions;
 namespace BossMod.Dawntrail.Dungeon.D10Underkeep.D103ValiaPira;
 
 public enum OID : uint
@@ -105,11 +104,11 @@ class EnforcementRay(BossModule module) : Components.GenericAOEs(module)
     private void SortAOEs()
     {
         _aoes.Sort((a, b) =>
-        {
-            var distA = (a.Origin - center).LengthSq();
-            var distB = (b.Origin - center).LengthSq();
-            return distA.CompareTo(distB);
-        });
+            {
+                var distA = (a.Origin - center).LengthSq();
+                var distB = (b.Origin - center).LengthSq();
+                return distA.CompareTo(distB);
+            });
     }
 
     public override void OnTethered(Actor source, ActorTetherInfo tether)
@@ -181,7 +180,4 @@ class D103ValiaPiraStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1027, NameID = 13749)]
-public class D103ValiaPira(WorldState ws, Actor primary) : BossModule(ws, primary, new(default, -331f), new ArenaBoundsSquare(17.5f))
-{
-    public override bool CheckReset() => !Service.Condition[ConditionFlag.BoundByDuty];
-}
+public class D103ValiaPira(WorldState ws, Actor primary) : BossModule(ws, primary, new(default, -331f), new ArenaBoundsSquare(17.5f));
