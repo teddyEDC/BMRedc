@@ -8,7 +8,7 @@ public enum OID : uint
 public enum AID : uint
 {
     AutoAttack = 870, // Boss->player, no cast
-    SweetSteel = 489, // Boss->self, no cast, range 7.4 ?-degree cone cleave (60-degree)
+    SweetSteel = 489, // Boss->self, no cast, range 7.4 ?-degree cone cleave (120-degree)
     VoidFire2 = 855, // Boss->location, 3.0s cast, range 5 aoe
     DarkMist = 705 // Boss->self, 4.0s cast, range 9.4 aoe
 }
