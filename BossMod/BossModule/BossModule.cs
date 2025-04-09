@@ -497,22 +497,27 @@ public abstract class BossModule : IDisposable
 
     private void OnActorCastFinished(Actor actor)
     {
-        if ((actor.Type is not ActorType.Player and not ActorType.Pet and not ActorType.Chocobo) && (actor.CastInfo?.IsSpell() ?? false))
-            foreach (var comp in _components)
-                comp.OnCastFinished(actor, actor.CastInfo);
+        if (actor.Type is not ActorType.Player and not ActorType.Pet and not ActorType.Chocobo and not ActorType.Buddy && (actor.CastInfo?.IsSpell() ?? false))
+        {
+            var count = Components.Count;
+            for (var i = 0; i < count; ++i)
+                Components[i].OnCastFinished(actor, actor.CastInfo);
+        }
     }
 
     private void OnIsTargetableChanged(Actor actor)
     {
         if (actor.IsTargetable)
         {
-            foreach (var comp in _components)
-                comp.OnTargetable(actor);
+            var count = Components.Count;
+            for (var i = 0; i < count; ++i)
+                Components[i].OnTargetable(actor);
         }
         else
         {
-            foreach (var comp in _components)
-                comp.OnUntargetable(actor);
+            var count = Components.Count;
+            for (var i = 0; i < count; ++i)
+                Components[i].OnUntargetable(actor);
         }
     }
 

@@ -109,7 +109,7 @@ class ReplayDetailsWindow : UIWindow
                     _mgr.ActiveModule.Arena.AddCircle(movementDest, 0.5f, Colors.FutureVulnerable);
                 }
 
-                var movement = _mgr.ActiveModule.CalculateMovementHintsForRaidMember(_povSlot, pc);
+                var movement = _mgr.ActiveModule.CalculateMovementHintsForRaidMember(_povSlot, ref pc);
                 foreach (var (from, to, col) in movement)
                 {
                     _mgr.ActiveModule.Arena.AddLine(from, to, (col & 0xffffff) | 0x80000000);

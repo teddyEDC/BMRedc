@@ -9,7 +9,7 @@ public sealed class ActorState : IEnumerable<Actor>
     public IEnumerator<Actor> GetEnumerator() => Actors.Values.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Actors.Values.GetEnumerator();
 
-    public const int StatusIDDirectionalDisregard = 3808;
+    public const uint StatusIDDirectionalDisregard = 3808u;
 
     public Actor? Find(ulong instanceID) => instanceID is not 0 and not 0xE0000000 ? Actors.GetValueOrDefault(instanceID) : null;
 
