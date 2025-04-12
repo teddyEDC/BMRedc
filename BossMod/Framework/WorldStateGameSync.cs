@@ -249,7 +249,8 @@ sealed class WorldStateGameSync : IDisposable
 
             if (actor != null && (obj == null || actor.InstanceID != obj->EntityId))
             {
-                RemoveActor(ref actor);
+                _actorsByIndex[i] = null;
+                RemoveActor(actor);
                 actor = null;
             }
 
@@ -259,7 +260,7 @@ sealed class WorldStateGameSync : IDisposable
                 {
                     Service.Log($"[WorldState] Actor position mismatch for #{i} {actor}");
                 }
-                UpdateActor(ref obj, i, ref actor);
+                UpdateActor(obj, i, actor);
             }
         }
 
@@ -268,14 +269,14 @@ sealed class WorldStateGameSync : IDisposable
         _actorOps.Clear();
     }
 
-    private void RemoveActor(ref Actor actor)
+    private void RemoveActor(Actor actor)
     {
         var id = actor.InstanceID;
         DispatchActorEvents(id);
         _ws.Execute(new ActorState.OpDestroy(id));
     }
 
-    private unsafe void UpdateActor(ref GameObject* obj, int index, ref Actor? act)
+    private unsafe void UpdateActor(GameObject* obj, int index, Actor? act)
     {
         var chr = obj->IsCharacter() ? (Character*)obj : null;
         var name = obj->NameString;
@@ -736,27 +737,6 @@ sealed class WorldStateGameSync : IDisposable
         };
         if (!MemoryExtensions.SequenceEqual(ckArray, _ws.Client.ContentKeyValueData))
             _ws.Execute(new ClientState.OpContentKVDataChange(ckArray));
-
-        /*
-        var id = EventFramework.Instance()->GetInstanceContentDirector();
-        if (id != null)
-        {
-            var layoutData = id->LayoutData;
-            var cnt = (int)layoutData->InstanceCount;
-            if (cnt > _ws.Client.MapEffectData.Length)
-            {
-                Service.Log($"exceeded capacity for map effects {cnt} > {_ws.Client.MapEffectData.Length}");
-                cnt = _ws.Client.MapEffectData.Length;
-            }
-
-            var mapeffects = new ushort[cnt];
-            for (var i = 0; i < mapeffects.Length; i++)
-                mapeffects[i] = layoutData->Instances[i].State;
-
-            if (!MemoryExtensions.SequenceEqual(mapeffects, _ws.Client.MapEffectData))
-                _ws.Execute(new ClientState.OpMapEffects(mapeffects));
-        }
-        */
     }
 
     private unsafe void UpdateDeepDungeon()
