@@ -25,7 +25,7 @@ class ThornedCatharsis(BossModule module) : Components.RaidwideCast(module, Acti
 
 class SpecterOfTheLost(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.SpecterOfTheLost), new AOEShapeCone(50f, 25f.Degrees()), tankbuster: true);
 
-[ModuleInfo(BossModuleInfo.Maturity.WIP, GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1030, NameID = 13861)]
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1030, NameID = 13861)]
 public class T04Zelenia(WorldState ws, Actor primary) : BossModule(ws, primary, arenaCenter, DefaultArena)
 {
     private static readonly WPos arenaCenter = new(100f, 100f);
