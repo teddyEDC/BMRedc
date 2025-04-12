@@ -13,6 +13,8 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.Interop;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace BossMod;
 
@@ -235,7 +237,7 @@ sealed class WorldStateGameSync : IDisposable
         var len = _actorsByIndex.Length;
         for (var i = 0; i < len; ++i)
         {
-            ref var actor = ref _actorsByIndex[i];
+            var actor = _actorsByIndex[i];
             var obj = mgr->Objects.IndexSorted[i].Value;
 
             if (obj != null && obj->EntityId == InvalidEntityId)
@@ -306,6 +308,7 @@ sealed class WorldStateGameSync : IDisposable
         var mountId = chr != null ? chr->Mount.MountId : 0u;
         var forayInfoPtr = chr != null ? chr->GetForayInfo() : null;
         var forayInfo = forayInfoPtr == null ? default : new ActorForayInfo(forayInfoPtr->Level, forayInfoPtr->Element);
+
         if (act == null)
         {
             var type = (ActorType)(((int)obj->ObjectKind << 8) + obj->SubKind);
@@ -369,7 +372,7 @@ sealed class WorldStateGameSync : IDisposable
                     TotalTime = castInfo->BaseCastTime,
                     Interruptible = castInfo->Interruptible != 0,
                 } : null;
-            UpdateActorCastInfo(ref act, ref curCast);
+            UpdateActorCastInfo(act, curCast);
         }
 
         var sm = chr != null ? chr->GetStatusManager() : null;
@@ -389,7 +392,7 @@ sealed class WorldStateGameSync : IDisposable
                     curStatus.Extra = s.Param;
                     curStatus.ExpireAt = _ws.CurrentTime.AddSeconds(dur);
                 }
-                UpdateActorStatus(ref act, i, ref curStatus);
+                UpdateActorStatus(act, i, ref curStatus);
             }
         }
 
@@ -412,9 +415,9 @@ sealed class WorldStateGameSync : IDisposable
         }
     }
 
-    private void UpdateActorCastInfo(ref Actor act, ref ActorCastInfo? cast)
+    private void UpdateActorCastInfo(Actor act, ActorCastInfo? cast)
     {
-        ref var castInfo = ref act.CastInfo;
+        var castInfo = act.CastInfo;
         if (cast == null && castInfo == null)
             return; // was not casting and is not casting
 
@@ -430,7 +433,7 @@ sealed class WorldStateGameSync : IDisposable
         _ws.Execute(new ActorState.OpCastInfo(act.InstanceID, cast));
     }
 
-    private void UpdateActorStatus(ref Actor act, int index, ref ActorStatus value)
+    private void UpdateActorStatus(Actor act, int index, ref readonly ActorStatus value)
     {
         // note: some statuses have non-zero remaining time but never tick down (e.g. FC buffs); currently we ignore that fact, to avoid log spam...
         // note: RemainingTime is not monotonously decreasing (I assume because it is really calculated by game and frametime fluctuates...), we ignore 'slight' duration increases (<1 sec)
