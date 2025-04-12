@@ -83,7 +83,11 @@ class GetDownBait(BossModule module) : Components.GenericBaitAway(module)
     {
         if (spell.Action.ID == (uint)AID.GetDownBait)
         {
-            ++NumCasts;
+            if (++NumCasts == 8)
+            {
+                CurrentBaits.Clear();
+                return;
+            }
             if (!First)
             {
                 var targets = spell.Targets;
