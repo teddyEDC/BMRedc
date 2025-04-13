@@ -629,33 +629,24 @@ public class GenericBaitStack(BossModule module, ActionID aid = default, bool on
         {
             ref readonly var b = ref baits[i];
             var origin = BaitOrigin(b);
+            var angle = Angle.FromDirection(b.Target.Position - origin);
             if (b.Target != actor && !isBaitTarget)
             {
                 if (!b.Forbidden[slot])
                 {
-                    if (b.Shape is AOEShapeCone cone)
-                        forbiddenInverted.Add(ShapeDistance.InvertedCone(origin, cone.Radius, Angle.FromDirection(b.Target.Position - origin), cone.HalfAngle));
-                    else if (b.Shape is AOEShapeRect rect)
-                        forbiddenInverted.Add(ShapeDistance.InvertedRect(origin, Angle.FromDirection(b.Target.Position - origin), rect.LengthFront, rect.LengthBack, rect.HalfWidth));
-                    else if (b.Shape is AOEShapeCircle circle)
-                        forbiddenInverted.Add(ShapeDistance.InvertedCircle(origin, circle.Radius));
+                    forbiddenInverted.Add(b.Shape.InvertedDistance(origin, angle));
                 }
                 else
                 {
-                    if (b.Shape is AOEShapeCone cone)
-                        forbidden.Add(ShapeDistance.Cone(origin, cone.Radius, Angle.FromDirection(b.Target.Position - origin), cone.HalfAngle));
-                    else if (b.Shape is AOEShapeRect rect)
-                        forbidden.Add(ShapeDistance.Rect(origin, Angle.FromDirection(b.Target.Position - origin), rect.LengthFront, rect.LengthBack, rect.HalfWidth));
-                    else if (b.Shape is AOEShapeCircle circle)
-                        forbiddenInverted.Add(ShapeDistance.Circle(origin, circle.Radius));
+                    forbidden.Add(b.Shape.Distance(origin, angle));
                 }
             }
             else if (b.Target != actor && isBaitTarget)
             {   // prevent overlapping if there are multiple stacks
                 if (b.Shape is AOEShapeCone cone)
-                    forbidden.Add(ShapeDistance.Cone(origin, cone.Radius, Angle.FromDirection(b.Target.Position - origin), cone.HalfAngle * 2f));
+                    forbidden.Add(ShapeDistance.Cone(origin, cone.Radius, angle, cone.HalfAngle * 2f));
                 else if (b.Shape is AOEShapeRect rect)
-                    forbidden.Add(ShapeDistance.Rect(origin, Angle.FromDirection(b.Target.Position - origin), rect.LengthFront, rect.LengthBack, rect.HalfWidth * 2f));
+                    forbidden.Add(ShapeDistance.Rect(origin, angle, rect.LengthFront, rect.LengthBack, rect.HalfWidth * 2f));
                 else if (b.Shape is AOEShapeCircle circle)
                     forbiddenInverted.Add(ShapeDistance.Circle(origin, circle.Radius * 2f));
             }

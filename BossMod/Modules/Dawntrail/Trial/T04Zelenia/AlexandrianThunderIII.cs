@@ -139,36 +139,37 @@ class AlexandrianThunderIII(BossModule module) : Components.GenericAOEs(module)
             var index = -1;
             switch (rotRounded)
             {
-                case -96: // 117.321, 110
-                case -23: // 100, 80
-                case -60: // 117.321, 90
-                    index = 4;
-                    break;
-                case 96: // 82.679, 110
-                case 23: // 100, 80
-                case 59: // 82.679, 90
-                    index = 2;
+                case 143: // 82.679, 110
+                case -143: // 117.321, 110
+                case 180: // 100, 120
+                    index = 0;
                     break;
                 case 83: // 82.679, 90
                 case 156: // 100, 120
                 case 119: // 82.679, 110
                     index = 1;
                     break;
-                case 143: // 82.679, 110
-                case -143: // 117.321, 110
-                case 180: // 100, 120
-                    index = 0;
-                    break;
-                case -120: // 117.321, 110
-                case -156: // 100, 120
-                case -83: // 117.321, 90
-                    index = 5;
+                case 96: // 82.679, 110
+                case 23: // 100, 80
+                case 59: // 82.679, 90
+                    index = 2;
                     break;
                 case 0: // 100, 80
                 case -36: // 117.321, 90
                 case 36: // 82.679, 90
                     index = 3;
                     break;
+                case -96: // 117.321, 110
+                case -23: // 100, 80
+                case -60: // 117.321, 90
+                    index = 4;
+                    break;
+                case -120: // 117.321, 110
+                case -156: // 100, 120
+                case -83: // 117.321, 90
+                    index = 5;
+                    break;
+
             }
             if (index >= 0)
             {
