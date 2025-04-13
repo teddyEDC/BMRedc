@@ -35,7 +35,7 @@ class M08SHowlingBladeStates : StateMachineBuilder
         TrackingTremors(id + 0x100000u, 10f);
         ExtraplanarPursuit(id + 0x110000u, 1.8f);
         ExtraplanarPursuit(id + 0x120000u, 10.8f);
-        SimpleState(id + 0x120000u, 7.4f, "Enrage");
+        SimpleState(id + 0x130000u, 7.4f, "Enrage");
     }
 
     private void Phase2(uint id)
@@ -50,11 +50,19 @@ class M08SHowlingBladeStates : StateMachineBuilder
         HerosBlow(id + 0x40000u, 12.2f);
         UltraviolentRay(id + 0x50000u, 10.2f);
         QuakeIII(id + 0x60000u, 11.2f);
-        Mooncleaver(id + 0x70000u, 13.2f);
+        Mooncleaver1(id + 0x70000u, 13.2f);
         ElementalPurge(id + 0x80000u, 7.1f);
         ProwlingGaleP2(id + 0x90000u, 14f);
-        TwofoldTempest(id + 0x90000u, 11.5f);
-        SimpleState(id + 0x120000u, 999f, "Enrage");
+        TwofoldTempest(id + 0xA0000u, 11.5f);
+        ChampionsCircuit(id + 0xB0000u, 18.3f);
+        QuakeIII(id + 0xC0000u, 9.9f);
+        UltraviolentRay(id + 0xD0000u, 14.2f);
+        Twinbite(id + 0xE0000u, 11.2f);
+        RiseOfTheHuntersBlade(id + 0xF0000u, 8.2f);
+        HerosBlow(id + 0x100000u, 9.4f);
+        UltraviolentRay(id + 0x110000u, 12.3f);
+        HowlingEight(id + 0x120000u, 16f);
+        SimpleState(id + 0x130000u, 11.3f, "Enrage");
     }
 
     private void ExtraplanarPursuit(uint id, float delay)
@@ -305,11 +313,11 @@ class M08SHowlingBladeStates : StateMachineBuilder
             .DeactivateOnExit<HerosBlow>();
     }
 
-    private void Mooncleaver(uint id, float delay)
+    private void Mooncleaver1(uint id, float delay)
     {
-        ComponentCondition<Mooncleaver>(id, delay, comp => comp.NumCasts != 0, "Destroy a platform")
-            .ActivateOnEnter<Mooncleaver>()
-            .DeactivateOnExit<Mooncleaver>();
+        ComponentCondition<Mooncleaver1>(id, delay, comp => comp.NumCasts != 0, "Destroy a platform")
+            .ActivateOnEnter<Mooncleaver1>()
+            .DeactivateOnExit<Mooncleaver1>();
     }
 
     private void ElementalPurge(uint id, float delay)
@@ -335,11 +343,89 @@ class M08SHowlingBladeStates : StateMachineBuilder
 
     private void TwofoldTempest(uint id, float delay)
     {
-        ComponentCondition<TwofoldTempestTetherAOE>(id, delay, comp => comp.NumCasts != 0, "Tether 1 resolve")
-            .ActivateOnEnter<TwofoldTempestTetherVoidzone>()
-            .ActivateOnEnter<TwofoldTempestTetherAOE>()
-            .ActivateOnEnter<TwofoldTempestRect>()
-            .ActivateOnEnter<TwofoldTempestVoidzone>();
-        ComponentCondition<TwofoldTempestTetherAOE>(id + 0x10u, 7.1f, comp => comp.NumCasts == 2, "Tether 2 resolve");
+        for (var i = 1; i <= 4; ++i)
+        {
+            var offset = id + (uint)((i - 1) * 0x10u);
+            var time = i == 1 ? delay : 7.1f;
+            var desc = $"Baits {i} resolve";
+            var casts = i;
+            var cond = ComponentCondition<TwofoldTempestRect>(offset, time, comp => comp.NumCasts == casts, desc);
+            if (i == 1)
+            {
+                cond
+                .ActivateOnEnter<TwofoldTempestTetherVoidzone>()
+                .ActivateOnEnter<TwofoldTempestTetherAOE>()
+                .ActivateOnEnter<TwofoldTempestRect>()
+                .ActivateOnEnter<TwofoldTempestVoidzone>();
+            }
+            else if (i == 4)
+            {
+                cond
+                .DeactivateOnExit<TwofoldTempestTetherVoidzone>()
+                .DeactivateOnExit<TwofoldTempestTetherAOE>()
+                .DeactivateOnExit<TwofoldTempestRect>();
+            }
+        }
+        ComponentCondition<ArenaChanges>(id + 0x40u, 5.9f, comp => comp.Repaired, "Repair broken platform");
+    }
+
+    private void ChampionsCircuit(uint id, float delay)
+    {
+        for (var i = 1; i <= 5; ++i)
+        {
+            var offset = id + (uint)((i - 1) * 0x10u);
+            var time = i == 1 ? delay : 4.4f;
+            var desc = $"Rotation {i}";
+            var casts = i;
+            var cond = ComponentCondition<ChampionsCircuit>(offset, time, comp => comp.NumCasts == casts, desc);
+            if (i == 1)
+            {
+                cond
+                .ActivateOnEnter<ChampionsCircuit>()
+                .ActivateOnEnter<GleamingBarrage>()
+                .DeactivateOnExit<TwofoldTempestVoidzone>();
+            }
+            else if (i == 5)
+            {
+                cond
+                .DeactivateOnExit<ChampionsCircuit>()
+                .DeactivateOnExit<GleamingBarrage>();
+            }
+        }
+    }
+
+    private void RiseOfTheHuntersBlade(uint id, float delay)
+    {
+        ActorCast(id, _module.BossP2, AID.RiseOfTheHuntersBlade, delay, 7f, true, "Rise of the Hunter's Blade");
+        ActorCast(id + 0x10u, _module.BossP2, AID.LoneWolfsLament, 2.2f, 3f, true, "Lone Wolf's Lament");
+        ComponentCondition<LamentOfTheCloseDistant>(id + 0x20u, 0.8f, comp => comp.TethersAssigned, "Tethers assigned")
+            .ActivateOnEnter<LamentOfTheCloseDistant>();
+        ComponentCondition<ProwlingGaleLast>(id + 0x30u, 18.2f, comp => comp.NumCasts != 0, "Towers resolve")
+            .ActivateOnEnter<ProwlingGaleLast>()
+            .DeactivateOnExit<ProwlingGaleLast>();
+    }
+
+    private void HowlingEight(uint id, float delay)
+    {
+        for (var i = 0; i < 5; ++i)
+        {
+            var phaseOffset = (uint)(i * 0x20u);
+            var cast1Id = id + 0x10u + phaseOffset;
+            var cast8Id = id + 0x20u + phaseOffset;
+            var platformId = id + 0x30u + phaseOffset;
+            var casts = i + 1;
+            var cond = ComponentCondition<HowlingEight>(cast1Id, i == 0 ? delay : 9.3f, comp => comp.NumCasts == casts, $"Tower {casts} cast 1");
+            if (i == 0)
+            {
+                cond
+                .ActivateOnEnter<HowlingEight>()
+                .ActivateOnEnter<Mooncleaver2>()
+                .DeactivateOnEnter<LamentOfTheCloseDistant>();
+            }
+            ComponentCondition<HowlingEight>(cast8Id, 6f, comp => comp.Towers.Count == 0, $"Tower {casts} cast 8")
+                .SetHint(StateMachine.StateHint.Raidwide);
+            if (i < 4)
+                ComponentCondition<Mooncleaver2>(platformId, 4.4f, comp => comp.NumCasts == casts, "Destroy platform");
+        }
     }
 }

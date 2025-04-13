@@ -174,8 +174,10 @@ public enum AID : uint
     FangedMaw = 42083, // GleamingFangP22->self, 7.0s cast, range 22 circle
     FangedPerimeter = 42084, // GleamingFangP22->self, 7.0s cast, range 15-30 donut
 
-    MooncleaverVisual = 42085, // BossP2->self, 4.0+1,0s cast, single-target
-    Mooncleaver = 42086, // Helper->self, 5.0s cast, range 8 circle
+    MooncleaverVisual1 = 42085, // BossP2->self, 4.0+1,0s cast, single-target
+    MooncleaverVisual2 = 42828, // BossP2->self, 3.0+1,0s cast, single-target
+    Mooncleaver1 = 42086, // Helper->self, 5.0s cast, range 8 circle
+    Mooncleaver2 = 42829, // Helper->self, 4.0s cast, range 8 circle
 
     ElementalPurge = 42087, // BossP2->self, 5.0s cast, single-target
     HuntersHarvestVisual = 42092, // BossP2->self, no cast, single-target
@@ -191,7 +193,57 @@ public enum AID : uint
     TwofoldTempestVisual2 = 42100, // BossP2->self, no cast, single-target
     TwofoldTempestRect = 42099, // Helper->self, no cast, ???, hits the whole platform, , range 40 width 16 rect
     TwofoldTempestCircle = 42098, // Helper->player, no cast, range 6 circle
-    WindSurge = 43153, // Helper->self, no cast, ???
+    VacuumWave = 42191, // Helper->self, no cast, range 60 circle, two voidzones intersecting
+    WindSurge = 43153, // Helper->self, no cast, ???, wind voidzone pulsing damage
+
+    BareFangs = 42101, // BossP2->self, 4.0s cast, single-target
+    ChampionsCircuitCW = 42103, // BossP2->self, 7.3+0,7s cast, single-target
+    ChampionsCircuitCCW = 42104, // BossP2->self, 7.3+0,7s cast, single-target
+    GleamingBarrage = 42102, // GleamingFangP21->self, 2.8s cast, range 31 width 8 rect
+    ChampionsCircuitDonutFirst = 42106, // Helper->self, 8.0s cast, range 4-13 donut
+    ChampionsCircuitConeFirst = 42108, // Helper->self, 8.0s cast, range 22 60-degree cone
+    ChampionsCircuitDonutSectorFirst1 = 42109, // Helper->self, 8.0s cast, range 16-28 60-degree donut sector
+    ChampionsCircuitDonutSectorFirst2 = 42107, // Helper->self, 8.0s cast, range 16-28 60-degree donut sector
+    ChampionsCircuitRectFirst = 42105, // Helper->self, 8.0s cast, range 30 width 12 rect
+    ChampionsCircuitRestCWVisual = 42145, // BossP2->self, no cast, single-target
+    ChampionsCircuitRestCCWVisual = 42146, // BossP2->self, no cast, single-target
+    ChampionsCircuitDonutRest = 42111, // Helper->self, 0.7s cast, range 4-13 donut
+    ChampionsCircuitDonutSectorRest1 = 42112, // Helper->self, 0.7s cast, range ?-28 donut
+    ChampionsCircuitDonutSectorRest2 = 42114, // Helper->self, 0.7s cast, range ?-28 donut
+    ChampionsCircuitConeRest = 42113, // Helper->self, 0.7s cast, range 22 60-degree cone
+    ChampionsCircuitRectRest = 42110, // Helper->self, 0.7s cast, range 30 width 12 rect
+
+    RiseOfTheHuntersBlade = 43052, // BossP2->self, 7.0s cast, single-target
+    LoneWolfsLament = 42115, // BossP2->self, 3.0s cast, single-target
+    ProwlingGaleLastVisual = 42117, // BossP2->self, 3.0s cast, single-target
+    ProwlingGaleLast1 = 42118, // Helper->self, 8.0s cast, range 2 circle, 1p tower
+    ProwlingGaleLast2 = 42119, // Helper->self, 8.0s cast, range 2 circle, 2p tower
+    ProwlingGaleLast3 = 42120, // Helper->self, 8.0s cast, range 2 circle, 3p tower
+    GreatWhirlwindLast = 42121, // Helper->self, no cast, range 60 circle, tower fail
+    UnmitigatedExplosion = 42116, // Helper->player, no cast, single-target, chains fail
+
+    HowlingEightVisualFirst = 43522, // BossP2->location, 8.0+1,0s cast, single-target
+    HowlingEightFirst1 = 43523, // Helper->self, 9.1s cast, range 8 circle
+    HowlingEightFirst2 = 43524, // Helper->self, 10.1s cast, range 8 circle
+    HowlingEightFirst3 = 43525, // Helper->self, 11.0s cast, range 8 circle
+    HowlingEightFirst4 = 43526, // Helper->self, 11.8s cast, range 8 circle
+    HowlingEightFirst5 = 43527, // Helper->self, 12.4s cast, range 8 circle
+    HowlingEightFirst6 = 43528, // Helper->self, 12.9s cast, range 8 circle
+    HowlingEightFirst7 = 43529, // Helper->self, 13.3s cast, range 8 circle
+    HowlingEightFirst8 = 43530, // Helper->self, 15.1s cast, range 8 circle
+    HowlingEightVisualRest = 42132, // BossP2->location, 5.0+1,0s cast, single-target
+    HowlingEightRest1 = 42133, // Helper->self, 6.1s cast, range 8 circle
+    HowlingEightRest2 = 42134, // Helper->self, 7.1s cast, range 8 circle
+    HowlingEightRest3 = 42135, // Helper->self, 8.0s cast, range 8 circle
+    HowlingEightRest4 = 42136, // Helper->self, 8.8s cast, range 8 circle
+    HowlingEightRest5 = 42137, // Helper->self, 9.4s cast, range 8 circle
+    HowlingEightRest6 = 42138, // Helper->self, 9.9s cast, range 8 circle
+    HowlingEightRest7 = 42139, // Helper->self, 10.3s cast, range 8 circle
+    HowlingEightRest8 = 42140, // Helper->self, 12.1s cast, range 8 circle
+    HowlingAgony = 43140, // Helper->self, no cast, range 100 circle, tower fail
+
+    StarcleaverVisual = 42141, // BossP2->self, 10.0s cast, single-target
+    Starcleaver = 42142 // Helper->self, 11.0s cast, range 8 circle
 }
 
 public enum SID : uint
@@ -221,5 +273,7 @@ public enum TetherID : uint
     WindsOfDecayGood = 1, // WolfOfWind->player
     Stonetether = 335, // player->WolfOfStone2
     Windtether = 336, // player->WolfOfWind1
-    TwofoldTempest = 84 // BossP2->player
+    TwofoldTempest = 84, // BossP2->player
+    GreenChains = 317, // player->player
+    BlueChains = 318 // player->player
 }

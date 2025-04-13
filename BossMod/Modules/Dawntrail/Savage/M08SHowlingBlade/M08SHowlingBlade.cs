@@ -7,7 +7,7 @@ class GreatDivide(BossModule module) : Components.CastSharedTankbuster(module, A
 class RavenousSaber(BossModule module) : Components.CastCounterMulti(module, [ActionID.MakeSpell(AID.RavenousSaber1),
 ActionID.MakeSpell(AID.RavenousSaber2), ActionID.MakeSpell(AID.RavenousSaber3), ActionID.MakeSpell(AID.RavenousSaber4),
 ActionID.MakeSpell(AID.RavenousSaber5)]);
-class Mooncleaver(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Mooncleaver), 8f);
+class Mooncleaver1(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Mooncleaver1), 8f);
 class ProwlingGaleP2(BossModule module) : Components.CastTowers(module, ActionID.MakeSpell(AID.ProwlingGaleP2), 2f, 2, 2);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1026, NameID = 13843, PlanLevel = 100)]

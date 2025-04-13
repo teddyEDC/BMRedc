@@ -5,15 +5,20 @@ class HuntersHarvestBait(BossModule module) : Components.GenericBaitAway(module,
     public static readonly AOEShapeCone Cone = new(40f, 105f.Degrees());
     public BitMask Bind;
 
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
     {
-        if (spell.Action.ID == (uint)AID.ElementalPurge)
+        if (iconID == (uint)IconID.StalkingStoneWind && actor.Role == Role.Tank)
         {
-            var primary = caster;
-            var target = WorldState.Actors.Find(primary.TargetID);
-            if (target is not Actor t)
-                return;
-            CurrentBaits.Add(new(primary, t, Cone, Module.CastFinishAt(spell, 5.2f)));
+            var party = Raid.WithoutSlot(true, true, true);
+            var len = party.Length;
+            for (var i = 0; i < len; ++i)
+            {
+                ref readonly var p = ref party[i];
+                if (p.Role == Role.Tank && p != actor)
+                {
+                    CurrentBaits.Add(new(Module.Enemies((uint)OID.BossP2)[0], p, Cone, WorldState.FutureTime(10.3d)));
+                }
+            }
         }
     }
 

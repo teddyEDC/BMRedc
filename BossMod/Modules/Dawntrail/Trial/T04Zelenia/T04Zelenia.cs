@@ -5,7 +5,6 @@ class PowerBreak1(BossModule module) : PowerBreak(module, AID.PowerBreak1);
 class PowerBreak2(BossModule module) : PowerBreak(module, AID.PowerBreak2);
 
 class HolyHazard(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.HolyHazard), new AOEShapeCone(24f, 60f.Degrees()), 2);
-class ValorousAscensionRect(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.ValorousAscensionRect), new AOEShapeRect(40, 4f), 2);
 
 class RosebloodBloom(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.RosebloodBloom), 10f, true)
 {
@@ -20,7 +19,7 @@ class RosebloodBloom(BossModule module) : Components.SimpleKnockbacks(module, Ac
 }
 
 class PerfumedQuietus(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.RosebloodBloom)); // using the knockback here, since after knockback player is stunned for a cutscene and can't heal up
-class ValorousAscension(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ValorousAscension1), "Raidwide x3");
+
 class ThornedCatharsis(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ThornedCatharsis));
 
 class SpecterOfTheLost(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.SpecterOfTheLost), new AOEShapeCone(50f, 25f.Degrees()), tankbuster: true);

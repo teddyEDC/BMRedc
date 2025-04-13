@@ -24,6 +24,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
     private readonly bool[] activePlatforms = new bool[5];
     private bool active;
     private AOEInstance? _aoe;
+    public bool Repaired => polygons.Count == 5;
     private static readonly AOEShapeCircle circle = new(8f);
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
@@ -67,7 +68,7 @@ class ArenaChanges(BossModule module) : Components.GenericAOEs(module)
         }
         else if (index is >= 0x16 and <= 0x1A)
         {
-            if (state == 0x00010001u)
+            if (state is 0x00010001u or 0x00020001u)
             {
                 var i = index - 0x16u;
                 polygons.Add(EndArenaPlatforms[i]);
@@ -139,11 +140,11 @@ class Teleporters(BossModule module) : BossComponent(module)
         var index = 0;
         for (var i = 0; i < 5; ++i)
         {
+            var zero = i == 0;
             var angle = new Angle(ArenaChanges.PlatformAngles[i]).Deg;
-            positions[index++] = ArenaChanges.EndArenaPlatforms[i].Center + 6f * (120f + angle).Degrees().ToDirection();
-            positions[i == 0 ? 9 : index++] = ArenaChanges.EndArenaPlatforms[i].Center + 6f * (-120f + angle).Degrees().ToDirection();
+            positions[index++] = ArenaChanges.EndArenaPlatforms[i].Center + 6f * (zero ? -120 : 120f + angle).Degrees().ToDirection();
+            positions[zero ? 9 : index++] = ArenaChanges.EndArenaPlatforms[i].Center + 6f * (zero ? 120 : -120f + angle).Degrees().ToDirection();
         }
-
         return [.. positions];
     }
 
@@ -151,9 +152,16 @@ class Teleporters(BossModule module) : BossComponent(module)
     {
         if (index is >= 0x02 and <= 0x0B)
         {
-            if (state == 0x00020001u)
+            if (state is 0x00020001u or 0x00200010u)
             {
-                activeTeleporters.Add(teleporters[index - 0x02u]);
+                var count = activeTeleporters.Count;
+                ref readonly var teleporter = ref teleporters[index - 0x02u];
+                for (var i = 0; i < count; ++i)
+                {
+                    if (activeTeleporters[i] == teleporter) // prevent duplicates
+                        return;
+                }
+                activeTeleporters.Add(teleporter);
             }
             else if (state == 0x00080004u)
             {
