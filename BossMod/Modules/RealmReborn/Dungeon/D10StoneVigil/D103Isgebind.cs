@@ -27,14 +27,66 @@ class Cauterize(BossModule module) : Components.SimpleAOEs(module, ActionID.Make
 
 class Touchdown(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.Touchdown))
 {
-    private readonly Cauterize _aoe = module.FindComponent<Cauterize>()!;
     private readonly AOEShapeCircle _shape = new(5f);
+    private bool _activation = false;  // Using a bool to track activation
 
+    private const uint HelperOID = (uint)OID.Helper;
+
+    // Counter to track how many times Cauterize has been cast
+    private int _cauterizeCounter = 0;
+    private bool _seenSheetOfIce2 = false;
+
+    // Reset variables when the boss becomes targetable again
+    public override void OnTargetable(Actor actor)
+    {
+        if (actor == Module.PrimaryActor)
+        {
+            // Reset activation and phase flags
+            _activation = false;  // Reset to false when targetable
+            _cauterizeCounter = 0;
+            _seenSheetOfIce2 = false;
+        }
+    }
+
+    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    {
+        // Only track casts from the boss or helper
+        if (caster.OID != Module.PrimaryActor.OID && caster.OID != HelperOID)
+            return;
+
+        var aid = (AID)spell.Action.ID;
+
+        // Handle Cauterize casts and predict the Touchdown
+        if (aid == AID.Cauterize)
+        {
+            bool phase2 = _seenSheetOfIce2;
+
+            // Predict Touchdown if conditions for phase transitions and Cauterize casts are met
+            if ((phase2 && _cauterizeCounter == 1) || (!phase2 && _cauterizeCounter == 0))
+            {
+                _activation = true;  // Set to true when prediction is made
+            }
+
+            // Increment the Cauterize counter after each cast
+            _cauterizeCounter++;
+        }
+
+        // Track when the SheetOfIce2 cast happens to determine phase 2
+        if (aid == AID.SheetOfIce2)
+            _seenSheetOfIce2 = true;
+
+        // Confirm Touchdown cast and reset activation time
+        if (aid == AID.Touchdown)
+        {
+            _activation = true;  // Set to true when Touchdown is cast
+        }
+    }
+
+    // Show touchdown AOE
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        // TODO: proper timings...
-        if (!Module.PrimaryActor.IsTargetable && _aoe.Casters.Count == 0)
-            return new AOEInstance[1] { new(_shape, WPos.ClampToGrid(D103Isgebind.ArenaCenter)) };
+        if (_activation)
+            return new AOEInstance[] { new(_shape, WPos.ClampToGrid(D103Isgebind.ArenaCenter)) };
         return [];
     }
 }
@@ -54,7 +106,7 @@ class D103IsgebindStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 11, NameID = 1680)]
+[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "Malediktus, Chuggalo", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 11, NameID = 1680)]
 public class D103Isgebind(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
     public static readonly WPos ArenaCenter = new(default, -248f);
