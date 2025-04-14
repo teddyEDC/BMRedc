@@ -1,4 +1,4 @@
-﻿namespace BossMod.Components;
+namespace BossMod.Components;
 
 public class GenericTowers(BossModule module, ActionID aid = default, bool prioritizeInsufficient = false) : CastCounter(module, aid)
 {
@@ -152,7 +152,7 @@ public class GenericTowers(BossModule module, ActionID aid = default, bool prior
                 Tower? mostRelevantTower = null;
                 var pos = actor.Position;
                 var countI = insufficientTowers.Count;
-                for (var i = 0; i < count; ++i)
+                for (var i = 0; i < countI; ++i)
                 {
                     var t = insufficientTowers[i];
                     var numInside = t.NumInside(Module);
@@ -235,22 +235,15 @@ public class GenericTowers(BossModule module, ActionID aid = default, bool prior
             var t = Towers[i];
             var actors = Module.Raid.WithSlot();
             var acount = actors.Length;
-            var filteredActors = new List<(int, Actor)>(acount);
-
+            var mask = new BitMask();
             for (var j = 0; j < acount; ++j)
             {
                 ref readonly var indexActor = ref actors[j];
                 if (!t.ForbiddenSoakers[indexActor.Item1] && t.Shape.Check(indexActor.Item2.Position, t.Position, t.Rotation))
                 {
-                    filteredActors.Add(indexActor);
+                    mask[indexActor.Item1] = true;
                 }
             }
-
-            var mask = new BitMask();
-            var fcount = filteredActors.Count;
-            for (var j = 0; j < fcount; ++j)
-                mask[filteredActors[j].Item1] = true;
-
             hints.PredictedDamage.Add((mask, t.Activation));
         }
     }
