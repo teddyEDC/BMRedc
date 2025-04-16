@@ -53,9 +53,11 @@ class BracingWind(BossModule module) : Components.SimpleKnockbacks(module, Actio
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var length = Arena.Bounds.Radius * 2f; // casters are at the border, orthogonal to borders
-        foreach (var c in Casters)
+        const float length = 24f * 2f; // casters are at the border, orthogonal to borders
+        var count = Casters.Count;
+        for (var i = 0; i < count; ++i)
         {
+            var c = Casters[i];
             hints.AddForbiddenZone(ShapeDistance.Rect(c.Position, c.CastInfo!.Rotation, length, Distance - length, 6), Module.CastFinishAt(c.CastInfo!));
         }
     }
@@ -153,10 +155,10 @@ class AgeOfEndlessFrost(BossModule module) : Components.GenericRotatingAOE(modul
         }
     }
 
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action.ID is (uint)AID.AgeOfEndlessFrostFirstCCW or (uint)AID.AgeOfEndlessFrostFirstCW or (uint)AID.AgeOfEndlessFrostRest)
-            AdvanceSequence(caster.Position, spell.Rotation, WorldState.CurrentTime);
+        if (spell.Action.ID is (uint)AID.AgeOfEndlessFrostFirstAOE or (uint)AID.AgeOfEndlessFrostRestAOE)
+            AdvanceSequence(spell.LocXZ, spell.Rotation, WorldState.CurrentTime);
     }
 }
 

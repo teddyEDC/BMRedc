@@ -92,12 +92,14 @@ class QueerBubble(BossModule module) : Components.GenericAOEs(module)
     {
         if (_aoe.Active)
         {
-            var forbidden = new List<Func<WPos, float>>(6);
             var count = AOEs.Count;
+            if (count == 0)
+                return;
+            var forbidden = new Func<WPos, float>[count];
+
             for (var i = 0; i < count; ++i)
-                forbidden.Add(ShapeDistance.InvertedCircle(AOEs[i].Position, 2.5f));
-            if (forbidden.Count != 0)
-                hints.AddForbiddenZone(ShapeDistance.Intersection(forbidden), Module.CastFinishAt(_aoe.Casters[0].CastInfo));
+                forbidden[i] = ShapeDistance.InvertedCircle(AOEs[i].Position, 2.5f);
+            hints.AddForbiddenZone(ShapeDistance.Intersection(forbidden), Module.CastFinishAt(_aoe.Casters[0].CastInfo));
         }
         else
             base.AddAIHints(slot, actor, assignment, hints);

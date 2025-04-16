@@ -107,7 +107,32 @@ public class GenericTowers(BossModule module, ActionID aid = default, bool prior
         for (var i = 0; i < count; ++i)
         {
             ref var t = ref towers[i];
-            DrawTower(Arena, ref t, !t.ForbiddenSoakers[pcSlot] && !t.IsInside(pc) && t.NumInside(Module) < t.MaxSoakers || t.IsInside(pc) && !t.ForbiddenSoakers[pcSlot] && t.NumInside(Module) <= t.MaxSoakers);
+            if (t.ForbiddenSoakers[pcSlot])
+                continue;
+            var isInside = t.IsInside(pc);
+            var numInside = t.NumInside(Module);
+            var safe = numInside < t.MaxSoakers || isInside && numInside <= t.MaxSoakers;
+            if (safe)
+                t.Shape.Outline(Arena, t.Position, t.Rotation, Colors.Safe, 2f);
+            else if (isInside && numInside > t.MaxSoakers) // player is inside but tower has more players than needed
+                t.Shape.Outline(Arena, t.Position, t.Rotation, default, 2f);
+        }
+    }
+
+    public override void DrawArenaBackground(int pcSlot, Actor pc)
+    {
+        var count = Towers.Count;
+        if (count == 0)
+            return;
+        var towers = CollectionsMarshal.AsSpan(Towers);
+        for (var i = 0; i < count; ++i)
+        {
+            ref var t = ref towers[i];
+            if (t.ForbiddenSoakers[pcSlot] || !t.IsInside(pc) && t.NumInside(Module) >= t.MaxSoakers)
+            {
+                t.Shape.Draw(Arena, t.Position, t.Rotation);
+                continue;
+            }
         }
     }
 
@@ -152,7 +177,7 @@ public class GenericTowers(BossModule module, ActionID aid = default, bool prior
                 Tower? mostRelevantTower = null;
                 var pos = actor.Position;
                 var countI = insufficientTowers.Count;
-                for (var i = 0; i < count; ++i)
+                for (var i = 0; i < countI; ++i)
                 {
                     var t = insufficientTowers[i];
                     var numInside = t.NumInside(Module);
@@ -235,22 +260,15 @@ public class GenericTowers(BossModule module, ActionID aid = default, bool prior
             var t = Towers[i];
             var actors = Module.Raid.WithSlot();
             var acount = actors.Length;
-            var filteredActors = new List<(int, Actor)>(acount);
-
+            var mask = new BitMask();
             for (var j = 0; j < acount; ++j)
             {
                 ref readonly var indexActor = ref actors[j];
                 if (!t.ForbiddenSoakers[indexActor.Item1] && t.Shape.Check(indexActor.Item2.Position, t.Position, t.Rotation))
                 {
-                    filteredActors.Add(indexActor);
+                    mask[indexActor.Item1] = true;
                 }
             }
-
-            var mask = new BitMask();
-            var fcount = filteredActors.Count;
-            for (var j = 0; j < fcount; ++j)
-                mask[filteredActors[j].Item1] = true;
-
             hints.PredictedDamage.Add((mask, t.Activation));
         }
     }

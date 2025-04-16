@@ -48,8 +48,8 @@ class PelagicCleaverRotation(BossModule module) : Components.GenericRotatingAOE(
     {
         _increment = iconID switch
         {
-            (uint)IconID.RotateCW => -60.Degrees(),
-            (uint)IconID.RotateCCW => 60.Degrees(),
+            (uint)IconID.RotateCW => -60f.Degrees(),
+            (uint)IconID.RotateCCW => 60f.Degrees(),
             _ => default
         };
         InitIfReady(actor);

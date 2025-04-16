@@ -7,9 +7,9 @@ class M08SHowlingBladeStates : StateMachineBuilder
     public M08SHowlingBladeStates(M08SHowlingBlade module) : base(module)
     {
         _module = module;
-        SimplePhase(0, Phase1, "P1")
+        SimplePhase(default, Phase1, "P1")
             .Raw.Update = () => Module.PrimaryActor.IsDestroyed || Module.PrimaryActor.HPMP.CurHP == 1;
-        SimplePhase(1, Phase2, "P2")
+        SimplePhase(1u, Phase2, "P2")
             .SetHint(StateMachine.PhaseHint.StartWithDowntime)
             .Raw.Update = () => Module.PrimaryActor.IsDeadOrDestroyed && (_module.BossP2()?.IsDeadOrDestroyed ?? true);
     }

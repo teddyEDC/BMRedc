@@ -10,24 +10,24 @@ class Aethertithe(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventEnvControl(byte index, uint state)
     {
-        if (index != 0)
+        if (index != 0x00u)
             return;
         Angle? dir = state switch
         {
-            0x04000100 => -55.Degrees(),
-            0x08000100 => 0.Degrees(),
-            0x10000100 => 55.Degrees(),
+            0x04000100u => -55f.Degrees(),
+            0x08000100u => default,
+            0x10000100u => 55f.Degrees(),
             _ => null
         };
         if (dir != null)
         {
-            AOE = new(_shape, Module.PrimaryActor.Position, dir.Value, WorldState.FutureTime(5.1f));
+            AOE = new(_shape, Module.PrimaryActor.Position, dir.Value, WorldState.FutureTime(5.1d));
         }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if ((AID)spell.Action.ID is AID.AethertitheAOER or AID.AethertitheAOEC or AID.AethertitheAOEL)
+        if (spell.Action.ID is (uint)AID.AethertitheAOER or (uint)AID.AethertitheAOEC or (uint)AID.AethertitheAOEL)
         {
             AOE = null;
             ++NumCasts;

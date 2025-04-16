@@ -140,7 +140,7 @@ class TwofoldTempestRect(BossModule module) : Components.GenericBaitStack(module
                 var center = ArenaChanges.EndArenaPlatforms[i].Center;
                 if (b.Target.Position.InCircle(center, 8f))
                 {
-                    b.CustomRotation = new(ArenaChanges.PlatformAngles[i]);
+                    b.CustomRotation = ArenaChanges.PlatformAngles[i];
                     break;
                 }
             }
@@ -174,7 +174,7 @@ class TwofoldTempestRect(BossModule module) : Components.GenericBaitStack(module
         {
             if (actor.Position.InCircle(ArenaChanges.EndArenaPlatforms[i].Center, 8f))
             {
-                if (new Angle(ArenaChanges.PlatformAngles[i]) != baits[0].Rotation)
+                if (ArenaChanges.PlatformAngles[i] != baits[0].Rotation)
                     return;
                 else
                  if (vulnerability[slot])
