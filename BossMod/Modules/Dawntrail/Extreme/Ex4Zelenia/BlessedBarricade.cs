@@ -53,18 +53,18 @@ class SpearpointPushAOE(BossModule module) : Components.GenericAOEs(module)
 
 class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module, onlyShowOutlines: true)
 {
-    private static readonly AOEShapeRect rect0C90 = new(33f, 37f, 1f, -90f.Degrees()), rect0C91 = new(33f, 37f, 1f, 90f.Degrees());
-    private AOEShapeRect curRect = new(default, default);
+    private static readonly AOEShapeRect rect = new(32f, 37f, 1f);
+    private Angle offset;
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
         if (actor.OID == (uint)OID.ZeleniasShade)
         {
-            curRect = id switch
+            offset = id switch
             {
-                0x0C90 => rect0C90,
-                0x0C91 => rect0C91,
-                _ => curRect
+                0x0C90 => -90f.Degrees(),
+                0x0C91 => 90f.Degrees(),
+                _ => default
             };
         }
     }
@@ -75,7 +75,7 @@ class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module,
         {
             var target = WorldState.Actors.Find(tether.Target);
             if (target is Actor t)
-                CurrentBaits.Add(new(source, t, curRect, WorldState.FutureTime(6.7d)));
+                CurrentBaits.Add(new(source, t, rect, WorldState.FutureTime(6.7d)));
         }
     }
 
@@ -96,8 +96,7 @@ class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module,
         for (var i = 0; i < count; ++i)
         {
             ref var b = ref baits[i];
-            b.CustomRotation = b.Source.Rotation;
-            b.Shape = curRect;
+            b.CustomRotation = b.Source.Rotation + offset;
         }
     }
 }
