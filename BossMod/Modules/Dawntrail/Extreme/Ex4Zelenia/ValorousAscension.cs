@@ -1,7 +1,7 @@
 namespace BossMod.Dawntrail.Extreme.Ex4Zelenia;
 
-class ValorousAscension(BossModule module) : Components.CastCounterMulti(module, [ActionID.MakeSpell(AID.ValorousAscension1),
-ActionID.MakeSpell(AID.ValorousAscension2), ActionID.MakeSpell(AID.ValorousAscension3)]);
+class ValorousAscension(BossModule module) : Components.CastCounterMulti(module, [(uint)AID.ValorousAscension1,
+(uint)AID.ValorousAscension2, (uint)AID.ValorousAscension3]);
 
 class ValorousAscensionRect(BossModule module) : Components.GenericAOEs(module)
 {

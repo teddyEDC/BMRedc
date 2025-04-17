@@ -38,7 +38,7 @@ class WideningNarrowingWitchHunt(BossModule module) : Components.GenericAOEs(mod
     }
 }
 
-class WideningNarrowingWitchHuntBait(BossModule module) : Components.GenericBaitAway(module, ActionID.MakeSpell(AID.WitchHuntAOE), centerAtTarget: true)
+class WideningNarrowingWitchHuntBait(BossModule module) : Components.GenericBaitAway(module, (uint)AID.WitchHuntAOE, centerAtTarget: true)
 {
     public enum Mechanic { None, Near, Far }
 
@@ -113,7 +113,7 @@ class WideningNarrowingWitchHuntBait(BossModule module) : Components.GenericBait
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (spell.Action == WatchedAction)
+        if (spell.Action.ID == WatchedAction)
         {
             ++NumCasts;
             ForbiddenPlayers[Raid.FindSlot(spell.MainTargetID)] = true;

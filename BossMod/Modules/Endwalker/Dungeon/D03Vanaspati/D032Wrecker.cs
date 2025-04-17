@@ -106,13 +106,13 @@ class QueerBubble(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class MeaninglessDestruction(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.MeaninglessDestruction));
-class PoisonHeartStack(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.PoisonHeartStack), 6f, 4, 4);
-class TotalWreck(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.TotalWreck));
-class AetherSprayWater(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AetherSprayWater));
-class AetherSprayFire(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.AetherSprayFire), "Go into a bubble! (Raidwide)");
+class MeaninglessDestruction(BossModule module) : Components.RaidwideCast(module, (uint)AID.MeaninglessDestruction);
+class PoisonHeartStack(BossModule module) : Components.StackWithCastTargets(module, (uint)AID.PoisonHeartStack, 6f, 4, 4);
+class TotalWreck(BossModule module) : Components.SingleTargetCast(module, (uint)AID.TotalWreck);
+class AetherSprayWater(BossModule module) : Components.RaidwideCast(module, (uint)AID.AetherSprayWater);
+class AetherSprayFire(BossModule module) : Components.RaidwideCast(module, (uint)AID.AetherSprayFire, "Go into a bubble! (Raidwide)");
 
-class AetherSprayWaterKB(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AetherSprayWater), 13f)
+class AetherSprayWaterKB(BossModule module) : Components.SimpleKnockbacks(module, (uint)AID.AetherSprayWater, 13f)
 {
     private readonly QueerBubble _aoe = module.FindComponent<QueerBubble>()!;
 
