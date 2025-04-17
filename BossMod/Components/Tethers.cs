@@ -1,9 +1,9 @@
 ﻿namespace BossMod.Components;
 
 // generic component for tankbuster at tethered targets; tanks are supposed to intercept tethers and gtfo from the raid
-public class TankbusterTether(BossModule module, ActionID aid, uint tetherID, AOEShape shape, double activationDelay = default, bool centerAtTarget = false) : CastCounter(module, aid)
+public class TankbusterTether(BossModule module, uint aid, uint tetherID, AOEShape shape, double activationDelay = default, bool centerAtTarget = false) : CastCounter(module, aid)
 {
-    public TankbusterTether(BossModule module, ActionID aid, uint tetherID, float radius, double activationDelay = default) : this(module, aid, tetherID, new AOEShapeCircle(radius), activationDelay, true) { }
+    public TankbusterTether(BossModule module, uint aid, uint tetherID, float radius, double activationDelay = default) : this(module, aid, tetherID, new AOEShapeCircle(radius), activationDelay, true) { }
     public readonly uint TID = tetherID;
     public readonly AOEShape Shape = shape;
     private readonly List<(Actor Player, Actor Enemy)> _tethers = [];
@@ -156,7 +156,7 @@ public class TankbusterTether(BossModule module, ActionID aid, uint tetherID, AO
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
         base.OnEventCast(caster, spell);
-        if (spell.Action == WatchedAction)
+        if (spell.Action.ID == WatchedAction)
             activation = default;
     }
 
@@ -211,7 +211,7 @@ public class TankbusterTether(BossModule module, ActionID aid, uint tetherID, AO
 }
 
 // generic component for AOE at tethered targets; players are supposed to intercept tethers and gtfo from the raid
-public class InterceptTetherAOE(BossModule module, ActionID aid, uint tetherID, float radius, uint[]? excludedAllies = null) : CastCounter(module, aid)
+public class InterceptTetherAOE(BossModule module, uint aid, uint tetherID, float radius, uint[]? excludedAllies = null) : CastCounter(module, aid)
 {
     public readonly uint[]? ExcludedAllies = excludedAllies;
     public readonly uint TID = tetherID;
@@ -342,7 +342,7 @@ public class InterceptTetherAOE(BossModule module, ActionID aid, uint tetherID, 
 }
 
 // generic component for tethers that need to be intercepted eg. to prevent a boss from gaining buffs
-public class InterceptTether(BossModule module, ActionID aid, uint tetherIDBad = 84, uint tetherIDGood = 17, uint[]? excludedAllies = null) : CastCounter(module, aid)
+public class InterceptTether(BossModule module, uint aid, uint tetherIDBad = 84u, uint tetherIDGood = 17u, uint[]? excludedAllies = null) : CastCounter(module, aid)
 {
     public readonly uint TIDGood = tetherIDGood;
     public readonly uint TIDBad = tetherIDBad;
@@ -374,7 +374,7 @@ public class InterceptTether(BossModule module, ActionID aid, uint tetherIDBad =
         for (var i = 0; i < _tethers.Count; ++i)
         {
             var side = _tethers[i];
-            Arena.AddLine(side.Enemy.Position, side.Player.Position, Raid.WithoutSlot().Exclude(exclude).Contains(side.Player) ? Colors.Safe : 0);
+            Arena.AddLine(side.Enemy.Position, side.Player.Position, Raid.WithoutSlot().Exclude(exclude).Contains(side.Player) ? Colors.Safe : default);
         }
     }
 
@@ -415,7 +415,7 @@ public class InterceptTether(BossModule module, ActionID aid, uint tetherIDBad =
 
 // generic component for tethers that need to be stretched and switch between a "good" and "bad" tether
 // at the end of the mechanic various things are possible, eg. single target dmg, knockback/pull, AOE etc.
-public class StretchTetherDuo(BossModule module, float minimumDistance, float activationDelay, uint tetherIDBad = 57, uint tetherIDGood = 1, AOEShape? shape = null, ActionID aid = default, uint enemyOID = default, bool knockbackImmunity = false) : GenericBaitAway(module, aid)
+public class StretchTetherDuo(BossModule module, float minimumDistance, float activationDelay, uint tetherIDBad = 57, uint tetherIDGood = 1, AOEShape? shape = null, uint aid = default, uint enemyOID = default, bool knockbackImmunity = false) : GenericBaitAway(module, aid)
 {
     public readonly AOEShape? Shape = shape;
     public readonly uint TIDGood = tetherIDGood;
@@ -597,7 +597,7 @@ public class StretchTetherDuo(BossModule module, float minimumDistance, float ac
 }
 
 // generic component for tethers that need to be stretched
-public class StretchTetherSingle(BossModule module, uint tetherID, float minimumDistance, AOEShape? shape = null, ActionID aid = default, uint enemyOID = default, float activationDelay = default, bool knockbackImmunity = false, bool needToKite = false) :
+public class StretchTetherSingle(BossModule module, uint tetherID, float minimumDistance, AOEShape? shape = null, uint aid = default, uint enemyOID = default, float activationDelay = default, bool knockbackImmunity = false, bool needToKite = false) :
 StretchTetherDuo(module, minimumDistance, activationDelay, tetherID, tetherID, shape, aid, enemyOID, knockbackImmunity)
 {
     public override void AddHints(int slot, Actor actor, TextHints hints)

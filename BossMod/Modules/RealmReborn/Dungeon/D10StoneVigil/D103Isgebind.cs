@@ -18,14 +18,14 @@ public enum AID : uint
     Touchdown = 1027 // Boss->self, no cast, range 5 aoe around center
 }
 
-class RimeWreath(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.RimeWreath));
-class FrostBreath(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.FrostBreath), new AOEShapeCone(27f, 60f.Degrees()));
-class FrostBreathCleave(BossModule module) : Components.Cleave(module, ActionID.MakeSpell(AID.FrostBreath), new AOEShapeCone(27f, 60f.Degrees()), activeWhileCasting: false);
-class SheetOfIce(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SheetOfIce), 5f);
-class SheetOfIce2(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SheetOfIce2), 5f);
-class Cauterize(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Cauterize), new AOEShapeRect(48f, 10f));
+class RimeWreath(BossModule module) : Components.RaidwideCast(module, (uint)AID.RimeWreath);
+class FrostBreath(BossModule module) : Components.SimpleAOEs(module, (uint)AID.FrostBreath, new AOEShapeCone(27f, 60f.Degrees()));
+class FrostBreathCleave(BossModule module) : Components.Cleave(module, (uint)AID.FrostBreath, new AOEShapeCone(27f, 60f.Degrees()), activeWhileCasting: false);
+class SheetOfIce(BossModule module) : Components.SimpleAOEs(module, (uint)AID.SheetOfIce, 5f);
+class SheetOfIce2(BossModule module) : Components.SimpleAOEs(module, (uint)AID.SheetOfIce2, 5f);
+class Cauterize(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Cauterize, new AOEShapeRect(48f, 10f));
 
-class Touchdown(BossModule module) : Components.GenericAOEs(module, ActionID.MakeSpell(AID.Touchdown))
+class Touchdown(BossModule module) : Components.GenericAOEs(module, (uint)AID.Touchdown)
 {
     private readonly AOEShapeCircle _shape = new(5f);
     private readonly List<AOEInstance> _aoes = [];

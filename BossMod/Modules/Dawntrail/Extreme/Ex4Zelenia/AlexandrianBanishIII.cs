@@ -1,6 +1,6 @@
 namespace BossMod.Dawntrail.Extreme.Ex4Zelenia;
 
-class AlexandrianBanishIII(BossModule module) : Components.GenericBaitStack(module, ActionID.MakeSpell(AID.AlexandrianBanishIII))
+class AlexandrianBanishIII(BossModule module) : Components.GenericBaitStack(module, (uint)AID.AlexandrianBanishIII)
 {
     private readonly FloorTiles _tiles = module.FindComponent<FloorTiles>()!;
     private static readonly AOEShapeCircle circle = new(4f);

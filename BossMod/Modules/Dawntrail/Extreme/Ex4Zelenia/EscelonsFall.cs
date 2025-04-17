@@ -1,6 +1,6 @@
 namespace BossMod.Dawntrail.Extreme.Ex4Zelenia;
 
-class EscelonsFall(BossModule module) : Components.GenericBaitAway(module, ActionID.MakeSpell(AID.EscelonsFall))
+class EscelonsFall(BossModule module) : Components.GenericBaitAway(module, (uint)AID.EscelonsFall)
 {
     public enum Mechanic { None, Near, Far }
     public Mechanic CurMechanic;
@@ -93,7 +93,7 @@ class EscelonsFall(BossModule module) : Components.GenericBaitAway(module, Actio
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
     {
-        if (spell.Action == WatchedAction)
+        if (spell.Action.ID == WatchedAction)
         {
             ++NumCasts;
             if ((NumCasts & 3) == 0)

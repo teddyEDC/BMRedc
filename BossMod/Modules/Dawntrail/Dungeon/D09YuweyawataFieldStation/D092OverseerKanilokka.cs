@@ -124,13 +124,13 @@ class Soulweave(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class FreeSpirits(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.FreeSpirits));
-class Bloodburst(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Bloodburst));
-class DarkSouls(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.DarkSouls));
-class TelltaleTears(BossModule module) : Components.SpreadFromCastTargets(module, ActionID.MakeSpell(AID.TelltaleTears), 5f);
-class SoulDouse(BossModule module) : Components.StackWithCastTargets(module, ActionID.MakeSpell(AID.SoulDouse), 6f, 4, 4);
-class LostHope(BossModule module) : Components.TemporaryMisdirection(module, ActionID.MakeSpell(AID.LostHope));
-class Necrohazard(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Necrohazard), 18f);
+class FreeSpirits(BossModule module) : Components.RaidwideCast(module, (uint)AID.FreeSpirits);
+class Bloodburst(BossModule module) : Components.RaidwideCast(module, (uint)AID.Bloodburst);
+class DarkSouls(BossModule module) : Components.SingleTargetCast(module, (uint)AID.DarkSouls);
+class TelltaleTears(BossModule module) : Components.SpreadFromCastTargets(module, (uint)AID.TelltaleTears, 5f);
+class SoulDouse(BossModule module) : Components.StackWithCastTargets(module, (uint)AID.SoulDouse, 6f, 4, 4);
+class LostHope(BossModule module) : Components.TemporaryMisdirection(module, (uint)AID.LostHope);
+class Necrohazard(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Necrohazard, 18f);
 
 class DarkII(BossModule module) : Components.GenericAOEs(module)
 {

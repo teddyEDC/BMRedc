@@ -92,7 +92,7 @@ class RestraintCollar(BossModule module) : BossComponent(module)
     }
 }
 
-class BigBoot(BossModule module) : Components.GenericKnockback(module, ActionID.MakeSpell(AID.BigBoot), true, stopAtWall: true)
+class BigBoot(BossModule module) : Components.GenericKnockback(module, (uint)AID.BigBoot, true, stopAtWall: true)
 {
     private Actor? _target;
     public override ReadOnlySpan<Knockback> ActiveKnockbacks(int slot, Actor actor)
@@ -162,11 +162,11 @@ class Corrosion(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class SanguineBlade(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.SanguineBlade), new AOEShapeCone(41.5f, 90f.Degrees()));
-class ClawOfTheGriffin(BossModule module) : Components.SingleTargetCast(module, ActionID.MakeSpell(AID.ClawOfTheGriffin));
-class BeakOfTheGriffin(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.BeakOfTheGriffin));
-class Lionshead(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.Lionshead));
-class FlashPowder(BossModule module) : Components.CastGaze(module, ActionID.MakeSpell(AID.FlashPowder));
+class SanguineBlade(BossModule module) : Components.SimpleAOEs(module, (uint)AID.SanguineBlade, new AOEShapeCone(41.5f, 90f.Degrees()));
+class ClawOfTheGriffin(BossModule module) : Components.SingleTargetCast(module, (uint)AID.ClawOfTheGriffin);
+class BeakOfTheGriffin(BossModule module) : Components.RaidwideCast(module, (uint)AID.BeakOfTheGriffin);
+class Lionshead(BossModule module) : Components.RaidwideCast(module, (uint)AID.Lionshead);
+class FlashPowder(BossModule module) : Components.CastGaze(module, (uint)AID.FlashPowder);
 
 class D173TheGriffinStates : StateMachineBuilder
 {

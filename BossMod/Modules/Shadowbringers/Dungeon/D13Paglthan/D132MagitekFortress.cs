@@ -27,12 +27,12 @@ public enum AID : uint
     Exhaust = 23705 // MarkIITelotekColossus->self, 4.0s cast, range 40 width 7 rect
 }
 
-class TwoTonzeMagitekMissile(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.TwoTonzeMagitekMissile), 12f);
-class Aethershot(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Aethershot), 6f);
-class DefensiveReaction(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.DefensiveReaction));
-class Exhaust(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.Exhaust), new AOEShapeRect(40f, 3.5f));
+class TwoTonzeMagitekMissile(BossModule module) : Components.SimpleAOEs(module, (uint)AID.TwoTonzeMagitekMissile, 12f);
+class Aethershot(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Aethershot, 6f);
+class DefensiveReaction(BossModule module) : Components.RaidwideCast(module, (uint)AID.DefensiveReaction);
+class Exhaust(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Exhaust, new AOEShapeRect(40f, 3.5f));
 
-class GroundToGroundBallistic(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.GroundToGroundBallistic), 10f)
+class GroundToGroundBallistic(BossModule module) : Components.SimpleKnockbacks(module, (uint)AID.GroundToGroundBallistic, 10f)
 {
     private static readonly Angle a180 = 180f.Degrees(), a18 = 18f.Degrees();
 

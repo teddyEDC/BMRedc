@@ -1,6 +1,6 @@
 ﻿namespace BossMod.Dawntrail.Extreme.Ex3QueenEternal;
 
-class AbsoluteAuthorityPuddles(BossModule module) : Components.SimpleAOEs(module, ActionID.MakeSpell(AID.AbsoluteAuthorityPuddlesAOE), 8f);
+class AbsoluteAuthorityPuddles(BossModule module) : Components.SimpleAOEs(module, (uint)AID.AbsoluteAuthorityPuddlesAOE, 8f);
 
 class AbsoluteAuthorityExpansionBoot(BossModule module) : Components.UniformStackSpread(module, 6f, 15f, 4, alwaysShowSpreads: true) // TODO: verify falloff
 {
@@ -62,4 +62,4 @@ class AbsoluteAuthorityHeel(BossModule module) : Components.GenericStackSpread(m
     }
 }
 
-class AbsoluteAuthorityKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AbsoluteAuthorityKnockback), 30f, kind: Kind.DirForward);
+class AbsoluteAuthorityKnockback(BossModule module) : Components.SimpleKnockbacks(module, (uint)AID.AbsoluteAuthorityKnockback, 30f, kind: Kind.DirForward);

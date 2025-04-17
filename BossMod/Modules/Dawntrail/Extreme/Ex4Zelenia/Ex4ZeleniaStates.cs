@@ -62,7 +62,7 @@ class Ex4ZeleniaStates : StateMachineBuilder
 
     private void ThornedCatharsis(uint id, float delay)
     {
-        Cast(id, AID.ThornedCatharsis, delay, 5f, "Raidwide")
+        Cast(id, (uint)AID.ThornedCatharsis, delay, 5f, "Raidwide")
             .SetHint(StateMachine.StateHint.Raidwide);
     }
 
@@ -92,7 +92,7 @@ class Ex4ZeleniaStates : StateMachineBuilder
 
     private void EscelonsFall1(uint id, float delay)
     {
-        Cast(id, AID.EscelonsFallVisual1, delay, 13f, "Select bait order")
+        Cast(id, (uint)AID.EscelonsFallVisual1, delay, 13f, "Select bait order")
             .ActivateOnEnter<EscelonsFall>();
         EscelonsFall(id, 0x30u, 1f);
     }
@@ -183,10 +183,10 @@ class Ex4ZeleniaStates : StateMachineBuilder
 
     private void EscelonsFall2(uint id, float delay)
     {
-        Cast(id, AID.BudOfValor, delay, 3f, "");
+        Cast(id, (uint)AID.BudOfValor, delay, 3f, "");
         ComponentCondition<ShockSpread>(id + 0x10u, 7.9f, comp => comp.CurrentBaits.Count != 0, "Baits appear")
             .ActivateOnEnter<ShockSpread>();
-        CastStart(id + 0x20u, AID.EscelonsFallVisual1, 1.3f, "Select bait order")
+        CastStart(id + 0x20u, (uint)AID.EscelonsFallVisual1, 1.3f, "Select bait order")
             .ActivateOnEnter<EscelonsFall>();
         ComponentCondition<AlexandrianBanishII>(id + 0x30u, 2f, comp => comp.Stacks.Count != 0, "Stacks appear")
             .ActivateOnEnter<AlexandrianBanishII>();
@@ -231,8 +231,8 @@ class Ex4ZeleniaStates : StateMachineBuilder
 
     private void EscelonsFall3(uint id, float delay)
     {
-        Cast(id, AID.BudOfValor, delay, 3f, "");
-        CastStart(id + 0x10u, AID.EscelonsFallVisual1, 3.1f, "Select bait order")
+        Cast(id, (uint)AID.BudOfValor, delay, 3f, "");
+        CastStart(id + 0x10u, (uint)AID.EscelonsFallVisual1, 3.1f, "Select bait order")
             .ActivateOnEnter<EscelonsFall>();
         ComponentCondition<PowerBreak>(id + 0x20u, 9.9f, comp => comp.NumCasts != 0, "Half room cleave 1")
             .ActivateOnEnter<PowerBreak>();

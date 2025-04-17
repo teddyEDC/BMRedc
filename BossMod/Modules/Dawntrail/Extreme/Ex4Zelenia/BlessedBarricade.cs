@@ -8,8 +8,16 @@ class Towers2(BossModule module) : Components.GenericTowers(module)
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action.ID == (uint)AID.Explosion2)
-            Towers.Add(new(spell.LocXZ, 3f, 3, 3, forbidden, Module.CastFinishAt(spell)));
+        switch (spell.Action.ID)
+        {
+            case (uint)AID.Explosion2:
+                Towers.Add(new(spell.LocXZ, 3f, 3, 3, forbidden, Module.CastFinishAt(spell)));
+                break;
+            case (uint)AID.SpearpointPush1:
+            case (uint)AID.SpearpointPush2:
+                forbidden = default;
+                break;
+        }
     }
 
     public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)

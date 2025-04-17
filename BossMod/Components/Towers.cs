@@ -1,6 +1,6 @@
 namespace BossMod.Components;
 
-public class GenericTowers(BossModule module, ActionID aid = default, bool prioritizeInsufficient = false) : CastCounter(module, aid)
+public class GenericTowers(BossModule module, uint aid = default, bool prioritizeInsufficient = false) : CastCounter(module, aid)
 {
     public struct Tower(WPos position, AOEShape shape, int minSoakers = 1, int maxSoakers = 1, BitMask forbiddenSoakers = default, DateTime activation = default, Angle rotation = default)
     {
@@ -274,7 +274,7 @@ public class GenericTowers(BossModule module, ActionID aid = default, bool prior
     }
 }
 
-public class CastTowers(BossModule module, ActionID aid, float radius, int minSoakers = 1, int maxSoakers = 1) : GenericTowers(module, aid)
+public class CastTowers(BossModule module, uint aid, float radius, int minSoakers = 1, int maxSoakers = 1) : GenericTowers(module, aid)
 {
     public readonly float Radius = radius;
     public readonly int MinSoakers = minSoakers;
@@ -282,13 +282,13 @@ public class CastTowers(BossModule module, ActionID aid, float radius, int minSo
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action == WatchedAction)
+        if (spell.Action.ID == WatchedAction)
             Towers.Add(new(spell.LocXZ, Radius, MinSoakers, MaxSoakers, activation: Module.CastFinishAt(spell)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action == WatchedAction)
+        if (spell.Action.ID == WatchedAction)
         {
             for (var i = 0; i < Towers.Count; ++i)
             {
@@ -304,7 +304,7 @@ public class CastTowers(BossModule module, ActionID aid, float radius, int minSo
 }
 
 // for tower mechanics in open world since likely not everyone is in your party
-public class GenericTowersOpenWorld(BossModule module, ActionID aid = default, bool prioritizeInsufficient = false, bool prioritizeEmpty = false) : CastCounter(module, aid)
+public class GenericTowersOpenWorld(BossModule module, uint aid = default, bool prioritizeInsufficient = false, bool prioritizeEmpty = false) : CastCounter(module, aid)
 {
     public struct Tower(WPos position, float radius, int minSoakers = 1, int maxSoakers = 1, HashSet<Actor>? allowedSoakers = null, DateTime activation = default)
     {
@@ -550,7 +550,7 @@ public class GenericTowersOpenWorld(BossModule module, ActionID aid = default, b
     }
 }
 
-public class CastTowersOpenWorld(BossModule module, ActionID aid, float radius, int minSoakers = 1, int maxSoakers = 1, bool prioritizeInsufficient = false, bool prioritizeEmpty = false) : GenericTowersOpenWorld(module, aid, prioritizeInsufficient, prioritizeEmpty)
+public class CastTowersOpenWorld(BossModule module, uint aid, float radius, int minSoakers = 1, int maxSoakers = 1, bool prioritizeInsufficient = false, bool prioritizeEmpty = false) : GenericTowersOpenWorld(module, aid, prioritizeInsufficient, prioritizeEmpty)
 {
     public readonly float Radius = radius;
     public readonly int MinSoakers = minSoakers;
@@ -558,13 +558,13 @@ public class CastTowersOpenWorld(BossModule module, ActionID aid, float radius, 
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action == WatchedAction)
+        if (spell.Action.ID == WatchedAction)
             Towers.Add(new(spell.LocXZ, Radius, MinSoakers, MaxSoakers, activation: Module.CastFinishAt(spell)));
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (spell.Action == WatchedAction)
+        if (spell.Action.ID == WatchedAction)
         {
             for (var i = 0; i < Towers.Count; ++i)
             {

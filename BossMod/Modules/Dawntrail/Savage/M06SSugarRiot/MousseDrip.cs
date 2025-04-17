@@ -32,7 +32,7 @@ class MousseDripStack(BossModule module) : Components.UniformStackSpread(module,
     }
 }
 
-class MousseDripVoidzone(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, ActionID.MakeSpell(AID.MousseDrip), GetVoidzones, 1.4f)
+class MousseDripVoidzone(BossModule module) : Components.VoidzoneAtCastTarget(module, 5f, (uint)AID.MousseDrip, GetVoidzones, 1.4f)
 {
     private static Actor[] GetVoidzones(BossModule module)
     {
