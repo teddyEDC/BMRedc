@@ -12,7 +12,7 @@ public class ReplayManagementConfig : ConfigNode
     public bool AutoRecord = false;
 
     [PropertyDisplay("Auto record in Duty Recorder replays", tooltip: "Requires auto-record to be turned on")]
-    public bool AutoARR = true;
+    public bool AutoARR = false;
 
     [PropertyDisplay("Max replays to keep before removal")]
     [PropertySlider(0, 1000)]

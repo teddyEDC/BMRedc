@@ -291,7 +291,7 @@ public sealed class ActionDefinitions : IDisposable
     public static ActionDefinition.ConditionDelegate PreventBackdashIfDangerous(float range)
          => (ws, player, target, hints) =>
         {
-            if (target == null || !Service.Config.Get<ActionTweaksConfig>().PreventDangerousDash)
+            if (target == null || !_config.PreventDangerousDash)
                 return false;
 
             if (player.PendingKnockbacks.Count > 0)
@@ -312,7 +312,7 @@ public sealed class ActionDefinitions : IDisposable
                 return true;
         }
 
-        return hints.ForbiddenZones.Any(d => d.containsFn(to));
+        return hints.ForbiddenZones.Any(d => d.shapeDistance(to) < 0);
     }
 
     public BitMask SpellAllowedClasses(Lumina.Excel.Sheets.Action data)
