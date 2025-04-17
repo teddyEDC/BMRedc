@@ -118,7 +118,7 @@ public enum AID : uint
 public enum SID : uint
 {
     ThornyVine = 445, // none->player, extra=0x0
-    EscelonsFall = 2970, // none->Boss, extra=0x2F7/0x2F6 -> 0x2F7 far, 0x2F6 close
+    EscelonsFall = 2970 // none->Boss, extra=0x2F7/0x2F6 -> 0x2F7 far, 0x2F6 close
 }
 
 public enum IconID : uint
@@ -139,5 +139,5 @@ public enum TetherID : uint
 {
     SpecterOfTheLost = 89, // player->Boss
     SpearpointPush = 17, // ZeleniasShade->player
-    ThornyVine = 18, // player->player
+    ThornyVine = 18 // player->player
 }
