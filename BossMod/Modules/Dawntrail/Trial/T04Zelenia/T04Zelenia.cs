@@ -19,10 +19,8 @@ class RosebloodBloom(BossModule module) : Components.SimpleKnockbacks(module, Ac
 }
 
 class PerfumedQuietus(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.RosebloodBloom)); // using the knockback here, since after knockback player is stunned for a cutscene and can't heal up
-
 class ThornedCatharsis(BossModule module) : Components.RaidwideCast(module, ActionID.MakeSpell(AID.ThornedCatharsis));
-
-class SpecterOfTheLost(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.SpecterOfTheLost), new AOEShapeCone(50f, 25f.Degrees()), tankbuster: true);
+class SpecterOfTheLost(BossModule module) : Components.BaitAwayCast(module, ActionID.MakeSpell(AID.SpecterOfTheLost), new AOEShapeCone(50f, 22.5f.Degrees()), tankbuster: true);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1030, NameID = 13861)]
 public class T04Zelenia(WorldState ws, Actor primary) : BossModule(ws, primary, arenaCenter, DefaultArena)

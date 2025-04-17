@@ -39,7 +39,7 @@ class AbsoluteAuthorityHeel(BossModule module) : Components.GenericStackSpread(m
     public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
     {
         if (iconID == (uint)IconID.AuthoritysHeel && Stacks.Count == 0)
-            Stacks.Add(new(actor, 1.5f, 8, 8, activation: WorldState.FutureTime(5.1f)));
+            Stacks.Add(new(actor, 1.5f, 8, 8, activation: WorldState.FutureTime(5.1d)));
     }
 
     public override void Update()
@@ -62,4 +62,4 @@ class AbsoluteAuthorityHeel(BossModule module) : Components.GenericStackSpread(m
     }
 }
 
-class AbsoluteAuthorityKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AbsoluteAuthorityKnockback), 30, kind: Kind.DirForward);
+class AbsoluteAuthorityKnockback(BossModule module) : Components.SimpleKnockbacks(module, ActionID.MakeSpell(AID.AbsoluteAuthorityKnockback), 30f, kind: Kind.DirForward);

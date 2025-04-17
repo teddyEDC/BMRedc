@@ -57,7 +57,7 @@ class MousseDripTowers(BossModule module) : Components.GenericTowers(module)
 {
     public override void OnEventEnvControl(byte index, uint state)
     {
-        if (state != 0x00020001)
+        if (state != 0x00020001u)
             return;
         WPos? pos = index switch
         {

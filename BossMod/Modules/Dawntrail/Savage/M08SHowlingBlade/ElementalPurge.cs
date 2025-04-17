@@ -34,7 +34,7 @@ class HuntersHarvestBait(BossModule module) : Components.GenericBaitAway(module,
             var center = ArenaChanges.EndArenaPlatforms[i].Center;
             if (b.Target.Position.InCircle(center, 8f))
             {
-                b.CustomRotation = new(ArenaChanges.PlatformAngles[i]);
+                b.CustomRotation = ArenaChanges.PlatformAngles[i];
                 return;
             }
         }

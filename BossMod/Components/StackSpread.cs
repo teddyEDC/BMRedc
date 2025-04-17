@@ -720,9 +720,11 @@ public class GenericBaitStack(BossModule module, ActionID aid = default, bool on
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
+        if (onlyShowOutlines)
+            return;
         var baits = CollectionsMarshal.AsSpan(ActiveBaits);
         var len = baits.Length;
-        if (len == 0 || onlyShowOutlines)
+        if (len == 0)
             return;
         var isBaitTarget = false; // determine if target of any stack
         for (var i = 0; i < len; ++i)
@@ -744,9 +746,11 @@ public class GenericBaitStack(BossModule module, ActionID aid = default, bool on
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
+        if (!onlyShowOutlines)
+            return;
         var baits = CollectionsMarshal.AsSpan(ActiveBaits);
         var len = baits.Length;
-        if (len == 0 || !onlyShowOutlines)
+        if (len == 0)
             return;
         var isBaitTarget = false; // determine if target of any stack
         for (var i = 0; i < len; ++i)

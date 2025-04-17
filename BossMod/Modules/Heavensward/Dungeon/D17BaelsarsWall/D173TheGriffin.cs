@@ -72,8 +72,8 @@ class RestraintCollar(BossModule module) : BossComponent(module)
     {
         var collar = Module.Enemies((uint)OID.RestraintCollar);
         var ironchain = collar.Count != 0 ? collar[0] : null;
-        if (ironchain != null && !ironchain.IsDead)
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(ironchain.Position, ironchain.HitboxRadius + 3f));
+        if (ironchain != null && ironchain.IsTargetable && !ironchain.IsDead)
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(ironchain.Position, ironchain.HitboxRadius + 2.6f));
     }
 
     public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
@@ -126,10 +126,13 @@ class Corrosion(BossModule module) : Components.GenericAOEs(module)
         var countB = blades.Count;
         if (countB == 0)
             return [];
+        var aoes = CollectionsMarshal.AsSpan(_aoes);
+        if (countB < 9)
+            return aoes;
         for (var i = 0; i < countB; ++i)
         {
             if (blades[i].IsDead)
-                return CollectionsMarshal.AsSpan(_aoes);
+                return aoes;
         }
 
         return [];

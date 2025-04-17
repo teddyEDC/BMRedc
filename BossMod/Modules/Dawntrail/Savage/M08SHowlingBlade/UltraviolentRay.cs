@@ -24,7 +24,7 @@ class UltraviolentRay(BossModule module) : Components.GenericBaitAway(module, Ac
                 var center = ArenaChanges.EndArenaPlatforms[j].Center;
                 if (b.Target.Position.InCircle(center, 8f))
                 {
-                    b.CustomRotation = new(ArenaChanges.PlatformAngles[j]);
+                    b.CustomRotation = ArenaChanges.PlatformAngles[j];
                     break;
                 }
             }
@@ -36,7 +36,7 @@ class UltraviolentRay(BossModule module) : Components.GenericBaitAway(module, Ac
         var baits = CollectionsMarshal.AsSpan(CurrentBaits);
         var len = baits.Length;
 
-        float playerPlatform = default;
+        Angle playerPlatform = default;
         for (var i = 0; i < 5; ++i)
         {
             if (actor.Position.InCircle(ArenaChanges.EndArenaPlatforms[i].Center, 8f))
@@ -45,7 +45,7 @@ class UltraviolentRay(BossModule module) : Components.GenericBaitAway(module, Ac
                 break;
             }
         }
-        var occupiedPlatforms = new List<float>(5);
+        var occupiedPlatforms = new List<Angle>(5);
         for (var i = 0; i < len; ++i)
         {
             ref readonly var b = ref baits[i];
