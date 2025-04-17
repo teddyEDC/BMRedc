@@ -29,16 +29,17 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
     {
         if (spotlightSet == null && actor.OID == (uint)OID.Spotlight && id == 0x11DC)
         {
-            if (actor.Position == new WPos(102.5f, 107.5f))
+            var position = actor.Position;
+            if (position == new WPos(102.5f, 107.5f))
                 spotlightSet = true;
-            else if (actor.Position == new WPos(102.5f, 92.5f))
+            else if (position == new WPos(102.5f, 92.5f))
                 spotlightSet = false;
         }
     }
 
     public override void OnEventEnvControl(byte index, uint state)
     {
-        if (index != 0x03 || patternENVC200010 != null)
+        if (index != 0x03u || patternENVC200010 != null)
             return;
 
         patternENVC200010 ??= state switch
@@ -112,6 +113,24 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
                     Towers = cachedTowers;
             }
         }
+    }
+
+    public override void DrawArenaBackground(int pcSlot, Actor pc)
+    {
+        var count = Towers.Count;
+        if (count == 0)
+            return;
+        if (!Towers[0].ForbiddenSoakers[pcSlot])
+            base.DrawArenaBackground(pcSlot, pc);
+    }
+
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        var count = Towers.Count;
+        if (count == 0)
+            return;
+        if (!Towers[0].ForbiddenSoakers[slot])
+            base.AddAIHints(slot, actor, assignment, hints);
     }
 }
 
