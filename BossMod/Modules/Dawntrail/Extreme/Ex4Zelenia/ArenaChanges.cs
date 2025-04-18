@@ -227,6 +227,7 @@ class FloorTiles(BossModule module) : BossComponent(module)
 class ActiveTiles(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = [];
+    private static readonly Ex4ZeleniaConfig _config = Service.Config.Get<Ex4ZeleniaConfig>();
     private readonly FloorTiles _tiles = module.FindComponent<FloorTiles>()!;
     private DateTime activation;
 
@@ -253,7 +254,7 @@ class ActiveTiles(BossModule module) : Components.GenericAOEs(module)
     private void AddAOEs()
     {
         var pos = Arena.Center;
-        void AddAOE(AOEShape shape, Angle rot) => _aoes.Add(new(shape, pos, rot, activation));
+        void AddAOE(AOEShape shape, Angle rot) => _aoes.Add(new(shape, pos, rot, activation, _config.RoseTileColor.ABGR));
         for (var i = 0; i < 8; ++i)
         {
             if (_tiles.InnerActiveTiles[i])
