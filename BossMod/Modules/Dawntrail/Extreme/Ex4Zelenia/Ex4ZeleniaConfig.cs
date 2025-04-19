@@ -4,5 +4,5 @@
 public class Ex4ZeleniaConfig() : ConfigNode()
 {
     [PropertyDisplay("Dangerous rose tile color:")]
-    public Color RoseTileColor = new(0x802929A1);
+    public Color RoseTileColor = new(0x80008080);
 }

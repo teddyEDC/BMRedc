@@ -18,6 +18,7 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
         new(107.5f, 97.49f), new(112.474f, 112.474f), new(87.48f, 87.48f), new(92.485f, 102.495f)
     ];
     protected readonly List<Tower> cachedTowers = new(4);
+    private readonly M05SDancingGreenConfig _config = Service.Config.Get<M05SDancingGreenConfig>();
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
@@ -60,6 +61,12 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
         {
             Towers.Add(new(spotlights[i], 2.5f, forbiddenSoakers: forbiddenFirst, activation: WorldState.FutureTime(22d)));
             cachedTowers.Add(new(spotlights2[i], 2.5f, forbiddenSoakers: forbiddenSecond, activation: WorldState.FutureTime(33.6d)));
+        }
+        if (_config.ShowAllSpotlights)
+        {
+            Towers.AddRange(cachedTowers);
+            cachedTowers.Clear();
+            Towers.SortByReverse(t => t.Activation); // prevent allowed towers overlapping forbidden
         }
     }
 
@@ -108,26 +115,37 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
             _orders[slot] = 0;
             if (++FinishedCount >= 4)
             {
-                Towers.Clear();
-                if (FinishedCount == 4)
+                if (Towers.Count == 8)
+                    Towers.RemoveRange(4, 4);
+                else
+                    Towers.Clear();
+                if (FinishedCount == 4 && cachedTowers.Count != 0)
                     Towers = cachedTowers;
             }
         }
     }
 
-    public override void DrawArenaBackground(int pcSlot, Actor pc)
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
         var count = Towers.Count;
         if (count == 0)
             return;
-        if (!Towers[0].ForbiddenSoakers[pcSlot])
-            base.DrawArenaBackground(pcSlot, pc);
+        var towers = CollectionsMarshal.AsSpan(Towers);
+        for (var i = 0; i < count; ++i)
+        {
+            ref var t = ref towers[i];
+            var isInside = t.IsInside(pc);
+            var numInside = t.NumInside(Module);
+            var safe = !t.ForbiddenSoakers[pcSlot] && (numInside < t.MaxSoakers || isInside && numInside <= t.MaxSoakers);
+            t.Shape.Outline(Arena, t.Position, t.Rotation, safe ? Colors.Safe : default, 2f);
+        }
     }
+
+    public override void DrawArenaBackground(int pcSlot, Actor pc) { }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        var count = Towers.Count;
-        if (count == 0)
+        if (Towers.Count == 0)
             return;
         if (!Towers[0].ForbiddenSoakers[slot])
             base.AddAIHints(slot, actor, assignment, hints);
