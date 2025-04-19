@@ -2,36 +2,52 @@
 
 public enum OID : uint
 {
-    //Boss
+    // Boss
     Boss = 0x4C, // Galvanth The Dominator
 
-    //Adds
+    // Trash
     InconspicuousImp = 0x7D, // Spawn during fight
     DeepcroftMiteling = 0x7F, // Spawn during fight
-    SkeletonSoldier = 0x7E, // Spawn during fight
+    SkeletonSoldier = 0x7E // Spawn during fight
 }
 
 public enum AID : uint
 {
-    //Boss
+    // Boss
     AutoAttackBoss = 870, // Boss->player, no cast
     Water = 971, // Boss->player, 1.0s cast, single target
     DrainTouch = 988, // Boss->player, no cast, single target
     MindBlast = 987, // Boss->self, 5.0s cast, range 9.95 circle aoe
 
-    //BaleenGuard
-    //AutoAttackGuard = 870, // Guard->player, no cast
-    HellSlash = 341, // SkeletonSoldier->player, no cast, single target
+    // Trash
+    HellSlash = 341 // SkeletonSoldier->player, no cast, single target
+}
+
+public enum TetherID : uint
+{
+    Tether1 = 1 // InconspicuousImp->Boss
 }
 
 class MindBlast(BossModule module) : Components.SimpleAOEs(module, (uint)AID.MindBlast, new AOEShapeCircle(9.95f));
+
+class InconspicuousImp(BossModule module) : BossComponent(module)
+{
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        if (Module.Enemies(OID.InconspicuousImp).Any(a => a.HPRatio > 0))
+        {
+            hints.Add("Kill the Imp's");
+        }
+    }
+}
 
 class D022GalvanthTheDominatorStates : StateMachineBuilder
 {
     public D022GalvanthTheDominatorStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<MindBlast>();
+            .ActivateOnEnter<MindBlast>()
+            .ActivateOnEnter<InconspicuousImp>();
     }
 }
 
