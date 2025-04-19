@@ -3,7 +3,7 @@
 public enum OID : uint
 {
     // Boss
-    Boss = 0x237, // Void Soulcounter
+    Boss = 0x237 // Void Soulcounter
 }
 
 public enum AID : uint
@@ -12,7 +12,7 @@ public enum AID : uint
     AutoAttack = 870, // Boss->player, no cast
     Enthunder = 430, // Boss->self, 1.5s cast, single target
     DarkOrbs = 911, // Boss->player, no cast, single target
-    Condemnation = 912, // Boss->self, 2.5s cast, range 7 90-degree cone aoe
+    Condemnation = 912 // Boss->self, 2.5s cast, range 7 90-degree cone aoe
 }
 
 class Condemnation(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Condemnation, new AOEShapeCone(7f, 45f.Degrees()));

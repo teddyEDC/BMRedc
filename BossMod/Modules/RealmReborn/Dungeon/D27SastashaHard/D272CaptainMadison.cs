@@ -19,7 +19,7 @@ public enum AID : uint
     Rive = 1299, // CBD->self, 2.5s cast, range 30+R width 2 rect
     Bloodstain = 1099, // CBC->self, 2.5s cast, range 5 circle
     Thunder = 968, // CBE->player, 1.0s cast, single-target
-    Tackle = 3068, // CBF->player, no cast, single-target
+    Tackle = 3068 // CBF->player, no cast, single-target
 }
 
 class Bloodstain(BossModule module) : SimpleAOEs(module, (uint)AID.Bloodstain, new AOEShapeCircle(7.5f));

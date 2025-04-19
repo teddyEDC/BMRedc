@@ -18,7 +18,7 @@ public enum AID : uint
     Expire = 3058, // Boss->self, no cast, single-target
     AquaBall = 3059, // D08->player, no cast, range 5 circle
     TailScrew = 3060, // Boss->player, 3.0s cast, single-target
-    WildInstinct = 3061, // Boss->self, no cast, single-target
+    WildInstinct = 3061 // Boss->self, no cast, single-target
 }
 
 public enum SID : uint
@@ -26,7 +26,7 @@ public enum SID : uint
     Slime = 569, // Tail->player, extra=0x0
     Haste = 226, // Boss->Boss, extra=0x0
     DamageUp = 290, // Boss->Boss, extra=0x0
-    Prey = 420, // Boss->player, extra=0x0
+    Prey = 420 // Boss->player, extra=0x0
 }
 
 class MarkOfDeath(BossModule module) : SingleTargetInstant(module, (uint)AID.MarkOfDeath)
