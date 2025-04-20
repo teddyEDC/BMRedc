@@ -3,7 +3,6 @@ namespace BossMod.Endwalker.TreasureHunt.ShiftingGymnasionAgonon.Hippomenes;
 public enum OID : uint
 {
     Boss = 0x3D49, // R6.3
-    _Gen_Actor1eaa02 = 0x1EAA02, // R0.500, x1, EventObj type
     BallOfLevin = 0x3D4A, // R1.7
     GymnasticGarlic = 0x3D51, // R0.84, icon 3, needs to be killed in order from 1 to 5 for maximum rewards
     GymnasticQueen = 0x3D53, // R0.84, icon 5, needs to be killed in order from 1 to 5 for maximum rewards
