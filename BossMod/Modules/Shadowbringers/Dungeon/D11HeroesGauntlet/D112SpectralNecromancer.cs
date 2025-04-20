@@ -133,59 +133,7 @@ class Burst(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class Doom(BossModule module) : BossComponent(module)
-{
-    private readonly List<Actor> _doomed = [];
-
-    public static bool CanActorCureDoom(Actor actor) => actor.Role == Role.Healer || actor.Class == Class.BRD;
-
-    public override void OnStatusGain(Actor actor, ActorStatus status)
-    {
-        if (status.ID == (uint)SID.Doom)
-            _doomed.Add(actor);
-    }
-
-    public override void OnStatusLose(Actor actor, ActorStatus status)
-    {
-        if (status.ID == (uint)SID.Doom)
-            _doomed.Remove(actor);
-    }
-
-    public override void AddHints(int slot, Actor actor, TextHints hints)
-    {
-        if (_doomed.Contains(actor))
-        {
-            if (!CanActorCureDoom(actor))
-                hints.Add("You were doomed! Get cleansed fast.");
-            else
-                hints.Add("Cleanse yourself! (Doom).");
-        }
-        if (CanActorCureDoom(actor))
-        {
-            var count = _doomed.Count;
-            for (var i = 0; i < count; ++i)
-            {
-                var doomed = _doomed[i];
-                if (doomed != actor)
-                    hints.Add($"Cleanse {doomed.Name}! (Doom)");
-            }
-        }
-    }
-
-    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        var count = _doomed.Count;
-        if (count != 0 && CanActorCureDoom(actor))
-            for (var i = 0; i < count; ++i)
-            {
-                var doomed = _doomed[i];
-                if (actor.Role == Role.Healer)
-                    hints.ActionsToExecute.Push(ActionID.MakeSpell(ClassShared.AID.Esuna), doomed, ActionQueue.Priority.High);
-                else if (actor.Class == Class.BRD)
-                    hints.ActionsToExecute.Push(ActionID.MakeSpell(BRD.AID.WardensPaean), doomed, ActionQueue.Priority.High);
-            }
-    }
-}
+class Doom(BossModule module) : Components.CleansableDebuff(module, (uint)SID.Doom);
 
 class D112SpectralNecromancerStates : StateMachineBuilder
 {
