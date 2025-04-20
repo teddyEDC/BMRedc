@@ -17,7 +17,7 @@ public enum OID : uint
 
 public enum AID : uint
 {
-    AutoAttack1 = 870, // Boss->player, no cast, single-target
+    AutoAttack1 = 870, // Boss/GymnasiouLyssa->player, no cast, single-target
     AutoAttack2 = 872, // GymnasiouGryps->player, no cast, single-target
 
     FeatherWind = 32267, // Boss->self, 4.0s cast, single-target, spawns Verdant Plumes
