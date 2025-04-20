@@ -154,7 +154,7 @@ class LostHope(BossModule module) : Components.TemporaryMisdirection(module, (ui
         base.AddAIHints(slot, actor, assignment, hints);
         if (prepare)
         {
-            hints.GoalZones.Add(hints.GoalSingleTarget(Arena.Center, 1f, 1f));
+            hints.GoalZones.Add(hints.GoalSingleTarget(Arena.Center, 1f, 9f));
         }
     }
 }

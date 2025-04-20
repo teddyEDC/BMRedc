@@ -10,7 +10,7 @@ class ThunderSlash(BossModule module) : Components.GenericAOEs(module)
         var count = _aoes.Count;
         if (count == 0)
             return [];
-        var max = count > 2 ? 2 : count;
+        var max = count > 3 ? 3 : count;
         var aoes = CollectionsMarshal.AsSpan(_aoes);
         for (var i = 0; i < max; ++i)
         {
