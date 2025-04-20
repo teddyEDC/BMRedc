@@ -1,6 +1,6 @@
 namespace BossMod.Components;
 
-class CleansableDebuff(BossModule module, uint statusID, string noun = "Doom", string adjective = "doomed") : BossComponent(module)
+public abstract class CleansableDebuff(BossModule module, uint statusID, string noun = "Doom", string adjective = "doomed") : BossComponent(module)
 {
     private readonly List<Actor> _affected = [];
     private static readonly ActionID esuna = ActionID.MakeSpell(ClassShared.AID.Esuna);
