@@ -237,7 +237,14 @@ public class BaitAwayEveryone : GenericBaitAway
     {
         AllowDeadTargets = false;
         if (source != null)
-            CurrentBaits.AddRange(Raid.WithoutSlot(true).Select(p => new Bait(source, p, shape)));
+        {
+            var party = Raid.WithoutSlot(true);
+            var len = party.Length;
+            for (var i = 0; i < len; ++i)
+            {
+                CurrentBaits.Add(new(source, party[i], shape));
+            }
+        }
     }
 }
 

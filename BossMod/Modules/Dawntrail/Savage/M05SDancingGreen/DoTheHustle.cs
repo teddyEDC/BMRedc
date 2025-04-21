@@ -5,7 +5,20 @@ class DoTheHustle(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeCone cone = new(50f, 90f.Degrees());
     private readonly List<AOEInstance> _aoes = new(4);
 
-    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(_aoes);
+    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
+    {
+        var count = _aoes.Count;
+        if (count == 0)
+            return [];
+        var aoes = CollectionsMarshal.AsSpan(_aoes);
+        var deadline = aoes[0].Activation.AddSeconds(1d);
+
+        var index = 0;
+        while (index < count && aoes[index].Activation < deadline)
+            ++index;
+
+        return aoes[..index];
+    }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {

@@ -95,6 +95,20 @@ class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module,
         }
     }
 
+    public override void DrawArenaForeground(int pcSlot, Actor pc)
+    {
+        base.DrawArenaForeground(pcSlot, pc);
+        var count = CurrentBaits.Count;
+        for (var i = 0; i < count; ++i)
+        {
+            var b = CurrentBaits[i];
+            if (b.Target == pc)
+            {
+                Arena.AddLine(b.Source.Position, b.Target.Position);
+            }
+        }
+    }
+
     public override void Update()
     {
         var count = CurrentBaits.Count;

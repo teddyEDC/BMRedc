@@ -1,3 +1,5 @@
+using BossMod.AST;
+
 namespace BossMod.Components;
 
 public abstract class CleansableDebuff(BossModule module, uint statusID, string noun = "Doom", string adjective = "doomed") : BossComponent(module)
@@ -25,7 +27,10 @@ public abstract class CleansableDebuff(BossModule module, uint statusID, string 
     public override void OnStatusLose(Actor actor, ActorStatus status)
     {
         if (status.ID == statusID)
-            _affected.Remove(actor);
+        {
+            if (actor.FindStatus(statusID) == null) // verify that all instances of the status effect are gone
+                _affected.Remove(actor);
+        }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
