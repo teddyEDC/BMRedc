@@ -3,7 +3,7 @@ namespace BossMod.Dawntrail.Savage.M08SHowlingBlade;
 class WolvesReignConeCircle(BossModule module) : Components.GenericAOEs(module)
 {
     private static readonly AOEShapeCone cone = new(40f, 60f.Degrees());
-    private static readonly AOEShapeCircle circle = new(13f);
+    private static readonly AOEShapeCircle circle = new(14f);
     private AOEInstance? _aoe;
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
