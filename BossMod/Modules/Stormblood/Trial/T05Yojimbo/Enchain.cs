@@ -30,12 +30,8 @@ class Enchain(BossModule module) : BossComponent(module)
     {
         if (_targets.Contains(actor))
         {
-            var boss = Module.Enemies((uint)OID.Boss).FirstOrDefault();
-            if (boss != null)
-            {
-                //TODO: Check Distance is correct
-                hints.AddForbiddenZone(new AOEShapeCircle(20f).Distance(boss.Position, new Angle(0)), DateTime.MaxValue);
-            }
+            //TODO: Check Distance is correct
+            hints.AddForbiddenZone(new AOEShapeCircle(20f).Distance(Module.PrimaryActor.Position, default), DateTime.MaxValue);
         }
 
         foreach (var ironChain in Module.Enemies((uint)OID.IronChain))

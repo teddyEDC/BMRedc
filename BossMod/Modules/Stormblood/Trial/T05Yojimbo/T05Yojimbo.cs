@@ -9,12 +9,12 @@ class Masamune(BossModule module) : Components.ChargeAOEs(module, (uint)AID.Masa
 class ZanmaZanmai(BossModule module) : Components.RaidwideCast(module, (uint)AID.ZanmaZanmai, "Raidwide drop to 1 hp");
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "The Combat Reborn Team, Chuggalo", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 595, NameID = 6089)]
-public class T05Yojimbo(WorldState ws, Actor primary) : BossModule(ws, primary, new(100, 100), new ArenaBoundsSquare(20))
+public class T05Yojimbo(WorldState ws, Actor primary) : BossModule(ws, primary, new(100f, 100f), new ArenaBoundsSquare(20f))
 {
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
         Arena.Actor(PrimaryActor);
-        Arena.Actors(Enemies(OID.Embodiment), Colors.Enemy);
+        Arena.Actors(Enemies((uint)OID.Embodiment));
     }
 }

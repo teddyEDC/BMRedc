@@ -6,7 +6,7 @@ class DragonNight(BossModule module) : BossComponent(module)
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
-        if (id == 0x008F && actor.OID == (uint)OID.DragonsHead)
+        if (id == 0x008Fu && actor.OID == (uint)OID.DragonsHead)
             _hintExpire = WorldState.FutureTime(5.5f);
     }
 
