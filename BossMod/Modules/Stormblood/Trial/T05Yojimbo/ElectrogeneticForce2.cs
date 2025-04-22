@@ -18,7 +18,7 @@ class ElectrogeneticForce2(BossModule module) : Components.SimpleAOEs(module, (u
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.ElectrogeneticForce2)
+        if (spell.Action.ID == (uint)AID.ElectrogeneticForce2)
         {
             _aoes.Clear();
         }

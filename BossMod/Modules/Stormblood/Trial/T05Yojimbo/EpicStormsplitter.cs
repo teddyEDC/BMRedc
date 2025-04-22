@@ -11,50 +11,50 @@ class EpicStormsplitter(BossModule module) : Components.GenericAOEs(module)
     private Actor? _caster;
     private Angle _lockedRotation;
     private WPos _lockedPosition;
-    private bool _sideAOEsDisplayed = false;
+    private bool _sideAOEsDisplayed;
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(_aoes);
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.EpicStormsplitter)
+        if (spell.Action.ID == (uint)AID.EpicStormsplitter)
         {
             _caster = caster;
             _stormsplitterCastStart = WorldState.CurrentTime;
             _lockedRotation = caster.Rotation;
             _lockedPosition = caster.Position;
 
-            _aoes.Add(new AOEInstance(_centerRect, _lockedPosition, _lockedRotation, _stormsplitterCastStart.AddSeconds(5), Colors.Danger));
+            _aoes.Add(new(_centerRect, _lockedPosition, _lockedRotation, _stormsplitterCastStart.AddSeconds(5d), Colors.Danger));
         }
-        else if ((AID)spell.Action.ID == AID.Seasplitter1)
+        else if (spell.Action.ID == (uint)AID.Seasplitter1)
         {
             _seasplitterCastEnd = WorldState.CurrentTime.AddSeconds(spell.TotalTime);
 
             if (!_sideAOEsDisplayed)
             {
-                AddSideAOEs(new Color(Colors.AOE));
+                AddSideAOEs();
                 _sideAOEsDisplayed = true;
             }
         }
     }
 
-    private void AddSideAOEs(Color color)
+    private void AddSideAOEs()
     {
         var offset = _centerRect.HalfWidth + _sideRect.HalfWidth - 1.5f;
         var perp = _lockedRotation.ToDirection().OrthoR();
 
-        _aoes.Add(new AOEInstance(_sideRect, _lockedPosition - perp * offset, _lockedRotation, _seasplitterCastEnd, color.ABGR));
-        _aoes.Add(new AOEInstance(_sideRect, _lockedPosition + perp * offset, _lockedRotation, _seasplitterCastEnd, color.ABGR));
+        _aoes.Add(new(_sideRect, _lockedPosition - perp * offset, _lockedRotation, _seasplitterCastEnd));
+        _aoes.Add(new(_sideRect, _lockedPosition + perp * offset, _lockedRotation, _seasplitterCastEnd));
     }
 
-    private void UpdateSideAOEColors(Color newColor)
+    private void UpdateSideAOEColors()
     {
         for (var i = 0; i < _aoes.Count; i++)
         {
             if (_aoes[i].Shape == _sideRect)
             {
                 var aoe = _aoes[i];
-                aoe.Color = newColor.ABGR;
+                aoe.Color = Colors.Danger;
                 _aoes[i] = aoe;
             }
         }
@@ -65,10 +65,10 @@ class EpicStormsplitter(BossModule module) : Components.GenericAOEs(module)
         if (_caster == null)
             return;
 
-        if (WorldState.CurrentTime >= _stormsplitterCastStart.AddSeconds(5))
+        if (WorldState.CurrentTime >= _stormsplitterCastStart.AddSeconds(5d))
         {
             _aoes.RemoveAll(aoe => aoe.Shape == _centerRect);
-            UpdateSideAOEColors(new Color(Colors.Danger));
+            UpdateSideAOEColors();
         }
 
         if (_sideAOEsDisplayed && WorldState.CurrentTime >= _seasplitterCastEnd)
@@ -80,11 +80,11 @@ class EpicStormsplitter(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if ((AID)spell.Action.ID == AID.EpicStormsplitter)
+        if (spell.Action.ID == (uint)AID.EpicStormsplitter)
         {
             _aoes.RemoveAll(aoe => aoe.Shape == _centerRect);
         }
-        else if ((AID)spell.Action.ID == AID.Seasplitter1)
+        else if (spell.Action.ID == (uint)AID.Seasplitter1)
         {
             _aoes.RemoveAll(aoe => aoe.Shape == _sideRect);
             _sideAOEsDisplayed = false;
