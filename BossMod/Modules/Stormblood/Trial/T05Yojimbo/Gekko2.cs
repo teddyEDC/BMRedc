@@ -24,9 +24,7 @@ class Gekko2(BossModule module) : Components.GenericAOEs(module)
     public override void OnEventIcon(Actor actor, uint iconID, ulong targetID)
     {
         if (iconID == 144)
-        {
             _targets.Add(actor);
-        }
     }
 
     public override void OnEventCast(Actor caster, ActorCastEvent spell)
@@ -45,7 +43,7 @@ class Gekko2(BossModule module) : Components.GenericAOEs(module)
             _targets.Clear();
             _aoes.Clear();
         }
-        Service.Log($"{_yukikazeActive} {_yukikazeExpiry} {WorldState.CurrentTime}");
+
         if (_yukikazeActive && WorldState.CurrentTime >= _yukikazeExpiry)
             _yukikazeActive = false;
     }
@@ -62,8 +60,6 @@ class Gekko2(BossModule module) : Components.GenericAOEs(module)
         {
             _yukikazeActive = true;
             _yukikazeExpiry = Module.CastFinishAt(spell, 3.5f);
-            Service.Log($"Gekko2: Yukikaze active until {_yukikazeExpiry}");
-            Service.Log($"Gekko2: Yukikaze is active, {_yukikazeActive}");
         }
     }
 
@@ -71,18 +67,12 @@ class Gekko2(BossModule module) : Components.GenericAOEs(module)
     {
         foreach (var aoe in ActiveAOEs(slot, actor))
         {
-            // Count how many *other* players are inside this AOE
             var overlapCount = _targets
                 .Where(t => !t.IsDeadOrDestroyed && t.InstanceID != actor.InstanceID)
                 .Count(t => _circle.Check(t.Position, aoe.Origin));
-            //Service.Log($"Yukikaze is {_yukikazeActive}");
 
-            // If 2 or more people (including this actor) are inside the AOE, it's bad
             if (_circle.Check(actor.Position, aoe.Origin) && overlapCount >= 1 && !_yukikazeActive)
-            {
-                Service.Log($"Yukikaze is {_yukikazeActive}");
                 hints.AddForbiddenZone(_circle.Distance(aoe.Origin, aoe.Rotation), aoe.Activation);
-            }
         }
     }
 }

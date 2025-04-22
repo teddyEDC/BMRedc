@@ -11,16 +11,12 @@ class Kasha2(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Kasha2)
-        {
             _aoes.Add(new(_donut, spell.LocXZ, spell.Rotation, WorldState.FutureTime(_Kasha2Delay)));
-        }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if ((AID)spell.Action.ID == AID.Kasha2)
-        {
             _aoes.Clear();
-        }
     }
 }
