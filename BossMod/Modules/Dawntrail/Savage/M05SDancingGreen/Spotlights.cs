@@ -164,8 +164,10 @@ class Spotlights1(BossModule module) : Components.GenericTowers(module)
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
         var towers = CollectionsMarshal.AsSpan(Towers);
-        var now = WorldState.CurrentTime;
         var len = towers.Length;
+        if (len == 0)
+            return;
+        var now = WorldState.CurrentTime;
         var forbiddenInverted = new List<Func<WPos, float>>(len);
         var forbidden = new List<Func<WPos, float>>(len);
         var inTower = false;
