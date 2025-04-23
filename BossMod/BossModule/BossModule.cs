@@ -396,14 +396,13 @@ public abstract class BossModule : IDisposable
     private void DrawPartyMembers(int pcSlot, ref Actor pc)
     {
         var raid = Raid.WithSlot();
-        var count = raid.Length;
-        for (var i = 0; i < count; ++i)
+        var len = raid.Length;
+        for (var i = 0; i < len; ++i)
         {
-            if (i == pcSlot)
+            var (slot, player) = raid[i];
+            if (slot == pcSlot)
                 continue;
-
-            var player = raid[i].Item2;
-            var (prio, color) = CalculateHighestPriority(pcSlot, ref pc, i, player);
+            var (prio, color) = CalculateHighestPriority(pcSlot, ref pc, slot, player);
 
             var isFocus = WorldState.Client.FocusTargetId == player.InstanceID;
             if (prio == BossComponent.PlayerPriority.Irrelevant && !WindowConfig.ShowIrrelevantPlayers && !(isFocus && WindowConfig.ShowFocusTargetPlayer))

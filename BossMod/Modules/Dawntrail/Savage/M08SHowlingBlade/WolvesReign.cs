@@ -17,7 +17,10 @@ class WolvesReignConeCircle(BossModule module) : Components.GenericAOEs(module)
             _ => null
         };
         if (shape != null)
-            _aoe = new(shape, spell.LocXZ, caster.Rotation + 180f.Degrees(), Module.CastFinishAt(spell, 3.6f), Colors.Danger);
+        {
+            var pos = spell.LocXZ;
+            _aoe = new(cone, pos, Angle.FromDirection(Arena.Center - pos), Module.CastFinishAt(spell, 3.6f), Colors.Danger);
+        }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
