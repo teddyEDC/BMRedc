@@ -25,18 +25,18 @@ class VirtualShiftIce(BossModule module) : Components.GenericAOEs(module, defaul
         var center = Ex3QueenEternal.ArenaCenter + offset;
         switch (state)
         {
-            case 0x00020001: // destroyed bridge respawns
+            case 0x00020001u: // destroyed bridge respawns
                 _destroyedBridges.RemoveAll(s => s.Center == center);
                 UpdateArena();
                 break;
-            case 0x00200010: // bridge gets damaged
+            case 0x00200010u: // bridge gets damaged
                 _unsafeBridges.Add(new(_shape, center));
                 break;
-            case 0x00400001: // damaged bridge gets repaired
-            case 0x00080004: // bridges despawn
+            case 0x00400001u: // damaged bridge gets repaired
+            case 0x00080004u: // bridges despawn
                 RemoveUnsafeBridges();
                 break;
-            case 0x00800004: // bridge gets destroyed
+            case 0x00800004u: // bridge gets destroyed
                 RemoveUnsafeBridges();
                 _destroyedBridges.Add(new(center, 3, 2));
                 UpdateArena();

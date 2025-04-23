@@ -68,8 +68,9 @@ class BlightedBolt : Components.GenericAOEs
             var len = party.Length;
             for (var i = 0; i < len; ++i)
             {
-                platform.RequireHint[i] = true;
-                platform.RequireLevitating[i] = false;
+                var slot = party[i].Item1;
+                platform.RequireHint[slot] = true;
+                platform.RequireLevitating[slot] = false;
             }
         }
     }

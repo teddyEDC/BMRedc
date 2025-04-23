@@ -13,7 +13,10 @@ class WolvesReignCone(BossModule module) : Components.GenericAOEs(module)
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID is (uint)AID.WolvesReignTeleport2 or (uint)AID.WolvesReignTeleport4)
-            _aoe = new(cone, spell.LocXZ, caster.Rotation + 180f.Degrees(), Module.CastFinishAt(spell, 5.1f));
+        {
+            var pos = spell.LocXZ;
+            _aoe = new(cone, pos, Angle.FromDirection(Arena.Center - pos), Module.CastFinishAt(spell, 5.1f));
+        }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
