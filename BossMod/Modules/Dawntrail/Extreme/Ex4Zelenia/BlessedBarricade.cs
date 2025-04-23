@@ -64,6 +64,7 @@ class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module,
     private static readonly AOEShapeRect rect = new(32f, 37f, 1f);
     private Angle offset;
     private static readonly Angle a90 = 90f.Degrees();
+    private static readonly WDir dir = new(default, 6f);
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {
@@ -107,8 +108,8 @@ class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module,
             {
                 var pos = b.Source.Position;
                 Arena.AddLine(pos, pc.Position);
-                var offsetDir = pos.X < 100 ? offset == -a90 ? 1f : -1f : offset == a90 ? 1f : -1f;
-                Arena.AddCircle(pos + offsetDir * new WDir(default, 6f), 1f, Colors.Safe);
+                var offsetDir = pos.X < 100f ? offset == -a90 ? 1f : -1f : offset == a90 ? 1f : -1f;
+                Arena.AddCircle(pos + offsetDir * dir, 1f, Colors.Safe);
             }
         }
     }
@@ -123,8 +124,8 @@ class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module,
         {
             var b = baits[0];
             var pos = b.Source.Position;
-            var offsetDir = pos.X < 100 ? offset == -a90 ? 1f : -1f : offset == a90 ? 1f : -1f;
-            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(pos + offsetDir * new WDir(default, 6f), 1f));
+            var offsetDir = pos.X < 100f ? offset == -a90 ? 1f : -1f : offset == a90 ? 1f : -1f;
+            hints.AddForbiddenZone(ShapeDistance.InvertedCircle(pos + offsetDir * dir, 1f));
         }
     }
 
