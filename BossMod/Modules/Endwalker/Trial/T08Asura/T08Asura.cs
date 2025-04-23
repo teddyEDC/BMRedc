@@ -1,5 +1,3 @@
-using BossMod.Dawntrail.Alliance.A12Fafnir;
-
 namespace BossMod.Endwalker.Trial.T08Asura;
 
 class LowerRealm(BossModule module) : Components.RaidwideCast(module, (uint)AID.LowerRealm);

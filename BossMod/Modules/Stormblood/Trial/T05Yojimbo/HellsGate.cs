@@ -1,6 +1,6 @@
 namespace BossMod.Stormblood.Trial.T05Yojimbo;
 
-class HellsGate(BossModule module) : Components.SingleTargetCast(module, (uint)AID.HellsGate)
+class HellsGate(BossModule module) : BossComponent(module)
 {
     private readonly List<Actor> _targets = [];
     private readonly List<Actor> _ironChains = [];
@@ -28,18 +28,17 @@ class HellsGate(BossModule module) : Components.SingleTargetCast(module, (uint)A
 
     public override void OnActorDestroyed(Actor actor)
     {
-        _targets.Remove(actor);
-        _ironChains.RemoveAll(chain => chain.IsDeadOrDestroyed);
+        if (_targets.Count > 0)
+        {
+            _targets.Remove(actor);
+            _ironChains.RemoveAll(chain => chain.IsDeadOrDestroyed);
+        }
     }
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
         if (_targets.Count > 0 && !_targets.Contains(actor))
             hints.Add("Kill the Iron Chain on bound players!");
-    }
-
-    public override void AddGlobalHints(GlobalHints hints)
-    {
     }
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)

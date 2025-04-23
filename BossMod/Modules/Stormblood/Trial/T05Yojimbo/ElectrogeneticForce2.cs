@@ -11,16 +11,12 @@ class ElectrogeneticForce2(BossModule module) : Components.SimpleAOEs(module, (u
     public override void OnActorCreated(Actor actor)
     {
         if (actor.OID == (uint)OID.ElectrogeneticForce)
-        {
             _aoes.Add(new(_circle, actor.Position, default, WorldState.FutureTime(_electrogeneticForce2Delay)));
-        }
     }
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.ElectrogeneticForce2)
-        {
             _aoes.Clear();
-        }
     }
 }

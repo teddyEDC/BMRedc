@@ -34,9 +34,4 @@ class DragonsLair(BossModule module) : Components.Exaflare(module, _rect)
                 AdvanceLine(line, line.Next);
         }
     }
-    public override void DrawArenaForeground(int pcSlot, Actor pc)
-    {
-        foreach (var head in Module.Enemies((uint)OID.DragonsHead))
-            Arena.Actor(head, Colors.Object, true);
-    }
 }
