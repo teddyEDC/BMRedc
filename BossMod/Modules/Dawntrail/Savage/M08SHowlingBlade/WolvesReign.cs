@@ -19,7 +19,7 @@ class WolvesReignConeCircle(BossModule module) : Components.GenericAOEs(module)
         if (shape != null)
         {
             var pos = spell.LocXZ;
-            _aoe = new(cone, pos, Angle.FromDirection(Arena.Center - pos), Module.CastFinishAt(spell, 3.6f), Colors.Danger);
+            _aoe = new(shape, pos, Angle.FromDirection(Arena.Center - pos), Module.CastFinishAt(spell, 3.6f), Colors.Danger);
         }
     }
 
