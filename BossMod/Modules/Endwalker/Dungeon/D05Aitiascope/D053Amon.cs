@@ -76,36 +76,7 @@ class CurtainCall(BossModule module) : Components.CastLineOfSightAOE(module, (ui
     }
 }
 
-class ThundagaForteCone(BossModule module) : Components.GenericAOEs(module)
-{
-    private static readonly AOEShapeCone cone = new(20f, 22.5f.Degrees());
-    private readonly List<AOEInstance> _aoes = new(8);
-
-    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
-    {
-        var count = _aoes.Count;
-        if (count == 0)
-            return [];
-        var max = count > 4 ? 4 : count;
-        return CollectionsMarshal.AsSpan(_aoes)[..max];
-    }
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        if (spell.Action.ID is (uint)AID.ThundagaForteCone1 or (uint)AID.ThundagaForteCone2)
-        {
-            _aoes.Add(new(cone, spell.LocXZ, spell.Rotation, Module.CastFinishAt(spell)));
-            if (_aoes.Count == 8)
-                _aoes.SortBy(x => x.Activation);
-        }
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        if (_aoes.Count != 0 && spell.Action.ID is (uint)AID.ThundagaForteCone1 or (uint)AID.ThundagaForteCone2)
-            _aoes.RemoveAt(0);
-    }
-}
+class ThundagaForteCone(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.ThundagaForteCone1, (uint)AID.ThundagaForteCone2], new AOEShapeCone(20f, 22.5f.Degrees()), 4, 8);
 
 class D053AmonStates : StateMachineBuilder
 {

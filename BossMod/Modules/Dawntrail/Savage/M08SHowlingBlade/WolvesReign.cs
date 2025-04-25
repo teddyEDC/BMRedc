@@ -35,71 +35,9 @@ class WolvesReignConeCircle(BossModule module) : Components.GenericAOEs(module)
     }
 }
 
-class WolvesReignRect(BossModule module) : Components.GenericAOEs(module)
-{
-    private static readonly AOEShapeRect rect = new(28f, 5f);
-    private AOEInstance? _aoe;
-
-    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => Utils.ZeroOrOne(ref _aoe);
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        if (spell.Action.ID is (uint)AID.WolvesReignRect1 or (uint)AID.WolvesReignRect2)
-            _aoe = new(rect, spell.LocXZ, caster.Rotation, Module.CastFinishAt(spell, 3.6f));
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        if (spell.Action.ID is (uint)AID.WolvesReignRect1 or (uint)AID.WolvesReignRect2)
-            ++NumCasts;
-    }
-}
-
-class WolvesReignCircle(BossModule module) : Components.GenericAOEs(module)
-{
-    private readonly List<AOEInstance> _aoes = new(4);
-    private static readonly AOEShapeCircle circle = new(6f);
-
-    public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor) => CollectionsMarshal.AsSpan(_aoes);
-
-    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
-    {
-        switch (spell.Action.ID)
-        {
-            case (uint)AID.WolvesReignCircle1:
-            case (uint)AID.WolvesReignCircle2:
-            case (uint)AID.WolvesReignCircle3:
-            case (uint)AID.EminentReign:
-            case (uint)AID.RevolutionaryReign:
-                _aoes.Add(new(circle, spell.LocXZ, default, Module.CastFinishAt(spell), ActorID: caster.InstanceID));
-                break;
-        }
-    }
-
-    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
-    {
-        var count = _aoes.Count;
-        if (count != 0)
-            switch (spell.Action.ID)
-            {
-                case (uint)AID.WolvesReignCircle1:
-                case (uint)AID.WolvesReignCircle2:
-                case (uint)AID.WolvesReignCircle3:
-                case (uint)AID.EminentReign:
-                case (uint)AID.RevolutionaryReign:
-                    ++NumCasts;
-                    for (var i = 0; i < count; ++i)
-                    {
-                        if (_aoes[i].ActorID == caster.InstanceID)
-                        {
-                            _aoes.RemoveAt(i);
-                            break;
-                        }
-                    }
-                    break;
-            }
-    }
-}
+class WolvesReignRect(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.WolvesReignRect1, (uint)AID.WolvesReignRect2], new AOEShapeRect(28f, 5f));
+class WolvesReignCircle(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.WolvesReignCircle1, (uint)AID.WolvesReignCircle2,
+(uint)AID.WolvesReignCircle3, (uint)AID.EminentReign, (uint)AID.RevolutionaryReign], 6f);
 
 class SovereignScar(BossModule module) : Components.GenericBaitStack(module)
 {

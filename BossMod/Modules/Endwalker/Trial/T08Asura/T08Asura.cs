@@ -1,5 +1,3 @@
-using BossMod.Dawntrail.Alliance.A12Fafnir;
-
 namespace BossMod.Endwalker.Trial.T08Asura;
 
 class LowerRealm(BossModule module) : Components.RaidwideCast(module, (uint)AID.LowerRealm);
@@ -15,6 +13,7 @@ class IconographyBladewise(BossModule module) : Components.SimpleAOEs(module, (u
 class Bladewise(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Bladewise, new AOEShapeRect(100f, 14f));
 class Scattering(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Scattering, new AOEShapeRect(20f, 3f));
 class OrderedChaos(BossModule module) : Components.SpreadFromCastTargets(module, (uint)AID.OrderedChaos, 5f);
+class MyriadAspects(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.MyriadAspects1, (uint)AID.MyriadAspects2], new AOEShapeCone(40f, 15f.Degrees()), 6, 12);
 
 class T08AsuraStates : StateMachineBuilder
 {
