@@ -99,7 +99,7 @@ class OvniStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "xan, Malediktus", GroupType = BossModuleInfo.GroupType.EurekaNM, GroupID = 639, NameID = 1424, SortOrder = 11)]
-public class Ovni(WorldState ws, Actor primary) : BossModule(ws, primary, new(266.1068f, -97.09414f), SharedBounds.Circle)
+public class Ovni(WorldState ws, Actor primary) : SimpleBossModule(ws, primary)
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {

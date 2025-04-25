@@ -212,7 +212,8 @@ public abstract class BossModule : IDisposable
         var pc = Raid[pcSlot];
         if (pc == null)
             return;
-
+        if (Components.Count != 0)
+            Components[0].UpdateArena(pcSlot, pc); // only check the first component that is loaded
         var pcHints = CalculateHintsForRaidMember(pcSlot, pc);
         if (includeText)
         {
@@ -228,7 +229,17 @@ public abstract class BossModule : IDisposable
         if (includeArena)
         {
             Arena.Begin(cameraAzimuth);
-            DrawArena(pcSlot, ref pc, pcHints.Any(h => h.Item2));
+            var haveRisks = false;
+            var count = pcHints.Count;
+            for (var i = 0; i < count; ++i)
+            {
+                if (pcHints[i].Item2)
+                {
+                    haveRisks = true;
+                    break;
+                }
+            }
+            DrawArena(pcSlot, ref pc, haveRisks);
             MiniArena.End();
         }
     }
@@ -259,9 +270,14 @@ public abstract class BossModule : IDisposable
             Components[i].DrawArenaForeground(pcSlot, pc);
         if (WindowConfig.ShowMeleeRangeIndicator)
         {
-            var enemy = WorldState.Actors.FirstOrDefault(a => !a.IsAlly && a.IsTargetable && !a.IsDead && a.InCombat);
-            if (enemy != null)
-                Arena.ZoneDonut(enemy.Position, enemy.HitboxRadius + 2.6f, enemy.HitboxRadius + 2.9f, Colors.MeleeRangeIndicator);
+            foreach (var a in WorldState.Actors)
+            {
+                if (!a.IsAlly && a.IsTargetable && !a.IsDead && a.InCombat)
+                {
+                    Arena.ZoneDonut(a.Position, a.HitboxRadius + 2.6f, a.HitboxRadius + 2.9f, Colors.MeleeRangeIndicator);
+                    break;
+                }
+            }
         }
         // draw enemies & player
         DrawEnemies(pcSlot, pc);
@@ -352,9 +368,10 @@ public abstract class BossModule : IDisposable
     private void DrawGlobalHints(BossComponent.GlobalHints hints)
     {
         using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor11);
-        foreach (var hint in hints)
+        var count = hints.Count;
+        for (var i = 0; i < count; ++i)
         {
-            ImGui.TextUnformatted(hint);
+            ImGui.TextUnformatted(hints[i]);
             ImGui.SameLine();
         }
         ImGui.NewLine();
@@ -362,10 +379,12 @@ public abstract class BossModule : IDisposable
 
     private void DrawPlayerHints(ref BossComponent.TextHints hints)
     {
-        foreach ((var hint, var risk) in hints)
+        var count = hints.Count;
+        for (var i = 0; i < count; ++i)
         {
-            using var color = ImRaii.PushColor(ImGuiCol.Text, risk ? Colors.Danger : Colors.Safe);
-            ImGui.TextUnformatted(hint);
+            var hint = hints[i];
+            using var color = ImRaii.PushColor(ImGuiCol.Text, hint.Item2 ? Colors.Danger : Colors.Safe);
+            ImGui.TextUnformatted(hint.Item1);
             ImGui.SameLine();
         }
         ImGui.NewLine();

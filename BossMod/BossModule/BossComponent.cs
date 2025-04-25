@@ -35,6 +35,7 @@ public class BossComponent(BossModule module)
     public virtual bool KeepOnPhaseChange { get; set; } // by default, all components are deactivated on phase change automatically (since phase change can happen at any time) - setting this to true prevents this
 
     public virtual void Update() { } // called every frame - it is a good place to update any cached values
+    public virtual void UpdateArena(int slot, Actor actor) { } // called every frame - it is a good place to update any cached values
     public virtual void AddHints(int slot, Actor actor, TextHints hints) { } // gather any relevant pieces of advice for specified raid member
     public virtual void AddMovementHints(int slot, Actor actor, MovementHints movementHints) { } // gather movement hints for specified raid member
     public virtual void AddGlobalHints(GlobalHints hints) { } // gather any relevant pieces of advice for whole raid
