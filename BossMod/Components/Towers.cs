@@ -42,12 +42,12 @@ public class GenericTowers(BossModule module, uint aid = default, bool prioritiz
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        var count = Towers.Count;
-        if (count == 0)
-            return;
         var towers = ActiveTowers(slot, actor);
+        var len = towers.Length;
+        if (len == 0)
+            return;
         var gtfoFromTower = false;
-        for (var i = 0; i < count; ++i)
+        for (var i = 0; i < len; ++i)
         {
             var t = towers[i];
             if (t.ForbiddenSoakers[slot] && t.IsInside(actor))
@@ -64,7 +64,7 @@ public class GenericTowers(BossModule module, uint aid = default, bool prioritiz
         else // Find index of a tower that is not forbidden and the actor is inside
         {
             var soakedIndex = -1;
-            for (var i = 0; i < count; ++i)
+            for (var i = 0; i < len; ++i)
             {
                 var t = towers[i];
                 if (!t.ForbiddenSoakers[slot] && t.IsInside(actor))
@@ -87,7 +87,7 @@ public class GenericTowers(BossModule module, uint aid = default, bool prioritiz
             else // Check if any tower has insufficient soakers
             {
                 var insufficientSoakers = false;
-                for (var i = 0; i < count; ++i)
+                for (var i = 0; i < len; ++i)
                 {
                     var t = towers[i];
                     if (!t.ForbiddenSoakers[slot] && t.InsufficientAmountInside(Module))
@@ -104,11 +104,11 @@ public class GenericTowers(BossModule module, uint aid = default, bool prioritiz
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        var count = Towers.Count;
-        if (count == 0)
-            return;
         var towers = ActiveTowers(pcSlot, pc);
-        for (var i = 0; i < count; ++i)
+        var len = towers.Length;
+        if (len == 0)
+            return;
+        for (var i = 0; i < len; ++i)
         {
             ref readonly var t = ref towers[i];
             if (t.ForbiddenSoakers[pcSlot])
@@ -125,11 +125,11 @@ public class GenericTowers(BossModule module, uint aid = default, bool prioritiz
 
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        var count = Towers.Count;
-        if (count == 0)
-            return;
         var towers = ActiveTowers(pcSlot, pc);
-        for (var i = 0; i < count; ++i)
+        var len = towers.Length;
+        if (len == 0)
+            return;
+        for (var i = 0; i < len; ++i)
         {
             ref readonly var t = ref towers[i];
             if (t.ForbiddenSoakers[pcSlot] || !t.IsInside(pc) && t.NumInside(Module) >= t.MaxSoakers)

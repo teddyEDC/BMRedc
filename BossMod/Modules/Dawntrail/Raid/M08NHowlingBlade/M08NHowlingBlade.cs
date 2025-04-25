@@ -17,12 +17,17 @@ class FangedCharge : Components.SimpleAOEs
     }
 }
 
-class TerrestrialTitans(BossModule module) : Components.SimpleAOEs(module, (uint)AID.TerrestrialTitans, 3f);
-class RoaringWind(BossModule module) : Components.SimpleAOEs(module, (uint)AID.RoaringWind, new AOEShapeRect(40f, 4f));
+class MoonbeamsBite : Components.SimpleAOEGroups
+{
+    public MoonbeamsBite(BossModule module) : base(module, [(uint)AID.MoonbeamsBite1, (uint)AID.MoonbeamsBite2, (uint)AID.MoonbeamsBite3,
+    (uint)AID.MoonbeamsBite4], new AOEShapeRect(40f, 10f), 2, 6)
+    {
+        MaxDangerColor = 1;
+    }
+}
 
-abstract class Shadowchase(BossModule module, uint aid) : Components.SimpleAOEs(module, aid, new AOEShapeRect(40f, 4f));
-class Shadowchase1(BossModule module) : Shadowchase(module, (uint)AID.Shadowchase1);
-class Shadowchase2(BossModule module) : Shadowchase(module, (uint)AID.Shadowchase2);
+class RoaringWindShadowchase(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.RoaringWind, (uint)AID.Shadowchase1, (uint)AID.Shadowchase2], new AOEShapeRect(40f, 4f));
+class TerrestrialTitans(BossModule module) : Components.SimpleAOEs(module, (uint)AID.TerrestrialTitans, 3f);
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 1025, NameID = 13843)]
 public class M08NHowlingBlade(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, startingArena)

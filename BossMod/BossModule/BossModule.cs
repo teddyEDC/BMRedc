@@ -212,8 +212,7 @@ public abstract class BossModule : IDisposable
         var pc = Raid[pcSlot];
         if (pc == null)
             return;
-        if (Components.Count != 0)
-            Components[0].UpdateArena(pcSlot, pc); // only check the first component that is loaded
+
         var pcHints = CalculateHintsForRaidMember(pcSlot, pc);
         if (includeText)
         {
