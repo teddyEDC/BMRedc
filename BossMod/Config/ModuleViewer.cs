@@ -298,6 +298,8 @@ public sealed class ModuleViewer : IDisposable
                 return (new("Removed Content", groupId, groupId), new(module, BNpcName(module.NameID), module.SortOrder));
             case BossModuleInfo.GroupType.BaldesionArsenal:
                 return (new("Baldesion Arsenal", groupId, groupId), new(module, BNpcName(module.NameID), module.SortOrder));
+            case BossModuleInfo.GroupType.CastrumLacusLitore:
+                return (new("Castrum Lacus Litore", groupId, groupId), new(module, BNpcName(module.NameID), module.SortOrder));
             case BossModuleInfo.GroupType.Quest:
                 var questRow = Service.LuminaRow<Quest>(module.GroupID)!.Value;
                 groupId |= questRow.JournalGenre.RowId;

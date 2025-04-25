@@ -409,7 +409,7 @@ class M08SHowlingBladeStates : StateMachineBuilder
     {
         for (var i = 0; i < 5; ++i)
         {
-            var phaseOffset = (uint)(i * 0x20u);
+            var phaseOffset = (uint)(i * 0x30u);
             var cast1Id = id + 0x10u + phaseOffset;
             var cast8Id = id + 0x20u + phaseOffset;
             var platformId = id + 0x30u + phaseOffset;

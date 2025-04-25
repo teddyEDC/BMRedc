@@ -122,14 +122,14 @@ class M06SSugarRiotStates : StateMachineBuilder
     {
         Cast(id, (uint)AID.SoulSugar, delay, 3f, "Add Phase")
             .ActivateOnEnter<Adds>();
-        ComponentCondition<Adds>(id, 10.2f, comp => comp.ActiveActors.Count != 0, "2x Mu + 1x Yan targetable");
-        ComponentCondition<Adds>(id + 0x10u, 2f, comp => comp.ActiveActors.Count > 3, "GimmeCat targetable")
+        ComponentCondition<Adds>(id + 0x10u, 10.2f, comp => comp.ActiveActors.Count != 0, "2x Mu + 1x Yan targetable");
+        ComponentCondition<Adds>(id + 0x20u, 2f, comp => comp.ActiveActors.Count > 3, "GimmeCat targetable")
             .ActivateOnEnter<ICraveViolence>()
             .ActivateOnEnter<OreRigato>();
-        ComponentCondition<Adds>(id + 0x20u, 25.1f, comp => comp.CountMu == 4 && comp.CountFeatherRay == 2, "2x Mu + 2x Featheray spawn")
+        ComponentCondition<Adds>(id + 0x30u, 25.1f, comp => comp.CountMu == 4 && comp.CountFeatherRay == 2, "2x Mu + 2x Featheray spawn")
             .ActivateOnEnter<WaterIIIVoidzone>()
             .ActivateOnEnter<WaterIIIBait>();
-        ComponentCondition<Adds>(id + 0x30u, 22.2f, comp => comp.CountYan == 2 && comp.CountGimmeCat == 2 && comp.CountJabberwock == 1, "Yan, GimmeCat, Jabberwock spawn")
+        ComponentCondition<Adds>(id + 0x40u, 22.2f, comp => comp.CountYan == 2 && comp.CountGimmeCat == 2 && comp.CountJabberwock == 1, "Yan, GimmeCat, Jabberwock spawn")
             .ActivateOnEnter<ManxomeWindersnatch>();
         Cast(id + 0x40u, (uint)AID.ReadyOreNot, 22f, 7f, "Raidwide")
             .SetHint(StateMachine.StateHint.Raidwide);
@@ -137,7 +137,7 @@ class M06SSugarRiotStates : StateMachineBuilder
         Cast(id + 0x60u, (uint)AID.ReadyOreNot, 66.1f, 7f, "Raidwide")
             .SetHint(StateMachine.StateHint.Raidwide)
             .ActivateOnExit<SingleDoubleStyle1>();
-        ComponentCondition<SingleDoubleStyle1>(id, 13.3f, comp => comp.NumCasts != 0, "Single Style resolves")
+        ComponentCondition<SingleDoubleStyle1>(id + 0x70u, 13.3f, comp => comp.NumCasts != 0, "Single Style resolves")
             .DeactivateOnExit<ICraveViolence>()
             .DeactivateOnExit<WaterIIIBait>()
             .DeactivateOnExit<WaterIIIVoidzone>()
@@ -179,18 +179,18 @@ class M06SSugarRiotStates : StateMachineBuilder
         ComponentCondition<LightningStorm>(id + 0x100u, 3.5f, comp => comp.NumCasts > 4, "Baited AOEs 3");
         ComponentCondition<Highlightning>(id + 0x110u, 0.3f, comp => comp.NumCasts == 4, "Big circle AOE 4");
         ComponentCondition<LightningStormHint>(id + 0x120u, 0.4f, comp => comp.NumCasts > 4, "AOE on grass 3");
-        ComponentCondition<LightningBolt>(id + 0x120u, 3.8f, comp => comp.NumCasts > 36, "Small circle AOEs 8");
-        ComponentCondition<LightningBolt>(id + 0x130u, 2.6f, comp => comp.NumCasts > 42, "Small circle AOEs 9");
-        ComponentCondition<LightningStorm>(id + 0x140u, 3.5f, comp => comp.NumCasts > 6, "Baited AOEs 4")
+        ComponentCondition<LightningBolt>(id + 0x130u, 3.8f, comp => comp.NumCasts > 36, "Small circle AOEs 8");
+        ComponentCondition<LightningBolt>(id + 0x140u, 2.6f, comp => comp.NumCasts > 42, "Small circle AOEs 9");
+        ComponentCondition<LightningStorm>(id + 0x150u, 3.5f, comp => comp.NumCasts > 6, "Baited AOEs 4")
             .DeactivateOnExit<LightningStorm>();
-        ComponentCondition<Highlightning>(id + 0x150u, 0.3f, comp => comp.NumCasts == 5, "Big circle AOE 5")
+        ComponentCondition<Highlightning>(id + 0x160u, 0.3f, comp => comp.NumCasts == 5, "Big circle AOE 5")
             .DeactivateOnExit<LightningBolt>()
             .DeactivateOnExit<Highlightning>();
-        ComponentCondition<LightningStormHint>(id + 0x160u, 0.3f, comp => comp.NumCasts > 6, "AOE on grass 4")
+        ComponentCondition<LightningStormHint>(id + 0x170u, 0.3f, comp => comp.NumCasts > 6, "AOE on grass 4")
             .DeactivateOnExit<LightningStormHint>();
-        ComponentCondition<PuddingParty>(id + 0x170u, 5.5f, comp => comp.NumCasts != 0, "Stack hit 1")
+        ComponentCondition<PuddingParty>(id + 0x180u, 5.5f, comp => comp.NumCasts != 0, "Stack hit 1")
             .ActivateOnEnter<PuddingParty>();
-        ComponentCondition<PuddingParty>(id + 0x180u, 4.2f, comp => comp.NumCasts == 5, "Stack hit 5")
+        ComponentCondition<PuddingParty>(id + 0x190u, 4.2f, comp => comp.NumCasts == 5, "Stack hit 5")
             .DeactivateOnExit<PuddingParty>();
     }
 
