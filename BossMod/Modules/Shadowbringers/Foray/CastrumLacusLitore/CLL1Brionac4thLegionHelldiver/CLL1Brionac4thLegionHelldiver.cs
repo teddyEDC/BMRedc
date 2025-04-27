@@ -4,50 +4,34 @@ namespace BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHe
 
 class ElectricAnvil(BossModule module) : Components.SingleTargetCast(module, (uint)AID.ElectricAnvil)
 {
-    private bool top;
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterTop))
-        {
-            top = true;
-        }
-        else
-        {
-            top = false;
+        if (_arena.IsBrionacArena)
             base.AddAIHints(slot, actor, assignment, hints);
-        }
     }
 
     public override void AddGlobalHints(GlobalHints hints)
     {
-        if (top)
-        {
+        if (_arena.IsBrionacArena)
             base.AddGlobalHints(hints);
-        }
     }
 }
 
 class MagitekMissiles(BossModule module) : Components.SingleTargetCast(module, (uint)AID.MagitekMissiles)
 {
-    private bool bottom;
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterBottom))
-        {
-            bottom = true;
-        }
-        else
-        {
-            bottom = false;
+        if (!_arena.IsBrionacArena)
             base.AddAIHints(slot, actor, assignment, hints);
-        }
     }
 
     public override void AddGlobalHints(GlobalHints hints)
     {
-        if (bottom)
+        if (!_arena.IsBrionacArena)
         {
             base.AddGlobalHints(hints);
         }
@@ -56,61 +40,45 @@ class MagitekMissiles(BossModule module) : Components.SingleTargetCast(module, (
 
 class MRVMissile(BossModule module) : Components.RaidwideCast(module, (uint)AID.MRVMissile)
 {
-    private bool bottom;
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterTop))
-        {
-            bottom = true;
-        }
-        else
-        {
-            bottom = false;
+        if (!_arena.IsBrionacArena)
             base.AddAIHints(slot, actor, assignment, hints);
-        }
     }
 
     public override void AddGlobalHints(GlobalHints hints)
     {
-        if (bottom)
-        {
+        if (!_arena.IsBrionacArena)
             base.AddGlobalHints(hints);
-        }
     }
 }
 
 class LightningShower(BossModule module) : Components.RaidwideCast(module, (uint)AID.LightningShower)
 {
-    private bool top;
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterTop))
-        {
-            top = true;
-        }
-        else
-        {
-            top = false;
+        if (_arena.IsBrionacArena)
             base.AddAIHints(slot, actor, assignment, hints);
-        }
     }
 
     public override void AddGlobalHints(GlobalHints hints)
     {
-        if (top)
-        {
+        if (_arena.IsBrionacArena)
             base.AddGlobalHints(hints);
-        }
     }
 }
 
 class FalseThunder(BossModule module) : Components.SimpleAOEGroupsByTimewindow(module, [(uint)AID.FalseThunder1, (uint)AID.FalseThunder2], new AOEShapeCone(47f, 65f.Degrees()))
 {
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
+
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterTop))
+        if (_arena.IsBrionacArena)
             return base.ActiveAOEs(slot, actor);
         else
             return [];
@@ -119,9 +87,11 @@ class FalseThunder(BossModule module) : Components.SimpleAOEGroupsByTimewindow(m
 
 class Voltstream(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Voltstream, new AOEShapeRect(40f, 5f), 3)
 {
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
+
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterTop))
+        if (_arena.IsBrionacArena)
             return base.ActiveAOEs(slot, actor);
         else
             return [];
@@ -130,9 +100,11 @@ class Voltstream(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Vo
 
 class SurfaceMissile(BossModule module) : Components.SimpleAOEs(module, (uint)AID.SurfaceMissile, 6f)
 {
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
+
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterBottom))
+        if (!_arena.IsBrionacArena)
             return base.ActiveAOEs(slot, actor);
         else
             return [];
@@ -141,9 +113,11 @@ class SurfaceMissile(BossModule module) : Components.SimpleAOEs(module, (uint)AI
 
 class CommandSuppressiveFormation(BossModule module) : Components.ChargeAOEs(module, (uint)AID.CommandSuppressiveFormation, 3f)
 {
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
+
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterBottom))
+        if (!_arena.IsBrionacArena)
             return base.ActiveAOEs(slot, actor);
         else
             return [];
@@ -152,18 +126,19 @@ class CommandSuppressiveFormation(BossModule module) : Components.ChargeAOEs(mod
 
 class DetermineArena(BossModule module) : BossComponent(module)
 {
-    private int arena; // 1 = top, 2 = bottom
+    public bool IsBrionacArena;
+
     public override void DrawArenaBackground(int pcSlot, Actor pc)
     {
-        if (arena != 2 && ArenaBottom.Contains(pc.Position - ArenaCenterBottom))
+        if (IsBrionacArena && ArenaBottom.Contains(pc.Position - ArenaCenterBottom))
         {
-            arena = 2;
+            IsBrionacArena = false;
             Arena.Center = ArenaCenterBottom;
             Arena.Bounds = ArenaBottom;
         }
-        else if (arena != 1 && ArenaTop.Contains(pc.Position - ArenaCenterTop))
+        else if (!IsBrionacArena && ArenaTop.Contains(pc.Position - ArenaCenterTop))
         {
-            arena = 1;
+            IsBrionacArena = true;
             Arena.Center = ArenaCenterTop;
             Arena.Bounds = ArenaTop;
         }
@@ -209,7 +184,6 @@ public class CLL1Brionac4thLegionHelldiver : BossModule
 
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
-
         if (Arena.Center == ArenaCenterTop)
             Arena.Actor(PrimaryActor);
         else
@@ -245,28 +219,24 @@ public class CLL1Brionac4thLegionHelldiver : BossModule
             if (center == ArenaCenterTop)
             {
                 if (oid == (uint)OID.MagitekCore)
-                {
                     enemyPrio = 1;
-                }
                 else if (e == PrimaryActor && e.HPRatio - _bossHellDiver?.HPRatio < -0.1f)
                     enemyPrio = AIHints.Enemy.PriorityForbidden;
-                else if (oid != (uint)OID.Boss)
-                    enemyPrio = AIHints.Enemy.PriorityPointless;
                 else if (oid == (uint)OID.FourthLegionSkyArmor && InBounds(e.Position))
                     enemyPrio = 0;
+                else if (oid != (uint)OID.Boss)
+                    enemyPrio = AIHints.Enemy.PriorityInvincible;
             }
-            else if (center == ArenaCenterBottom)
+            else
             {
                 if (oid == (uint)OID.FourthLegionHelldiver3)
-                {
                     enemyPrio = 1;
-                }
                 else if (e == _bossHellDiver && e.HPRatio - PrimaryActor.HPRatio < -0.1f)
                     enemyPrio = AIHints.Enemy.PriorityForbidden;
-                else if (oid != (uint)OID.FourthLegionHelldiver1)
-                    enemyPrio = AIHints.Enemy.PriorityPointless;
                 else if (oid == (uint)OID.FourthLegionSkyArmor && InBounds(e.Position))
                     enemyPrio = 0;
+                else if (oid != (uint)OID.FourthLegionHelldiver1)
+                    enemyPrio = AIHints.Enemy.PriorityInvincible;
             }
         }
     }

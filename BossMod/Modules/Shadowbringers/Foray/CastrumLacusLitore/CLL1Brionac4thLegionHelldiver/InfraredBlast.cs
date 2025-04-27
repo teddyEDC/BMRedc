@@ -4,9 +4,9 @@ namespace BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHe
 
 class InfraredBlast(BossModule module) : Components.InterceptTether(module, (uint)AID.InfraredBlast, (uint)TetherID.InfraredBlast)
 {
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
     private DateTime _activation;
     private readonly List<Actor> players = [];
-    private bool bottom;
     private BitMask fire;
     private readonly Actor tunnelmachine = module.Enemies((uint)OID.TunnelArmor)[0];
 
@@ -19,7 +19,7 @@ class InfraredBlast(BossModule module) : Components.InterceptTether(module, (uin
             {
                 foreach (var a in WorldState.Actors.Actors.Values)
                 {
-                    if (a.OID == 0u && ArenaBottom.Contains(a.Position - ArenaCenterBottom))
+                    if (a.OID == default && ArenaBottom.Contains(a.Position - ArenaCenterBottom))
                         players.Add(a);
                 }
             }
@@ -40,7 +40,7 @@ class InfraredBlast(BossModule module) : Components.InterceptTether(module, (uin
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {
-        if (!Active || !bottom)
+        if (!Active || _arena.IsBrionacArena)
             return;
         var count = _tethers.Count;
         for (var i = 0; i < count; ++i)
@@ -52,7 +52,7 @@ class InfraredBlast(BossModule module) : Components.InterceptTether(module, (uin
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (!Active || !bottom)
+        if (!Active || _arena.IsBrionacArena)
             return;
         if (!_tetheredPlayers[slot])
         {
@@ -103,18 +103,10 @@ class InfraredBlast(BossModule module) : Components.InterceptTether(module, (uin
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterBottom))
-        {
-            bottom = true;
-        }
-        else
-        {
-            bottom = false;
-        }
-        if (Active && bottom)
+        if (Active && !_arena.IsBrionacArena)
         {
             var count = _tethers.Count;
-            var forbidden = new List<Func<WPos, float>>(count);
+            var forbidden = new List<Func<WPos, float>>(2);
             var target = tunnelmachine;
             for (var i = 0; i < count; ++i)
             {

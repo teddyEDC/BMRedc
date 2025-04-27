@@ -149,8 +149,14 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
     private async Task<NavigationDecision> BuildNavigationDecision(Actor player, Actor master, Targeting targeting)
     {
-        if (_config.ForbidMovement || _config.ForbidAIMovementMounted && player.MountId != 0)
+        if (_config.ForbidMovement || _config.ForbidAIMovementMounted && player.MountId != 0
+            || autorot.Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.NoMovement && autorot.Hints.ImminentSpecialMode.activation <= WorldState.FutureTime(1d))
             return new() { LeewaySeconds = float.MaxValue };
+
+        if (autorot.Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Freezing && autorot.Hints.ImminentSpecialMode.activation <= WorldState.FutureTime(0.5d))
+        {
+            autorot.Hints.WantJump = true;
+        }
 
         Actor? forceDestination = null;
         var interactTarget = autorot.Hints.InteractWithTarget;

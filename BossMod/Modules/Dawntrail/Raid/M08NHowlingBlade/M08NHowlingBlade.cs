@@ -8,6 +8,9 @@ class Heavensearth1(BossModule module) : Components.StackWithCastTargets(module,
 class Heavensearth2(BossModule module) : Components.StackWithCastTargets(module, (uint)AID.Heavensearth2, 6, 8, 8);
 class Gust(BossModule module) : Components.SpreadFromCastTargets(module, (uint)AID.Gust, 5f);
 class TargetedQuake(BossModule module) : Components.SimpleAOEs(module, (uint)AID.TargetedQuake, 4f);
+class GrowlingWindWealofStone(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.GrowlingWind, (uint)AID.WealOfStone1, (uint)AID.WealOfStone2, (uint)AID.WealOfStone3],
+new AOEShapeRect(40f, 3f));
+
 class FangedCharge : Components.SimpleAOEs
 {
     public FangedCharge(BossModule module) : base(module, (uint)AID.FangedCharge, new AOEShapeRect(46f, 3f))
@@ -33,7 +36,7 @@ class TerrestrialTitans(BossModule module) : Components.SimpleAOEs(module, (uint
 public class M08NHowlingBlade(WorldState ws, Actor primary) : BossModule(ws, primary, ArenaCenter, startingArena)
 {
     public static readonly WPos ArenaCenter = new(100f, 100f);
-    private static readonly ArenaBoundsComplex startingArena = new([new Polygon(ArenaCenter, 15f, 40)]);
+    private static readonly ArenaBoundsComplex startingArena = new([new Polygon(ArenaCenter, 17f, 40)]);
     public static readonly Polygon[] EndArenaPolygon = [new Polygon(ArenaCenter, 12f, 40)]; // 11.2s after 0x200010 then 0x00 20001
     public static readonly ArenaBoundsComplex EndArena = new(EndArenaPolygon);
 }

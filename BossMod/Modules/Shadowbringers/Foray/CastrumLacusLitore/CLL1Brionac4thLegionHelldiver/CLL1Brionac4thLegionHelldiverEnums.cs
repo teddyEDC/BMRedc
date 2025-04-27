@@ -53,8 +53,8 @@ public enum AID : uint
     // bottom
     CommandDiveFormation = 20975, // FourthLegionHelldiver1->self, 5.0s cast, single-target
     CommandChainCannon = 20987, // FourthLegionHelldiver1->self, 4.0s cast, single-target
-    DiveFormation1 = 20976, // FourthLegionHelldiver2->TunnelArmor, 11.0s cast, width 6 rect charge
-    DiveFormation2 = 20977, // Helper->TunnelArmor, 11.5s cast, width 10 rect charge
+    DiveFormationVisual = 20976, // FourthLegionHelldiver2->TunnelArmor, 11.0s cast, width 6 rect charge
+    DiveFormation = 20977, // Helper->TunnelArmor, 11.5s cast, width 10 rect charge
     CommandLinearDive = 20970, // FourthLegionHelldiver1->self, 5.0s cast, single-target
     LinearDive = 20971, // FourthLegionHelldiver2->TunnelArmor, 7.0s cast, width 6 rect charge
 

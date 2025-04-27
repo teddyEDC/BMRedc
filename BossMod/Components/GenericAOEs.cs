@@ -144,8 +144,8 @@ public class SimpleAOEGroups(BossModule module, uint[] aids, AOEShape shape, int
 {
     public SimpleAOEGroups(BossModule module, uint[] aids, float radius, int maxCasts = int.MaxValue, int expectedNumCasters = 99, double riskyWithSecondsLeft = 0d) : this(module, aids, new AOEShapeCircle(radius), maxCasts, expectedNumCasters, riskyWithSecondsLeft) { }
 
-    private readonly uint[] AIDs = aids;
-    private readonly int ExpectedNumCasters = expectedNumCasters;
+    protected readonly uint[] AIDs = aids;
+    protected readonly int ExpectedNumCasters = expectedNumCasters;
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
     {
@@ -213,5 +213,26 @@ public class SimpleAOEGroupsByTimewindow(BossModule module, uint[] aids, AOEShap
             ++index;
 
         return aoes[..index];
+    }
+}
+
+public class SimpleChargeAOEGroups(BossModule module, uint[] aids, float halfWidth, int maxCasts = int.MaxValue, int expectedNumCasters = 99, double riskyWithSecondsLeft = 0d, float extraLengthFront = 0f) : SimpleAOEGroups(module, aids, 0f, maxCasts, expectedNumCasters, riskyWithSecondsLeft)
+{
+    private readonly float HalfWidth = halfWidth;
+
+    public override void OnCastStarted(Actor caster, ActorCastInfo spell)
+    {
+        var len = AIDs.Length;
+        for (var i = 0; i < len; ++i)
+        {
+            if (spell.Action.ID == AIDs[i])
+            {
+                var dir = spell.LocXZ - caster.Position;
+                Casters.Add(new(new AOEShapeRect(dir.Length() + extraLengthFront, HalfWidth), WPos.ClampToGrid(caster.Position), Angle.FromDirection(dir), Module.CastFinishAt(spell), ActorID: caster.InstanceID));
+                if (Casters.Count == ExpectedNumCasters)
+                    Casters.SortBy(aoe => aoe.Activation);
+                return;
+            }
+        }
     }
 }

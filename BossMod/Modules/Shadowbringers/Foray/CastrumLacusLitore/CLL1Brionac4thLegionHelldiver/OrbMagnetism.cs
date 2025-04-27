@@ -1,9 +1,8 @@
-using static BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHelldiver.CLL1Brionac4thLegionHelldiver;
-
 namespace BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHelldiver;
 
 class OrbsAOE(BossModule module) : Components.GenericAOEs(module)
 {
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
     private readonly List<(Actor Orb, AOEShape Shape)> orbs = new(4);
     public static readonly AOEShapeDonut Donut = new(5f, 20f);
     private static readonly AOEShapeCircle circle = new(12f);
@@ -12,7 +11,7 @@ class OrbsAOE(BossModule module) : Components.GenericAOEs(module)
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (ArenaTop.Contains(actor.Position - ArenaCenterTop))
+        if (_arena.IsBrionacArena)
             return CollectionsMarshal.AsSpan(AOEs);
         else
             return [];
@@ -279,7 +278,7 @@ class Magnetism(BossModule module) : Components.GenericKnockback(module, ignoreI
         {
             if (source.Kind == Kind.TowardsOrigin)
             {
-                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(source.Origin, 30f), source.Activation);
+                hints.AddForbiddenZone(ShapeDistance.InvertedCircle(source.Origin, 35f), source.Activation);
             }
             else
             {
@@ -289,7 +288,7 @@ class Magnetism(BossModule module) : Components.GenericKnockback(module, ignoreI
                 var dir = angle.ToDirection();
                 if (opposite != default)
                 {
-                    hints.AddForbiddenZone(ShapeDistance.InvertedRect(opposite + 30f * dir, -dir, 30f, default, 2.5f), source.Activation);
+                    hints.AddForbiddenZone(ShapeDistance.InvertedRect(opposite + 35f * dir, -dir, 5f, default, 0.5f), source.Activation);
                 }
             }
         }
