@@ -263,7 +263,7 @@ abstract class DeepThunder(BossModule module, uint aid) : Components.CastTowers(
 class DeepThunder1(BossModule module) : DeepThunder(module, (uint)AID.DeepThunderTower1);
 class DeepThunder2(BossModule module) : DeepThunder(module, (uint)AID.DeepThunderTower2);
 
-class WroughtFire(BossModule module) : Components.BaitAwayCast(module, (uint)AID.WroughtFire, new AOEShapeCircle(6f), true, tankbuster: true);
+class WroughtFire(BossModule module) : Components.BaitAwayCast(module, (uint)AID.WroughtFire, 6f, tankbuster: true);
 class BuildingHeat(BossModule module) : Components.StackWithCastTargets(module, (uint)AID.BuildingHeat, 6f, 4, 4);
 class Ashlayer(BossModule module) : Components.RaidwideCast(module, (uint)AID.Ashlayer);
 

@@ -249,13 +249,15 @@ public class BaitAwayEveryone : GenericBaitAway
 }
 
 // component for mechanics requiring tether targets to bait their aoe away from raid
-public class BaitAwayTethers(BossModule module, AOEShape shape, uint tetherID, uint aid = default, uint enemyOID = default, float activationDelay = default, bool centerAtTarget = false) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
+public class BaitAwayTethers(BossModule module, AOEShape shape, uint tetherID, uint aid = default, uint enemyOID = default, double activationDelay = default, bool centerAtTarget = false) : GenericBaitAway(module, aid, centerAtTarget: centerAtTarget)
 {
+    public BaitAwayTethers(BossModule module, float radius, uint tetherID, uint aid = default, uint enemyOID = default, double activationDelay = default, bool centerAtTarget = true) : this(module, new AOEShapeCircle(radius), tetherID, aid, enemyOID, activationDelay, centerAtTarget) { }
+
     public AOEShape Shape = shape;
     public uint TID = tetherID;
     public bool DrawTethers = true;
     public readonly List<Actor> _enemies = module.Enemies(enemyOID);
-    public float ActivationDelay = activationDelay;
+    public double ActivationDelay = activationDelay;
 
     public override void DrawArenaForeground(int pcSlot, Actor pc)
     {

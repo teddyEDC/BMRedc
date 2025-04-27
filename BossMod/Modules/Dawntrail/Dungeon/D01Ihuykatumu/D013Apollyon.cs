@@ -86,7 +86,7 @@ class LevinsickleSpark(BossModule module) : Components.VoidzoneAtCastTarget(modu
 class WingOfLightning(BossModule module) : Components.SimpleAOEs(module, (uint)AID.WingOfLightning, new AOEShapeCone(40f, 22.5f.Degrees()), 8);
 
 class ThunderIII2(BossModule module) : Components.SpreadFromCastTargets(module, (uint)AID.ThunderIII, 6f);
-class BladeTB(BossModule module) : Components.BaitAwayCast(module, (uint)AID.BladeTB, new AOEShapeCircle(6f), true, tankbuster: true);
+class BladeTB(BossModule module) : Components.BaitAwayCast(module, (uint)AID.BladeTB, 6f, tankbuster: true);
 
 class WindSickle(BossModule module) : Components.SimpleAOEs(module, (uint)AID.WindSickle, new AOEShapeDonut(5f, 60f));
 class RazorStorm(BossModule module) : Components.SimpleAOEs(module, (uint)AID.RazorStorm, new AOEShapeRect(40f, 20f));

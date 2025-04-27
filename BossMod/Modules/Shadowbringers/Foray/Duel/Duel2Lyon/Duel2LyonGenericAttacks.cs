@@ -177,7 +177,7 @@ class SpitefulFlameCircleVoidzone(BossModule module) : Components.GenericAOEs(mo
 
 class SpitefulFlameRect(BossModule module) : Components.SimpleAOEs(module, (uint)AID.SpitefulFlame2, new AOEShapeRect(80f, 2f));
 
-class DynasticFlame(BossModule module) : Components.BaitAwayTethers(module, new AOEShapeCircle(10f), (uint)TetherID.fireorbs, centerAtTarget: true)
+class DynasticFlame(BossModule module) : Components.BaitAwayTethers(module, 10f, (uint)TetherID.fireorbs)
 {
     private int orbcount;
 
