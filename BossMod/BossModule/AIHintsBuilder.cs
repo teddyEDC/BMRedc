@@ -182,8 +182,11 @@ public sealed class AIHintsBuilder : IDisposable
                 hints.ForbiddenDirections.Add((Angle.FromDirection(target - player.Position), 45.Degrees(), finishAt));
         }
 
-        foreach (var inv in _invincible)
-            hints.SetPriority(inv, AIHints.Enemy.PriorityInvincible);
+        var count = _invincible.Count;
+        for (var i = 0; i < count; ++i)
+        {
+            hints.SetPriority(_invincible[i], AIHints.Enemy.PriorityInvincible);
+        }
     }
 
     private void OnCastStarted(Actor actor)
@@ -228,14 +231,28 @@ public sealed class AIHintsBuilder : IDisposable
 
     private void OnStatusGain(Actor actor, int index)
     {
-        if (invincibleStatuses.Contains(actor.Statuses[index].ID))
-            _invincible.Add(actor);
+        var statusID = actor.Statuses[index].ID;
+        for (var i = 0; i < 32; ++i)
+        {
+            if (statusID == invincibleStatuses[i])
+            {
+                _invincible.Add(actor);
+                return;
+            }
+        }
     }
 
     private void OnStatusLose(Actor actor, int index)
     {
-        if (invincibleStatuses.Contains(actor.Statuses[index].ID))
-            _invincible.Remove(actor);
+        var statusID = actor.Statuses[index].ID;
+        for (var i = 0; i < 32; ++i)
+        {
+            if (statusID == invincibleStatuses[i])
+            {
+                _invincible.Remove(actor);
+                return;
+            }
+        }
     }
 
     private static Angle DetermineConeAngle(ref (byte, byte, byte, uint RowId, string Name, string PathAlly, string Path, int Pos, bool Omen, uint) data)
@@ -243,7 +260,7 @@ public sealed class AIHintsBuilder : IDisposable
         if (!data.Omen)
         {
             Service.Log($"[AutoHints] No omen data for {data.RowId} '{data.Name}'...");
-            return 180.Degrees();
+            return 180f.Degrees();
         }
         var path = data.Path;
         var pos = data.Pos;

@@ -24,9 +24,18 @@ public enum AID : uint
     Dualcast = 15909 // Tristitia->self, 2.0s cast, single-target
 }
 
+public enum SID : uint
+{
+    ShockSpikes = 199, // Boss->Boss, extra=0x64
+    CriticalStrikes = 1797 // Boss->Boss, extra=0x0
+}
+
 class WatergaIII(BossModule module) : Components.SimpleAOEs(module, (uint)AID.WatergaIII, 8f);
 class SpineLash1(BossModule module) : Components.SimpleAOEs(module, (uint)AID.SpineLash1, new AOEShapeCone(9f, 45f.Degrees()));
 class SpineLash2(BossModule module) : Components.SimpleAOEs(module, (uint)AID.SpineLash2, new AOEShapeCone(11f, 45f.Degrees()));
+class ShockSpikes(BossModule module) : Components.Dispel(module, (uint)SID.ShockSpikes);
+class MightyStrikes(BossModule module) : Components.Dispel(module, (uint)SID.CriticalStrikes);
+
 class Meteor(BossModule module) : Components.RaidwideCast(module, (uint)AID.Meteor);
 
 class TornadoIIAerogaIVDualCast(BossModule module) : Components.GenericAOEs(module)
@@ -134,6 +143,9 @@ class TristitiaStates : StateMachineBuilder
     public TristitiaStates(BossModule module) : base(module)
     {
         TrivialPhase()
+            .ActivateOnEnter<ShockSpikes>()
+            .ActivateOnEnter<MightyStrikes>()
+            .ActivateOnEnter<TornadoIIAerogaIVDualCast>()
             .ActivateOnEnter<WatergaIII>()
             .ActivateOnEnter<TornadoIIAerogaIVDualCast>()
             .ActivateOnEnter<SpineLash2>()

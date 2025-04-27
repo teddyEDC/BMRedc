@@ -24,12 +24,15 @@ public class DuelFarmConfig : ConfigNode
     [PropertySlider(0, 30, Speed = 0.1f)]
     public int MaxPullCount = 10;
 
+    [PropertyDisplay("Show auto farm window")]
+    public bool ShowAutoFarmWindow = false;
+
     public bool AssistMode;
 }
 
 public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
 {
-    protected readonly DuelFarmConfig _globalConfig = Service.Config.Get<DuelFarmConfig>();
+    protected static readonly DuelFarmConfig _globalConfig = Service.Config.Get<DuelFarmConfig>();
 
     public readonly string Zone;
 
@@ -59,9 +62,9 @@ public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
         base.Dispose(disposing);
     }
 
-    public override bool WantDrawExtra() => true;
+    public override bool WantDrawExtra() => _globalConfig.ShowAutoFarmWindow;
 
-    public override string WindowName() => $"{Zone}###Eureka module";
+    public override string WindowName() => $"{Zone}###Bozja module";
 
     protected virtual void AddAIHints(int playerSlot, Actor player, AIHints hints) { }
 
@@ -73,14 +76,27 @@ public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
         var farmMax = _globalConfig.MaxPullCount;
         var farmRange = _globalConfig.MaxPullDistance;
 
-        if (farmMax > 0 && hints.PotentialTargets.Count(e => e.Priority >= 0) >= farmMax)
-            return;
+        if (farmMax > 0)
+        {
+            var count = 0;
+            var countTargets = hints.PotentialTargets.Count;
+            for (var i = 0; i < countTargets; ++i)
+            {
+                var e = hints.PotentialTargets[i];
+                if (e.Priority >= 0)
+                {
+                    ++count;
+                    if (count >= farmMax)
+                        return;
+                }
+            }
+        }
 
         if (farmNameID == 0)
             return;
 
         // only need to check "undesirable" targets, as mobs already attacking party members will be handled by autofarm
-        bool canTarget(AIHints.Enemy enemy) => enemy.Priority == AIHints.Enemy.PriorityUndesirable && (!_globalConfig.AssistMode || enemy.Actor.InCombat);
+        static bool canTarget(AIHints.Enemy enemy) => enemy.Priority == AIHints.Enemy.PriorityUndesirable && (!_globalConfig.AssistMode || enemy.Actor.InCombat);
 
         foreach (var e in hints.PotentialTargets.Where(t => t.Actor.NameID == farmNameID))
         {
