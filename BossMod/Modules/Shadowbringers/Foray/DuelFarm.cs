@@ -32,7 +32,7 @@ public class DuelFarmConfig : ConfigNode
 
 public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
 {
-    protected static readonly DuelFarmConfig _globalConfig = Service.Config.Get<DuelFarmConfig>();
+    protected static readonly DuelFarmConfig globalConfig = Service.Config.Get<DuelFarmConfig>();
 
     public readonly string Zone;
 
@@ -62,7 +62,7 @@ public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
         base.Dispose(disposing);
     }
 
-    public override bool WantDrawExtra() => _globalConfig.ShowAutoFarmWindow;
+    public override bool WantDrawExtra() => globalConfig.ShowAutoFarmWindow;
 
     public override string WindowName() => $"{Zone}###Bozja module";
 
@@ -73,8 +73,8 @@ public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
         AddAIHints(playerSlot, player, hints);
 
         var farmNameID = GetPrepID(FarmTarget);
-        var farmMax = _globalConfig.MaxPullCount;
-        var farmRange = _globalConfig.MaxPullDistance;
+        var farmMax = globalConfig.MaxPullCount;
+        var farmRange = globalConfig.MaxPullDistance;
 
         if (farmMax > 0)
         {
@@ -96,7 +96,7 @@ public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
             return;
 
         // only need to check "undesirable" targets, as mobs already attacking party members will be handled by autofarm
-        static bool canTarget(AIHints.Enemy enemy) => enemy.Priority == AIHints.Enemy.PriorityUndesirable && (!_globalConfig.AssistMode || enemy.Actor.InCombat);
+        static bool canTarget(AIHints.Enemy enemy) => enemy.Priority == AIHints.Enemy.PriorityUndesirable && (!globalConfig.AssistMode || enemy.Actor.InCombat);
 
         foreach (var e in hints.PotentialTargets.Where(t => t.Actor.NameID == farmNameID))
         {
@@ -123,13 +123,13 @@ public abstract class DuelFarm<Duel> : ZoneModule where Duel : struct, Enum
         var modified = false;
 
         ImGui.SetNextItemWidth(200);
-        modified |= ImGui.DragFloat("Max distance to look for new mobs", ref _globalConfig.MaxPullDistance, 1, 20, 120);
+        modified |= ImGui.DragFloat("Max distance to look for new mobs", ref globalConfig.MaxPullDistance, 1, 20, 120);
         ImGui.SetNextItemWidth(200);
-        modified |= ImGui.DragInt("Max mobs to pull (set to 0 for no limit)", ref _globalConfig.MaxPullCount, 1, 0, 30);
-        modified |= ImGui.Checkbox("Assist mode (only attack mobs that are already in combat)", ref _globalConfig.AssistMode);
+        modified |= ImGui.DragInt("Max mobs to pull (set to 0 for no limit)", ref globalConfig.MaxPullCount, 1, 0, 30);
+        modified |= ImGui.Checkbox("Assist mode (only attack mobs that are already in combat)", ref globalConfig.AssistMode);
 
         if (modified)
-            _globalConfig.Modified.Fire();
+            globalConfig.Modified.Fire();
     }
 }
 
