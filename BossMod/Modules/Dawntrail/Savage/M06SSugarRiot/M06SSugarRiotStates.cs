@@ -86,7 +86,7 @@ class M06SSugarRiotStates : StateMachineBuilder
                 cond.DeactivateOnExit<SprayPain1>();
         }
         ComponentCondition<HeatingBurningUp>(id + 0x90u, 4.5f, comp => comp.NumCasts == 3, "Defamation 1 + stack resolve");
-        ComponentCondition<StickyMousse>(id + 0xA0, 2.6f, comp => comp.Spreads.Count != 0, "Spreads appear")
+        ComponentCondition<StickyMousse>(id + 0xA0u, 2.6f, comp => comp.Spreads.Count != 0, "Spreads appear")
             .ActivateOnEnter<StickyMousse>();
         ComponentCondition<StickyMousse>(id + 0xB0u, 5.7f, comp => comp.Stacks.Count != 0, "Spreads resolve");
         ComponentCondition<StickyMousse>(id + 0xC0u, 6f, comp => comp.NumCasts != 0, "Light party stacks resolve")

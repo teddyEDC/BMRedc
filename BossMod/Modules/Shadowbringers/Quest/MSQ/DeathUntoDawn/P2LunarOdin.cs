@@ -126,7 +126,7 @@ class LunarGungnir1(BossModule module) : Components.StackWithCastTargets(module,
 class LunarGungnir2(BossModule module) : Components.StackWithCastTargets(module, (uint)AID.LunarGungnir1, 6f);
 class Gungnir(BossModule module) : Components.SimpleAOEs(module, (uint)AID.GungnirAOE, 10f);
 class Gagnrath(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Gagnrath, new AOEShapeRect(50f, 2f));
-class GungnirSpread(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(10f), 189, (uint)AID.GungnirSpread, 5.3f, centerAtTarget: true);
+class GungnirSpread(BossModule module) : Components.BaitAwayIcon(module, 10f, 189u, (uint)AID.GungnirSpread, 5.3f);
 
 abstract class Zantetsuken(BossModule module, uint aid) : Components.SimpleAOEs(module, aid, new AOEShapeRect(70f, 19.5f));
 class RightZantetsuken(BossModule module) : Zantetsuken(module, (uint)AID.RightZantetsuken);

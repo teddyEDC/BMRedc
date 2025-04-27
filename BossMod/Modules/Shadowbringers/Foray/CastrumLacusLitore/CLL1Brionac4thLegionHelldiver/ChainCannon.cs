@@ -1,15 +1,14 @@
-using static BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHelldiver.CLL1Brionac4thLegionHelldiver;
-
 namespace BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHelldiver;
 
 class ChainCannon(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = new(4);
     private static readonly AOEShapeRect rect = new(60f, 2.5f);
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (ArenaBottom.Contains(actor.Position - ArenaCenterBottom))
+        if (!_arena.IsBrionacArena)
             return CollectionsMarshal.AsSpan(_aoes);
         else
             return [];

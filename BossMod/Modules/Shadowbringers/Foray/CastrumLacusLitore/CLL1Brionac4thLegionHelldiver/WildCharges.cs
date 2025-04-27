@@ -1,14 +1,13 @@
-using static BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHelldiver.CLL1Brionac4thLegionHelldiver;
-
 namespace BossMod.Shadowbringers.Foray.CastrumLacusLitore.CLL1Brionac4thLegionHelldiver;
 
 class WildCharges(BossModule module) : Components.GenericAOEs(module)
 {
     private readonly List<AOEInstance> _aoes = new(6);
+    private readonly DetermineArena _arena = module.FindComponent<DetermineArena>()!;
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (ArenaBottom.Contains(actor.Position - ArenaCenterBottom))
+        if (!_arena.IsBrionacArena)
             return CollectionsMarshal.AsSpan(_aoes);
         else
             return [];
@@ -18,8 +17,8 @@ class WildCharges(BossModule module) : Components.GenericAOEs(module)
     {
         var halfWidth = spell.Action.ID switch
         {
-            (uint)AID.DiveFormation1 or (uint)AID.LinearDive => 3f,
-            (uint)AID.DiveFormation2 => 5f,
+            (uint)AID.LinearDive => 3f,
+            (uint)AID.DiveFormation => 5f,
             _ => default
         };
         if (halfWidth != default)
@@ -31,12 +30,14 @@ class WildCharges(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
-        if (_aoes.Count != 0 && spell.Action.ID is (uint)AID.DiveFormation1 or (uint)AID.DiveFormation2 or (uint)AID.LinearDive)
+        if (_aoes.Count != 0 && spell.Action.ID is (uint)AID.DiveFormation or (uint)AID.LinearDive)
             _aoes.RemoveAt(0);
     }
 
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
+        if (_arena.IsBrionacArena)
+            return;
         var count = _aoes.Count;
         if (count != 0)
         {
@@ -52,10 +53,11 @@ class WildCharges(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
+        if (_arena.IsBrionacArena)
+            return;
         var count = _aoes.Count;
         if (count == 0)
             return;
-
         var risky = true;
         for (var i = 0; i < count; ++i)
         {

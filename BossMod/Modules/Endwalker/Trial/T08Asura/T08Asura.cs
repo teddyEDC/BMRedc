@@ -3,7 +3,7 @@ namespace BossMod.Endwalker.Trial.T08Asura;
 class LowerRealm(BossModule module) : Components.RaidwideCast(module, (uint)AID.LowerRealm);
 class Ephemerality(BossModule module) : Components.RaidwideCast(module, (uint)AID.Ephemerality);
 
-class CuttingJewel(BossModule module) : Components.BaitAwayCast(module, (uint)AID.CuttingJewel, new AOEShapeCircle(4f), true, tankbuster: true);
+class CuttingJewel(BossModule module) : Components.BaitAwayCast(module, (uint)AID.CuttingJewel, 4f, tankbuster: true);
 
 class IconographyPedestalPurge(BossModule module) : Components.SimpleAOEs(module, (uint)AID.IconographyPedestalPurge, 10f);
 class PedestalPurge(BossModule module) : Components.SimpleAOEs(module, (uint)AID.PedestalPurge, 60f);

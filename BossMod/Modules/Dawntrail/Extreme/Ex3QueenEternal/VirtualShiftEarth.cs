@@ -117,7 +117,7 @@ class LawsOfEarthBurst2 : LawsOfEarthBurst
     }
 }
 
-class GravityPillar(BossModule module) : Components.BaitAwayCast(module, (uint)AID.GravityPillar, new AOEShapeCircle(10f), true);
+class GravityPillar(BossModule module) : Components.BaitAwayCast(module, (uint)AID.GravityPillar, 10f);
 
 // note: the tethers appear before target is created; the target is at the same location as the boss
 class GravityRay(BossModule module) : Components.BaitAwayTethers(module, new AOEShapeCone(50f, 30f.Degrees()), (uint)TetherID.GravityRay, (uint)AID.GravityRay) // TODO: verify angle

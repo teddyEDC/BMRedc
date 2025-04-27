@@ -70,18 +70,18 @@ class PainMire(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Pain
 {
     public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
     {
-        if (Module.Enemies(OID.BleedVoidzone).Any(x => x.EventState != 7))
+        if (Module.Enemies((uint)OID.BleedVoidzone).Any(x => x.EventState != 7))
         { }
         else
             base.AddAIHints(slot, actor, assignment, hints);
     }
 }
 
-class BleedVoidzone(BossModule module) : Components.Voidzone(module, 8f, m => m.Enemies(OID.BleedVoidzone).Where(x => x.EventState != 7));
+class BleedVoidzone(BossModule module) : Components.Voidzone(module, 8f, m => m.Enemies((uint)OID.BleedVoidzone).Where(x => x.EventState != 7));
 class TwistedTouch(BossModule module) : Components.SingleTargetCast(module, (uint)AID.TwistedTouch);
 class ChaosStorm(BossModule module) : Components.RaidwideCast(module, (uint)AID.ChaosStorm);
 class DarkDeluge(BossModule module) : Components.SimpleAOEs(module, (uint)AID.DarkDeluge, 5f);
-class NecrobombBaitAway(BossModule module) : Components.BaitAwayIcon(module, new AOEShapeCircle(9.25f), (uint)IconID.Baitaway, (uint)AID.DeathThroes, centerAtTarget: true); // note: explosion is not always exactly the position of player, if zombie teleports to player it is player + zombie hitboxradius = 1.25 away
+class NecrobombBaitAway(BossModule module) : Components.BaitAwayIcon(module, 9.25f, (uint)IconID.Baitaway, (uint)AID.DeathThroes); // note: explosion is not always exactly the position of player, if zombie teleports to player it is player + zombie hitboxradius = 1.25 away
 
 class Necrobombs(BossModule module) : BossComponent(module)
 {
@@ -110,7 +110,7 @@ class Burst(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnActorModelStateChange(Actor actor, byte modelState, byte animState1, byte animState2)
     {
-        if (modelState == 54)
+        if (modelState == 54u)
             _aoes.Add(new(circle, WPos.ClampToGrid(actor.Position), default, WorldState.FutureTime(6d))); // activation time can be vastly different, even twice as high so we take a conservative delay
     }
 

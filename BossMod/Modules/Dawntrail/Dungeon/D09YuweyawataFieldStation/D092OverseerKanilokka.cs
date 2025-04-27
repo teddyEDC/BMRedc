@@ -144,7 +144,7 @@ class LostHope(BossModule module) : Components.TemporaryMisdirection(module, (ui
 
     public override void OnEventEnvControl(byte index, uint state)
     {
-        if (index == 0x07u)
+        if (index != 0x07u)
             return;
         prepare = false;
     }
