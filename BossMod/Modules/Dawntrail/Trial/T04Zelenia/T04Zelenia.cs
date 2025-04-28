@@ -18,6 +18,14 @@ class RosebloodBloom(BossModule module) : Components.SimpleKnockbacks(module, (u
     }
 }
 
+class ThunderSlash : Components.SimpleAOEs
+{
+    public ThunderSlash(BossModule module) : base(module, (uint)AID.ThunderSlash, new AOEShapeCone(24f, 30f.Degrees()), 4)
+    {
+        MaxDangerColor = 2;
+    }
+}
+
 class PerfumedQuietus(BossModule module) : Components.RaidwideCast(module, (uint)AID.RosebloodBloom); // using the knockback here, since after knockback player is stunned for a cutscene and can't heal up
 class ThornedCatharsis(BossModule module) : Components.RaidwideCast(module, (uint)AID.ThornedCatharsis);
 class SpecterOfTheLost(BossModule module) : Components.BaitAwayCast(module, (uint)AID.SpecterOfTheLost, new AOEShapeCone(50f, 22.5f.Degrees()), tankbuster: true);

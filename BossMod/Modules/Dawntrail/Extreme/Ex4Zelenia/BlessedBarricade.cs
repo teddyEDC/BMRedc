@@ -64,7 +64,7 @@ class SpearpointPushBait(BossModule module) : Components.GenericBaitAway(module,
     private static readonly AOEShapeRect rect = new(32f, 37f, 1f);
     private Angle offset;
     private static readonly Angle a90 = 90f.Degrees();
-    private static readonly WDir dir = new(default, 6f);
+    private static readonly WDir dir = new(default, 8f);
 
     public override void OnActorPlayActionTimelineEvent(Actor actor, ushort id)
     {

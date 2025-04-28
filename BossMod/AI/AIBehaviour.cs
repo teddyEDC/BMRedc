@@ -160,18 +160,18 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
 
         Actor? forceDestination = null;
         var interactTarget = autorot.Hints.InteractWithTarget;
-        if (_followMaster)
-            forceDestination = master;
-        else if (interactTarget != null)
-        {
+        if (interactTarget != null)
             forceDestination = interactTarget;
+        else if (_followMaster)
+        {
+            forceDestination = master;
         }
 
         _followMaster = interactTarget == null && (_config.FollowDuringCombat || !master.InCombat || (_masterPrevPos - _masterMovementStart).LengthSq() > 100f) && (_config.FollowDuringActiveBossModule || autorot.Bossmods.ActiveModule?.StateMachine.ActiveState == null) && (_config.FollowOutOfCombat || master.InCombat);
 
         if (_followMaster && AIPreset == null)
         {
-            if (forceDestination != null && forceDestination.OID != 0u && autorot.Hints.PathfindMapBounds.Contains(forceDestination.Position - autorot.Hints.PathfindMapCenter))
+            if (forceDestination != null && forceDestination.OID != master.OID && autorot.Hints.PathfindMapBounds.Contains(forceDestination.Position - autorot.Hints.PathfindMapCenter))
             {
                 autorot.Hints.GoalZones.Add(autorot.Hints.GoalProximity(forceDestination, 3.5f, 100f));
             }

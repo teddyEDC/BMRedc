@@ -263,7 +263,7 @@ class AutoWukLamat(WorldState ws) : UnmanagedRotation(ws, 3f)
         UseAction(gcd, primaryTarget);
         UseAction(Roleplay.AID.BeakOfTheLuwatena, primaryTarget, -5f);
 
-        if (Player.DistanceToHitbox(primaryTarget) < 3)
+        if (Player.DistanceToHitbox(primaryTarget) < 3f)
             UseAction(Roleplay.AID.RunOfTheRroneek, primaryTarget, -10f);
 
         if (Player.HPMP.CurHP * 2 < Player.HPMP.MaxHP)
