@@ -9,7 +9,7 @@ class MagossRadiance(BossModule module) : Components.RaidwideCast(module, (uint)
 class RadiantHalo(BossModule module) : Components.RaidwideCast(module, (uint)AID.RadiantHalo);
 class CrystallineStoneIII(BossModule module) : Components.StackWithCastTargets(module, (uint)AID.CrystallineStoneIII2, 6f, 8, 8);
 class CrystallineBlizzardIII(BossModule module) : Components.SpreadFromCastTargets(module, (uint)AID.CrystallineBlizzardIII2, 5f);
-class Beacon(BossModule module) : Components.ChargeAOEs(module, (uint)AID.Beacon, 3f);
+class Beacon1(BossModule module) : Components.ChargeAOEs(module, (uint)AID.Beacon1, 3f);
 class Beacon2(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Beacon2, new AOEShapeRect(45f, 3f), 10);
 class HydaelynsRay(BossModule module) : Components.SimpleAOEs(module, (uint)AID.HydaelynsRay, new AOEShapeRect(45f, 15f));
 
@@ -21,7 +21,7 @@ class T02HydaelynStates : StateMachineBuilder
             .ActivateOnEnter<ParhelicCircle>()
             .ActivateOnEnter<MousasScorn>()
             .ActivateOnEnter<Echoes>()
-            .ActivateOnEnter<Beacon>()
+            .ActivateOnEnter<Beacon1>()
             .ActivateOnEnter<Beacon2>()
             .ActivateOnEnter<CrystallineStoneIII>()
             .ActivateOnEnter<CrystallineBlizzardIII>()
