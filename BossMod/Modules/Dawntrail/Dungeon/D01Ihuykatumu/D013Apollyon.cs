@@ -57,10 +57,7 @@ class Whirlwind(BossModule module) : Components.Voidzone(module, 4.5f, GetWhirlw
 }
 class Blade(BossModule module) : Components.SingleTargetCast(module, (uint)AID.Blade);
 class HighWind(BossModule module) : Components.RaidwideCast(module, (uint)AID.HighWind);
-
-abstract class Blades(BossModule module, uint aid) : Components.SimpleAOEs(module, aid, new AOEShapeRect(50f, 6f));
-class RazorZephyr(BossModule module) : Blades(module, (uint)AID.RazorZephyr);
-class BladesOfFamine(BossModule module) : Blades(module, (uint)AID.BladesOfFamine);
+class RazorZephyrBladesOfFamine(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.RazorZephyr, (uint)AID.BladesOfFamine], new AOEShapeRect(50f, 6f));
 
 class Levinsickle(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Levinsickle, 4f);
 class LevinsickleSpark(BossModule module) : Components.VoidzoneAtCastTarget(module, 4f, (uint)AID.LevinsickleSpark, GetVoidzones, 0.7f)
@@ -139,10 +136,9 @@ class D013ApollyonStates : StateMachineBuilder
     public D013ApollyonStates(BossModule module) : base(module)
     {
         TrivialPhase()
-            .ActivateOnEnter<RazorZephyr>()
+            .ActivateOnEnter<RazorZephyrBladesOfFamine>()
             .ActivateOnEnter<Blade>()
             .ActivateOnEnter<HighWind>()
-            .ActivateOnEnter<BladesOfFamine>()
             .ActivateOnEnter<Levinsickle>()
             .ActivateOnEnter<LevinsickleSpark>()
             .ActivateOnEnter<WingOfLightning>()

@@ -50,8 +50,8 @@ public abstract class UnmanagedRotation(WorldState ws, float effectiveRange)
         Exec(closestPriorityTarget);
     }
 
-    protected void UseAction(Roleplay.AID action, Actor? target, float additionalPriority = 0, Vector3 targetPos = default) => UseAction(ActionID.MakeSpell(action), target, additionalPriority, targetPos);
-    protected void UseAction(ActionID action, Actor? target, float additionalPriority = 0, Vector3 targetPos = default)
+    protected void UseAction(Roleplay.AID action, Actor? target, float additionalPriority = default, Vector3 targetPos = default) => UseAction(ActionID.MakeSpell(action), target, additionalPriority, targetPos);
+    protected void UseAction(ActionID action, Actor? target, float additionalPriority = default, Vector3 targetPos = default)
     {
         var def = ActionDefinitions.Instance[action];
         if (def == null)
@@ -72,5 +72,5 @@ public abstract class UnmanagedRotation(WorldState ws, float effectiveRange)
 public abstract class RotationModule<R>(BossModule module) : BossComponent(module) where R : UnmanagedRotation
 {
     private readonly R _rotation = New<R>.Constructor<WorldState>()(module.WorldState);
-    public sealed override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints) => _rotation.Execute(actor, hints);
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints) => _rotation.Execute(actor, hints);
 }
