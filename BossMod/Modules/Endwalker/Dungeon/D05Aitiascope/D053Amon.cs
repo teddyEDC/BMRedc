@@ -44,11 +44,11 @@ class CurtainCallArenaChange(BossModule module) : BossComponent(module)
 
     public override void OnEventEnvControl(byte index, uint state)
     {
-        if (index == 0x05)
+        if (index == 0x05u)
         {
-            if (state == 0x00020001)
+            if (state == 0x00020001u)
                 Arena.Bounds = CurtaincallArena;
-            else if (state == 0x00080004)
+            else if (state == 0x00080004u)
                 Arena.Bounds = D053Amon.arena;
         }
     }
@@ -57,10 +57,7 @@ class CurtainCallArenaChange(BossModule module) : BossComponent(module)
 class Epode(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Epode, new AOEShapeRect(70f, 6f));
 class EruptionForte(BossModule module) : Components.SimpleAOEs(module, (uint)AID.EruptionForte, 8f);
 
-abstract class FiragaForte(BossModule module, uint aid) : Components.SimpleAOEs(module, aid, new AOEShapeRect(40f, 10f));
-class LeftFiragaForte(BossModule module) : FiragaForte(module, (uint)AID.LeftFiragaForte);
-class RightFiragaForte(BossModule module) : FiragaForte(module, (uint)AID.RightFiragaForte);
-
+class FiragaForte(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.LeftFiragaForte, (uint)AID.RightFiragaForte], new AOEShapeRect(40f, 10f));
 class ThundagaForteProximity(BossModule module) : Components.SimpleAOEs(module, (uint)AID.ThundagaForteProximity, 15f);
 class DarkForte(BossModule module) : Components.SingleTargetCast(module, (uint)AID.DarkForte);
 class Entracte(BossModule module) : Components.RaidwideCast(module, (uint)AID.Entracte);
@@ -88,8 +85,7 @@ class D053AmonStates : StateMachineBuilder
             .ActivateOnEnter<DreamsOfIce>()
             .ActivateOnEnter<Epode>()
             .ActivateOnEnter<EruptionForte>()
-            .ActivateOnEnter<LeftFiragaForte>()
-            .ActivateOnEnter<RightFiragaForte>()
+            .ActivateOnEnter<FiragaForte>()
             .ActivateOnEnter<ThundagaForteProximity>()
             .ActivateOnEnter<ThundagaForteCone>()
             .ActivateOnEnter<DarkForte>()

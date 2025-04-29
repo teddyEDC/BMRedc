@@ -124,12 +124,8 @@ class Shock(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Shock, 
 class RumblingThunder(BossModule module) : Components.SimpleAOEs(module, (uint)AID.RumblingThunder, 6f);
 class ElectricWhisker(BossModule module) : Components.SimpleAOEs(module, (uint)AID.ElectricWhisker, new AOEShapeCone(40f, 30f.Degrees()));
 
-abstract class Mandragoras(BossModule module, uint aid) : Components.SimpleAOEs(module, aid, 7f);
-class PluckAndPrune(BossModule module) : Mandragoras(module, (uint)AID.PluckAndPrune);
-class TearyTwirl(BossModule module) : Mandragoras(module, (uint)AID.TearyTwirl);
-class HeirloomScream(BossModule module) : Mandragoras(module, (uint)AID.HeirloomScream);
-class PungentPirouette(BossModule module) : Mandragoras(module, (uint)AID.PungentPirouette);
-class Pollen(BossModule module) : Mandragoras(module, (uint)AID.Pollen);
+class MandragoraAOEs(BossModule module) : Components.SimpleAOEGroups(module, [(uint)AID.PluckAndPrune, (uint)AID.TearyTwirl,
+(uint)AID.HeirloomScream, (uint)AID.PungentPirouette, (uint)AID.Pollen], 7f);
 
 class HeavySmash(BossModule module) : Components.SimpleAOEs(module, (uint)AID.HeavySmash, 6f);
 
@@ -145,11 +141,7 @@ class HippomenesStates : StateMachineBuilder
             .ActivateOnEnter<Shock>()
             .ActivateOnEnter<RumblingThunder>()
             .ActivateOnEnter<ElectricWhisker>()
-            .ActivateOnEnter<PluckAndPrune>()
-            .ActivateOnEnter<TearyTwirl>()
-            .ActivateOnEnter<HeirloomScream>()
-            .ActivateOnEnter<PungentPirouette>()
-            .ActivateOnEnter<Pollen>()
+            .ActivateOnEnter<MandragoraAOEs>()
             .ActivateOnEnter<HeavySmash>()
             .Raw.Update = () =>
             {

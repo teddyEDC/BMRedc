@@ -88,7 +88,19 @@ class AutoReaperAI(WorldState ws) : QuestBattle.UnmanagedRotation(ws, 10f)
     }
 }
 
-class ReaperAI(BossModule module) : QuestBattle.RotationModule<AutoReaperAI>(module);
+class ReaperAI(BossModule module) : QuestBattle.RotationModule<AutoReaperAI>(module)
+{
+    public override void AddAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
+    {
+        var count = hints.PotentialTargets.Count;
+        for (var i = 0; i < count; ++i)
+        {
+            var e = hints.PotentialTargets[i];
+            e.Priority = e.Actor.OID == (uint)OID.ImperialColossus ? 5 : e.Actor.TargetID == actor.InstanceID ? 1 : 0;
+        }
+        base.AddAIHints(slot, actor, assignment, hints);
+    }
+}
 
 class GrynewahtStates : StateMachineBuilder
 {
@@ -127,16 +139,6 @@ public class Grynewaht(WorldState ws, Actor primary) : BossModule(ws, primary, d
     {
         Arena.Actor(PrimaryActor);
         Arena.Actors(Enemies(adds));
-    }
-
-    protected override void CalculateModuleAIHints(int slot, Actor actor, PartyRolesConfig.Assignment assignment, AIHints hints)
-    {
-        var count = hints.PotentialTargets.Count;
-        for (var i = 0; i < count; ++i)
-        {
-            var e = hints.PotentialTargets[i];
-            e.Priority = e.Actor.OID == (uint)OID.ImperialColossus ? 5 : e.Actor.TargetID == actor.InstanceID ? 1 : 0;
-        }
     }
 
     protected override void UpdateModule()
