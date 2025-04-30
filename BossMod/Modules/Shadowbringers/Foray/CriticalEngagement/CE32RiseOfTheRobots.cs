@@ -249,8 +249,12 @@ class OrderTowers(BossModule module) : Components.GenericAOEs(module)
 class OrderForcedMarch(BossModule module) : Components.StatusDrivenForcedMarch(module, 3f, (uint)SID.ForwardMarch, (uint)SID.AboutFace, (uint)SID.LeftFace, (uint)SID.RightFace)
 {
     private readonly OrderTowers _math = module.FindComponent<OrderTowers>()!;
+
+#pragma warning disable CA5394 // Do not use insecure randomness
     private static readonly Random random = new();
-    private readonly float randomOdd = (float)random.Next(1 / 2, (100 + 1) / 2) * 2 - 1; // used as pseudo randomisation for default case
+    private readonly float randomOdd = random.Next(1, 51) * 2 - 1; // used as pseudo randomisation for default case
+#pragma warning restore CA5394
+
     private static readonly Angle a175 = 175f.Degrees(), a45 = 45f.Degrees(), am90 = -90f.Degrees(), a225 = 22.5f.Degrees();
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
