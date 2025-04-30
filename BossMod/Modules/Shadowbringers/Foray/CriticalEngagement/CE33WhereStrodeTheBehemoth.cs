@@ -23,7 +23,7 @@ public enum AID : uint
     ZombieJuiceRepeat = 20199 // Helper->location, no cast, range 6 circle
 }
 
-class BlazingMeteor(BossModule module) : Components.CastLineOfSightAOE(module, (uint)AID.BlazingMeteor, 30f, safeInsideHitbox: false)
+class BlazingMeteor(BossModule module) : Components.CastLineOfSightAOE(module, (uint)AID.BlazingMeteor, 30f)
 {
     public override ReadOnlySpan<Actor> BlockerActors() => CollectionsMarshal.AsSpan(Module.Enemies((uint)OID.BestialCorpse));
 }
@@ -70,8 +70,24 @@ class Thunderbolt(BossModule module) : Components.GenericAOEs(module)
                 var pos = corpses[i].Position;
                 if (pos.InCircle(loc, 6f))
                 {
-                    _aoes.Add(new(cone, WPos.ClampToGrid(pos), corpses[i].Rotation, WorldState.FutureTime(12.8d)));
+                    AddAOE(pos, corpses[i].Rotation);
                     return; // never more than one corpse per circle
+                }
+            }
+        }
+        else if (spell.Action.ID == (uint)AID.ZombieBreath)
+        {
+            var corpses = Module.Enemies((uint)OID.BestialCorpse);
+            var count = corpses.Count;
+            var loc = spell.LocXZ;
+            var rot = spell.Rotation.ToDirection();
+            for (var i = 0; i < count; ++i)
+            {
+                var pos = corpses[i].Position;
+                if (pos.InRect(loc, rot, 60f, default, 3f))
+                {
+                    AddAOE(pos, corpses[i].Rotation);
+                    // no early exit, if unlucky boss tanking, rect can hit multiple corpses
                 }
             }
         }
@@ -79,6 +95,7 @@ class Thunderbolt(BossModule module) : Components.GenericAOEs(module)
         {
             _aoes.Clear();
         }
+        void AddAOE(WPos pos, Angle rot) => _aoes.Add(new(cone, WPos.ClampToGrid(pos), rot, WorldState.FutureTime(12.8d)));
     }
 }
 
@@ -92,6 +109,7 @@ class CE33WhereStrodeTheBehemothStates : StateMachineBuilder
             .ActivateOnEnter<BlazingMeteor>()
             .ActivateOnEnter<ZombieJuice>()
             .ActivateOnEnter<WildBolt>()
+            .ActivateOnEnter<WildHorn>()
             .ActivateOnEnter<ZombieBreath>()
             .ActivateOnEnter<Thunderbolt>();
     }
