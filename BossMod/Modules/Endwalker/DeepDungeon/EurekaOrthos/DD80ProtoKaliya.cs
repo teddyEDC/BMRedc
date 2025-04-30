@@ -56,7 +56,7 @@ class Magnetism(BossModule module) : Components.GenericKnockback(module, ignoreI
             var count = _aoe1.AOEs.Count;
             for (var i = 0; i < count; ++i)
                 if (_aoe1.AOEs[i].Shape == NerveGasRingAndAutoCannons.donut)
-                    return new Knockback[1] { source };
+                    return new Span<Knockback>([source]);
         }
         return [];
     }
