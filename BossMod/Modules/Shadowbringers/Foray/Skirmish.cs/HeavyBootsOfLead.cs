@@ -36,6 +36,7 @@ class Pulverize(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Pul
 class Ventilate(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Ventilate, 8f);
 class Compress(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Compress, new AOEShapeCross(50f, 3.5f));
 class Accelerate(BossModule module) : Components.StackWithCastTargets(module, (uint)AID.Accelerate, 6f, 8, 8);
+class Dispose(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Dispose, new AOEShapeCone(40f, 30f.Degrees()));
 
 class Shatter(BossModule module) : Components.SimpleAOEs(module, (uint)AID.Shatter, 6f);
 class GarleanFire(BossModule module) : Components.SimpleAOEs(module, (uint)AID.GarleanFire, 5f);
@@ -51,6 +52,7 @@ class HeavyBootsOfLeadStates : StateMachineBuilder
             .ActivateOnEnter<Compress>()
             .ActivateOnEnter<Accelerate>()
             .ActivateOnEnter<Shatter>()
+            .ActivateOnEnter<Dispose>()
             .ActivateOnEnter<GarleanFire>();
     }
 }
