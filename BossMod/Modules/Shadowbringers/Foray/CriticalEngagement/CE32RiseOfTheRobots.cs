@@ -153,7 +153,7 @@ class Train(BossModule module) : Components.GenericRotatingAOE(module)
 
 class OrderTowers(BossModule module) : Components.GenericAOEs(module)
 {
-    public readonly AOEInstance?[] AOEs = new AOEInstance?[8];
+    public readonly AOEInstance[][] AOEs = new AOEInstance[8][];
     public static readonly WPos[] TowerPositions = GetTowerPositions();
     public List<uint>[] Numbers = new List<uint>[8];
 
@@ -172,9 +172,9 @@ class OrderTowers(BossModule module) : Components.GenericAOEs(module)
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (slot is < 0 or > 7 || AOEs[slot] is not AOEInstance aoe) // no support for NPCs that might be around
+        if (slot is < 0 or > 7 || AOEs[slot] == default) // no support for NPCs that might be around
             return [];
-        return new Span<AOEInstance>([aoe]);
+        return AOEs[slot];
     }
 
     public override void OnCastStarted(Actor caster, ActorCastInfo spell)
@@ -189,10 +189,11 @@ class OrderTowers(BossModule module) : Components.GenericAOEs(module)
         };
         if (divisor < 6u)
         {
-            var party = Module.Raid.WithSlot(true, true, true);
-            var len = party.Length;
             for (var i = 0; i < 8; ++i)
                 Numbers[i] = [];
+
+            var party = Module.Raid.WithSlot(true, true, true);
+            var len = party.Length;
             for (var i = 0; i < len; ++i)
             {
                 ref readonly var p = ref party[i];
@@ -217,7 +218,7 @@ class OrderTowers(BossModule module) : Components.GenericAOEs(module)
                         shapes.Add(new Polygon(TowerPositions[j - 1], 5f, 20));
                     }
                 }
-                AOEs[p.Item1] = new(new AOEShapeCustom(shapes, InvertForbiddenZone: !outsideSafe), Arena.Center, default, Module.CastFinishAt(spell), !outsideSafe ? Colors.SafeFromAOE : default);
+                AOEs[p.Item1] = [new(new AOEShapeCustom(shapes, InvertForbiddenZone: !outsideSafe), Arena.Center, default, Module.CastFinishAt(spell), !outsideSafe ? Colors.SafeFromAOE : default)];
             }
         }
     }
@@ -238,8 +239,10 @@ class OrderTowers(BossModule module) : Components.GenericAOEs(module)
 
     public override void AddHints(int slot, Actor actor, TextHints hints)
     {
-        if (AOEs[slot] is AOEInstance aoe)
+        ref var aoes = ref AOEs[slot];
+        if (aoes != default)
         {
+            ref var aoe = ref AOEs[slot][0];
             var isInside = aoe.Check(actor.Position);
             hints.Add(Numbers[slot][0] == default ? ("Avoid marked towers!", isInside) : ("Move into a marked tower!", !isInside));
         }
@@ -259,8 +262,10 @@ class OrderForcedMarch(BossModule module) : Components.StatusDrivenForcedMarch(m
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {
-        if (_math.AOEs[slot] is Components.GenericAOEs.AOEInstance aoe)
+        ref var aoes = ref _math.AOEs[slot];
+        if (aoes != default)
         {
+            ref var aoe = ref aoes[0];
             var isInside = aoe.Check(pos);
             return _math.Numbers[slot][0] == default ? isInside : !isInside;
         }
