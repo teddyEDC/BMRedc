@@ -258,7 +258,7 @@ class OrderForcedMarch(BossModule module) : Components.StatusDrivenForcedMarch(m
     private readonly float randomOdd = random.Next(1, 51) * 2 - 1; // used as pseudo randomisation for default case
 #pragma warning restore CA5394
 
-    private static readonly Angle a175 = 175f.Degrees(), a45 = 45f.Degrees(), am90 = -90f.Degrees(), a225 = 22.5f.Degrees();
+    private static readonly Angle a175 = 175f.Degrees(), a45 = 45f.Degrees(), am90 = -90f.Degrees(), a225 = 22.5f.Degrees(), a180 = 180f.Degrees();
 
     public override bool DestinationUnsafe(int slot, Actor actor, WPos pos)
     {
@@ -280,11 +280,11 @@ class OrderForcedMarch(BossModule module) : Components.StatusDrivenForcedMarch(m
         if (_math.Numbers[slot] is var num && num != default)
         {
             var move0 = state.PendingMoves[0];
-            var dir = move0.dir;
             var act = move0.activation;
-            var angleToTower = (num[0] - 1) * am90;
-            hints.AddForbiddenZone(num[0] == default ? ShapeDistance.InvertedCone(CE32RiseOfTheRobots.ArenaCenter, 7f, a45 * randomOdd, a225) : ShapeDistance.InvertedCone(CE32RiseOfTheRobots.ArenaCenter, 7f, angleToTower + dir, a225), act);
-            hints.ForbiddenDirections.Add(num[0] == default ? (a45 * randomOdd, a175, act) : (angleToTower - dir, a175, act));
+            var isDefault = num[0] == default;
+            var angleToTower = isDefault ? default : (num[0] - 1) * am90;
+            hints.AddForbiddenZone(isDefault ? ShapeDistance.InvertedCone(CE32RiseOfTheRobots.ArenaCenter, 7f, a45 * randomOdd, a225) : ShapeDistance.InvertedCone(CE32RiseOfTheRobots.ArenaCenter, 7f, a180 + angleToTower, a225), act);
+            hints.ForbiddenDirections.Add(isDefault ? (a45 * randomOdd, a175, act) : (angleToTower - move0.dir, a175, act));
         }
     }
 }

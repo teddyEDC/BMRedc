@@ -63,13 +63,12 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
     private static readonly AOEShapeRect rect = new(20f, 10f);
     private static readonly AOEShapeCircle circle = new(15f);
     private readonly List<AOEInstance> _aoes = new(8);
-    private bool show;
     private int tetherCount;
     private byte tutorial;
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (!show)
+        if (tetherCount != default)
             return [];
 
         var aoes = CollectionsMarshal.AsSpan(_aoes);
@@ -95,7 +94,6 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
     {
         if (tether.ID == (uint)TetherID.Freeze)
         {
-            show = true;
             var count = _aoes.Count;
             var id = source.InstanceID;
             var aoes = CollectionsMarshal.AsSpan(_aoes);
@@ -128,7 +126,6 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
                     _aoes.RemoveAt(i);
                     if (_aoes.Count == 0)
                     {
-                        show = false;
                         ++tutorial;
                         tetherCount = default;
                     }
