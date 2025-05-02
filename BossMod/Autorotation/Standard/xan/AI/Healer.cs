@@ -112,19 +112,6 @@ public class HealerAI(RotationModuleManager manager, Actor player) : AIBase(mana
         }
     }
 
-    private Vector3? ArenaCenter
-    {
-        get
-        {
-            if (Bossmods.ActiveModule is BossModule m)
-            {
-                var center = m.Arena.Center;
-                return new Vector3(center.X, Player.PosRot.Y, center.Z);
-            }
-            return null;
-        }
-    }
-
     public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         if (Player.MountId > 0)

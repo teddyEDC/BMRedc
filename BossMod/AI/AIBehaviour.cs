@@ -157,7 +157,7 @@ sealed class AIBehaviour(AIController ctrl, RotationModuleManager autorot, Prese
             || autorot.Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.NoMovement && autorot.Hints.ImminentSpecialMode.activation <= WorldState.FutureTime(1d))
             return new() { LeewaySeconds = float.MaxValue };
 
-        if (autorot.Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Freezing && autorot.Hints.ImminentSpecialMode.activation <= WorldState.FutureTime(2d))
+        if (autorot.Hints.ImminentSpecialMode.mode == AIHints.SpecialMode.Freezing && autorot.Hints.ImminentSpecialMode.activation <= WorldState.FutureTime(2.1d))
         {
             var randomO1 = random.NextSingle() * 2f - 1f;
             var randomO2 = random.NextSingle() * 2f - 1f;

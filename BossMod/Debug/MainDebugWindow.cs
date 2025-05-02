@@ -25,7 +25,7 @@ class MainDebugWindow(WorldState ws, RotationModuleManager autorot, ZoneModuleMa
     private readonly DebugTiming _debugTiming = new();
     private readonly DebugTeleport _debugTeleport = new();
     private readonly DebugCollision _debugCollision = new();
-    // private readonly DebugQuests _debugQuests = new();
+    private readonly DebugQuests _debugQuests = new();
 
     protected override void Dispose(bool disposing)
     {
@@ -171,10 +171,10 @@ class MainDebugWindow(WorldState ws, RotationModuleManager autorot, ZoneModuleMa
         {
             DrawLimitBreak();
         }
-        // if (ImGui.CollapsingHeader("Quests"))
-        // {
-        //     _debugQuests.Draw();
-        // }
+        if (ImGui.CollapsingHeader("Quests"))
+        {
+            _debugQuests.Draw();
+        }
         if (ImGui.CollapsingHeader("Teleport"))
         {
             _debugTeleport.Draw();

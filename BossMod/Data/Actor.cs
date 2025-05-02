@@ -165,10 +165,10 @@ public sealed class Actor(ulong instanceID, uint oid, int spawnIndex, string nam
             return sum;
         }
     }
-    public int PendingHPRaw => (int)HPMP.CurHP + PendingHPDiffence;
-    public int PendingMPRaw => (int)HPMP.CurMP + PendingMPDiffence;
+    public int PendingHPRaw => (int)HPMP.CurHP + PendingHPDifference;
+    public int PendingMPRaw => (int)HPMP.CurMP + PendingMPDifference;
     public int PendingHPClamped => Math.Clamp(PendingHPRaw, 0, (int)HPMP.MaxHP);
-    public bool PendingDead => Pending <= 1 && !IsStrikingDummy;
+    public bool PendingDead => PendingHPRaw <= 1 && !IsStrikingDummy;
     public float PendingHPRatio => (float)PendingHPRaw / HPMP.MaxHP;
 
     // if expirationForPredicted is not null, search pending first, and return one if found; in that case only low byte of extra will be set
