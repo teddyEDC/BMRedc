@@ -68,13 +68,13 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
 
     public override ReadOnlySpan<AOEInstance> ActiveAOEs(int slot, Actor actor)
     {
-        if (tetherCount != default)
+        if (tetherCount == default)
             return [];
 
         var aoes = CollectionsMarshal.AsSpan(_aoes);
         var isTutorial = tutorial < 2u;
         var len = aoes.Length;
-        var max = len > 2 && isTutorial ? 2 : len > 4 && !isTutorial ? 4 : len;
+        var max = len > 1 && isTutorial ? 2 : len > 3 && !isTutorial ? 4 : len;
         return aoes[..max];
     }
 
@@ -102,7 +102,7 @@ class IceScreamFrozenSwirl(BossModule module) : Components.GenericAOEs(module)
                 ref var aoe = ref aoes[i];
                 if (aoe.ActorID == id)
                 {
-                    aoe.Activation = WorldState.FutureTime(14.9f);
+                    aoe.Activation = WorldState.FutureTime(14.9d);
                     ++tetherCount;
                     var isTutorial = tutorial < 2u;
                     if (isTutorial && tetherCount == 2 || !isTutorial && tetherCount == 4)
