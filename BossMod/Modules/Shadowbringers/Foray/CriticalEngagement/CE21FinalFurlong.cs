@@ -136,4 +136,9 @@ class CE21FinalFurlongStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.BozjaCE, GroupID = 735, NameID = 6)] // bnpcname=9405
-public class CE21FinalFurlong(WorldState ws, Actor primary) : BossModule(ws, primary, new(644f, 228f), new ArenaBoundsCircle(27f));
+public class CE21FinalFurlong(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+{
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(644f, 228f), 29.5f, 32)]);
+
+    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
+}

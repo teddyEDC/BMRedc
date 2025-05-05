@@ -170,4 +170,6 @@ public class CE34TrampledUnderHoof(WorldState ws, Actor primary) : BossModule(ws
             };
         }
     }
+
+    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
 }
