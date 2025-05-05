@@ -201,4 +201,19 @@ public class CastWeakpoint(BossModule module, uint aid, AOEShape shape, uint sta
         if (statusKind >= 0)
             _playerWeakpoints.Remove(actor.InstanceID);
     }
+
+    public override void AddHints(int slot, Actor actor, TextHints hints)
+    {
+        var eyes = ActiveEyes(slot, actor);
+        var len = eyes.Length;
+        for (var i = 0; i < len; ++i)
+        {
+            ref readonly var eye = ref eyes[i];
+            if (!HitByEye(ref actor, eye))
+            {
+                hints.Add("Face open weakpoint to eye!");
+                return;
+            }
+        }
+    }
 }

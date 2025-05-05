@@ -60,14 +60,14 @@ class GabrielStates : StateMachineBuilder
         Cast(id, (uint)AID.IntegratedScanner, delay, 4f, "Apply weakspot");
         ComponentCondition<EnhancedMobility>(id + 0x10u, 12.1f, comp => comp.NumCasts != default, "Knockback 1")
             .ActivateOnEnter<EnhancedMobility>()
-            .ActivateOnEnter<Burst>()
-            .ActivateOnEnter<EnhancedMobilityHint>();
+            .ActivateOnEnter<EnhancedMobilityWeakpoint>()
+            .ActivateOnEnter<Burst>();
         ComponentCondition<Burst>(id + 0x20u, 1.3f, comp => comp.NumCasts != default, "Tower 1");
         ComponentCondition<EnhancedMobility>(id + 0x30u, 5.1f, comp => comp.NumCasts == 2, "Knockback 2");
         ComponentCondition<Burst>(id + 0x40u, 1.3f, comp => comp.NumCasts == 2, "Tower 2")
             .DeactivateOnExit<EnhancedMobility>()
             .DeactivateOnExit<Burst>()
-            .DeactivateOnExit<EnhancedMobilityHint>();
+            .DeactivateOnExit<EnhancedMobilityWeakpoint>();
     }
 
     private void IntegratedScannerEnhancedMobility3x(uint id, float delay)
@@ -75,8 +75,8 @@ class GabrielStates : StateMachineBuilder
         Cast(id, (uint)AID.IntegratedScanner, delay, 4f, "Apply weakspot");
         ComponentCondition<EnhancedMobility>(id + 0x10u, 12.1f, comp => comp.NumCasts != default, "Knockback 1")
             .ActivateOnEnter<EnhancedMobility>()
-            .ActivateOnEnter<Burst>()
-            .ActivateOnEnter<EnhancedMobilityHint>();
+            .ActivateOnEnter<EnhancedMobilityWeakpoint>()
+            .ActivateOnEnter<Burst>();
         ComponentCondition<Burst>(id + 0x20u, 1.3f, comp => comp.NumCasts != default, "Tower 1");
         ComponentCondition<EnhancedMobility>(id + 0x30u, 5.1f, comp => comp.NumCasts == 2, "Knockback 2");
         ComponentCondition<Burst>(id + 0x40u, 1.3f, comp => comp.NumCasts == 2, "Tower 2");
@@ -84,7 +84,7 @@ class GabrielStates : StateMachineBuilder
         ComponentCondition<Burst>(id + 0x60u, 1.3f, comp => comp.NumCasts == 3, "Tower 3")
             .DeactivateOnExit<EnhancedMobility>()
             .DeactivateOnExit<Burst>()
-            .DeactivateOnExit<EnhancedMobilityHint>();
+            .DeactivateOnExit<EnhancedMobilityWeakpoint>();
     }
 
     private void IntegratedScannerEnhancedMobilityFullyAnalyzed(uint id, float delay)
@@ -93,11 +93,11 @@ class GabrielStates : StateMachineBuilder
         ComponentCondition<EnhancedMobility>(id + 0x10u, 12.1f, comp => comp.NumCasts != default, "Knockback")
             .ActivateOnEnter<EnhancedMobility>()
             .ActivateOnEnter<Burst>()
-            .ActivateOnEnter<EnhancedMobilityHint2>();
+            .ActivateOnEnter<EnhancedMobilityFullyAnalyzedHint>();
         ComponentCondition<Burst>(id + 0x20u, 1.3f, comp => comp.NumCasts != default, "Tower 1")
             .DeactivateOnExit<EnhancedMobility>()
             .DeactivateOnExit<Burst>()
-            .DeactivateOnExit<EnhancedMobilityHint2>();
+            .DeactivateOnExit<EnhancedMobilityFullyAnalyzedHint>();
     }
 
     private void MagitekCannon(uint id, float delay)

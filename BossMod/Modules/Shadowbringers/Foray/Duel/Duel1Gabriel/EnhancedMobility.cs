@@ -58,6 +58,5 @@ class EnhancedMobility(BossModule module) : Components.GenericKnockback(module, 
     }
 }
 
-class EnhancedMobilityHint(BossModule module) : Components.CastHint(module, (uint)AID.EnhancedMobility, "Face open weakpoint to boss!");
-class EnhancedMobilityHint2(BossModule module) : Components.CastHint(module, (uint)AID.EnhancedMobility, "Use manawall or tank invuln to survive!");
+class EnhancedMobilityFullyAnalyzedHint(BossModule module) : Components.CastHint(module, (uint)AID.EnhancedMobility, "Use manawall or tank invuln to survive!");
 class EnhancedMobilityWeakpoint(BossModule module) : Components.CastWeakpoint(module, (uint)AID.EnhancedMobility, 40f, default, (uint)SID.BackUnseen, (uint)SID.LeftUnseen, (uint)SID.RightUnseen);
