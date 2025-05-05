@@ -33,7 +33,7 @@ public sealed class Caster(RotationModuleManager manager, Actor player) : AIBase
         return def;
     }
 
-    public override void Execute(StrategyValues strategy, ref Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
+    public override void Execute(StrategyValues strategy, Actor? primaryTarget, float estimatedAnimLockDelay, bool isMoving)
     {
         if (Player.MountId > 0)
             return;
@@ -92,7 +92,7 @@ public sealed class Caster(RotationModuleManager manager, Actor player) : AIBase
     {
         var candidates = strategy.Option(Track.RaiseTarget).As<RaiseTarget>() switch
         {
-            RaiseTarget.Everyone => World.Actors.Where(x => x.Type is ActorType.Player or ActorType.DutySupport && x.IsAlly),
+            RaiseTarget.Everyone => World.Actors.Where(x => x.Type is ActorType.Player or ActorType.Buddy && x.IsAlly),
             RaiseTarget.Alliance => World.Party.WithoutSlot(true, false, true),
             _ => World.Party.WithoutSlot(true, true, true)
         };
