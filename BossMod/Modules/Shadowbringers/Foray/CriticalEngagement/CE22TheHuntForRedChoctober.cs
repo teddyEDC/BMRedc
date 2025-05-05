@@ -141,8 +141,7 @@ class ChocoMeteorStream(BossModule module) : Components.GenericAOEs(module)
                 var angle = (WDir.Cross(dirClosest, dir) > 0f ? -1f : 1f) * 45f.Degrees(); // cross product to detect rotation direction
                 for (var i = 0; i < 13; ++i)
                 {
-                    var rotated = dir.Rotate(i * angle);
-                    var pos = i == 0 ? loc : WPos.ClampToGrid(center + rotated);
+                    var pos = i == 0 ? loc : WPos.ClampToGrid(center + dir.Rotate(i * angle));
                     _aoes.Add(new(circle, pos, default, Module.CastFinishAt(spell, i * 2f)));
                 }
 
