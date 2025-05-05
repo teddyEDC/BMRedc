@@ -122,30 +122,48 @@ class ChocoMeteorStream(BossModule module) : Components.GenericAOEs(module)
             _aoes.Add(new(circle, loc, default, Module.CastFinishAt(spell)));
             initialPositions.Add(loc);
         }
-        else if (_aoes.Count < 28 && spell.Action.ID == (uint)AID.ChocoMeteorStreamRest)
+        else if (spell.Action.ID == (uint)AID.ChocoMeteorStreamRest)
         {
-            var center = Arena.Center;
             var loc = spell.LocXZ;
-            var dir = loc - center;
-
-            // identify the closest initial position
-            var a = initialPositions[0];
-            var b = initialPositions[1];
-            var distA = (a - loc).LengthSq();
-            var distB = (b - loc).LengthSq();
-            var closest = distA < distB ? a : b;
-            var dirClosest = closest - center;
-
-            var angle = (WDir.Cross(dirClosest, dir) > 0f ? -1f : 1f) * 45f.Degrees(); // cross product to detect rotation direction
-            for (var i = 0; i < 13; ++i)
+            if (_aoes.Count < 28)
             {
-                var rotated = dir.Rotate(i * angle);
-                var pos = i == 0 ? loc : WPos.ClampToGrid(center + rotated);
-                _aoes.Add(new(circle, pos, default, Module.CastFinishAt(spell, i * 2f)));
-            }
+                var center = Arena.Center;
+                var dir = loc - center;
 
-            if (_aoes.Count == 28)
-                _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+                // identify the closest initial position
+                var a = initialPositions[0];
+                var b = initialPositions[1];
+                var distA = (a - loc).LengthSq();
+                var distB = (b - loc).LengthSq();
+                var closest = distA < distB ? a : b;
+                var dirClosest = closest - center;
+
+                var angle = (WDir.Cross(dirClosest, dir) > 0f ? -1f : 1f) * 45f.Degrees(); // cross product to detect rotation direction
+                for (var i = 0; i < 13; ++i)
+                {
+                    var pos = i == 0 ? loc : WPos.ClampToGrid(center + dir.Rotate(i * angle));
+                    _aoes.Add(new(circle, pos, default, Module.CastFinishAt(spell, i * 2f)));
+                }
+
+                if (_aoes.Count == 28)
+                    _aoes.Sort((x, y) => x.Activation.CompareTo(y.Activation));
+            }
+            else
+            {
+                var aoes = CollectionsMarshal.AsSpan(_aoes);
+                var maxC = Math.Min(2, 28 - NumCasts);
+                var maxI = NumCasts + maxC;
+
+                for (var i = NumCasts; i < maxI; ++i)
+                {
+                    ref var aoe = ref aoes[i];
+                    if (loc.AlmostEqual(aoe.Origin, 1f))
+                    {
+                        aoe.Origin = loc;
+                        return;
+                    }
+                }
+            }
         }
         if (spell.Action.ID == (uint)AID.ChocoMeteorStreamRest) // update location to replace prediction with actual location to ensure pixel perfectness
         {
