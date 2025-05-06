@@ -13,8 +13,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.Interop;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace BossMod;
 
@@ -248,14 +246,6 @@ sealed class WorldStateGameSync : IDisposable
                 Service.LogVerbose($"[WorldState] Skipping bad object #{i} with id {obj->EntityId:X}");
                 obj = null;
             }
-
-            if (actor != null && (obj == null || actor.InstanceID != obj->EntityId))
-            {
-                _actorsByIndex[i] = null;
-                RemoveActor(actor);
-                actor = null;
-            }
-
             if (obj != null)
             {
                 if (actor != _ws.Actors.Find(obj->EntityId))
@@ -263,6 +253,12 @@ sealed class WorldStateGameSync : IDisposable
                     Service.Log($"[WorldState] Actor position mismatch for #{i} {actor}");
                 }
                 UpdateActor(obj, i, actor);
+            }
+            if (actor != null && (obj == null || actor.InstanceID != obj->EntityId))
+            {
+                _actorsByIndex[i] = null;
+                RemoveActor(actor);
+                actor = null;
             }
         }
 
@@ -317,7 +313,7 @@ sealed class WorldStateGameSync : IDisposable
 
             // note: for now, we continue relying on network messages for tether changes, since sometimes multiple changes can happen in a single frame, and some components rely on seeing all of them...
             var tether = chr != null ? new ActorTetherInfo(chr->Vfx.Tethers[0].Id, chr->Vfx.Tethers[0].TargetId) : default;
-            if (tether.ID != 0)
+            if (tether.ID != default)
                 _ws.Execute(new ActorState.OpTether(act.InstanceID, tether));
         }
         else
@@ -512,9 +508,9 @@ sealed class WorldStateGameSync : IDisposable
             // else: just assume there's no player for now...
         }
 
-        var member = player.InstanceId != 0 ? group->GetPartyMemberByEntityId((uint)player.InstanceId) : null;
+        var member = player.InstanceId != default ? group->GetPartyMemberByEntityId((uint)player.InstanceId) : null;
         if (member != null)
-            player.InCutscene |= (member->Flags & 0x10) != 0;
+            player.InCutscene |= (member->Flags & 0x10) != default;
         UpdatePartySlot(PartyState.PlayerSlot, player);
         return member;
     }
@@ -1005,7 +1001,7 @@ sealed class WorldStateGameSync : IDisposable
 
     private unsafe void ProcessMapEffect(byte* data, byte offLow, byte offIndex)
     {
-        for (var i = 0; i < *data; i++)
+        for (var i = 0; i < *data; ++i)
         {
             var low = *(ushort*)(data + 2 * i + offLow);
             var high = *(ushort*)(data + 2 * i + 2);
