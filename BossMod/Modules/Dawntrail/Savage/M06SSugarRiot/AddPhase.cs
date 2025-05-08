@@ -30,13 +30,13 @@ class Adds(BossModule module) : Components.AddsMulti(module, [(uint)OID.Mu, (uin
                 case 2 when phase <= 2: priorities[2] = prio; break; // Yan P1
                 case 3 when phase <= 2: priorities[3] = prio; break; // Gimme Cat P1
                 case 4 when phase is >= 2 and not 4: priorities[1] = prio; break; // Mu P2
-                case 5 when phase >= 2: priorities[4] = prio; break; // FeatherRay NW
-                case 6 when phase >= 2: priorities[5] = prio; break; // FeatherRay NE
+                case 5: priorities[4] = prio; break; // FeatherRay NW
+                case 6: priorities[5] = prio; break; // FeatherRay NE
                 case 7 when phase == 3: priorities[2] = prio; break; // Yan P3
                 case 8 when phase == 3: priorities[3] = prio; break; // Gimme Cat P3
                 case 9 when phase == 3: priorities[6] = prio; break; // Jabberwock P3
-                case 10 when phase == 4: priorities[7] = prio; break; // FeatherRay SW
-                case 11 when phase == 4: priorities[8] = prio; break; // FeatherRay SE
+                case 10: priorities[7] = prio; break; // FeatherRay SW
+                case 11: priorities[8] = prio; break; // FeatherRay SE
                 case 12 when phase == 4: priorities[1] = prio; break; // Mu P4
                 case 13 when phase == 4: priorities[3] = prio; break; // Gimme Cat P4
                 case 14 when phase == 4: priorities[6] = prio; break; // Jabberwock P4

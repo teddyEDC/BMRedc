@@ -8,7 +8,7 @@ public class M06SSugarRiotConfig() : ConfigNode
 {
     [PropertyDisplay("Add phase priorities for autorotation (from highest to lowest)")]
     [PropertyStringOrder(["Sugar Riot", "Mu P1", "Yan P1", "Gimme Cat P1", "Mu P2", "Feather Ray NW", "Feather Ray NE", "Yan P3", "Gimme Cat P3", "Jabberwock P3",
-    "Feather Ray SW", "Feather Ray SE", "Mu P4", "Gimme Cat P4", "Jabberwok P4", "Yan P4"])]
+    "Feather Ray SW", "Feather Ray SE", "Mu P4", "Gimme Cat P4", "Jabberwock P4", "Yan P4"])]
     public int[] AddsPriorityOrder = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
 
     public override void DrawCustom(UITree tree, WorldState ws)
