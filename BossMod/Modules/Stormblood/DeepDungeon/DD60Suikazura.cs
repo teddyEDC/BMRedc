@@ -11,7 +11,7 @@ public enum AID : uint
     AutoAttack = 6499, // Boss->player, no cast, single-target
 
     Firewalker = 11925, // Boss->self, 3.0s cast, range 10 90-degree cone
-    InfiniteAnguish = 11930, // AccursedCane->self, 3.0s cast, range 12 circle
+    InfiniteAnguish = 11930, // AccursedCane->self, 3.0s cast, range 6-12 donut
     FireII = 11927, // Boss->location, 3.5s cast, range 5 circle
     Topple = 11926, // Boss->self, 3.0s cast, range 3+R circle
     SearingChain = 11929, // AccursedCane->self, 3.0s cast, range 60+R width 4 rect
@@ -30,13 +30,24 @@ class InfiniteAnguish(BossModule module) : Components.GenericAOEs(module)
     public override void OnActorCreated(Actor actor)
     {
         if (actor.OID == (uint)OID.AccursedCane)
-            _aoes.Add(new(donut, WPos.ClampToGrid(actor.Position), default, WorldState.FutureTime(7.9d)));
+            _aoes.Add(new(donut, WPos.ClampToGrid(actor.Position), default, WorldState.FutureTime(7.9d), ActorID: actor.InstanceID));
     }
 
-    public override void OnEventCast(Actor caster, ActorCastEvent spell)
+    public override void OnCastFinished(Actor caster, ActorCastInfo spell)
     {
         if (spell.Action.ID == (uint)AID.InfiniteAnguish)
-            _aoes.Clear();
+        {
+            var count = _aoes.Count;
+            var id = caster.InstanceID;
+            for (var i = 0; i < count; ++i)
+            {
+                if (_aoes[i].ActorID == id)
+                {
+                    _aoes.RemoveAt(i);
+                    return;
+                }
+            }
+        }
     }
 }
 
@@ -59,6 +70,6 @@ class DD60SuikazuraStates : StateMachineBuilder
     }
 }
 
-[ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 545, NameID = 7487)]
-public class DD60Suikazura(WorldState ws, Actor primary) : HoHBoss2(ws, primary);
+[ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "LegendofIceman, Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 545, NameID = 7487)]
+public class DD60Suikazura(WorldState ws, Actor primary) : HoHArena2(ws, primary);
 
