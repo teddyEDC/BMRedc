@@ -41,4 +41,4 @@ class DD50GozuStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 544, NameID = 7485)]
-public class DD50Gozu(WorldState ws, Actor primary) : HoHBoss2(ws, primary);
+public class DD50Gozu(WorldState ws, Actor primary) : HoHArena2(ws, primary);

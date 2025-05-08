@@ -1,11 +1,22 @@
 namespace BossMod.Stormblood.DeepDungeon.HeavenOnHigh;
 
-public abstract class HoHBoss(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+public static class HoHArenas
 {
-    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-300f, -300f), 24.5f * CosPI.Pi48th, 48, 3.75f.Degrees())], [new Rectangle(new(-300f, -325f), 20f, 1.25f)]);
+    public static readonly WPos ArenaCenter = new(-300f, -300f);
+    public static readonly Rectangle[] Entrance = [new Rectangle(new(-299.839f, -325.43f), 20f, 1.25f)];
 }
 
-public abstract class HoHBoss2(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+public abstract class HoHArena1(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
 {
-    private static readonly ArenaBoundsComplex arena = new([new Polygon(new(-300f, -300f), 24.5f, 48)], [new Rectangle(new(-299.839f, -325.43f), 20f, 1.25f)]);
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(HoHArenas.ArenaCenter, 24.5f * CosPI.Pi48th, 48, 3.75f.Degrees())], [new Rectangle(new(-300f, -325f), 20f, 1.25f)]);
+}
+
+public abstract class HoHArena2(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+{
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(HoHArenas.ArenaCenter, 24.5f, 48)], HoHArenas.Entrance);
+}
+
+public abstract class HoHArena3(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
+{
+    private static readonly ArenaBoundsComplex arena = new([new Polygon(HoHArenas.ArenaCenter, 25f, 48)], HoHArenas.Entrance);
 }

@@ -31,5 +31,5 @@ class DD10MojabuneStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 540, NameID = 7480)] // cfcid is 540 -> 549 (personal note for self)
-public class DD10Mojabune(WorldState ws, Actor primary) : HoHBoss(ws, primary);
+public class DD10Mojabune(WorldState ws, Actor primary) : HoHArena1(ws, primary);
 

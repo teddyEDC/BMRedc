@@ -56,4 +56,4 @@ class DD40BhimaStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 543, NameID = 7483)]
-public class DD40Bhima(WorldState ws, Actor primary) : HoHBoss(ws, primary);
+public class DD40Bhima(WorldState ws, Actor primary) : HoHArena1(ws, primary);

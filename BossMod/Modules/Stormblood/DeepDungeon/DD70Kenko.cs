@@ -132,9 +132,9 @@ class Devour(BossModule module) : Components.GenericBaitAway(module)
 class Ululation(BossModule module) : Components.RaidwideCast(module, (uint)AID.Ululation);
 class HoundOutOfHell(BossModule module) : Components.BaitAwayChargeCast(module, (uint)AID.HoundOutOfHell, 7f);
 
-class KenkoStates : StateMachineBuilder
+class DD70KenkoStates : StateMachineBuilder
 {
-    public KenkoStates(BossModule module) : base(module)
+    public DD70KenkoStates(BossModule module) : base(module)
     {
         TrivialPhase()
             .ActivateOnEnter<PredatorClaws>()
@@ -148,4 +148,4 @@ class KenkoStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 546, NameID = 7489)]
-public class Kenko(WorldState ws, Actor primary) : HoHBoss2(ws, primary);
+public class DD70Kenko(WorldState ws, Actor primary) : HoHArena2(ws, primary);

@@ -31,4 +31,4 @@ class DD20BecchoStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Contributed, Contributors = "LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 541, NameID = 7481)]
-public class DD20Beccho(WorldState ws, Actor primary) : HoHBoss(ws, primary);
+public class DD20Beccho(WorldState ws, Actor primary) : HoHArena1(ws, primary);

@@ -35,4 +35,4 @@ class DD30HirukoStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus, LegendofIceman", GroupType = BossModuleInfo.GroupType.CFC, GroupID = 542, NameID = 7482)]
-public class DD30Hiruko(WorldState ws, Actor primary) : HoHBoss(ws, primary);
+public class DD30Hiruko(WorldState ws, Actor primary) : HoHArena1(ws, primary);
