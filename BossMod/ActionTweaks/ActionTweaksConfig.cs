@@ -57,10 +57,10 @@ public sealed class ActionTweaksConfig : ConfigNode
     [PropertyDisplay("Use custom queueing for manually pressed actions", tooltip: "This setting allows better integration with autorotations and will prevent you from triple-weaving or drifting GCDs if you press a healing ability while autorotation is going on")]
     public bool UseManualQueue = false;
 
-    [PropertyDisplay("Try to prevent dashing into AOEs", tooltip: "Prevent automatic use of targeted dashes (like WAR Onslaught) if they would move you into a dangerous area. May not work as expected in instances that do not have modules.\n\nRequires the \"Use custom queueing\" option.\n\nWhen this safeguard is enabled, you can temporarily bypass it by pressing the same ability twice in quick succession.", since: "0.0.0.290", depends: nameof(UseManualQueue))]
+    [PropertyDisplay("Try to prevent dashing into AOEs", tooltip: "Prevent automatic use of targeted dashes (like WAR Onslaught) if they would move you into a dangerous area. May not work as expected in instances that do not have modules.\n\nRequires the \"Use custom queueing\" option.\n\nWhen this safeguard is enabled, you can temporarily bypass it by pressing the same ability twice in quick succession.")]
     public bool PreventDangerousDash = false;
 
-    [PropertyDisplay("Apply the previous option to all dashes, not just gap closers", tooltip: "Includes backdashes (e.g. SAM Yaten), teleports (e.g. NIN Shukuchi), and fixed-length dashes (e.g. DRG Elusive Jump)", depends: nameof(PreventDangerousDash))]
+    [PropertyDisplay("Apply the previous option to all dashes, not just gap closers", tooltip: "Includes backdashes (e.g. SAM Yaten), teleports (e.g. NIN Shukuchi), and fixed-length dashes (e.g. DRG Elusive Jump)")]
     public bool PreventDangerousDashExtra = true;
 
     [PropertyDisplay("Automatically manage auto attacks", tooltip: "This setting prevents starting autos early during countdown, starts them automatically at pull, when switching targets and when using any actions that don't explicitly cancel autos.")]

@@ -288,7 +288,7 @@ public sealed class ActionDefinitions : IDisposable
     public static bool DashToTargetCheck(WorldState _, Actor player, ActionQueue.Entry action, AIHints hints)
     {
         var target = action.Target;
-        if (target == null ||!_config.PreventDangerousDash)
+        if (target == null || !_config.PreventDangerousDash)
             return false;
 
         // if there are pending knockbacks, god only knows where we would be sent after using a gapcloser
@@ -305,8 +305,7 @@ public sealed class ActionDefinitions : IDisposable
 
     public static bool DashToPositionCheck(WorldState _, Actor player, ActionQueue.Entry action, AIHints hints)
     {
-        var cfg = Service.Config.Get<ActionTweaksConfig>();
-        if (action.TargetPos == default || !cfg.PreventDangerousDash || !cfg.PreventDangerousDashExtra)
+        if (action.TargetPos == default || !_config.PreventDangerousDash || !_config.PreventDangerousDashExtra)
             return false;
 
         if (player.PendingKnockbacks.Count > 0)
@@ -334,7 +333,7 @@ public sealed class ActionDefinitions : IDisposable
     public static ActionDefinition.ConditionDelegate BackdashCheck(float range)
          => (ws, player, act, hints) =>
         {
-            if (act.Target == null || !config.PreventDangerousDash || !config.PreventDangerousDashExtra)
+            if (act.Target == null || !_config.PreventDangerousDash || !_config.PreventDangerousDashExtra)
                 return false;
 
             if (player.PendingKnockbacks.Count > 0)
@@ -443,7 +442,7 @@ public sealed class ActionDefinitions : IDisposable
     public float ActionBaseCooldown(ActionID aid) => aid.Type switch
     {
         ActionType.Spell => SpellBaseCooldown(aid.ID),
-        ActionType.Item => ItemData(aid.ID).Cooldowns * (aid.ID > 1000000 ? 0.9f : 1.0f) /*?? 5*/,
+        ActionType.Item => ItemData(aid.ID).Cooldowns * (aid.ID > 1000000u ? 0.9f : 1.0f) /*?? 5*/,
         _ => 5,
     };
 
@@ -515,7 +514,7 @@ public sealed class ActionDefinitions : IDisposable
             Cooldown = cooldown,
             InstantAnimLock = animLock,
         };
-        var aidHQ = new ActionID(ActionType.Item, baseId + 1000000);
+        var aidHQ = new ActionID(ActionType.Item, baseId + 1000000u);
         _definitions[aidHQ] = new(aidHQ)
         {
             AllowedTargets = targets,
