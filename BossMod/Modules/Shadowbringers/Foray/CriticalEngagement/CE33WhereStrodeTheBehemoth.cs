@@ -122,5 +122,5 @@ public class CE33WhereStrodeTheBehemoth(WorldState ws, Actor primary) : BossModu
 {
     private static readonly ArenaBoundsComplex arena = new([new Polygon(new(231f, 95f), 29.5f, 32)]);
 
-    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InCircle(Arena.Center, 30f);
 }

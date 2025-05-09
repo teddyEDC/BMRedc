@@ -84,7 +84,7 @@ class DisruptionArenaChange(BossModule module) : Components.GenericAOEs(module)
 
     public override void OnEventEnvControl(byte index, uint state)
     {
-        if (state == 0x00020001 && index == 0x28)
+        if (state == 0x00020001u && index == 0x28u)
         {
             Arena.Bounds = D063Eliminator.DefaultBounds;
             _aoe = null;

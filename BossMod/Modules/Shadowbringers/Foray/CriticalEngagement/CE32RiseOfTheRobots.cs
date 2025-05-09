@@ -313,5 +313,5 @@ public class CE32RiseOfTheRobots(WorldState ws, Actor primary) : BossModule(ws, 
     private static readonly ArenaBoundsComplex startingArena = new([new Polygon(ArenaCenter, 29.5f, 32)]);
     public static readonly ArenaBoundsCircle DefaultArena = new(25f); // default arena got no extra collision, just a donut aoe
 
-    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InCircle(Arena.Center, 30f);
 }

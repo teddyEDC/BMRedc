@@ -26,5 +26,5 @@ class Duel2LyonStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.BozjaDuel, GroupID = 735, NameID = 8)] // bnpcname=9409
 public class Duel2Lyon(WorldState ws, Actor primary) : BossModule(ws, primary, new(211f, 380f), new ArenaBoundsCircle(20f))
 {
-    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InCircle(Arena.Center, 20f);
 }

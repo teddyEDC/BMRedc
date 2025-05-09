@@ -316,6 +316,8 @@ public class CE23FiresOfWar(WorldState ws, Actor primary) : BossModule(ws, prima
     private Actor? _bossMater;
     public Actor? BossMater() => _bossMater;
 
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InCircle(Arena.Center, 20f);
+
     protected override void UpdateModule()
     {
         // TODO: this is an ugly hack, think how multi-actor fights can be implemented without it...

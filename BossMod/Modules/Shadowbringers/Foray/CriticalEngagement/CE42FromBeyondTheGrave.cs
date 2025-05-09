@@ -200,7 +200,7 @@ class CE42FromBeyondTheGraveStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "Malediktus", GroupType = BossModuleInfo.GroupType.BozjaCE, GroupID = 778, NameID = 20)] // bnpcname=9931
-public class CE42FromBeyondTheGrave(WorldState ws, Actor primary) : BossModule(ws, primary, new(-60, 800), new ArenaBoundsCircle(30))
+public class CE42FromBeyondTheGrave(WorldState ws, Actor primary) : BossModule(ws, primary, new(-60f, 800f), new ArenaBoundsCircle(30f))
 {
     protected override void DrawEnemies(int pcSlot, Actor pc)
     {
@@ -210,5 +210,5 @@ public class CE42FromBeyondTheGrave(WorldState ws, Actor primary) : BossModule(w
         Arena.Actors(Enemies((uint)OID.DyunbuTheAccursed));
     }
 
-    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InCircle(Arena.Center, 30f);
 }
