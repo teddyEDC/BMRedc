@@ -192,7 +192,7 @@ class CE41WithDiremiteAndMainStates : StateMachineBuilder
 }
 
 [ModuleInfo(BossModuleInfo.Maturity.Verified, GroupType = BossModuleInfo.GroupType.BozjaCE, GroupID = 778, NameID = 21)] // bnpcname=9969
-public class CE41WithDiremiteAndMain(WorldState ws, Actor primary) : BossModule(ws, primary, new(-220, 530), new ArenaBoundsCircle(30))
+public class CE41WithDiremiteAndMain(WorldState ws, Actor primary) : BossModule(ws, primary, new(-220f, 530f), new ArenaBoundsCircle(30f))
 {
     public static readonly uint[] Crystals = [(uint)OID.DimCrystal, (uint)OID.CorruptedCrystal];
     protected override void DrawEnemies(int pcSlot, Actor pc)
@@ -212,5 +212,5 @@ public class CE41WithDiremiteAndMain(WorldState ws, Actor primary) : BossModule(
         Arena.Actors(filteredcrystals, Colors.Object, true);
     }
 
-    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InCircle(Arena.Center, 30f);
 }

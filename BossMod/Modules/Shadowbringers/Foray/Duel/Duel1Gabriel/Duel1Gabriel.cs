@@ -54,5 +54,5 @@ class DynamicSensoryJammer(BossModule module) : Components.StayMove(module, 3f)
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.BozjaDuel, GroupID = 735, NameID = 4, PlanLevel = 80)]
 public class Gabriel(WorldState ws, Actor primary) : BossModule(ws, primary, WPos.ClampToGrid(new(631f, 687f)), new ArenaBoundsCircle(15f))
 {
-    protected override bool CheckPull() => base.CheckPull() && InBounds(Raid.Player()!.Position);
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InCircle(Arena.Center, 15f);
 }

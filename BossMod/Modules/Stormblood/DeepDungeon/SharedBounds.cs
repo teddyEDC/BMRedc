@@ -15,8 +15,3 @@ public abstract class HoHArena2(WorldState ws, Actor primary) : BossModule(ws, p
 {
     private static readonly ArenaBoundsComplex arena = new([new Polygon(HoHArenas.ArenaCenter, 24.5f, 48)], HoHArenas.Entrance);
 }
-
-public abstract class HoHArena3(WorldState ws, Actor primary) : BossModule(ws, primary, arena.Center, arena)
-{
-    private static readonly ArenaBoundsComplex arena = new([new Polygon(HoHArenas.ArenaCenter, 25f, 48)], HoHArenas.Entrance);
-}
