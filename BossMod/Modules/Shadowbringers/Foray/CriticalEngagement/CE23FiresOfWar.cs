@@ -45,6 +45,8 @@ public enum SID : uint
     CantTouchThis = 2056 // none->PyrobolusSoror, extra=0xB9
 }
 
+class ScaldingScolding(BossModule module) : Components.Cleave(module, (uint)AID.ScaldingScolding, new AOEShapeCone(8f, 60f.Degrees()));
+
 class CantTouchThis(BossModule module) : Components.GenericStackSpread(module)
 {
     private readonly List<Actor> participants = [];
@@ -290,6 +292,7 @@ class CE23FiresOfWarStates : StateMachineBuilder
             .ActivateOnEnter<HotTemper>()
             .ActivateOnEnter<TooHotToHandle>()
             .ActivateOnEnter<SlowDeflagration>()
+            .ActivateOnEnter<ScaldingScolding>()
             .Raw.Update = () =>
             {
                 if (module.BossMater()?.IsDead ?? false)
