@@ -124,7 +124,7 @@ class ElectrochemicalReaction(BossModule module) : Components.GenericAOEs(module
                     var laser = bartizans[i];
                     if (laser.position.AlmostEqual(loc, 1f))
                     {
-                        goto skip; // each brazier got 2 actors, don't add duplicates
+                        goto skip; // each bartizan got 2 actors, don't add duplicates
                     }
                 }
                 bartizans.Add((WPos.ClampToGrid(loc), default));
@@ -189,5 +189,5 @@ class CE24PatriotGamesStates : StateMachineBuilder
 [ModuleInfo(BossModuleInfo.Maturity.Verified, Contributors = "The Combat Reborn Team (Malediktus)", GroupType = BossModuleInfo.GroupType.BozjaCE, GroupID = 735, NameID = 10)]
 public class CE24PatriotGames(WorldState ws, Actor primary) : BossModule(ws, primary, new(-239.999f, 413.999f), new ArenaBoundsSquare(24.5f))
 {
-    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InSquare(Arena.Center, 24.5f);
+    protected override bool CheckPull() => base.CheckPull() && Raid.Player()!.Position.InSquare(Arena.Center, 25f);
 }
