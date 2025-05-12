@@ -80,7 +80,7 @@ public static class BossModuleRegistry
                 iidType = null;
             }
 
-            var primaryOID = infoAttr?.PrimaryActorOID ?? 0;
+            uint primaryOID = infoAttr?.PrimaryActorOID ?? 0;
             if (primaryOID == 0 && oidType != null)
             {
                 if (Enum.TryParse(oidType, "Boss", out var oid))
@@ -125,7 +125,7 @@ public static class BossModuleRegistry
             }
 
             var sortOrder = infoAttr?.SortOrder ?? 0;
-            if (sortOrder == 0 && int.TryParse([.. module.Name.SkipWhile(c => !char.IsAsciiDigit(c)).TakeWhile(char.IsAsciiDigit)], out var inferredSortOrder))
+            if (sortOrder == 0 && int.TryParse(module.Name.SkipWhile(c => !char.IsAsciiDigit(c)).TakeWhile(char.IsAsciiDigit).ToArray(), out var inferredSortOrder))
             {
                 sortOrder = inferredSortOrder;
             }
@@ -164,7 +164,7 @@ public static class BossModuleRegistry
         }
     }
 
-    public static readonly Dictionary<uint, Info> RegisteredModules = []; // [primary-actor-oid] = module info
+    private static readonly Dictionary<uint, Info> _modulesByOID = []; // [primary-actor-oid] = module info
     private static readonly Dictionary<Type, Info> _modulesByType = []; // [module-type] = module info
 
     static BossModuleRegistry()
@@ -175,12 +175,16 @@ public static class BossModuleRegistry
             if (info == null)
                 continue;
             _modulesByType[t] = info;
-            if (!RegisteredModules.TryAdd(info.PrimaryActorOID, info))
-                Service.Log($"[ModuleRegistry] Two boss modules have same primary actor OID: {t.FullName} and {RegisteredModules[info.PrimaryActorOID].ModuleType.FullName}");
+            if (!_modulesByOID.TryAdd(info.PrimaryActorOID, info))
+                Service.Log($"[ModuleRegistry] Two boss modules have same primary actor OID: {t.FullName} and {_modulesByOID[info.PrimaryActorOID].ModuleType.FullName}");
         }
     }
 
-    public static Info? FindByOID(uint oid) => RegisteredModules.GetValueOrDefault(oid);
+    private static readonly BossModuleConfig _config = Service.Config.Get<BossModuleConfig>();
+
+    public static IReadOnlyDictionary<uint, Info> RegisteredModules => _modulesByOID;
+
+    public static Info? FindByOID(uint oid) => _modulesByOID.GetValueOrDefault(oid);
     public static Info? FindByType(Type type) => _modulesByType.GetValueOrDefault(type);
 
     public static BossModule? CreateModule(Info? info, WorldState ws, Actor primary) => info?.ModuleFactory(ws, primary);
@@ -188,6 +192,13 @@ public static class BossModuleRegistry
     public static BossModule? CreateModuleForActor(WorldState ws, Actor primary, BossModuleInfo.Maturity minMaturity)
     {
         var info = primary.Type is ActorType.Enemy or ActorType.EventObj ? FindByOID(primary.OID) : null;
+        if (info is { } inf)
+        {
+            if (_config.DisabledModules.Contains(inf.ModuleType.ToString()))
+                return null;
+            if (_config.DisabledCategories.Contains(inf.Category))
+                return null;
+        }
         return info?.Maturity >= minMaturity ? CreateModule(info, ws, primary) : null;
     }
 

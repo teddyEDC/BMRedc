@@ -1,8 +1,20 @@
 ﻿namespace BossMod;
 
-[ConfigDisplay(Name = "Boss modules and radar", Order = 1)]
+[ConfigDisplay(Name = "Boss Modules and Radar", Order = 1)]
 public class BossModuleConfig : ConfigNode
 {
+    public enum RadarCloseBehavior
+    {
+        [PropertyDisplay("Open settings dialog")]
+        Prompt,
+        [PropertyDisplay("Hide radar")]
+        DisableRadar,
+        [PropertyDisplay("Disable current module (and hide radar)")]
+        DisableActiveModule,
+        [PropertyDisplay("Disable current module and all modules in the same category")]
+        DisableActiveModuleCategory
+    }
+
     // boss module settings
     [PropertyDisplay("Minimal maturity for the module to be loaded", tooltip: "Some modules will have the \"WIP\" status and will not automatically load unless you change this")]
     public BossModuleInfo.Maturity MinMaturity = BossModuleInfo.Maturity.Contributed;
@@ -17,17 +29,20 @@ public class BossModuleConfig : ConfigNode
     [PropertyDisplay("Enable radar")]
     public bool Enable = true;
 
+    [PropertyDisplay("Close button behavior")]
+    public RadarCloseBehavior CloseBehavior = RadarCloseBehavior.Prompt;
+
     [PropertyDisplay("Lock radar and hint window movement and mouse interaction")]
     public bool Lock = false;
 
     [PropertyDisplay("Transparent radar window background", tooltip: "Removes the black window around the radar; this will not work if you move the radar to a different monitor")]
-    public bool TrishaMode = true;
+    public bool TrishaMode = false;
 
     [PropertyDisplay("Add opaque background to the arena in the radar")]
-    public bool OpaqueArenaBackground = true;
+    public bool OpaqueArenaBackground = false;
 
     [PropertyDisplay("Show outlines and shadows on various radar markings")]
-    public bool ShowOutlinesAndShadows = true;
+    public bool ShowOutlinesAndShadows = false;
 
     [PropertyDisplay("Radar arena scale factor", tooltip: "Scale of the arena inside of the radar window")]
     [PropertySlider(0.1f, 10, Speed = 0.1f, Logarithmic = true)]
@@ -40,12 +55,8 @@ public class BossModuleConfig : ConfigNode
     [PropertyDisplay("Rotate radar to match camera orientation")]
     public bool RotateArena = true;
 
-    [PropertyDisplay("Rotate map by 180° if rotating map is off")]
-    public bool FlipArena = false;
-
-    [PropertyDisplay("Give radar extra space for rotations", tooltip: "If you are using the above setting, you can give the radar extra space on the sides before the edges are clipped in order to account for rotating your camera during an encounter or to give the cardinal directions space.")]
-    [PropertySlider(1, 2, Speed = 0.1f, Logarithmic = true)]
-    public float SlackForRotations = 1.5f;
+    [PropertyDisplay("Give radar extra space for rotations", tooltip: "If you are using the above setting, this gives the radar extra space on the sides before the edges are clipped in order to account for rotating your camera during an encounter")]
+    public bool AddSlackForRotations = true;
 
     [PropertyDisplay("Show arena border in radar")]
     public bool ShowBorder = true;
@@ -59,14 +70,6 @@ public class BossModuleConfig : ConfigNode
     [PropertyDisplay("Cardinal direction font size")]
     [PropertySlider(0.1f, 100, Speed = 1)]
     public float CardinalsFontSize = 17;
-
-    [PropertyDisplay("Waymark font size")]
-    [PropertySlider(0.1f, 100, Speed = 1)]
-    public float WaymarkFontSize = 22;
-
-    [PropertyDisplay("Actor triangle scale factor")]
-    [PropertySlider(0.1f, 10, Speed = 0.1f)]
-    public float ActorScale = 1;
 
     [PropertyDisplay("Show waymarks on radar")]
     public bool ShowWaymarks = false;
@@ -84,9 +87,6 @@ public class BossModuleConfig : ConfigNode
     [PropertyDisplay("Show text hints in separate window", tooltip: "Separates the radar window from the hints window, allowing you to reposition the hints window")]
     public bool HintsInSeparateWindow = false;
 
-    [PropertyDisplay("Make separate hints window transparent")]
-    public bool HintsInSeparateWindowTransparent = false;
-
     [PropertyDisplay("Show mechanic sequence and timer hints")]
     public bool ShowMechanicTimers = true;
 
@@ -100,6 +100,6 @@ public class BossModuleConfig : ConfigNode
     [PropertyDisplay("Show movement hints in world", tooltip: "Not used very much, but can show you arrows in the game world to indicate where to move for certain mechanics")]
     public bool ShowWorldArrows = false;
 
-    [PropertyDisplay("Show melee range indicator")]
-    public bool ShowMeleeRangeIndicator = false;
+    public List<string> DisabledModules = [];
+    public List<BossModuleInfo.Category> DisabledCategories = [];
 }

@@ -27,7 +27,7 @@ public abstract class ZoneModule(WorldState ws) : IDisposable
 
     public void DrawGlobalHints()
     {
-        using var color = ImRaii.PushColor(ImGuiCol.Text, Colors.TextColor11);
+        using var color = ImRaii.PushColor(ImGuiCol.Text, 0xffffff00);
         foreach (var hint in CalculateGlobalHints())
         {
             ImGui.TextUnformatted(hint);

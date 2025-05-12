@@ -1,4 +1,5 @@
-using ImGuiNET;
+﻿using ImGuiNET;
+using System.Text;
 
 namespace BossMod;
 
@@ -57,7 +58,7 @@ public class StateMachine(List<StateMachine.Phase> phases)
         public PhaseHint Hint = PhaseHint.None; // special flags for phase
     }
 
-    public readonly List<Phase> Phases = phases;
+    public List<Phase> Phases { get; private init; } = phases;
 
     private DateTime _curTime;
     private DateTime _activation;
@@ -66,16 +67,16 @@ public class StateMachine(List<StateMachine.Phase> phases)
     public float TimeSinceActivation => (float)(_curTime - _activation).TotalSeconds;
     public float TimeSincePhaseEnter => (float)(_curTime - _phaseEnter).TotalSeconds;
     public float TimeSinceTransition => (float)(_curTime - _lastTransition).TotalSeconds;
-    public float TimeSinceTransitionClamped => Math.Min(TimeSinceTransition, ActiveState?.Duration ?? 0);
+    public float TimeSinceTransitionClamped => MathF.Min(TimeSinceTransition, ActiveState?.Duration ?? 0);
 
-    public int ActivePhaseIndex = -1;
+    public int ActivePhaseIndex { get; private set; } = -1;
     public Phase? ActivePhase => Phases.ElementAtOrDefault(ActivePhaseIndex);
-    public State? ActiveState;
+    public State? ActiveState { get; private set; }
 
     public void Start(DateTime now)
     {
         _activation = _curTime = now;
-        if (Phases.Count != 0)
+        if (Phases.Count > 0)
             TransitionToPhase(0);
     }
 
@@ -89,7 +90,7 @@ public class StateMachine(List<StateMachine.Phase> phases)
         _curTime = now;
         while (ActivePhase != null)
         {
-            var transition = ActivePhase.Update?.Invoke() ?? false;
+            bool transition = ActivePhase.Update?.Invoke() ?? false;
             if (!transition)
                 break;
             Service.Log($"[StateMachine] Phase transition from {ActivePhaseIndex} '{ActivePhase.Name}', time={TimeSincePhaseEnter:f2}");
@@ -124,7 +125,7 @@ public class StateMachine(List<StateMachine.Phase> phases)
 
     public string BuildStateChain(State? start, string sep, int maxCount = 5)
     {
-        var count = 0;
+        int count = 0;
         var res = new StringBuilder();
         while (start != null && count < maxCount)
         {
@@ -158,7 +159,7 @@ public class StateMachine(List<StateMachine.Phase> phases)
     private (string, State?) BuildComplexStateNameAndDuration(State start, float timeActive, bool writeTime)
     {
         var res = new StringBuilder(start.Name);
-        var timeLeft = Math.Max(0, start.Duration - timeActive);
+        var timeLeft = MathF.Max(0, start.Duration - timeActive);
         if (writeTime && res.Length > 0)
         {
             res.Append($" in {timeLeft:f1}s");
@@ -168,7 +169,7 @@ public class StateMachine(List<StateMachine.Phase> phases)
         while (start.EndHint.HasFlag(StateHint.GroupWithNext) && start.NextStates?.Length == 1)
         {
             start = start.NextStates[0];
-            timeLeft += Math.Max(0, start.Duration);
+            timeLeft += MathF.Max(0, start.Duration);
             if (start.Name.Length > 0)
             {
                 if (res.Length > 0)

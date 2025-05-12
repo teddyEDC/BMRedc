@@ -1,5 +1,6 @@
-﻿using Dalamud.Interface;
+﻿using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
+using static BossMod.BossModuleConfig;
 
 namespace BossMod;
 
@@ -15,24 +16,23 @@ public class BossModuleMainWindow : UIWindow
         _mgr = mgr;
         _zmm = zmm;
         RespectCloseHotkey = false;
-        TitleBarButtons.Add(new() { Icon = FontAwesomeIcon.Cog, IconOffset = new(1), Click = _ => OpenModuleConfig() });
     }
 
     public override void PreOpenCheck()
     {
         var showZoneModule = ShowZoneModule();
-        IsOpen = BossModuleManager.Config.Enable && (_mgr.LoadedModules.Count > 0 || showZoneModule);
+        IsOpen = _mgr.Config.Enable && (_mgr.LoadedModules.Count > 0 || showZoneModule);
         ShowCloseButton = _mgr.ActiveModule != null && !showZoneModule;
         WindowName = (showZoneModule ? $"Zone module ({_zmm.ActiveModule?.GetType().Name})" : _mgr.ActiveModule != null ? $"Boss module ({_mgr.ActiveModule.GetType().Name})" : "Loaded boss modules") + _windowID;
         Flags = ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
-        if (BossModuleManager.Config.TrishaMode)
+        if (_mgr.Config.TrishaMode)
             Flags |= ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground;
-        if (BossModuleManager.Config.Lock)
+        if (_mgr.Config.Lock)
             Flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs;
-        ForceMainWindow = BossModuleManager.Config.TrishaMode; // NoBackground flag without ForceMainWindow works incorrectly for whatever reason
+        ForceMainWindow = _mgr.Config.TrishaMode; // NoBackground flag without ForceMainWindow works incorrectly for whatever reason
 
-        if (BossModuleManager.Config.ShowWorldArrows && _mgr.ActiveModule != null && _mgr.WorldState.Party[PartyState.PlayerSlot] is var pc && pc != null)
-            DrawMovementHints(_mgr.ActiveModule.CalculateMovementHintsForRaidMember(PartyState.PlayerSlot, ref pc), pc.PosRot.Y);
+        if (_mgr.Config.ShowWorldArrows && _mgr.ActiveModule != null && _mgr.WorldState.Party[PartyState.PlayerSlot] is var pc && pc != null)
+            DrawMovementHints(_mgr.ActiveModule.CalculateMovementHintsForRaidMember(PartyState.PlayerSlot, pc), pc.PosRot.Y);
     }
 
     public override void OnOpen()
@@ -49,16 +49,56 @@ public class BossModuleMainWindow : UIWindow
     {
         if (!IsOpen)
         {
-            // user pressed close button - deactivate current module and show module list instead
-            // show module list instead of boss module
-            Service.Log("[BMM] Bossmod window closed by user, showing module list instead...");
-            _mgr.ActiveModule = null;
+            // user pressed close button
+            OnManualClose(_mgr.Config.CloseBehavior);
             IsOpen = true;
         }
     }
 
+    private void OnManualClose(RadarCloseBehavior beh)
+    {
+        switch (beh)
+        {
+            case RadarCloseBehavior.Prompt:
+                _showClosePopup = true;
+                break;
+
+            case RadarCloseBehavior.DisableRadar:
+                _mgr.Config.Enable = false;
+                break;
+
+            case RadarCloseBehavior.DisableActiveModule:
+                if (_mgr.ActiveModule?.Info is { } info)
+                {
+                    _mgr.Config.DisabledModules.Add(info.ModuleType.ToString());
+                    _mgr.ActiveModule = null;
+                }
+                break;
+
+            case RadarCloseBehavior.DisableActiveModuleCategory:
+                if (_mgr.ActiveModule?.Info is { } i)
+                {
+                    _mgr.Config.DisabledCategories.Add(i.Category);
+                    _mgr.ActiveModule = null;
+                }
+                break;
+        }
+    }
+
+    private bool _showClosePopup;
+
     public override void Draw()
     {
+        using (var popup = ImRaii.PopupModal("Radar close behavior##radar_close"))
+            if (popup)
+                DrawRadarClosePopup();
+
+        if (_showClosePopup)
+        {
+            _showClosePopup = false;
+            ImGui.OpenPopup("Radar close behavior##radar_close");
+        }
+
         if (ShowZoneModule())
         {
             _zmm.ActiveModule?.DrawGlobalHints();
@@ -67,24 +107,12 @@ public class BossModuleMainWindow : UIWindow
         {
             try
             {
-                _mgr.ActiveModule.Draw(BossModuleManager.Config.RotateArena ? _mgr.WorldState.Client.CameraAzimuth : BossModuleManager.Config.FlipArena ? 180f.Degrees() : default, PartyState.PlayerSlot, !BossModuleManager.Config.HintsInSeparateWindow, true);
+                _mgr.ActiveModule.Draw(_mgr.Config.RotateArena ? _mgr.WorldState.Client.CameraAzimuth : default, PartyState.PlayerSlot, !_mgr.Config.HintsInSeparateWindow, true);
             }
             catch (Exception ex)
             {
                 Service.Log($"Boss module draw crashed: {ex}");
                 _mgr.ActiveModule = null;
-            }
-        }
-        else
-        {
-            var count = _mgr.LoadedModules.Count;
-            for (var i = 0; i < count; ++i)
-            {
-                var m = _mgr.LoadedModules[i];
-                var oidType = BossModuleRegistry.FindByOID(m.PrimaryActor.OID)?.ObjectIDType;
-                var oidName = oidType?.GetEnumName(m.PrimaryActor.OID);
-                if (ImGui.Button($"{m.GetType()} ({m.PrimaryActor.InstanceID:X} '{m.PrimaryActor.Name}' {oidName})"))
-                    _mgr.ActiveModule = m;
             }
         }
     }
@@ -94,7 +122,7 @@ public class BossModuleMainWindow : UIWindow
         if (arrows == null || arrows.Count == 0 || Camera.Instance == null)
             return;
 
-        foreach ((var start, var end, var color) in arrows)
+        foreach ((var start, var end, uint color) in arrows)
         {
             Vector3 start3 = start.ToVec3(y);
             Vector3 end3 = end.ToVec3(y);
@@ -107,11 +135,46 @@ public class BossModuleMainWindow : UIWindow
         }
     }
 
-    private void OpenModuleConfig()
+    private bool _rememberCloseChoice;
+    private RadarCloseBehavior _beh;
+
+    private void DrawRadarClosePopup()
     {
-        if (_mgr.ActiveModule?.Info != null)
-            _ = new BossModuleConfigWindow(_mgr.ActiveModule.Info, _mgr.WorldState);
+        ImGui.Text("What would you like to do?");
+
+        if (ImGui.RadioButton("Hide the radar window", _beh == RadarCloseBehavior.DisableRadar))
+            _beh = RadarCloseBehavior.DisableRadar;
+        if (ImGui.RadioButton($"Disable the current module (currently: {_mgr.ActiveModule})", _beh == RadarCloseBehavior.DisableActiveModule))
+            _beh = RadarCloseBehavior.DisableActiveModule;
+        if (ImGui.RadioButton($"Disable the current category (currently: {_mgr.ActiveModule?.Info?.Category.ToString() ?? "unknown"})", _beh == RadarCloseBehavior.DisableActiveModuleCategory))
+            _beh = RadarCloseBehavior.DisableActiveModuleCategory;
+
+        ImGui.Dummy(new(0, 15));
+
+        ImGui.Checkbox("Remember my choice", ref _rememberCloseChoice);
+
+        ImGui.Dummy(new(0, 15));
+
+        if (ImGui.Button("OK"))
+        {
+            if (_rememberCloseChoice)
+            {
+                _mgr.Config.CloseBehavior = _beh;
+                _mgr.Config.Modified.Fire();
+            }
+            ImGui.CloseCurrentPopup();
+            OnManualClose(_beh);
+            _beh = default;
+            _rememberCloseChoice = false;
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Cancel"))
+        {
+            _beh = default;
+            _rememberCloseChoice = false;
+            ImGui.CloseCurrentPopup();
+        }
     }
 
-    private bool ShowZoneModule() => BossModuleManager.Config.ShowGlobalHints && !BossModuleManager.Config.HintsInSeparateWindow && _mgr.ActiveModule?.StateMachine.ActivePhase == null && (_zmm.ActiveModule?.WantDrawHints() ?? false);
+    private bool ShowZoneModule() => _mgr.Config.ShowGlobalHints && !_mgr.Config.HintsInSeparateWindow && _mgr.ActiveModule?.StateMachine.ActivePhase == null && (_zmm.ActiveModule?.WantDrawHints() ?? false);
 }

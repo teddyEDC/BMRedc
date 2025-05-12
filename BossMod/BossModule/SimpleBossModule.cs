@@ -2,13 +2,11 @@
 
 // base class for simple boss modules (hunts, fates, dungeons, etc.)
 // these always center map around PC
-public abstract class SimpleBossModule(WorldState ws, Actor primary) : BossModule(ws, primary, primary.Position, new ArenaBoundsCircle(30, AllowObstacleMap: true))
+public abstract class SimpleBossModule(WorldState ws, Actor primary) : BossModule(ws, primary, primary.Position, new ArenaBoundsCircle(30))
 {
     private WPos _prevFramePathfindCenter;
 
     public override bool CheckReset() => !PrimaryActor.InCombat;
-
-    protected override bool CheckPull() => base.CheckPull() && (PrimaryActor.Position - Raid.Player()!.Position).LengthSq() < 900f;
 
     protected override void UpdateModule()
     {

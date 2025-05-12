@@ -16,7 +16,7 @@ public class StateMachineTree
         public bool IsVulnerable;
         public StateMachine.State State;
         public Node? Predecessor;
-        public readonly List<Node> Successors = [];
+        public List<Node> Successors = [];
 
         internal Node(float t, int phaseID, int branchID, StateMachine.State state, StateMachine.Phase phase, Node? pred)
         {
@@ -69,7 +69,7 @@ public class StateMachineTree
             var n = StartingNode;
             while (n.Successors.Count > 0)
             {
-                var nextIndex = n.Successors.FindIndex(n => n.BranchID > StartingNode.BranchID + branchOffset);
+                int nextIndex = n.Successors.FindIndex(n => n.BranchID > StartingNode.BranchID + branchOffset);
                 if (nextIndex == -1)
                     nextIndex = n.Successors.Count;
                 n = n.Successors[nextIndex - 1];
@@ -90,16 +90,17 @@ public class StateMachineTree
         }
     }
 
-    public readonly Dictionary<uint, Node> Nodes = [];
+    private readonly Dictionary<uint, Node> _nodes = [];
+    public IReadOnlyDictionary<uint, Node> Nodes => _nodes;
 
-    public readonly List<Phase> Phases = [];
+    public List<Phase> Phases { get; } = [];
 
-    public int TotalBranches;
-    public float TotalMaxTime;
+    public int TotalBranches { get; private set; }
+    public float TotalMaxTime { get; private set; }
 
     public StateMachineTree(StateMachine sm)
     {
-        for (var i = 0; i < sm.Phases.Count; ++i)
+        for (int i = 0; i < sm.Phases.Count; ++i)
         {
             var (startingNode, maxTime) = LayoutNodeAndSuccessors(0, i, TotalBranches, sm.Phases[i].InitialState, sm.Phases[i], null);
             Phases.Add(new(sm.Phases[i], startingNode, maxTime));
@@ -117,7 +118,7 @@ public class StateMachineTree
             foreach (var (p, t) in Phases.Zip(phaseDurations))
                 p.Duration = Math.Min(t, p.MaxTime);
 
-        for (var i = 1; i < Phases.Count; ++i)
+        for (int i = 1; i < Phases.Count; ++i)
             Phases[i].StartTime = Phases[i - 1].StartTime + Phases[i - 1].Duration;
 
         var lastPhase = Phases[^1];
@@ -127,7 +128,7 @@ public class StateMachineTree
     // find phase index that corresponds to specified time; assumes ApplyTimings was called before
     public int FindPhaseAtTime(float t)
     {
-        var next = Phases.FindIndex(p => p.StartTime > t);
+        int next = Phases.FindIndex(p => p.StartTime > t);
         return next switch
         {
             < 0 => Phases.Count - 1,
@@ -144,13 +145,13 @@ public class StateMachineTree
 
     public (Node, float) AbsoluteTimeToNodeAndDelay(float t, List<int> phaseBranches)
     {
-        var phaseIndex = FindPhaseAtTime(t);
+        int phaseIndex = FindPhaseAtTime(t);
         return PhaseTimeToNodeAndDelay(t - Phases[phaseIndex].StartTime, phaseIndex, phaseBranches);
     }
 
     private (Node, float) LayoutNodeAndSuccessors(float t, int phaseID, int branchID, StateMachine.State state, StateMachine.Phase phase, Node? pred)
     {
-        var node = Nodes[state.ID] = new Node(t + state.Duration, phaseID, branchID, state, phase, pred);
+        var node = _nodes[state.ID] = new Node(t + state.Duration, phaseID, branchID, state, phase, pred);
         float succDuration = 0;
 
         if (state.NextStates?.Length > 0)

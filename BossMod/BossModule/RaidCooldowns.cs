@@ -35,7 +35,7 @@ public sealed class RaidCooldowns : IDisposable
         }
         // find first ability coming off CD and return time until it happens
         var firstAvailable = _damageCooldowns.Min(e => e.AvailableAt);
-        return Math.Max(0, (float)(firstAvailable - _ws.CurrentTime).TotalSeconds);
+        return MathF.Max(0, (float)(firstAvailable - _ws.CurrentTime).TotalSeconds);
     }
 
     // NextDamageBuffIn, but null at fight start before any raidbuffs have been used
@@ -45,7 +45,7 @@ public sealed class RaidCooldowns : IDisposable
             return null;
 
         var firstAvailable = _damageCooldowns.Min(e => e.AvailableAt);
-        return Math.Min(float.MaxValue, (float)(firstAvailable - _ws.CurrentTime).TotalSeconds);
+        return MathF.Min(float.MaxValue, (float)(firstAvailable - _ws.CurrentTime).TotalSeconds);
     }
 
     public static bool IsDamageBuff(uint statusID) => statusID
@@ -68,7 +68,7 @@ public sealed class RaidCooldowns : IDisposable
         return (float)(expireMax - _ws.CurrentTime).TotalSeconds;
     }
 
-    public float InterruptAvailableIn(int slot, DateTime now) => Math.Max(0, (float)(_interruptCooldowns[slot] - now).TotalSeconds);
+    public float InterruptAvailableIn(int slot, DateTime now) => MathF.Max(0, (float)(_interruptCooldowns[slot] - now).TotalSeconds);
 
     private void HandlePartyUpdate(PartyState.OpModify op)
     {
@@ -102,7 +102,7 @@ public sealed class RaidCooldowns : IDisposable
 
     private bool UpdateDamageCooldown(ulong casterID, ActionID action)
     {
-        var slot = _ws.Party.FindSlot(casterID);
+        int slot = _ws.Party.FindSlot(casterID);
         if (slot is < 0 or >= PartyState.MaxPartySize) // ignore cooldowns from other alliance parties
             return false;
 
@@ -122,7 +122,7 @@ public sealed class RaidCooldowns : IDisposable
 
     private bool UpdateInterruptCooldown(ulong casterID, ActionID action, float cooldown)
     {
-        var slot = _ws.Party.FindSlot(casterID);
+        int slot = _ws.Party.FindSlot(casterID);
         if (slot is < 0 or >= PartyState.MaxPartySize) // ignore cooldowns from other alliance parties
             return false;
         _interruptCooldowns[slot] = _ws.CurrentTime.AddSeconds(cooldown);

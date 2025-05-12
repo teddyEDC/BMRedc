@@ -5,10 +5,10 @@ public sealed class BossModuleManager : IDisposable
 {
     public readonly WorldState WorldState;
     public readonly RaidCooldowns RaidCooldowns;
-    public static readonly BossModuleConfig Config = Service.Config.Get<BossModuleConfig>();
+    public readonly BossModuleConfig Config = Service.Config.Get<BossModuleConfig>();
     private readonly EventSubscriptions _subsciptions;
 
-    public readonly List<BossModule> LoadedModules = [];
+    public List<BossModule> LoadedModules { get; } = [];
     public Event<BossModule> ModuleLoaded = new();
     public Event<BossModule> ModuleUnloaded = new();
     public Event<BossModule> ModuleActivated = new();
@@ -58,14 +58,14 @@ public sealed class BossModuleManager : IDisposable
     public void Update()
     {
         // update all loaded modules, handle activation/deactivation
-        var bestPriority = 0;
+        int bestPriority = 0;
         BossModule? bestModule = null;
-        var anyModuleActivated = false;
-        for (var i = 0; i < LoadedModules.Count; ++i)
+        bool anyModuleActivated = false;
+        for (int i = 0; i < LoadedModules.Count; ++i)
         {
             var m = LoadedModules[i];
-            var wasActive = m.StateMachine.ActiveState != null;
-            var allowUpdate = wasActive || !LoadedModules.Any(other => other.StateMachine.ActiveState != null && other.GetType() == m.GetType()); // hack: forbid activating multiple modules of the same type
+            bool wasActive = m.StateMachine.ActiveState != null;
+            bool allowUpdate = wasActive || !LoadedModules.Any(other => other.StateMachine.ActiveState != null && other.GetType() == m.GetType()); // hack: forbid activating multiple modules of the same type
             bool isActive;
             try
             {
@@ -103,7 +103,7 @@ public sealed class BossModuleManager : IDisposable
             }
 
             // module remains loaded
-            var priority = ModuleDisplayPriority(m);
+            int priority = ModuleDisplayPriority(m);
             if (priority > bestPriority)
             {
                 bestPriority = priority;
@@ -173,7 +173,7 @@ public sealed class BossModuleManager : IDisposable
 
     private void ConfigChanged()
     {
-        var demoIndex = LoadedModules.FindIndex(m => m is DemoModule);
+        int demoIndex = LoadedModules.FindIndex(m => m is DemoModule);
         if (Config.ShowDemo && demoIndex < 0)
             LoadModule(CreateDemoModule());
         else if (!Config.ShowDemo && demoIndex >= 0)
