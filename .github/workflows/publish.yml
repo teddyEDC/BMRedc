@@ -37,10 +37,10 @@ jobs:
         run: dotnet build --no-restore -c Release BossMod\BossModReborn.csproj -p:AssemblyVersion=${{ env.tag }} -p:FileVersion=${{ env.tag }} -p:InformationalVersion=${{ env.tag }} --output .\build
 
       - name: Zip Plugin
-        run: Compress-Archive -Path .\build\* -DestinationPath .\build\BossModReborn.zip
+        run: Compress-Archive -Path .\build\* -DestinationPath .\build\BMRedc-1.0.0.zip
 
       - name: Publish Plugin
         uses: softprops/action-gh-release@v2
         with:
-          files: ./build/BossModReborn.zip
+          files: ./build/BMRedc-1.0.0.zip
           token: ${{ secrets.GITHUB_TOKEN }}
