@@ -45,11 +45,11 @@ public class MapVisualizer
         ImGui.Dummy(size);
 
         // blocked squares / goal
-        var nodeIndex = 0;
-        var hoverNode = -1;
-        for (var y = 0; y < Map.Height; ++y)
+        int nodeIndex = 0;
+        int hoverNode = -1;
+        for (int y = 0; y < Map.Height; ++y)
         {
-            for (var x = 0; x < Map.Width; ++x, ++nodeIndex)
+            for (int x = 0; x < Map.Width; ++x, ++nodeIndex)
             {
                 var corner = tl + new Vector2(x, y) * ScreenPixelSize;
                 var cornerEnd = corner + new Vector2(ScreenPixelSize, ScreenPixelSize);
@@ -58,31 +58,31 @@ public class MapVisualizer
                 var pixPriority = Map.PixelPriority[nodeIndex];
                 if (pixMaxG < 0)
                 {
-                    dl.AddRectFilled(corner, cornerEnd, Colors.PathfindingColor1);
+                    dl.AddRectFilled(corner, cornerEnd, 0xff007fff);
                 }
                 else if (pixMaxG < float.MaxValue)
                 {
-                    var alpha = 1 - (pixMaxG > 0f ? pixMaxG / Map.MaxG : 0f);
-                    var c = 128 + (uint)(alpha * 127);
+                    var alpha = 1 - (pixMaxG > 0 ? pixMaxG / Map.MaxG : 0);
+                    uint c = 128 + (uint)(alpha * 127);
                     c = c | (c << 8) | 0xff000000;
                     dl.AddRectFilled(corner, cornerEnd, c);
                 }
                 else if (pixPriority > 0)
                 {
                     var alpha = Map.MaxPriority > 0 ? pixPriority / Map.MaxPriority : 1;
-                    var c = 128 + (uint)(alpha * 127);
+                    uint c = 128 + (uint)(alpha * 127);
                     c = (c << 8) | 0xff000000;
                     dl.AddRectFilled(corner, cornerEnd, c);
                 }
                 else if (pixPriority < 0)
                 {
-                    dl.AddRectFilled(corner, cornerEnd, Colors.PathfindingColor2);
+                    dl.AddRectFilled(corner, cornerEnd, 0xff808080);
                 }
 
                 ref var pfNode = ref _pathfind.NodeByIndex(nodeIndex);
                 if (pfNode.OpenHeapIndex != 0)
                 {
-                    dl.AddCircle((corner + cornerEnd) / 2, ScreenPixelSize * 0.5f - 2, pfNode.OpenHeapIndex < 0 ? Colors.PathfindingColor3 : Colors.PathfindingColor4, 0, pfNode.OpenHeapIndex == 1 ? 2 : 1);
+                    dl.AddCircle((corner + cornerEnd) / 2, ScreenPixelSize * 0.5f - 2, pfNode.OpenHeapIndex < 0 ? 0xff0000ff : 0xffff0080, 0, pfNode.OpenHeapIndex == 1 ? 2 : 1);
                 }
 
                 if (ImGui.IsMouseHoveringRect(corner, cornerEnd))
@@ -93,21 +93,21 @@ public class MapVisualizer
         }
 
         // border
-        dl.AddLine(tl, tr, Colors.Border, 2);
-        dl.AddLine(tr, br, Colors.Border, 2);
-        dl.AddLine(br, bl, Colors.Border, 2);
-        dl.AddLine(bl, tl, Colors.Border, 2);
+        dl.AddLine(tl, tr, 0xffffffff, 2);
+        dl.AddLine(tr, br, 0xffffffff, 2);
+        dl.AddLine(br, bl, 0xffffffff, 2);
+        dl.AddLine(bl, tl, 0xffffffff, 2);
 
         // grid
-        for (var x = 1; x < Map.Width; ++x)
+        for (int x = 1; x < Map.Width; ++x)
         {
             var off = new Vector2(x * ScreenPixelSize, 0);
-            dl.AddLine(tl + off, bl + off, Colors.Border, 1);
+            dl.AddLine(tl + off, bl + off, 0xffffffff, 1);
         }
-        for (var y = 1; y < Map.Height; ++y)
+        for (int y = 1; y < Map.Height; ++y)
         {
             var off = new Vector2(0, y * ScreenPixelSize);
-            dl.AddLine(tl + off, tr + off, Colors.Border, 1);
+            dl.AddLine(tl + off, tr + off, 0xffffffff, 1);
         }
 
         DrawPath(dl, tl, hoverNode >= 0 ? hoverNode : _pathfind.BestIndex());
@@ -123,11 +123,11 @@ public class MapVisualizer
             var side = r.halfWidth * direction.OrthoR();
             var front = r.origin + r.lenF * direction;
             var back = r.origin - r.lenB * direction;
-            dl.AddQuad(tl + Map.WorldToGridFrac(front + side) * ScreenPixelSize, tl + Map.WorldToGridFrac(front - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back + side) * ScreenPixelSize, Colors.PathfindingColor3);
+            dl.AddQuad(tl + Map.WorldToGridFrac(front + side) * ScreenPixelSize, tl + Map.WorldToGridFrac(front - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back - side) * ScreenPixelSize, tl + Map.WorldToGridFrac(back + side) * ScreenPixelSize, 0xff0000ff);
         }
         foreach (var l in Lines)
         {
-            dl.AddLine(tl + Map.WorldToGridFrac(l.origin) * ScreenPixelSize, tl + Map.WorldToGridFrac(l.dest) * ScreenPixelSize, Colors.PathfindingColor3);
+            dl.AddLine(tl + Map.WorldToGridFrac(l.origin) * ScreenPixelSize, tl + Map.WorldToGridFrac(l.dest) * ScreenPixelSize, 0xff0000ff);
         }
 
         ImGui.TableNextColumn();
@@ -155,7 +155,7 @@ public class MapVisualizer
             if (pfNode.OpenHeapIndex != 0)
             {
                 var (parentX, parentY) = Map.IndexToGrid(pfNode.ParentIndex);
-                ImGui.TextUnformatted($"PF: g={pfNode.GScore:f3}, h={pfNode.HScore:f3}, g+h={pfNode.FScore:f3}, score={pfNode.Score}, parent={parentX}x{parentY}, index={pfNode.OpenHeapIndex}, leeway={pfNode.PathLeeway}");
+                ImGui.TextUnformatted($"PF: g={pfNode.GScore:f3}, h={pfNode.HScore:f3}, g+h={pfNode.FScore:f3}, score={pfNode.Score}, parent={parentX}x{parentY}, index={pfNode.OpenHeapIndex}, leeway={pfNode.PathLeeway}, off={pfNode.EnterOffset}");
 
                 //if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
                 //{
@@ -164,11 +164,8 @@ public class MapVisualizer
 
                 ref var pfParent = ref _pathfind.NodeByIndex(pfNode.ParentIndex);
                 var (grandParentX, grandParentY) = Map.IndexToGrid(pfParent.ParentIndex);
-                var gpGScore = _pathfind.NodeByIndex(pfParent.ParentIndex).GScore;
-
-                var canSee = _pathfind.LineOfSight(grandParentX, grandParentY, x, y, gpGScore, out var gpLineOfSightLeeway, out var gpLineOfSightDist, out var gpLineOfSightMinG);
-                ImGui.TextUnformatted($"PF: grandparent={grandParentX}x{grandParentY}, " + $"canSee={canSee}, " + $"dist={gpLineOfSightDist:F2}, " + $"leeway={gpLineOfSightLeeway:F2}, " + $"minG={gpLineOfSightMinG:F2}"
-                );
+                var losLeeway = _pathfind.LineOfSight(grandParentX, grandParentY, _pathfind.NodeByIndex(pfParent.ParentIndex).EnterOffset, x, y, out var grandParentOffset, out var grandParentDist, out var grandParentMinG);
+                ImGui.TextUnformatted($"PF: grandparent={grandParentX}x{grandParentY}, dist={grandParentDist}, losLeeway={losLeeway}, off={grandParentOffset}, minG={grandParentMinG}");
             }
         }
 
@@ -236,16 +233,16 @@ public class MapVisualizer
         var sCenter = tl + Map.WorldToGridFrac(center) * ScreenPixelSize;
         if (halfWidth.Rad >= MathF.PI)
         {
-            dl.AddCircle(sCenter, or / Map.Resolution * ScreenPixelSize, Colors.PathfindingColor3);
+            dl.AddCircle(sCenter, or / Map.Resolution * ScreenPixelSize, 0xff0000ff);
             if (ir > 0)
-                dl.AddCircle(sCenter, ir / Map.Resolution * ScreenPixelSize, Colors.PathfindingColor3);
+                dl.AddCircle(sCenter, ir / Map.Resolution * ScreenPixelSize, 0xff0000ff);
         }
         else
         {
-            var sDir = Angle.HalfPi - dir.Rad;
+            float sDir = MathF.PI / 2 - dir.Rad;
             dl.PathArcTo(sCenter, ir / Map.Resolution * ScreenPixelSize, sDir + halfWidth.Rad, sDir - halfWidth.Rad);
             dl.PathArcTo(sCenter, or / Map.Resolution * ScreenPixelSize, sDir - halfWidth.Rad, sDir + halfWidth.Rad);
-            dl.PathStroke(Colors.PathfindingColor3, ImDrawFlags.Closed, 1);
+            dl.PathStroke(0xff0000ff, ImDrawFlags.Closed, 1);
         }
     }
 
@@ -261,22 +258,17 @@ public class MapVisualizer
         var color = 0xffffff00;
         var nextIndex = startingNode.ParentIndex;
         var (x1, y1) = Map.IndexToGrid(startingIndex);
-        var (x2, y2) = Map.IndexToGrid(nextIndex);
-
-        var maxIterations = Map.Width * Map.Height;
-        var iterations = 0;
-
-        while ((x1 != x2 || y1 != y2) && iterations <= maxIterations)
+        var (x2, y2) = Map.IndexToGrid(startingNode.ParentIndex);
+        while (x1 != x2 || y1 != y2)
         {
-            dl.AddLine(tl + new Vector2(x1 + 0.5f, y1 + 0.5f) * ScreenPixelSize,
-                    tl + new Vector2(x2 + 0.5f, y2 + 0.5f) * ScreenPixelSize,
-                    color, 2);
-            color = Colors.Vulnerable;
+            var off1 = _pathfind.NodeByIndex(startingIndex).EnterOffset;
+            var off2 = _pathfind.NodeByIndex(nextIndex).EnterOffset;
+            dl.AddLine(tl + new Vector2(x1 + 0.5f + off1.X, y1 + 0.5f + off1.Y) * ScreenPixelSize, tl + new Vector2(x2 + 0.5f + off2.X, y2 + 0.5f + off2.Y) * ScreenPixelSize, color, 2);
+            color = 0xffff00ff;
             startingIndex = nextIndex;
             nextIndex = _pathfind.NodeByIndex(startingIndex).ParentIndex;
             (x1, y1) = (x2, y2);
             (x2, y2) = Map.IndexToGrid(nextIndex);
-            iterations++;
         }
     }
 
@@ -293,22 +285,18 @@ public class MapVisualizer
         var (x1, y1) = Map.IndexToGrid(startingIndex);
         var (x2, y2) = Map.IndexToGrid(nextIndex);
         var futureCenter = _pathfind.CellCenter(startingIndex);
-        int maxIterations = Map.Width * Map.Height;
-        int iterations = 0;
-
-        while ((x1 != x2 || y1 != y2) && iterations <= maxIterations)
+        while (x1 != x2 || y1 != y2)
         {
             ref var node = ref _pathfind.NodeByIndex(startingIndex);
             var curCenter = _pathfind.CellCenter(startingIndex);
             var prevCenter = _pathfind.CellCenter(node.ParentIndex);
             var turn = (curCenter - prevCenter).OrthoL().Dot(futureCenter - curCenter);
-            using var n = ImRaii.TreeNode($"Waypoint: {x1}x{y1} ({Map.GridToWorld(x1, y1, 0.5f, 0.5f)}), minG={node.PathMinG}, leeway={node.PathLeeway}, turn={turn}", ImGuiTreeNodeFlags.Leaf);
+            using var n = ImRaii.TreeNode($"Waypoint: {x1}x{y1} ({Map.GridToWorld(x1, y1, node.EnterOffset.X + 0.5f, node.EnterOffset.Y + 0.5f)}), minG={node.PathMinG}, leeway={node.PathLeeway}, turn={turn}", ImGuiTreeNodeFlags.Leaf);
             startingIndex = nextIndex;
             nextIndex = _pathfind.NodeByIndex(node.ParentIndex).ParentIndex;
             (x1, y1) = (x2, y2);
             (x2, y2) = Map.IndexToGrid(nextIndex);
             futureCenter = curCenter;
-            iterations++;
         }
     }
 
